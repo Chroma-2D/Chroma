@@ -15,14 +15,84 @@ namespace Chroma.Graphics
             if (SDL.SDL_WasInit(SDL.SDL_INIT_EVERYTHING) == 0)
                 SDL.SDL_Init(SDL.SDL_INIT_EVERYTHING);
 
-            Console.WriteLine(" => GraphicsManager initializing. Registered renderers: ");
+            Console.WriteLine(" => GraphicsManager initializing...");
+            Console.WriteLine("    Registered renderers:");
 
-            foreach(var s in GetRendererNames())
-                Console.WriteLine($"    {s}");
+            foreach (var s in GetRendererNames())
+                Console.WriteLine($"      {s}");
+
+            Console.WriteLine("    Available displays:");
+
+            foreach (var d in FetchDisplayInfo())
+                Console.WriteLine($"      {d.Index}: {d.Dimensions.Width}x{d.Dimensions.Height}@{d.RefreshRate}Hz");
         }
 
         public List<string> GetRendererNames()
             => GetRegisteredRenderers().Select(x => $"{x.name.Value} ({x.major_version}.{x.minor_version})").ToList();
+
+        public List<Display> FetchDisplayInfo()
+        {
+            var displays = new List<Display>();
+            var count = SDL.SDL_GetNumVideoDisplays();
+
+            for (var i = 0; i < count; i++)
+            {
+                var display = FetchDisplayInfo(i);
+
+                if (display != null)
+                    displays.Add(display);
+            }
+
+            return displays;
+        }
+
+        public List<Display> FetchDesktopDisplayInfo()
+        {
+            var displays = new List<Display>();
+            var count = SDL.SDL_GetNumVideoDisplays();
+
+            for (var i = 0; i < count; i++)
+            {
+                var display = FetchDesktopDisplayInfo(i);
+
+                if (display != null)
+                    displays.Add(display);
+            }
+
+            return displays;
+        }
+
+        public Display FetchDisplayInfo(int index)
+        {
+            if (SDL.SDL_GetCurrentDisplayMode(index, out SDL.SDL_DisplayMode mode) == 0)
+            {
+                return new Display(index, mode.refresh_rate, (ushort)mode.w, (ushort)mode.h)
+                {
+                    UnderlyingDisplayMode = mode
+                };
+            }
+            else
+            {
+                Console.WriteLine($"Failed to retrieve display {index} info: {SDL.SDL_GetError()}");
+                return null;
+            }
+        }
+
+        public Display FetchDesktopDisplayInfo(int index)
+        {
+            if (SDL.SDL_GetDesktopDisplayMode(index, out SDL.SDL_DisplayMode mode) == 0)
+            {
+                return new Display(index, mode.refresh_rate, (ushort)mode.w, (ushort)mode.h)
+                {
+                    UnderlyingDisplayMode = mode
+                };
+            }
+            else
+            {
+                Console.WriteLine($"Failed to retrieve desktop display {index} info: {SDL.SDL_GetError()}");
+                return null;
+            }
+        }
 
         internal List<SDL_gpu.GPU_RendererID> GetRegisteredRenderers()
         {

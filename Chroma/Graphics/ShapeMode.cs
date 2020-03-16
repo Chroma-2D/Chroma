@@ -1,6 +1,6 @@
 ﻿namespace Chroma.Graphics
 {
-    public enum RectangleMode
+    public enum ShapeMode
     {
         Fill,
         Stroke

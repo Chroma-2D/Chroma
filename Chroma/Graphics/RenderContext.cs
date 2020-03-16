@@ -13,6 +13,8 @@ namespace Chroma.Graphics
         {
             Owner = owner;
             CurrentRenderTarget = owner.RenderTargetPointer;
+            
+            LineThickness = 1;
         }
 
         public float LineThickness

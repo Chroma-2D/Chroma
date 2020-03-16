@@ -9,8 +9,4 @@
     <ProjectReference Include="..\Chroma.SDL2\Chroma.SDL2.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Input\" />
-  </ItemGroup>
-
 </Project>

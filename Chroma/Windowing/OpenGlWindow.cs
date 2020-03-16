@@ -11,10 +11,19 @@ namespace Chroma.Windowing
         internal DrawDelegate Draw { get; set; }
         internal UpdateDelegate Update { get; set; }
 
-        public OpenGlWindow(Game game, ushort width, ushort height) : 
-            base(game, width, height, SDL.SDL_WindowFlags.SDL_WINDOW_OPENGL)
-        {
-        }
+        internal OpenGlWindow(Game game, ushort width, ushort height)
+          : base(
+                game, 
+                new Vector2(
+                    SDL.SDL_WINDOWPOS_CENTERED, 
+                    SDL.SDL_WINDOWPOS_CENTERED
+                ), 
+                width, 
+                height, 
+                false, 
+                SDL.SDL_WindowFlags.SDL_WINDOW_OPENGL
+            )
+        { }
 
         internal override void OnSdlEvent(SDL.SDL_Event ev)
         {

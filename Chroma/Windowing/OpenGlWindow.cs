@@ -16,6 +16,11 @@ namespace Chroma.Windowing
         {
         }
 
+        internal override void OnSdlEvent(SDL.SDL_Event ev)
+        {
+            base.OnSdlEvent(ev);
+        }
+
         protected override void OnDraw()
         {
             Draw?.Invoke(RenderContext);

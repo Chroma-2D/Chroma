@@ -26,7 +26,7 @@ namespace Chroma.ExampleApp
 
         protected override void Update(float delta)
         {
-            Console.WriteLine(delta);
+            // Console.WriteLine(delta);
 
             if (_rectPosition.X + 10 >= Window.Size.Width || _rectPosition.X - 1 < 0)
                 _hSign *= -1;

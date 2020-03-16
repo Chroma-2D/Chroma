@@ -7,9 +7,9 @@ namespace Chroma.SDL2
     {
         public IntPtr Pointer;
 
-        public string Value
-        {
-            get { return Marshal.PtrToStringAnsi(Pointer); }
-        }
+        public string Value => Marshal.PtrToStringAnsi(Pointer);
+
+        public override string ToString()
+            => Value;
     }
 }

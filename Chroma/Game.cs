@@ -6,6 +6,7 @@ namespace Chroma
     public class Game
     {
         protected OpenGlWindow Window { get; }
+        protected GraphicsManager Graphics => GraphicsManager.Instance;
 
         public bool Running { get; private set; }
 

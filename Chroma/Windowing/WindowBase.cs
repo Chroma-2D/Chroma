@@ -52,8 +52,9 @@ namespace Chroma.Windowing
             Handle = SDL.SDL_CreateWindow(_title, 100, 100, width, height, windowFlags);
             SDL_gpu.GPU_SetInitWindow(SDL.SDL_GetWindowID(Handle));
 
-            // TODO: decouple from ogl
-            RenderTargetPointer = SDL_gpu.GPU_InitRenderer(SDL_gpu.GPU_RendererEnum.GPU_RENDERER_OPENGL_3, width, height, 0);
+            var bestRenderer = GraphicsManager.Instance.GetBestRenderer();
+            Console.WriteLine($"    Selecting best renderer: {bestRenderer.name}");
+            RenderTargetPointer = SDL_gpu.GPU_InitRenderer(bestRenderer.renderer, width, height, 0);
             RenderContext = new RenderContext(this);
         }
 

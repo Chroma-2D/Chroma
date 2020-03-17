@@ -22,12 +22,12 @@ namespace Chroma.Windowing.Events.SpecializedHandlers
 
         private void KeyUp(OpenGlWindow owner, SDL.SDL_Event ev)
         {
-            
+            Keyboard.OnKeyUp(new KeyEventArgs((Scancode)ev.key.keysym.scancode, false, ev.key.repeat != 0));
         }
 
         private void KeyDown(OpenGlWindow owner, SDL.SDL_Event ev)
         {
-            Keyboard.OnKeyDown(new KeyEventArgs((Scancode)ev.key.keysym.scancode));
+            Keyboard.OnKeyDown(new KeyEventArgs((Scancode)ev.key.keysym.scancode, true, ev.key.repeat != 0));
         }
 
         private void MouseMoved(OpenGlWindow owner, SDL.SDL_Event ev)

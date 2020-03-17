@@ -41,7 +41,28 @@ namespace Chroma.Input
         X = SDL.SDL_Scancode.SDL_SCANCODE_X,
         Y = SDL.SDL_Scancode.SDL_SCANCODE_Y,
         Z = SDL.SDL_Scancode.SDL_SCANCODE_Z,
-        
+
+        // --- Numpad group.
+        NumLock = SDL.SDL_Scancode.SDL_SCANCODE_NUMLOCKCLEAR,
+        NumpadSlash = SDL.SDL_Scancode.SDL_SCANCODE_KP_DIVIDE,
+        NumpadAsterisk = SDL.SDL_Scancode.SDL_SCANCODE_KP_MULTIPLY,
+        NumpadMinus = SDL.SDL_Scancode.SDL_SCANCODE_KP_MINUS,
+        NumpadPlus = SDL.SDL_Scancode.SDL_SCANCODE_KP_PLUS,
+        Numpad0 = SDL.SDL_Scancode.SDL_SCANCODE_KP_0,
+        Numpad1 = SDL.SDL_Scancode.SDL_SCANCODE_KP_1,
+        Numpad2 = SDL.SDL_Scancode.SDL_SCANCODE_KP_2,
+        Numpad3 = SDL.SDL_Scancode.SDL_SCANCODE_KP_3,
+        Numpad4 = SDL.SDL_Scancode.SDL_SCANCODE_KP_4,
+        Numpad5 = SDL.SDL_Scancode.SDL_SCANCODE_KP_5,
+        Numpad6 = SDL.SDL_Scancode.SDL_SCANCODE_KP_6,
+        Numpad7 = SDL.SDL_Scancode.SDL_SCANCODE_KP_7,
+        Numpad8 = SDL.SDL_Scancode.SDL_SCANCODE_KP_8,
+        Numpad9 = SDL.SDL_Scancode.SDL_SCANCODE_KP_9,
+        NumpadEnter = SDL.SDL_Scancode.SDL_SCANCODE_KP_ENTER,
+        NumpadPeriod = SDL.SDL_Scancode.SDL_SCANCODE_KP_PERIOD,
+        NumpadComma = SDL.SDL_Scancode.SDL_SCANCODE_KP_COMMA,
+        NumpadDecimal = SDL.SDL_Scancode.SDL_SCANCODE_KP_DECIMAL,
+
         // --- Function group.
         F1 = SDL.SDL_Scancode.SDL_SCANCODE_F1,
         F2 = SDL.SDL_Scancode.SDL_SCANCODE_F2,
@@ -67,7 +88,8 @@ namespace Chroma.Input
         F22 = SDL.SDL_Scancode.SDL_SCANCODE_F22,
         F23 = SDL.SDL_Scancode.SDL_SCANCODE_F23,
         F24 = SDL.SDL_Scancode.SDL_SCANCODE_F24,
-        
+        Escape = SDL.SDL_Scancode.SDL_SCANCODE_ESCAPE,
+
         // --- Punctuation group.
         Comma = SDL.SDL_Scancode.SDL_SCANCODE_COMMA,
         Period = SDL.SDL_Scancode.SDL_SCANCODE_PERIOD,
@@ -95,6 +117,7 @@ namespace Chroma.Input
         Right = SDL.SDL_Scancode.SDL_SCANCODE_RIGHT,
         Up = SDL.SDL_Scancode.SDL_SCANCODE_UP,
         Down = SDL.SDL_Scancode.SDL_SCANCODE_DOWN,
+        Enter = SDL.SDL_Scancode.SDL_SCANCODE_RETURN,
         
         // --- Keyboard state group.
         LeftShift = SDL.SDL_Scancode.SDL_SCANCODE_LSHIFT,

@@ -16,6 +16,18 @@ namespace Chroma.Windowing.Events.SpecializedHandlers
             Dispatcher.RegisterGenericEventHandler(SDL.SDL_EventType.SDL_MOUSEWHEEL, WheelMoved);
             Dispatcher.RegisterGenericEventHandler(SDL.SDL_EventType.SDL_MOUSEBUTTONDOWN, MousePressed);
             Dispatcher.RegisterGenericEventHandler(SDL.SDL_EventType.SDL_MOUSEBUTTONUP, MouseReleased);
+            Dispatcher.RegisterGenericEventHandler(SDL.SDL_EventType.SDL_KEYUP, KeyUp);
+            Dispatcher.RegisterGenericEventHandler(SDL.SDL_EventType.SDL_KEYDOWN, KeyDown);
+        }
+
+        private void KeyUp(OpenGlWindow owner, SDL.SDL_Event ev)
+        {
+            
+        }
+
+        private void KeyDown(OpenGlWindow owner, SDL.SDL_Event ev)
+        {
+            Keyboard.OnKeyDown(new KeyEventArgs((Scancode)ev.key.keysym.scancode));
         }
 
         private void MouseMoved(OpenGlWindow owner, SDL.SDL_Event ev)

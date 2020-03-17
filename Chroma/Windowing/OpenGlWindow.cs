@@ -64,8 +64,6 @@ namespace Chroma.Windowing
                 SDL.SDL_WindowFlags.SDL_WINDOW_OPENGL
             );
 
-            Mouse.WindowHandle = Handle;
-
             SDL_gpu.GPU_SetInitWindow(SDL.SDL_GetWindowID(Handle));
 
             var bestRenderer = GraphicsManager.Instance.GetBestRenderer();

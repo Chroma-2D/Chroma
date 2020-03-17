@@ -2,14 +2,18 @@ namespace Chroma.Input.EventArgs
 {
     public class KeyEventArgs : System.EventArgs
     {
-        public Scancode Scancode { get; }
-        public bool IsRepeat { get; }
-        public bool IsDown { get; }
+        public ScanCode ScanCode { get; }
+        public KeyCode KeyCode { get; }
+        public KeyModifiers Modifiers { get; }
 
-        internal KeyEventArgs(Scancode scancode, bool isDown, bool isRepeat)
+        public bool IsRepeat { get; }
+
+        internal KeyEventArgs(ScanCode scanCode, KeyCode keyCode, KeyModifiers modifiers, bool isRepeat)
         {
-            Scancode = scancode;
-            IsDown = isDown;
+            ScanCode = scanCode;
+            KeyCode = keyCode;
+            Modifiers = modifiers;
+
             IsRepeat = isRepeat;
         }
     }

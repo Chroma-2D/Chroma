@@ -6,10 +6,10 @@ namespace Chroma.Graphics
 {
     public class RenderContext
     {
-        internal WindowBase Owner { get; }
+        internal OpenGlWindow Owner { get; }
         internal SDL_gpu.GPU_Target_PTR CurrentRenderTarget { get; }
 
-        internal RenderContext(WindowBase owner)
+        internal RenderContext(OpenGlWindow owner)
         {
             Owner = owner;
             CurrentRenderTarget = owner.RenderTargetPointer;

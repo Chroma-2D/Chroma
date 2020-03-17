@@ -6,8 +6,8 @@ namespace Chroma.ExampleApp
 {
     public class ExampleGame : Game
     {
-        private byte Red { get; set; }
-        private Color Color { get; set; }
+        private Vector2 _position;
+        private float _speed = 500f;
 
         public ExampleGame()
         {
@@ -18,24 +18,38 @@ namespace Chroma.ExampleApp
             {
                 Window.Properties.Title = $"{e.Position.X}, {e.Position.Y}";
             };
-
-            Mouse.WheelMoved += (sender, e) =>
-            {
-                Red += (byte)(e.Motion.Y % byte.MaxValue);
-                Color = new Color(Red, 0, 0);
-            };
-
-            Keyboard.KeyDown += (sender, e) => Console.WriteLine(e.Scancode);
         }
 
         protected override void Draw(RenderContext context)
         {
-            context.Clear(Color);
+            context.Clear(Color.Black);
+            context.Rectangle(ShapeMode.Fill, _position, new Size(32, 32), Color.White);
         }
 
         protected override void Update(float delta)
         {
-            // Window.Properties.Title = Window.FPS.ToString();
+            var dx = 0f;
+            var dy = 0f;
+
+            if (Keyboard.IsKeyDown(KeyCode.Up))
+            {
+                dy = -_speed * delta;
+            }
+            else if (Keyboard.IsKeyDown(KeyCode.Down))
+            {
+                dy = _speed * delta;
+            }
+
+            if (Keyboard.IsKeyDown(KeyCode.Left))
+            {
+                dx = -_speed * delta;
+            }
+            else if (Keyboard.IsKeyDown(KeyCode.Right))
+            {
+                dx = _speed * delta;
+            }
+
+            _position = new Vector2(_position.X + dx, _position.Y + dy);
         }
     }
 }

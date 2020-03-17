@@ -1,4 +1,5 @@
-﻿using Chroma.Graphics;
+﻿using System;
+using Chroma.Graphics;
 using Chroma.Input;
 
 namespace Chroma.ExampleApp
@@ -23,6 +24,8 @@ namespace Chroma.ExampleApp
                 Red += (byte)(e.Motion.Y % byte.MaxValue);
                 Color = new Color(Red, 0, 0);
             };
+
+            Keyboard.KeyDown += (sender, e) => Console.WriteLine(e.Scancode);
         }
 
         protected override void Draw(RenderContext context)

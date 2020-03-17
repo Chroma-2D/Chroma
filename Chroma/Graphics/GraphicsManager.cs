@@ -10,6 +10,26 @@ namespace Chroma.Graphics
         private static GraphicsManager _instance;
         public static readonly GraphicsManager Instance = new Lazy<GraphicsManager>(() => _instance ??= new GraphicsManager()).Value;
 
+        private bool _vSyncEnabled;
+
+        public bool VSyncEnabled
+        {
+            get => _vSyncEnabled;
+            set
+            {
+                _vSyncEnabled = value;
+
+                if (!value)
+                {
+                    SDL.SDL_GL_SetSwapInterval(0);
+                }
+                else
+                {
+                    SDL.SDL_GL_SetSwapInterval(1);
+                }
+            }
+        }
+
         private GraphicsManager()
         {
             if (SDL.SDL_WasInit(SDL.SDL_INIT_EVERYTHING) == 0)

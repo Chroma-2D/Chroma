@@ -1,38 +1,38 @@
 ﻿using Chroma.Graphics;
-using System;
-using System.Collections.Generic;
+using Chroma.Input;
 
 namespace Chroma.ExampleApp
 {
     public class ExampleGame : Game
     {
-        private readonly List<Vertex> _verts = new List<Vertex>();
+        private byte Red { get; set; }
+        private Color Color { get; set; }
 
         public ExampleGame()
         {
-            // Window.SwitchToExclusiveFullscreen();
-            Window.SwitchToWindowed(1024, 600);
-            Window.VSyncEnabled = true;
+            Window.GoWindowed(1024, 600);
+            GraphicsManager.Instance.VSyncEnabled = false;
 
-            _verts.AddRange(
-                new[]
-                {
-                    new Vertex(32f, 32f),
-                    new Vertex(64f, 32f),
-                    new Vertex(64f, 64f),
-                    new Vertex(32f, 64f),
-                });
+            Mouse.Moved += (sender, e) =>
+            {
+                Window.Properties.Title = $"{e.Position.X}, {e.Position.Y}";
+            };
+
+            Mouse.WheelMoved += (sender, e) =>
+            {
+                Red += (byte)(e.Motion.Y % byte.MaxValue);
+                Color = new Color(Red, 0, 0);
+            };
         }
 
         protected override void Draw(RenderContext context)
         {
-            context.Clear(Color.Black);
-            context.Line(new Vector2(32, 32), new Vector2(64, 64), Color.White);
+            context.Clear(Color);
         }
 
         protected override void Update(float delta)
         {
-            Window.Title = Window.FPS.ToString();
+            // Window.Properties.Title = Window.FPS.ToString();
         }
     }
 }

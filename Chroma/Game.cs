@@ -12,7 +12,7 @@ namespace Chroma
 
         public Game()
         {
-            Window = new OpenGlWindow(this, 640, 480)
+            Window = new OpenGlWindow(this)
             {
                 Draw = Draw,
                 Update = Update

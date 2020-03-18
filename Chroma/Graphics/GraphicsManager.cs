@@ -1,4 +1,5 @@
-﻿using Chroma.SDL2;
+﻿using Chroma.Diagnostics;
+using Chroma.SDL2;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,16 +36,16 @@ namespace Chroma.Graphics
             if (SDL.SDL_WasInit(SDL.SDL_INIT_EVERYTHING) == 0)
                 SDL.SDL_Init(SDL.SDL_INIT_EVERYTHING);
 
-            Console.WriteLine(" => GraphicsManager initializing...");
-            Console.WriteLine("    Registered renderers:");
+            Log.Info("GraphicsManager initializing...");
+            Log.Info(" Registered renderers:");
 
             foreach (var s in GetRendererNames())
-                Console.WriteLine($"      {s}");
+                Log.Info($"  {s}");
 
-            Console.WriteLine("    Available displays:");
+            Log.Info(" Available displays:");
 
             foreach (var d in FetchDisplayInfo())
-                Console.WriteLine($"      {d.Index}: {d.Dimensions.Width}x{d.Dimensions.Height}@{d.RefreshRate}Hz");
+                Log.Info($"  {d.Index}: {d.Dimensions.Width}x{d.Dimensions.Height}@{d.RefreshRate}Hz");
         }
 
         public List<string> GetRendererNames()
@@ -93,7 +94,7 @@ namespace Chroma.Graphics
             }
             else
             {
-                Console.WriteLine($"Failed to retrieve display {index} info: {SDL.SDL_GetError()}");
+                Log.Error($"Failed to retrieve display {index} info: {SDL.SDL_GetError()}");
                 return null;
             }
         }
@@ -109,7 +110,7 @@ namespace Chroma.Graphics
             }
             else
             {
-                Console.WriteLine($"Failed to retrieve desktop display {index} info: {SDL.SDL_GetError()}");
+                Log.Error($"Failed to retrieve desktop display {index} info: {SDL.SDL_GetError()}");
                 return null;
             }
         }

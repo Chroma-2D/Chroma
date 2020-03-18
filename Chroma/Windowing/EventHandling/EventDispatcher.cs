@@ -1,4 +1,5 @@
-﻿using Chroma.SDL2;
+﻿using Chroma.Diagnostics;
+using Chroma.SDL2;
 using System;
 using System.Collections.Generic;
 
@@ -41,7 +42,7 @@ namespace Chroma.Windowing.EventHandling
             }
             else
             {
-                Console.WriteLine($"Unsupported window event: {ev.windowEvent}.");
+                Log.Debug($"Unsupported window event: {ev.windowEvent}.");
             }
         }
 
@@ -53,7 +54,7 @@ namespace Chroma.Windowing.EventHandling
             }
             else
             {
-                Console.WriteLine($"Unsupported generic event: {ev.type}.");
+                Log.Debug($"Unsupported generic event: {ev.type}.");
             }
         }
 
@@ -61,7 +62,7 @@ namespace Chroma.Windowing.EventHandling
         {
             if (WindowEventHandlers.ContainsKey(eventId))
             {
-                Console.WriteLine($"{eventId} handler is getting redefined.");
+                Log.Warning($"{eventId} handler is getting redefined.");
                 WindowEventHandlers[eventId] = handler;
             }
             else
@@ -74,7 +75,7 @@ namespace Chroma.Windowing.EventHandling
         {
             if (SdlEventHandlers.ContainsKey(type))
             {
-                Console.WriteLine($"{type} handler is getting redefined.");
+                Log.Warning($"{type} handler is getting redefined.");
                 SdlEventHandlers[type] = handler;
             }
             else

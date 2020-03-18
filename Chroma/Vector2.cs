@@ -47,6 +47,9 @@ namespace Chroma
         public override int GetHashCode()
             => HashCode.Combine(X, Y);
 
+        public override string ToString()
+            => $"[{X}, {Y}]";
+
         public static float Distance(Vector2 a, Vector2 b)
             => (a - b).Magnitude;
 

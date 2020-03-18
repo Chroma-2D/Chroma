@@ -1,5 +1,4 @@
 ﻿using Chroma.Input.EventArgs;
-using System;
 using System.Collections.Generic;
 
 namespace Chroma.Input
@@ -15,9 +14,6 @@ namespace Chroma.Input
             _scanCodeStates = new Dictionary<ScanCode, bool>();
         }
 
-        public static event EventHandler<KeyEventArgs> KeyDown;
-        public static event EventHandler<KeyEventArgs> KeyUp;
-
         public static bool IsKeyDown(KeyCode keyCode)
             => _keyCodeStates.ContainsKey(keyCode) && _keyCodeStates[keyCode];
 
@@ -27,7 +23,7 @@ namespace Chroma.Input
         public static bool IsKeyUp(KeyCode keyCode) => !IsKeyDown(keyCode);
         public static bool IsKeyUp(ScanCode scanCode) => !IsKeyDown(scanCode);
 
-        internal static void OnKeyUp(KeyEventArgs e)
+        internal static void OnKeyReleased(Game game, KeyEventArgs e)
         {
             if (!_keyCodeStates.ContainsKey(e.KeyCode))
                 _keyCodeStates.Add(e.KeyCode, false);
@@ -39,10 +35,10 @@ namespace Chroma.Input
             else
                 _scanCodeStates[e.ScanCode] = false;
 
-            KeyUp?.Invoke(null, e);
+            game.OnKeyReleased(e);
         }
 
-        internal static void OnKeyDown(KeyEventArgs e)
+        internal static void OnKeyPressed(Game game, KeyEventArgs e)
         {
             if (!_keyCodeStates.ContainsKey(e.KeyCode))
                 _keyCodeStates.Add(e.KeyCode, true);
@@ -54,7 +50,7 @@ namespace Chroma.Input
             else
                 _scanCodeStates[e.ScanCode] = true;
 
-            KeyDown?.Invoke(null, e);
+            game.OnKeyPressed(e);
         }
     }
 }

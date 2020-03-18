@@ -2,19 +2,19 @@
 using System;
 using System.Collections.Generic;
 
-namespace Chroma.Windowing.Events
+namespace Chroma.Windowing.EventHandling
 {
     public sealed class EventDispatcher
     {
-        private OpenGlWindow Owner { get; }
+        private Window Owner { get; }
 
-        internal delegate void SdlEventHandler(OpenGlWindow window, SDL.SDL_Event ev);
-        internal delegate void WindowEventHandler(OpenGlWindow window, SDL.SDL_WindowEvent ev);
+        internal delegate void SdlEventHandler(Window window, SDL.SDL_Event ev);
+        internal delegate void WindowEventHandler(Window window, SDL.SDL_WindowEvent ev);
 
         internal Dictionary<SDL.SDL_EventType, SdlEventHandler> SdlEventHandlers { get; }
         internal Dictionary<SDL.SDL_WindowEventID, WindowEventHandler> WindowEventHandlers { get; }
 
-        internal EventDispatcher(OpenGlWindow owner)
+        internal EventDispatcher(Window owner)
         {
             Owner = owner;
 
@@ -29,7 +29,8 @@ namespace Chroma.Windowing.Events
                 DispatchWindowEvent(ev.window);
                 return;
             }
-            DispatchGenericEvent(ev);
+
+            DispatchEvent(ev);
         }
 
         internal void DispatchWindowEvent(SDL.SDL_WindowEvent ev)
@@ -44,7 +45,7 @@ namespace Chroma.Windowing.Events
             }
         }
 
-        internal void DispatchGenericEvent(SDL.SDL_Event ev)
+        internal void DispatchEvent(SDL.SDL_Event ev)
         {
             if (SdlEventHandlers.ContainsKey(ev.type))
             {
@@ -69,7 +70,7 @@ namespace Chroma.Windowing.Events
             }
         }
 
-        internal void RegisterGenericEventHandler(SDL.SDL_EventType type, SdlEventHandler handler)
+        internal void RegisterEventHandler(SDL.SDL_EventType type, SdlEventHandler handler)
         {
             if (SdlEventHandlers.ContainsKey(type))
             {

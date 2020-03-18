@@ -4,36 +4,29 @@ namespace Chroma.Diagnostics
 {
     internal class FpsCounter
     {
-        private readonly uint[] _frameTimes;
-
-        private uint _lastTickValue;
-        private uint _totalFrames;
+        private uint _lastTime;
+        private uint _frameCount;
 
         public float FPS { get; private set; }
-        public uint Precision { get; set; } = 60;
 
         internal FpsCounter()
         {
-            _frameTimes = new uint[Precision];
-            _lastTickValue = SDL.SDL_GetTicks();
+            _lastTime = SDL.SDL_GetTicks();
         }
 
         internal void Update()
         {
-            var frameTimeIndex = _totalFrames % Precision;
-            var ticks = SDL.SDL_GetTicks();
+            var currentTime = SDL.SDL_GetTicks();
 
-            _frameTimes[frameTimeIndex] = ticks - _lastTickValue;
-            _lastTickValue = ticks;
-            _totalFrames++;
+            if (currentTime - _lastTime > 1000)
+            {
+                FPS = _frameCount;
 
-            var count = _totalFrames < Precision ? _totalFrames : Precision;
+                _lastTime = currentTime;
+                _frameCount = 0;
+            }
 
-            for (var i = 0; i < count; i++)
-                FPS += _frameTimes[i];
-
-            FPS /= count;
-            FPS = 1000f / FPS;
+            _frameCount++;
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿namespace Chroma.Windowing.EventArgs
 {
-    public class WindowResizeEventArgs : System.EventArgs
+    public class WindowSizeEventArgs : System.EventArgs
     {
         public Size Size { get; }
 
-        internal WindowResizeEventArgs(Size size)
+        internal WindowSizeEventArgs(Size size)
         {
             Size = size;
         }

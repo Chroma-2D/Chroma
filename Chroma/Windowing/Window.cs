@@ -1,23 +1,20 @@
 ﻿using Chroma.Diagnostics;
 using Chroma.Graphics;
-using Chroma.Input;
-using Chroma.Input.EventArgs;
 using Chroma.SDL2;
 using Chroma.Windowing.EventArgs;
-using Chroma.Windowing.Events;
-using Chroma.Windowing.Events.SpecializedHandlers;
+using Chroma.Windowing.EventHandling;
+using Chroma.Windowing.EventHandling.Specialized;
 using System;
 
 namespace Chroma.Windowing
 {
-    public sealed class OpenGlWindow : IDisposable
+    public sealed class Window : IDisposable
     {
         private ulong _nowFrameTime = SDL.SDL_GetPerformanceCounter();
         private ulong _lastFrameTime = 0;
 
         private float Delta { get; set; }
         private FpsCounter FpsCounter { get; }
-        private Game Game { get; }
         private RenderContext RenderContext { get; }
 
         internal delegate void StateUpdateDelegate(float delta);
@@ -26,19 +23,23 @@ namespace Chroma.Windowing
         internal StateUpdateDelegate Update;
         internal DrawDelegate Draw;
 
+        internal Game Game { get; }
         internal EventDispatcher EventDispatcher { get; }
         internal SDL_gpu.GPU_Target_PTR RenderTargetPointer { get; }
 
         public event EventHandler Closed;
-        public event EventHandler Exposed;
+        public event EventHandler Hidden;
+        public event EventHandler Shown;
+        public event EventHandler Invalidated;
+        public event EventHandler<WindowStateEventArgs> StateChanged;
         public event EventHandler MouseEntered;
         public event EventHandler MouseLeft;
         public event EventHandler Focused;
         public event EventHandler Unfocused;
-        public event EventHandler<CancelEventArgs> QuitRequested;
-        public event EventHandler<WindowResizeEventArgs> SizeChanged;
-        public event EventHandler<WindowResizeEventArgs> Resized;
         public event EventHandler<WindowMoveEventArgs> Moved;
+        public event EventHandler<WindowSizeEventArgs> SizeChanged;
+        public event EventHandler<WindowSizeEventArgs> Resized;
+        public event EventHandler<CancelEventArgs> QuitRequested;
 
         public bool Disposed { get; private set; }
         public IntPtr Handle { get; }
@@ -48,26 +49,27 @@ namespace Chroma.Windowing
 
         public float FPS => FpsCounter.FPS;
 
-        internal OpenGlWindow(Game game)
+        internal Window(Game game)
         {
             Game = game;
             Properties = new WindowProperties(this);
 
-            FpsCounter = new FpsCounter();
 
             Handle = SDL.SDL_CreateWindow(
-                Properties.Title,
+                string.Empty,
                 (int)Properties.Position.X,
                 (int)Properties.Position.Y,
                 (int)Properties.Size.Width,
                 (int)Properties.Size.Height,
                 SDL.SDL_WindowFlags.SDL_WINDOW_OPENGL
             );
+            Properties.Title = "Chroma Engine";
 
             SDL_gpu.GPU_SetInitWindow(SDL.SDL_GetWindowID(Handle));
 
             var bestRenderer = GraphicsManager.Instance.GetBestRenderer();
             Console.WriteLine($"    Selecting best renderer: {bestRenderer.name}");
+
             RenderTargetPointer = SDL_gpu.GPU_InitRenderer(
                 bestRenderer.renderer,
                 (ushort)Properties.Size.Width,
@@ -75,14 +77,15 @@ namespace Chroma.Windowing
                 0
             );
 
-            GraphicsManager.Instance.VSyncEnabled = true;
+            FpsCounter = new FpsCounter();
+            RenderContext = new RenderContext(this);
 
+            GraphicsManager.Instance.VSyncEnabled = true;
+            
             EventDispatcher = new EventDispatcher(this);
             new WindowEventHandlers(EventDispatcher);
             new FrameworkEventHandlers(EventDispatcher);
             new InputEventHandlers(EventDispatcher);
-
-            RenderContext = new RenderContext(this);
         }
 
         public void Run()
@@ -128,19 +131,23 @@ namespace Chroma.Windowing
             Properties.Position = new Vector2(SDL.SDL_WINDOWPOS_CENTERED, SDL.SDL_WINDOWPOS_CENTERED);
         }
 
-        internal void OnQuitRequested(CancelEventArgs e)
-        {
-            QuitRequested?.Invoke(this, e);
+        internal void OnClosed()
+            => Closed?.Invoke(this, System.EventArgs.Empty);
 
-            if (!e.Cancel)
-                Running = false;
-        }
+        internal void OnHidden()
+            => Hidden?.Invoke(this, System.EventArgs.Empty);
 
-        internal void OnExposed()
+        internal void OnShown()
+            => Shown?.Invoke(this, System.EventArgs.Empty);
+
+        internal void OnInvalidated()
         {
             SDL_gpu.GPU_Flip(RenderTargetPointer);
-            Exposed?.Invoke(this, System.EventArgs.Empty);
+            Invalidated?.Invoke(this, System.EventArgs.Empty);
         }
+
+        internal void OnStateChanged(WindowStateEventArgs e)
+            => StateChanged?.Invoke(this, e);
 
         internal void OnMouseEntered()
             => MouseEntered?.Invoke(this, System.EventArgs.Empty);
@@ -148,23 +155,33 @@ namespace Chroma.Windowing
         internal void OnMouseLeft()
             => MouseLeft?.Invoke(this, System.EventArgs.Empty);
 
+        internal void OnFocusOffered()
+        {
+            SDL.SDL_SetWindowInputFocus(Handle);
+        }
+
         internal void OnFocused()
             => Focused?.Invoke(this, System.EventArgs.Empty);
 
         internal void OnUnfocused()
             => Unfocused?.Invoke(this, System.EventArgs.Empty);
 
-        internal void OnClosed()
-            => Closed?.Invoke(this, System.EventArgs.Empty);
-
-        internal void OnSizeChanged(WindowResizeEventArgs e)
-            => SizeChanged?.Invoke(this, e);
-
-        internal void OnResized(WindowResizeEventArgs e)
-            => Resized?.Invoke(this, e);
-
         internal void OnMoved(WindowMoveEventArgs e)
             => Moved?.Invoke(this, e);
+
+        internal void OnSizeChanged(WindowSizeEventArgs e)
+            => SizeChanged?.Invoke(this, e);
+
+        internal void OnResized(WindowSizeEventArgs e)
+            => Resized?.Invoke(this, e);
+
+        internal void OnQuitRequested(CancelEventArgs e)
+        {
+            QuitRequested?.Invoke(this, e);
+
+            if (!e.Cancel)
+                Running = false;
+        }
 
         private void DetermineNativeResolution()
         {
@@ -204,7 +221,7 @@ namespace Chroma.Windowing
             }
         }
 
-        ~OpenGlWindow()
+        ~Window()
         {
             Dispose(false);
         }

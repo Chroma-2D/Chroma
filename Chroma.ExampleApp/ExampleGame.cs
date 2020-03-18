@@ -1,7 +1,8 @@
-﻿using Chroma.Graphics;
+﻿using Chroma.Diagnostics;
+using Chroma.Graphics;
 using Chroma.Input;
 using Chroma.Input.EventArgs;
-using System;
+using Chroma.Windowing;
 
 namespace Chroma.ExampleApp
 {
@@ -13,23 +14,27 @@ namespace Chroma.ExampleApp
 
         public ExampleGame()
         {
-            GraphicsManager.Instance.VSyncEnabled = true;
+            GraphicsManager.Instance.VSyncEnabled = false;
 
             Window.GoWindowed(1024, 600); 
 
-            Window.MouseEntered += (sender, e) => Console.WriteLine(":: Mouse entered window area.");
-            Window.MouseLeft += (sender, e) => Console.WriteLine(":: Mouse left window area.");
-            Window.Moved += (sender, e) => Console.WriteLine($":: Window was moved to {e.Position}");
-            Window.SizeChanged += (sender, e) => Console.WriteLine($":: Window size has changed to {e.Size}");
-            Window.Resized += (sender, e) => Console.WriteLine($":: Window was resized by user to {e.Size}");
-            Window.Focused += (sender, e) => Console.WriteLine($":: Window has gained keyboard focus.");
-            Window.Unfocused += (sender, e) => Console.WriteLine($":: Window has lost keyboard focus.");
-            Window.Hidden += (sender, e) => Console.WriteLine(":: Window hidden.");
-            Window.Invalidated += (sender, e) => Console.WriteLine(":: Window invalidated.");
+            Window.MouseEntered += (sender, e) => Log.Info(":: Mouse entered window area.");
+            Window.MouseLeft += (sender, e) => Log.Info(":: Mouse left window area.");
+            Window.Moved += (sender, e) => Log.Info($":: Window was moved to {e.Position}");
+            Window.SizeChanged += (sender, e) => Log.Info($":: Window size has changed to {e.Size}");
+            Window.Resized += (sender, e) => Log.Info($":: Window was resized by user to {e.Size}");
+            Window.Focused += (sender, e) => Log.Info($":: Window has gained keyboard focus.");
+            Window.StateChanged += (sender, e) => Log.Info($":: Window state changed to {e.State}");
+            Window.Unfocused += (sender, e) => Log.Info($":: Window has lost keyboard focus.");
+            Window.Hidden += (sender, e) => Log.Info(":: Window hidden.");
+            Window.Invalidated += (sender, e) => Log.Info(":: Window invalidated.");
+
+            Window.Properties.State = WindowState.Maximized;
         }
 
         protected override void MouseMoved(MouseMoveEventArgs e)
         {
+
         }
 
         protected override void TextInput(TextInputEventArgs e)

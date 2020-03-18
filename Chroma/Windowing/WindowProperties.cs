@@ -1,4 +1,5 @@
-﻿using Chroma.SDL2;
+﻿using Chroma.Diagnostics;
+using Chroma.SDL2;
 
 namespace Chroma.Windowing
 {
@@ -49,11 +50,17 @@ namespace Chroma.Windowing
 
             set
             {
-                _state = value;
-
-                switch (_state)
+                switch (value)
                 {
                     case WindowState.Maximized:
+                        var flags = (SDL.SDL_WindowFlags)SDL.SDL_GetWindowFlags(Owner.Handle);
+
+                        if (!flags.HasFlag(SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE))
+                        {
+                            Log.Warning("Refusing to maximize a non-resizable window.");
+                            return;
+                        }
+
                         SDL.SDL_MaximizeWindow(Owner.Handle);
                         break;
 
@@ -65,6 +72,8 @@ namespace Chroma.Windowing
                         SDL.SDL_RestoreWindow(Owner.Handle);
                         break;
                 }
+
+                _state = value;
             }
         }
 

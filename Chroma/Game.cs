@@ -1,6 +1,8 @@
 ﻿using Chroma.Windowing;
 using Chroma.Graphics;
 using Chroma.Input.EventArgs;
+using Chroma.Diagnostics;
+using System;
 
 namespace Chroma
 {

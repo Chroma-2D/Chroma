@@ -68,7 +68,7 @@ namespace Chroma.Windowing
             SDL_gpu.GPU_SetInitWindow(SDL.SDL_GetWindowID(Handle));
 
             var bestRenderer = GraphicsManager.Instance.GetBestRenderer();
-            Console.WriteLine($"    Selecting best renderer: {bestRenderer.name}");
+            Log.Info($"Selecting best renderer: {bestRenderer.name}");
 
             RenderTargetPointer = SDL_gpu.GPU_InitRenderer(
                 bestRenderer.renderer,
@@ -180,7 +180,9 @@ namespace Chroma.Windowing
             QuitRequested?.Invoke(this, e);
 
             if (!e.Cancel)
+            {
                 Running = false;
+            }
         }
 
         private void DetermineNativeResolution()

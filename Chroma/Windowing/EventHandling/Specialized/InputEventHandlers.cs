@@ -18,6 +18,8 @@ namespace Chroma.Windowing.EventHandling.Specialized
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_KEYDOWN, KeyPressed);
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_TEXTINPUT, TextInput);
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_KEYMAPCHANGED, KeyMapChanged);
+            Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_TEXTEDITING, TextEdition);
+
 
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_MOUSEMOTION, MouseMoved);
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_MOUSEWHEEL, WheelMoved);
@@ -25,9 +27,15 @@ namespace Chroma.Windowing.EventHandling.Specialized
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_MOUSEBUTTONUP, MouseReleased);
         }
 
+        private void TextEdition(Window owner, SDL.SDL_Event ev)
+        {
+            // TODO someday?
+            // Not handled for no: no practical use found.
+        }
+
         private void KeyMapChanged(Window owner, SDL.SDL_Event ev)
         {
-            // FIXME someday?
+            // TODO someday?
             // Not handled for now: no practical use found.
         }
 

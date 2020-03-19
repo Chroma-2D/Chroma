@@ -14,12 +14,15 @@ namespace Chroma.Windowing.EventHandling.Specialized
         {
             Dispatcher = dispatcher;
 
+            Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_CONTROLLERDEVICEADDED, ControllerConnected);
+            Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_CONTROLLERDEVICEREMOVED, ControllerDisconnected);
+            Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_CONTROLLERAXISMOTION, ControllerAxisMotion);
+
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_KEYUP, KeyReleased);
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_KEYDOWN, KeyPressed);
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_TEXTINPUT, TextInput);
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_KEYMAPCHANGED, KeyMapChanged);
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_TEXTEDITING, TextEdition);
-
 
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_MOUSEMOTION, MouseMoved);
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_MOUSEWHEEL, WheelMoved);
@@ -27,29 +30,19 @@ namespace Chroma.Windowing.EventHandling.Specialized
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_MOUSEBUTTONUP, MouseReleased);
         }
 
-        private void TextEdition(Window owner, SDL.SDL_Event ev)
+        private void ControllerConnected(Window owner, SDL.SDL_Event ev)
         {
-            // TODO someday?
-            // Not handled for no: no practical use found.
+            Controller.SetDeadZone(ev.cdevice.which, 3500);
+            SDL.SDL_GameControllerOpen(ev.cdevice.which);
         }
 
-        private void KeyMapChanged(Window owner, SDL.SDL_Event ev)
+        private void ControllerDisconnected(Window owner, SDL.SDL_Event ev)
         {
-            // TODO someday?
-            // Not handled for now: no practical use found.
+            SDL.SDL_GameControllerClose(ev.user.data2);
         }
 
-        private void TextInput(Window owner, SDL.SDL_Event ev)
+        private void ControllerAxisMotion(Window owner, SDL.SDL_Event ev)
         {
-            string textInput;
-            unsafe
-            {
-                textInput = Marshal.PtrToStringUTF8(
-                    new IntPtr(ev.text.text)
-                );
-            }
-
-            owner.Game.OnTextInput(new TextInputEventArgs(textInput));
         }
 
         private void KeyReleased(Window owner, SDL.SDL_Event ev)
@@ -76,6 +69,31 @@ namespace Chroma.Windowing.EventHandling.Specialized
                     ev.key.repeat != 0
                 )
             );
+        }
+
+        private void TextEdition(Window owner, SDL.SDL_Event ev)
+        {
+            // TODO someday?
+            // Not handled for no: no practical use found.
+        }
+
+        private void KeyMapChanged(Window owner, SDL.SDL_Event ev)
+        {
+            // TODO someday?
+            // Not handled for now: no practical use found.
+        }
+
+        private void TextInput(Window owner, SDL.SDL_Event ev)
+        {
+            string textInput;
+            unsafe
+            {
+                textInput = Marshal.PtrToStringUTF8(
+                    new IntPtr(ev.text.text)
+                );
+            }
+
+            owner.Game.OnTextInput(new TextInputEventArgs(textInput));
         }
 
         private void MouseMoved(Window owner, SDL.SDL_Event ev)

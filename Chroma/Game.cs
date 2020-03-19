@@ -3,6 +3,7 @@ using Chroma.Graphics;
 using Chroma.Input.EventArgs;
 using Chroma.Diagnostics;
 using System;
+using Chroma.Input;
 
 namespace Chroma
 {

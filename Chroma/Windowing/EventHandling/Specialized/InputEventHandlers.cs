@@ -1,5 +1,7 @@
-﻿using Chroma.Input;
+﻿using Chroma.Hardware;
+using Chroma.Input;
 using Chroma.Input.EventArgs;
+using Chroma.Input.Internal;
 using Chroma.SDL2;
 using System;
 using System.Runtime.InteropServices;
@@ -14,12 +16,14 @@ namespace Chroma.Windowing.EventHandling.Specialized
         {
             Dispatcher = dispatcher;
 
+            Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_CONTROLLERDEVICEADDED, ControllerConnected);
+            Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_CONTROLLERDEVICEREMOVED, ControllerDisconnected);
+
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_KEYUP, KeyReleased);
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_KEYDOWN, KeyPressed);
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_TEXTINPUT, TextInput);
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_KEYMAPCHANGED, KeyMapChanged);
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_TEXTEDITING, TextEdition);
-
 
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_MOUSEMOTION, MouseMoved);
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_MOUSEWHEEL, WheelMoved);
@@ -27,29 +31,29 @@ namespace Chroma.Windowing.EventHandling.Specialized
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_MOUSEBUTTONUP, MouseReleased);
         }
 
-        private void TextEdition(Window owner, SDL.SDL_Event ev)
+        private void ControllerConnected(Window owner, SDL.SDL_Event ev)
         {
-            // TODO someday?
-            // Not handled for no: no practical use found.
+            var instance = SDL.SDL_GameControllerOpen(ev.cdevice.which);
+            var joyInstance = SDL.SDL_GameControllerGetJoystick(instance);
+            var instanceId = SDL.SDL_JoystickInstanceID(joyInstance);
+
+            var playerIndex = ControllerRegistry.Instance.GetFirstFreePlayerSlot();
+            SDL.SDL_GameControllerSetPlayerIndex(instance, playerIndex);
+
+            var name = SDL.SDL_GameControllerName(instance);
+            var productInfo = new ProductInfo(
+                SDL.SDL_GameControllerGetVendor(instance),
+                SDL.SDL_GameControllerGetProduct(instance)
+            );
+
+            var controllerInfo = new ControllerInfo(instance, instanceId, playerIndex, name, productInfo);
+            ControllerRegistry.Instance.Register(instance, controllerInfo);
         }
 
-        private void KeyMapChanged(Window owner, SDL.SDL_Event ev)
+        private void ControllerDisconnected(Window owner, SDL.SDL_Event ev)
         {
-            // TODO someday?
-            // Not handled for now: no practical use found.
-        }
-
-        private void TextInput(Window owner, SDL.SDL_Event ev)
-        {
-            string textInput;
-            unsafe
-            {
-                textInput = Marshal.PtrToStringUTF8(
-                    new IntPtr(ev.text.text)
-                );
-            }
-
-            owner.Game.OnTextInput(new TextInputEventArgs(textInput));
+            var instance = SDL.SDL_GameControllerFromInstanceID(ev.cdevice.which);
+            ControllerRegistry.Instance.Unregister(instance);
         }
 
         private void KeyReleased(Window owner, SDL.SDL_Event ev)
@@ -76,6 +80,31 @@ namespace Chroma.Windowing.EventHandling.Specialized
                     ev.key.repeat != 0
                 )
             );
+        }
+
+        private void TextEdition(Window owner, SDL.SDL_Event ev)
+        {
+            // TODO someday?
+            // Not handled for no: no practical use found.
+        }
+
+        private void KeyMapChanged(Window owner, SDL.SDL_Event ev)
+        {
+            // TODO someday?
+            // Not handled for now: no practical use found.
+        }
+
+        private void TextInput(Window owner, SDL.SDL_Event ev)
+        {
+            string textInput;
+            unsafe
+            {
+                textInput = Marshal.PtrToStringUTF8(
+                    new IntPtr(ev.text.text)
+                );
+            }
+
+            owner.Game.OnTextInput(new TextInputEventArgs(textInput));
         }
 
         private void MouseMoved(Window owner, SDL.SDL_Event ev)

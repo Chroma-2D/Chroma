@@ -1,8 +1,6 @@
 ﻿using Chroma.Windowing;
 using Chroma.Graphics;
 using Chroma.Input.EventArgs;
-using Chroma.Diagnostics;
-using System;
 
 namespace Chroma
 {
@@ -63,6 +61,14 @@ namespace Chroma
         {
         }
 
+        protected virtual void ControllerConnected(ControllerEventArgs e)
+        {
+        }
+
+        protected virtual void ControllerDisconnected(ControllerEventArgs e)
+        { 
+        }
+
         internal void OnMouseMoved(MouseMoveEventArgs e)
             => MouseMoved(e);
 
@@ -83,5 +89,11 @@ namespace Chroma
 
         internal void OnTextInput(TextInputEventArgs e)
             => TextInput(e);
+
+        internal void OnControllerConnected(ControllerEventArgs e)
+            => ControllerConnected(e);
+
+        internal void OnControllerDisconnected(ControllerEventArgs e)
+            => ControllerDisconnected(e);
     }
 }

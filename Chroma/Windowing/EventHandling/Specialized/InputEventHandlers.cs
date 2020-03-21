@@ -16,6 +16,19 @@ namespace Chroma.Windowing.EventHandling.Specialized
         {
             Dispatcher = dispatcher;
 
+            Dispatcher.Discard(
+                new[] {
+                    SDL.SDL_EventType.SDL_CONTROLLERAXISMOTION,
+                    SDL.SDL_EventType.SDL_CONTROLLERBUTTONDOWN,
+                    SDL.SDL_EventType.SDL_CONTROLLERBUTTONUP,
+                    SDL.SDL_EventType.SDL_JOYAXISMOTION,
+                    SDL.SDL_EventType.SDL_JOYDEVICEADDED,
+                    SDL.SDL_EventType.SDL_JOYDEVICEREMOVED,
+                    SDL.SDL_EventType.SDL_JOYBUTTONUP,
+                    SDL.SDL_EventType.SDL_JOYBUTTONDOWN
+                }
+            );
+
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_CONTROLLERDEVICEADDED, ControllerConnected);
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_CONTROLLERDEVICEREMOVED, ControllerDisconnected);
 

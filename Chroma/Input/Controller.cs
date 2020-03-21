@@ -7,14 +7,14 @@ namespace Chroma.Input
 {
     public static class Controller
     {
-        internal static Dictionary<int, short> DeadZones { get; }
+        internal static Dictionary<int, ushort> DeadZones { get; }
         
         static Controller()
         {
-            DeadZones = new Dictionary<int, short>();
+            DeadZones = new Dictionary<int, ushort>();
         }
 
-        public static void SetDeadZone(int playerIndex, short value)
+        public static void SetDeadZone(int playerIndex, ushort value)
         {
             var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
 

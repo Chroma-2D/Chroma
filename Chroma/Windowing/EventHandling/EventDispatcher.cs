@@ -1,6 +1,5 @@
 ﻿using Chroma.Diagnostics;
 using Chroma.SDL2;
-using System;
 using System.Collections.Generic;
 
 namespace Chroma.Windowing.EventHandling
@@ -14,6 +13,7 @@ namespace Chroma.Windowing.EventHandling
 
         internal Dictionary<SDL.SDL_EventType, SdlEventHandler> SdlEventHandlers { get; }
         internal Dictionary<SDL.SDL_WindowEventID, WindowEventHandler> WindowEventHandlers { get; }
+        internal Dictionary<SDL.SDL_EventType, bool> DiscardedEventTypes { get; }
 
         internal EventDispatcher(Window owner)
         {
@@ -21,10 +21,14 @@ namespace Chroma.Windowing.EventHandling
 
             SdlEventHandlers = new Dictionary<SDL.SDL_EventType, SdlEventHandler>();
             WindowEventHandlers = new Dictionary<SDL.SDL_WindowEventID, WindowEventHandler>();
+            DiscardedEventTypes = new Dictionary<SDL.SDL_EventType, bool>();
         }
 
         internal void Dispatch(SDL.SDL_Event ev)
         {
+            if (DiscardedEventTypes.ContainsKey(ev.type))
+                return;
+
             if (ev.type == SDL.SDL_EventType.SDL_WINDOWEVENT)
             {
                 DispatchWindowEvent(ev.window);
@@ -81,6 +85,20 @@ namespace Chroma.Windowing.EventHandling
             else
             {
                 SdlEventHandlers.Add(type, handler);
+            }
+        }
+
+        internal void Discard(params SDL.SDL_EventType[] types)
+        {
+            foreach (var type in types)
+            {
+                if (DiscardedEventTypes.ContainsKey(type))
+                {
+                    Log.Warning($"{type} handler is getting discarded yet another time. Ignoring.");
+                    continue;
+                }
+
+                DiscardedEventTypes.Add(type, true);
             }
         }
     }

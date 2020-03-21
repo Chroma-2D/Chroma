@@ -48,12 +48,22 @@ namespace Chroma.Windowing.EventHandling.Specialized
 
             var controllerInfo = new ControllerInfo(instance, instanceId, playerIndex, name, productInfo);
             ControllerRegistry.Instance.Register(instance, controllerInfo);
+            
+            owner.Game.OnControllerConnected(
+                new ControllerEventArgs(controllerInfo)
+            );
         }
 
         private void ControllerDisconnected(Window owner, SDL.SDL_Event ev)
         {
             var instance = SDL.SDL_GameControllerFromInstanceID(ev.cdevice.which);
+            var controllerInfo = ControllerRegistry.Instance.GetControllerInfo(instance);
+            
             ControllerRegistry.Instance.Unregister(instance);
+            
+            owner.Game.OnControllerDisconnected(
+                new ControllerEventArgs(controllerInfo)
+            );
         }
 
         private void KeyReleased(Window owner, SDL.SDL_Event ev)

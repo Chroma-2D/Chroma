@@ -54,7 +54,6 @@ namespace Chroma.Windowing
             Game = game;
             Properties = new WindowProperties(this);
 
-
             Handle = SDL.SDL_CreateWindow(
                 string.Empty,
                 (int)Properties.Position.X,
@@ -81,7 +80,7 @@ namespace Chroma.Windowing
             RenderContext = new RenderContext(this);
 
             GraphicsManager.Instance.VSyncEnabled = true;
-            
+
             EventDispatcher = new EventDispatcher(this);
             new WindowEventHandlers(EventDispatcher);
             new FrameworkEventHandlers(EventDispatcher);

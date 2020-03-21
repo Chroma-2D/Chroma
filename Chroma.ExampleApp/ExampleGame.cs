@@ -15,8 +15,9 @@ namespace Chroma.ExampleApp
         public ExampleGame()
         {
             GraphicsManager.Instance.VSyncEnabled = false;
+            Log.Verbosity |= Verbosity.Debug;
 
-            Window.GoWindowed(1024, 600); 
+            Window.GoWindowed(1024, 600);
 
             Window.MouseEntered += (sender, e) => Log.Info(":: Mouse entered window area.");
             Window.MouseLeft += (sender, e) => Log.Info(":: Mouse left window area.");
@@ -30,11 +31,6 @@ namespace Chroma.ExampleApp
             Window.Invalidated += (sender, e) => Log.Info(":: Window invalidated.");
 
             Window.Properties.State = WindowState.Maximized;
-        }
-
-        protected override void MouseMoved(MouseMoveEventArgs e)
-        {
-
         }
 
         protected override void TextInput(TextInputEventArgs e)
@@ -51,29 +47,19 @@ namespace Chroma.ExampleApp
 
         protected override void Update(float delta)
         {
-            var dx = 0f;
-            var dy = 0f;
+            var xAxis = Controller.GetAxisValueNormalized(0, ControllerAxis.LeftStickX);
+            var yAxis = Controller.GetAxisValueNormalized(0, ControllerAxis.LeftStickY);
 
-            if (Keyboard.IsKeyDown(KeyCode.Up))
-            {
-                dy = -_speed * delta;
-            }
-            else if (Keyboard.IsKeyDown(KeyCode.Down))
-            {
-                dy = _speed * delta;
-            }
-
-            if (Keyboard.IsKeyDown(KeyCode.Left))
-            {
-                dx = -_speed * delta;
-            }
-            else if (Keyboard.IsKeyDown(KeyCode.Right))
-            {
-                dx = _speed * delta;
-            }
+            var dx = _speed * delta * xAxis;
+            var dy = _speed * delta * yAxis;
 
             _position = new Vector2(_position.X + dx, _position.Y + dy);
             Window.Properties.Title = Window.FPS.ToString();
+        }
+
+        protected override void ControllerConnected(ControllerEventArgs e)
+        {
+            Controller.SetDeadZone(e.Controller.PlayerIndex, 3500);
         }
     }
 }

@@ -56,5 +56,10 @@ namespace Chroma.ExampleApp
             _position = new Vector2(_position.X + dx, _position.Y + dy);
             Window.Properties.Title = Window.FPS.ToString();
         }
+
+        protected override void ControllerConnected(ControllerEventArgs e)
+        {
+            Controller.SetDeadZone(e.Controller.PlayerIndex, 3500);
+        }
     }
 }

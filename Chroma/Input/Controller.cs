@@ -1,4 +1,5 @@
-﻿using Chroma.SDL2;
+﻿using Chroma.Input.Internal;
+using Chroma.SDL2;
 using System;
 using System.Collections.Generic;
 
@@ -13,47 +14,72 @@ namespace Chroma.Input
             DeadZones = new Dictionary<int, short>();
         }
 
-        public static void SetDeadZone(int index, short value)
+        public static void SetDeadZone(int playerIndex, short value)
         {
-            if (!DeadZones.ContainsKey(index))
-                DeadZones.Add(index, value);
+            var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
+
+            if (controller == null)
+                return;
+
+            if (!DeadZones.ContainsKey(playerIndex))
+                DeadZones.Add(playerIndex, value);
             else
-                DeadZones[index] = value;
+                DeadZones[playerIndex] = value;
         }
 
-        public static string GetName(int index)
-            => SDL.SDL_GameControllerNameForIndex(index);
-
-        public static string GetMappings(int index)
-            => SDL.SDL_GameControllerMappingForDeviceIndex(index);
-
-        public static short GetAxisValue(int index, ControllerAxis axis)
+        public static string GetName(int playerIndex)
         {
-            var instance = SDL.SDL_GameControllerFromInstanceID(index);
+            var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
+
+            if (controller == null)
+                return null;
+
+            return SDL.SDL_GameControllerName(controller.InstancePointer);
+        }
+
+        public static string GetMappings(int playerIndex)
+        {
+            var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
+
+            if (controller == null)
+                return null;
+
+            return SDL.SDL_GameControllerMapping(controller.InstancePointer);
+        }
+
+        public static short GetAxisValue(int playerIndex, ControllerAxis axis)
+        {
+            var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
+
+            if (controller == null)
+                return 0;
 
             var axisValue = SDL.SDL_GameControllerGetAxis(
-                instance,
+                controller.InstancePointer,
                 (SDL.SDL_GameControllerAxis)axis
             );
 
-            if (DeadZones.ContainsKey(index))
+            if (DeadZones.ContainsKey(playerIndex))
             {
-                if (Math.Abs((int)axisValue) < DeadZones[index])
+                if (Math.Abs((int)axisValue) < DeadZones[playerIndex])
                     return 0;
             }
 
             return axisValue;
         }
 
-        public static float GetAxisValueNormalized(int index, ControllerAxis axis)
-            => GetAxisValue(index, axis) / 32768f;
+        public static float GetAxisValueNormalized(int playerIndex, ControllerAxis axis)
+            => GetAxisValue(playerIndex, axis) / 32768f;
 
-        public static bool IsButtonPressed(int index, ControllerButton button)
+        public static bool IsButtonPressed(int playerIndex, ControllerButton button)
         {
-            var instance = SDL.SDL_GameControllerFromInstanceID(index);
+            var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
+
+            if (controller == null)
+                return false;
 
             return SDL.SDL_GameControllerGetButton(
-                instance,
+                controller.InstancePointer,
                 (SDL.SDL_GameControllerButton)button
             ) > 0;
         }

@@ -1,5 +1,7 @@
-﻿using Chroma.Input;
+﻿using Chroma.Hardware;
+using Chroma.Input;
 using Chroma.Input.EventArgs;
+using Chroma.Input.Internal;
 using Chroma.SDL2;
 using System;
 using System.Runtime.InteropServices;
@@ -16,7 +18,6 @@ namespace Chroma.Windowing.EventHandling.Specialized
 
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_CONTROLLERDEVICEADDED, ControllerConnected);
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_CONTROLLERDEVICEREMOVED, ControllerDisconnected);
-            Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_CONTROLLERAXISMOTION, ControllerAxisMotion);
 
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_KEYUP, KeyReleased);
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_KEYDOWN, KeyPressed);
@@ -32,17 +33,27 @@ namespace Chroma.Windowing.EventHandling.Specialized
 
         private void ControllerConnected(Window owner, SDL.SDL_Event ev)
         {
-            Controller.SetDeadZone(ev.cdevice.which, 3500);
-            SDL.SDL_GameControllerOpen(ev.cdevice.which);
+            var instance = SDL.SDL_GameControllerOpen(ev.cdevice.which);
+            var joyInstance = SDL.SDL_GameControllerGetJoystick(instance);
+            var instanceId = SDL.SDL_JoystickInstanceID(joyInstance);
+
+            var playerIndex = ControllerRegistry.Instance.GetFirstFreePlayerSlot();
+            SDL.SDL_GameControllerSetPlayerIndex(instance, playerIndex);
+
+            var name = SDL.SDL_GameControllerName(instance);
+            var productInfo = new ProductInfo(
+                SDL.SDL_GameControllerGetVendor(instance),
+                SDL.SDL_GameControllerGetProduct(instance)
+            );
+
+            var controllerInfo = new ControllerInfo(instance, instanceId, playerIndex, name, productInfo);
+            ControllerRegistry.Instance.Register(instance, controllerInfo);
         }
 
         private void ControllerDisconnected(Window owner, SDL.SDL_Event ev)
         {
-            SDL.SDL_GameControllerClose(ev.user.data2);
-        }
-
-        private void ControllerAxisMotion(Window owner, SDL.SDL_Event ev)
-        {
+            var instance = SDL.SDL_GameControllerFromInstanceID(ev.cdevice.which);
+            ControllerRegistry.Instance.Unregister(instance);
         }
 
         private void KeyReleased(Window owner, SDL.SDL_Event ev)

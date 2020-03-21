@@ -8,8 +8,11 @@ namespace Chroma.Graphics
 {
     public class GraphicsManager
     {
-        private static GraphicsManager _instance;
-        public static readonly GraphicsManager Instance = new Lazy<GraphicsManager>(() => _instance ??= new GraphicsManager()).Value;
+        private static readonly Lazy<GraphicsManager> _lazyInitializer  = new Lazy<GraphicsManager>(
+            () => new GraphicsManager()
+        );
+
+        public static GraphicsManager Instance => _lazyInitializer.Value;
 
         private bool _vSyncEnabled;
 

@@ -58,7 +58,7 @@ namespace Chroma.ExampleApp
                         
             var dx = _speed * delta * xAxis;
             var dy = _speed * delta * yAxis;
-            var dims = GraphicsManager.Instance.FetchDesktopDisplayInfo(0).Dimensions;
+            var dims = Window.Properties.Size;
 
             if (_position.X + dx < 0 || _position.X + dx + 32 >= dims.Width)
             {
@@ -69,9 +69,9 @@ namespace Chroma.ExampleApp
                 _position = new Vector2(_position.X + dx, _position.Y);
             }
 
-            if (_position.Y + dy < 0 || _position.Y + dy + 32 >= dims.Width)
+            if (_position.Y + dy < 0 || _position.Y + dy + 32 >= dims.Height)
             {
-                Controller.Vibrate(0, 0, 16384, 16);
+                Controller.Vibrate(0, 0, 32768, 16);
             }
             else
             {
@@ -83,7 +83,7 @@ namespace Chroma.ExampleApp
 
         protected override void ControllerConnected(ControllerEventArgs e)
         {
-            Controller.SetDeadZone(e.Controller.PlayerIndex, 5000);
+            Controller.SetDeadZone(e.Controller.PlayerIndex, 3000);
         }
     }
 }

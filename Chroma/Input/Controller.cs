@@ -8,7 +8,7 @@ namespace Chroma.Input
     public static class Controller
     {
         internal static Dictionary<int, short> DeadZones { get; }
-
+        
         static Controller()
         {
             DeadZones = new Dictionary<int, short>();
@@ -82,6 +82,21 @@ namespace Chroma.Input
                 controller.InstancePointer,
                 (SDL.SDL_GameControllerButton)button
             ) > 0;
+        }
+
+        public static void Vibrate(int playerIndex, ushort lowFreq, ushort highFreq, uint duration)
+        {
+            var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
+
+            if (controller == null)
+                return;
+            
+            SDL.SDL_GameControllerRumble(
+                controller.InstancePointer,
+                lowFreq,
+                highFreq,
+                duration
+            );
         }
     }
 }

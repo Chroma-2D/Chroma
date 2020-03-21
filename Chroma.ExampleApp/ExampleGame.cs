@@ -55,11 +55,29 @@ namespace Chroma.ExampleApp
             {
                 _color = Color.Green;
             }
-            
+                        
             var dx = _speed * delta * xAxis;
             var dy = _speed * delta * yAxis;
+            var dims = GraphicsManager.Instance.FetchDesktopDisplayInfo(0).Dimensions;
 
-            _position = new Vector2(_position.X + dx, _position.Y + dy);
+            if (_position.X + dx < 0 || _position.X + dx + 32 >= dims.Width)
+            {
+                Controller.Vibrate(0, 16384, 0, 16);
+            }
+            else
+            {
+                _position = new Vector2(_position.X + dx, _position.Y);
+            }
+
+            if (_position.Y + dy < 0 || _position.Y + dy + 32 >= dims.Width)
+            {
+                Controller.Vibrate(0, 0, 16384, 16);
+            }
+            else
+            {
+                _position = new Vector2(_position.X, _position.Y + dy);
+            }
+
             Window.Properties.Title = Window.FPS.ToString();
         }
 

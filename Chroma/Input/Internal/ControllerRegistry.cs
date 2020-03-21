@@ -64,5 +64,13 @@ namespace Chroma.Input.Internal
             var instancePointer = _playerMappings[playerIndex];
             return _controllers[instancePointer];
         }
+
+        internal ControllerInfo GetControllerInfo(IntPtr instancePointer)
+        {
+            if (!_controllers.ContainsKey(instancePointer))
+                return null;
+
+            return _controllers[instancePointer];
+        }
     }
 }

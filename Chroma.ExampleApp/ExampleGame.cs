@@ -3,6 +3,7 @@ using Chroma.Graphics;
 using Chroma.Input;
 using Chroma.Input.EventArgs;
 using Chroma.Windowing;
+using System;
 
 namespace Chroma.ExampleApp
 {
@@ -55,7 +56,7 @@ namespace Chroma.ExampleApp
             {
                 _color = Color.Green;
             }
-                        
+
             var dx = _speed * delta * xAxis;
             var dy = _speed * delta * yAxis;
             var dims = Window.Properties.Size;
@@ -84,6 +85,15 @@ namespace Chroma.ExampleApp
         protected override void ControllerConnected(ControllerEventArgs e)
         {
             Controller.SetDeadZone(e.Controller.PlayerIndex, 3000);
+        }
+
+        protected override void ControllerButtonPressed(ControllerButtonEventArgs e)
+        {
+            if (e.Button == ControllerButton.A)
+            {
+                Console.WriteLine(Controller.GetBatteryLevel(0));
+            }
+            Console.WriteLine($"{e.Button} on controller {e.Controller.PlayerIndex}");
         }
     }
 }

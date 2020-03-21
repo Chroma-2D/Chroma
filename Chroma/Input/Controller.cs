@@ -1,4 +1,5 @@
-﻿using Chroma.Input.Internal;
+﻿using Chroma.Hardware;
+using Chroma.Input.Internal;
 using Chroma.SDL2;
 using System;
 using System.Collections.Generic;
@@ -97,6 +98,17 @@ namespace Chroma.Input
                 highFreq,
                 duration
             );
+        }
+
+        public static BatteryStatus GetBatteryLevel(int playerIndex)
+        {
+            var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
+
+            if (controller == null)
+                return BatteryStatus.Unknown;
+
+            var joystickInstance = SDL.SDL_GameControllerGetJoystick(controller.InstancePointer);
+            return (BatteryStatus)SDL.SDL_JoystickCurrentPowerLevel(joystickInstance);
         }
     }
 }

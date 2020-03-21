@@ -69,6 +69,18 @@ namespace Chroma
         { 
         }
 
+        protected virtual void ControllerButtonPressed(ControllerButtonEventArgs e)
+        {
+        }
+
+        protected virtual void ControllerButtonReleased(ControllerButtonEventArgs e)
+        {
+        }
+
+        protected virtual void ControllerAxisMoved(ControllerAxisEventArgs e)
+        {
+        }
+
         internal void OnMouseMoved(MouseMoveEventArgs e)
             => MouseMoved(e);
 
@@ -95,5 +107,14 @@ namespace Chroma
 
         internal void OnControllerDisconnected(ControllerEventArgs e)
             => ControllerDisconnected(e);
+
+        internal void OnControllerButtonPressed(ControllerButtonEventArgs e)
+            => ControllerButtonPressed(e);
+
+        internal void OnControllerButtonReleased(ControllerButtonEventArgs e)
+            => ControllerButtonReleased(e);
+
+        internal void OnControllerAxisMoved(ControllerAxisEventArgs e)
+            => ControllerAxisMoved(e);
     }
 }

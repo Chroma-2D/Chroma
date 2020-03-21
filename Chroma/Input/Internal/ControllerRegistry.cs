@@ -65,7 +65,7 @@ namespace Chroma.Input.Internal
             return _controllers[instancePointer];
         }
 
-        internal ControllerInfo GetControllerInfo(IntPtr instancePointer)
+        internal ControllerInfo GetControllerInfoByPointer(IntPtr instancePointer)
         {
             if (!_controllers.ContainsKey(instancePointer))
                 return null;

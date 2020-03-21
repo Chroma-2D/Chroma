@@ -11,6 +11,7 @@ namespace Chroma.ExampleApp
         private Vector2 _position;
         private float _speed = 400f;
         private string _str = string.Empty;
+        private Color _color = Color.White;
 
         public ExampleGame()
         {
@@ -42,7 +43,7 @@ namespace Chroma.ExampleApp
         protected override void Draw(RenderContext context)
         {
             context.Clear(Color.Black);
-            context.Rectangle(ShapeMode.Fill, _position, new Size(32, 32), Color.White);
+            context.Rectangle(ShapeMode.Fill, _position, new Size(32, 32), _color);
         }
 
         protected override void Update(float delta)
@@ -50,6 +51,11 @@ namespace Chroma.ExampleApp
             var xAxis = Controller.GetAxisValueNormalized(0, ControllerAxis.LeftStickX);
             var yAxis = Controller.GetAxisValueNormalized(0, ControllerAxis.LeftStickY);
 
+            if (Controller.IsButtonPressed(0, ControllerButton.Xbox))
+            {
+                _color = Color.Green;
+            }
+            
             var dx = _speed * delta * xAxis;
             var dy = _speed * delta * yAxis;
 
@@ -59,7 +65,7 @@ namespace Chroma.ExampleApp
 
         protected override void ControllerConnected(ControllerEventArgs e)
         {
-            Controller.SetDeadZone(e.Controller.PlayerIndex, 3500);
+            Controller.SetDeadZone(e.Controller.PlayerIndex, 5000);
         }
     }
 }

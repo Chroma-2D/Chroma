@@ -2,30 +2,55 @@
 using Chroma.Input.Internal;
 using Chroma.SDL2;
 using System;
-using System.Collections.Generic;
 
 namespace Chroma.Input
 {
     public static class Controller
     {
-        internal static Dictionary<int, ushort> DeadZones { get; }
-        
-        static Controller()
+        public static bool CanIgnoreAxisMotion(int playerIndex, ControllerAxis axis, short axisValue)
         {
-            DeadZones = new Dictionary<int, ushort>();
+            var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
+
+            if (controller == null)
+                return true;
+
+            if (controller.DeadZones.ContainsKey(axis))
+            {
+                if (Math.Abs((int)axisValue) < controller.DeadZones[axis])
+                    return true;
+            }
+
+            return false;
         }
 
-        public static void SetDeadZone(int playerIndex, ushort value)
+        public static void SetDeadZone(int playerIndex, ControllerAxis axis, ushort value)
         {
             var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
 
             if (controller == null)
                 return;
 
-            if (!DeadZones.ContainsKey(playerIndex))
-                DeadZones.Add(playerIndex, value);
+            if (!controller.DeadZones.ContainsKey(axis))
+                controller.DeadZones.Add(axis, value);
             else
-                DeadZones[playerIndex] = value;
+                controller.DeadZones[axis] = value;
+        }
+
+        public static void SetDeadZoneUniform(int playerIndex, ushort value)
+        {
+            var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
+
+            if (controller == null)
+                return;
+
+            controller.DeadZones.Clear();
+
+            SetDeadZone(playerIndex, ControllerAxis.LeftStickX, value);
+            SetDeadZone(playerIndex, ControllerAxis.RightStickX, value);
+            SetDeadZone(playerIndex, ControllerAxis.LeftStickY, value);
+            SetDeadZone(playerIndex, ControllerAxis.RightStickY, value);
+            SetDeadZone(playerIndex, ControllerAxis.LeftTrigger, value);
+            SetDeadZone(playerIndex, ControllerAxis.RightTrigger, value);
         }
 
         public static string GetName(int playerIndex)
@@ -60,11 +85,8 @@ namespace Chroma.Input
                 (SDL.SDL_GameControllerAxis)axis
             );
 
-            if (DeadZones.ContainsKey(playerIndex))
-            {
-                if (Math.Abs((int)axisValue) < DeadZones[playerIndex])
-                    return 0;
-            }
+            if (CanIgnoreAxisMotion(playerIndex, axis, axisValue))
+                return 0;
 
             return axisValue;
         }
@@ -91,7 +113,7 @@ namespace Chroma.Input
 
             if (controller == null)
                 return;
-            
+
             SDL.SDL_GameControllerRumble(
                 controller.InstancePointer,
                 lowFreq,

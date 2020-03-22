@@ -1,5 +1,6 @@
 ﻿using Chroma.Hardware;
 using System;
+using System.Collections.Generic;
 
 namespace Chroma.Input
 {
@@ -11,6 +12,7 @@ namespace Chroma.Input
         public int PlayerIndex { get; }
         public string Name { get; }
         public ProductInfo ProductInfo { get; }
+        public Dictionary<ControllerAxis, ushort> DeadZones { get; }
 
         internal ControllerInfo(IntPtr instancePointer, int instanceId, int playerIndex, string name, ProductInfo productInfo)
         {
@@ -20,6 +22,8 @@ namespace Chroma.Input
             PlayerIndex = playerIndex;
             Name = name;
             ProductInfo = productInfo;
+
+            DeadZones = new Dictionary<ControllerAxis, ushort>();
         }
     }
 }

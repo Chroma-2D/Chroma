@@ -18,7 +18,6 @@ namespace Chroma.Windowing.EventHandling.Specialized
 
             Dispatcher.Discard(
                 new[] {
-                    SDL.SDL_EventType.SDL_CONTROLLERAXISMOTION,
                     SDL.SDL_EventType.SDL_JOYAXISMOTION,
                     SDL.SDL_EventType.SDL_JOYDEVICEADDED,
                     SDL.SDL_EventType.SDL_JOYDEVICEREMOVED,

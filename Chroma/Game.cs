@@ -6,13 +6,15 @@ namespace Chroma
 {
     public class Game
     {
-        protected Window Window { get; }
-        protected GraphicsManager Graphics => GraphicsManager.Instance;
+        public Window Window { get; }
+        public GraphicsManager Graphics { get; }
 
         public bool Running { get; private set; }
 
         public Game()
         {
+            Graphics = new GraphicsManager();
+
             Window = new Window(this)
             {
                 Draw = Draw,

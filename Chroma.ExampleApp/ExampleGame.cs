@@ -16,7 +16,7 @@ namespace Chroma.ExampleApp
 
         public ExampleGame()
         {
-            GraphicsManager.Instance.VSyncEnabled = false;
+            Graphics.VSyncEnabled = false;
             Log.Verbosity |= Verbosity.Debug;
 
             Window.GoWindowed(1024, 600);

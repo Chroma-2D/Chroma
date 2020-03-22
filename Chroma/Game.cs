@@ -13,7 +13,7 @@ namespace Chroma
 
         public Game()
         {
-            Graphics = new GraphicsManager();
+            Graphics = new GraphicsManager(this);
 
             Window = new Window(this)
             {

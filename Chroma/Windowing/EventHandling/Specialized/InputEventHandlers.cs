@@ -24,7 +24,10 @@ namespace Chroma.Windowing.EventHandling.Specialized
                     SDL.SDL_EventType.SDL_JOYBUTTONUP,
                     SDL.SDL_EventType.SDL_JOYBUTTONDOWN,
                     SDL.SDL_EventType.SDL_JOYHATMOTION,
-                    SDL.SDL_EventType.SDL_JOYBALLMOTION
+                    SDL.SDL_EventType.SDL_JOYBALLMOTION,
+                    SDL.SDL_EventType.SDL_KEYMAPCHANGED,
+                    SDL.SDL_EventType.SDL_TEXTEDITING
+
                 }
             );
 
@@ -37,8 +40,6 @@ namespace Chroma.Windowing.EventHandling.Specialized
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_KEYUP, KeyReleased);
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_KEYDOWN, KeyPressed);
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_TEXTINPUT, TextInput);
-            Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_KEYMAPCHANGED, KeyMapChanged);
-            Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_TEXTEDITING, TextEdition);
 
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_MOUSEMOTION, MouseMoved);
             Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_MOUSEWHEEL, WheelMoved);
@@ -151,18 +152,6 @@ namespace Chroma.Windowing.EventHandling.Specialized
                     ev.key.repeat != 0
                 )
             );
-        }
-
-        private void TextEdition(Window owner, SDL.SDL_Event ev)
-        {
-            // TODO someday?
-            // Not handled for no: no practical use found.
-        }
-
-        private void KeyMapChanged(Window owner, SDL.SDL_Event ev)
-        {
-            // TODO someday?
-            // Not handled for now: no practical use found.
         }
 
         private void TextInput(Window owner, SDL.SDL_Event ev)

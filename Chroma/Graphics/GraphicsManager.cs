@@ -8,12 +8,6 @@ namespace Chroma.Graphics
 {
     public class GraphicsManager
     {
-        private static readonly Lazy<GraphicsManager> _lazyInitializer  = new Lazy<GraphicsManager>(
-            () => new GraphicsManager()
-        );
-
-        public static GraphicsManager Instance => _lazyInitializer.Value;
-
         private bool _vSyncEnabled;
 
         public bool VSyncEnabled
@@ -34,7 +28,7 @@ namespace Chroma.Graphics
             }
         }
 
-        private GraphicsManager()
+        internal GraphicsManager()
         {
             if (SDL.SDL_WasInit(SDL.SDL_INIT_EVERYTHING) == 0)
                 SDL.SDL_Init(SDL.SDL_INIT_EVERYTHING);

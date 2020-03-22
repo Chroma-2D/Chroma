@@ -66,7 +66,7 @@ namespace Chroma.Windowing
 
             SDL_gpu.GPU_SetInitWindow(SDL.SDL_GetWindowID(Handle));
 
-            var bestRenderer = GraphicsManager.Instance.GetBestRenderer();
+            var bestRenderer = Game.Graphics.GetBestRenderer();
             Log.Info($"Selecting best renderer: {bestRenderer.name}");
 
             RenderTargetPointer = SDL_gpu.GPU_InitRenderer(
@@ -79,7 +79,7 @@ namespace Chroma.Windowing
             FpsCounter = new FpsCounter();
             RenderContext = new RenderContext(this);
 
-            GraphicsManager.Instance.VSyncEnabled = true;
+            Game.Graphics.VSyncEnabled = true;
 
             EventDispatcher = new EventDispatcher(this);
             new WindowEventHandlers(EventDispatcher);
@@ -187,7 +187,7 @@ namespace Chroma.Windowing
         private void DetermineNativeResolution()
         {
             var thisDisplayIndex = SDL.SDL_GetWindowDisplayIndex(Handle);
-            var display = GraphicsManager.Instance.FetchDesktopDisplayInfo(thisDisplayIndex);
+            var display = Game.Graphics.FetchDesktopDisplayInfo(thisDisplayIndex);
 
             var mode = new SDL.SDL_DisplayMode
             {

@@ -84,7 +84,15 @@ namespace Chroma.ExampleApp
 
         protected override void ControllerConnected(ControllerEventArgs e)
         {
-            Controller.SetDeadZone(e.Controller.PlayerIndex, 3000);
+            Controller.SetDeadZoneUniform(e.Controller.PlayerIndex, 3500);
+        }
+
+        protected override void ControllerAxisMoved(ControllerAxisEventArgs e)
+        {
+            if (Controller.CanIgnoreAxisMotion(0, e.Axis, e.Value))
+                return;
+
+            Console.WriteLine($"{e.Axis} on controller {e.Controller.PlayerIndex}");
         }
 
         protected override void ControllerButtonPressed(ControllerButtonEventArgs e)

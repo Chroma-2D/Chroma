@@ -14,6 +14,8 @@ namespace Chroma.ExampleApp
         private string _str = string.Empty;
         private Color _color = Color.White;
 
+        private Button _button;
+
         public ExampleGame()
         {
             Graphics.VSyncEnabled = false;
@@ -32,7 +34,14 @@ namespace Chroma.ExampleApp
             Window.Hidden += (sender, e) => Log.Info(":: Window hidden.");
             Window.Invalidated += (sender, e) => Log.Info(":: Window invalidated.");
 
-            Window.Properties.State = WindowState.Maximized;
+            _button = new Button(
+                new Vector2(100, 100),
+                new Size(128, 24),
+                () =>
+                {
+                    Graphics.Gamma = 1.0f;
+                }
+            );
         }
 
         protected override void TextInput(TextInputEventArgs e)
@@ -45,6 +54,23 @@ namespace Chroma.ExampleApp
         {
             context.Clear(Color.Black);
             context.Rectangle(ShapeMode.Fill, _position, new Size(32, 32), _color);
+
+            _button.Draw(context);
+        }
+
+        protected override void MousePressed(MouseButtonEventArgs e)
+        {
+            _button.OnMousePressed(e);
+        }
+
+        protected override void MouseReleased(MouseButtonEventArgs e)
+        {
+            _button.OnMouseReleased(e);
+        }
+
+        protected override void MouseMoved(MouseMoveEventArgs e)
+        {
+            _button.OnMouseMoved(e);
         }
 
         protected override void Update(float delta)
@@ -101,6 +127,7 @@ namespace Chroma.ExampleApp
             {
                 Console.WriteLine(Controller.GetBatteryLevel(0));
             }
+
             Console.WriteLine($"{e.Button} on controller {e.Controller.PlayerIndex}");
         }
     }

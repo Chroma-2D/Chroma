@@ -1,6 +1,5 @@
 ﻿using Chroma.Diagnostics;
 using Chroma.SDL2;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,6 +8,8 @@ namespace Chroma.Graphics
     public class GraphicsManager
     {
         private bool _vSyncEnabled;
+
+        private Game Game { get; }
 
         public bool VSyncEnabled
         {
@@ -28,10 +29,18 @@ namespace Chroma.Graphics
             }
         }
 
-        internal GraphicsManager()
+        public float Gamma
+        {
+            get => SDL.SDL_GetWindowBrightness(Game.Window.Handle);
+            set => SDL.SDL_SetWindowBrightness(Game.Window.Handle, value);
+        }
+
+        internal GraphicsManager(Game game)
         {
             if (SDL.SDL_WasInit(SDL.SDL_INIT_EVERYTHING) == 0)
                 SDL.SDL_Init(SDL.SDL_INIT_EVERYTHING);
+
+            Game = game;
 
             Log.Info("GraphicsManager initializing...");
             Log.Info(" Registered renderers:");

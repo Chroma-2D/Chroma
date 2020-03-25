@@ -26,6 +26,7 @@ namespace Chroma.Windowing
         internal Game Game { get; }
         internal EventDispatcher EventDispatcher { get; }
         internal SDL_gpu.GPU_Target_PTR RenderTargetPointer { get; }
+        internal static IntPtr RendererHandle { get; private set; }
 
         public event EventHandler Closed;
         public event EventHandler Hidden;

@@ -1,5 +1,6 @@
 ﻿using Chroma.Diagnostics;
 using Chroma.SDL2;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,7 +11,7 @@ namespace Chroma.Graphics
         private bool _vSyncEnabled;
 
         private Game Game { get; }
-
+        
         public bool VSyncEnabled
         {
             get => _vSyncEnabled;

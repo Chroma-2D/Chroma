@@ -1,5 +1,6 @@
 ﻿using Chroma.SDL2;
 using Chroma.Windowing;
+using System;
 using System.Collections.Generic;
 
 namespace Chroma.Graphics
@@ -178,6 +179,18 @@ namespace Chroma.Graphics
             {
                 SDL_gpu.GPU_TriFilled(CurrentRenderTarget, a.X, a.Y, b.X, b.Y, c.X, c.Y, color);
             }
+        }
+
+        public void DrawTexture(Texture texture, Vector2 position, Color color)
+        {
+            SDL_gpu.GPU_SetColor(texture.ImageHandle, color);
+            SDL_gpu.GPU_Blit(
+                texture.ImageHandle, 
+                IntPtr.Zero, 
+                CurrentRenderTarget, 
+                position.X, 
+                position.Y
+            );
         }
     }
 }

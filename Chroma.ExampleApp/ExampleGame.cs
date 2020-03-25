@@ -15,6 +15,7 @@ namespace Chroma.ExampleApp
         private Color _color = Color.White;
 
         private Button _button;
+        private Texture _tex;
 
         public ExampleGame()
         {
@@ -42,6 +43,8 @@ namespace Chroma.ExampleApp
                     Graphics.Gamma = 1.0f;
                 }
             );
+
+            _tex = new Texture(@"D:\Pictures\Avatars\392871855133818880.png");
         }
 
         protected override void TextInput(TextInputEventArgs e)
@@ -56,6 +59,11 @@ namespace Chroma.ExampleApp
             context.Rectangle(ShapeMode.Fill, _position, new Size(32, 32), _color);
 
             _button.Draw(context);
+
+            for (var y = 0; y < 3; y++)
+            {
+                context.DrawTexture(_tex, new Vector2(400, y * _tex.Size.Height), Color.White);
+            }
         }
 
         protected override void MousePressed(MouseButtonEventArgs e)

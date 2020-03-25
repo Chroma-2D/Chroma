@@ -725,17 +725,7 @@ namespace Chroma.SDL2
             public GPU_BlendEqEnum alpha_equation;
         };
 
-        /*
-		 * Image object for containing pixel/texture data.
-		 * A GPU_Image can be created with GPU_CreateImage(), GPU_LoadImage(), GPU_CopyImage(), or GPU_CopyImageFromSurface().
-		 * Free the memory with GPU_FreeImage() when you're done.
-		 * \see GPU_CreateImage()
-		 * \see GPU_LoadImage()
-		 * \see GPU_CopyImage()
-		 * \see GPU_CopyImageFromSurface()
-		 * \see GPU_Target
-		 */
-         [StructLayout(LayoutKind.Sequential)]
+        [StructLayout(LayoutKind.Sequential)]
         public struct GPU_Image
         {
             //GPU_Renderer_PTR
@@ -753,8 +743,8 @@ namespace Chroma.SDL2
             public UInt16 texture_w, texture_h;  // Underlying texture dimensions
             public byte has_mipmaps;
 
-            float anchor_x;
-            float anchor_y;
+            public float anchor_x;
+            public float anchor_y;
 
             public SDL.SDL_Color color;
             public byte use_blending;
@@ -783,7 +773,7 @@ namespace Chroma.SDL2
 
             public static GPU_Image_PTR Null
             {
-                get { return default(GPU_Image_PTR); }
+                get { return default; }
             }
         }
 

@@ -735,12 +735,13 @@ namespace Chroma.SDL2
 		 * \see GPU_CopyImageFromSurface()
 		 * \see GPU_Target
 		 */
+         [StructLayout(LayoutKind.Sequential)]
         public struct GPU_Image
         {
             //GPU_Renderer_PTR
             public IntPtr renderer;
 
-            //GPU_Target_PTR 
+            public IntPtr context_target;
             public IntPtr target;
 
             public UInt16 w, h;
@@ -751,6 +752,9 @@ namespace Chroma.SDL2
             public UInt16 base_w, base_h;  // Original image dimensions
             public UInt16 texture_w, texture_h;  // Underlying texture dimensions
             public byte has_mipmaps;
+
+            float anchor_x;
+            float anchor_y;
 
             public SDL.SDL_Color color;
             public byte use_blending;
@@ -836,9 +840,6 @@ namespace Chroma.SDL2
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_SetColor(GPU_Image_PTR image, SDL.SDL_Color color);
-
-        [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL.SDL_Color GPU_GetColor(GPU_Image_PTR image);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_SetRGB(GPU_Image_PTR image, byte r, byte g, byte b);

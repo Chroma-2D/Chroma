@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Chroma.ExampleApp
+﻿namespace Chroma.ExampleApp
 {
     class Program
     {

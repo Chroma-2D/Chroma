@@ -1,6 +1,6 @@
-﻿using Chroma.Hardware;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Chroma.Hardware;
 
 namespace Chroma.Input
 {

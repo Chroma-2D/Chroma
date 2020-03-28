@@ -1,6 +1,6 @@
-﻿using Chroma.Diagnostics;
+﻿using System.Collections.Generic;
+using Chroma.Diagnostics;
 using Chroma.SDL2;
-using System.Collections.Generic;
 
 namespace Chroma.Windowing.EventHandling
 {

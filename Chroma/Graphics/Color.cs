@@ -1,5 +1,5 @@
-﻿using Chroma.SDL2;
-using System;
+﻿using System;
+using Chroma.SDL2;
 
 namespace Chroma.Graphics
 {

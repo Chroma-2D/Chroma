@@ -1,8 +1,7 @@
-﻿using Chroma.Diagnostics;
-using Chroma.SDL2;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Chroma.Diagnostics;
+using Chroma.SDL2;
 
 namespace Chroma.Graphics
 {

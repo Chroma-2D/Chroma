@@ -1,7 +1,7 @@
-﻿using Chroma.Hardware;
+﻿using System;
+using Chroma.Hardware;
 using Chroma.Input.Internal;
 using Chroma.SDL2;
-using System;
 
 namespace Chroma.Input
 {

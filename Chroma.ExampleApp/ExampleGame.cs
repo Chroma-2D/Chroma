@@ -1,9 +1,9 @@
-﻿using Chroma.Diagnostics;
+﻿using System;
+using Chroma.Diagnostics;
 using Chroma.Graphics;
 using Chroma.Input;
 using Chroma.Input.EventArgs;
 using Chroma.Windowing;
-using System;
 
 namespace Chroma.ExampleApp
 {

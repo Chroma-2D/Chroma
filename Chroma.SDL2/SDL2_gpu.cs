@@ -867,6 +867,12 @@ namespace Chroma.SDL2
         public static extern void GPU_SetImageFilter(GPU_Image_PTR image, GPU_FilterEnum filter);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetAnchor(GPU_Image_PTR image, float anchor_x, float anchor_y);
+
+        [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_GetAnchor(GPU_Image_PTR image, out float anchor_x, out float anchor_y);
+
+        [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern GPU_SnapEnum GPU_GetSnapMode(GPU_Image_PTR image);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]

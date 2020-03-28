@@ -1,5 +1,5 @@
-﻿using Chroma.Input.EventArgs;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Chroma.Input.EventArgs;
 
 namespace Chroma.Input
 {

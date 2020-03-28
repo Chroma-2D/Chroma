@@ -1,6 +1,6 @@
-﻿using Chroma.Windowing;
-using Chroma.Graphics;
+﻿using Chroma.Graphics;
 using Chroma.Input.EventArgs;
+using Chroma.Windowing;
 
 namespace Chroma
 {

@@ -1,7 +1,7 @@
-﻿using Chroma.Graphics;
+﻿using System;
+using Chroma.Graphics;
 using Chroma.Input;
 using Chroma.Input.EventArgs;
-using System;
 
 namespace Chroma.ExampleApp
 {

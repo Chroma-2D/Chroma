@@ -1,7 +1,7 @@
-﻿using Chroma.SDL2;
-using Chroma.Windowing;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Chroma.SDL2;
+using Chroma.Windowing;
 
 namespace Chroma.Graphics
 {

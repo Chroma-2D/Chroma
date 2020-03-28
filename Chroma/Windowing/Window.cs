@@ -1,10 +1,10 @@
-﻿using Chroma.Diagnostics;
+﻿using System;
+using Chroma.Diagnostics;
 using Chroma.Graphics;
 using Chroma.SDL2;
 using Chroma.Windowing.EventArgs;
 using Chroma.Windowing.EventHandling;
 using Chroma.Windowing.EventHandling.Specialized;
-using System;
 
 namespace Chroma.Windowing
 {

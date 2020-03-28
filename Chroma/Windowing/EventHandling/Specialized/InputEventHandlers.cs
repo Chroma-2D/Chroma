@@ -1,10 +1,10 @@
-﻿using Chroma.Hardware;
+﻿using System;
+using System.Runtime.InteropServices;
+using Chroma.Hardware;
 using Chroma.Input;
 using Chroma.Input.EventArgs;
 using Chroma.Input.Internal;
 using Chroma.SDL2;
-using System;
-using System.Runtime.InteropServices;
 
 namespace Chroma.Windowing.EventHandling.Specialized
 {

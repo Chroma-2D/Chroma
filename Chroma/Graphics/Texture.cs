@@ -132,6 +132,12 @@ namespace Chroma.Graphics
             get => (TextureFilteringMode)ImageHandle.Value.filter_mode;
             set => SDL_gpu.GPU_SetImageFilter(ImageHandle, (SDL_gpu.GPU_FilterEnum)value);
         }
+        
+        public Color ColorMask
+        {
+            get => ImageHandle.Value.color;
+            set => SDL_gpu.GPU_SetColor(ImageHandle, value);
+        }
 
         public Texture(string fileName)
         {

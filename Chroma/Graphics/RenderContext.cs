@@ -203,7 +203,7 @@ namespace Chroma.Graphics
 
         public void DrawTexture(Texture texture, Vector2 position, Color color)
         {
-            SDL_gpu.GPU_SetColor(texture.ImageHandle, color);
+            texture.ColorMask = color;
             SDL_gpu.GPU_Blit(
                 texture.ImageHandle, 
                 IntPtr.Zero, 

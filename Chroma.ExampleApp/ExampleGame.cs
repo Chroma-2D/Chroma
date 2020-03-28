@@ -60,9 +60,12 @@ namespace Chroma.ExampleApp
 
             _button.Draw(context);
 
-            for (var y = 0; y < 3; y++)
+            for (var x = 0; x < 100; x++)
             {
-                context.DrawTexture(_tex, new Vector2(400, y * _tex.Size.Height), Color.White);
+                for (var y = 0; y < 100; y++)
+                {
+                    context.DrawTexture(_tex, new Vector2(x * _tex.Size.Width / 2, y * _tex.Size.Height / 2), Color.White);
+                }
             }
         }
 
@@ -113,7 +116,7 @@ namespace Chroma.ExampleApp
                 _position = new Vector2(_position.X, _position.Y + dy);
             }
 
-            Window.Properties.Title = Window.FPS.ToString();
+            Window.Properties.Title = $"{Window.FPS} | {Window.DrawCallsThisFrame} draw calls";
         }
 
         protected override void ControllerConnected(ControllerEventArgs e)

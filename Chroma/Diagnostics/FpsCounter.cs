@@ -1,4 +1,5 @@
-﻿using Chroma.SDL2;
+﻿using Chroma.Graphics;
+using Chroma.SDL2;
 
 namespace Chroma.Diagnostics
 {
@@ -8,6 +9,7 @@ namespace Chroma.Diagnostics
         private uint _frameCount;
 
         public float FPS { get; private set; }
+        public static int DrawCallsThisFrame => RenderContext.DrawCalls;
 
         internal FpsCounter()
         {

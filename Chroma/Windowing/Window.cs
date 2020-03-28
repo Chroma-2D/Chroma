@@ -49,6 +49,7 @@ namespace Chroma.Windowing
         public WindowProperties Properties { get; }
 
         public float FPS => FpsCounter.FPS;
+        public int DrawCallsThisFrame => FpsCounter.DrawCallsThisFrame;
 
         internal Window(Game game)
         {
@@ -102,6 +103,8 @@ namespace Chroma.Windowing
                     EventDispatcher.Dispatch(ev);
 
                 Update?.Invoke(Delta);
+
+                RenderContext.DrawCalls = 0;
                 Draw?.Invoke(RenderContext);
 
                 SDL_gpu.GPU_Flip(RenderTargetPointer);

@@ -34,6 +34,17 @@ namespace Chroma
             Y = y;
         }
 
+        public Vector2(float uniform)
+        {
+            X = Y = uniform;
+        }
+
+        public Vector2(Vector2 other)
+        {
+            X = other.X;
+            Y = other.Y;
+        }
+
         public float DistanceTo(Vector2 target)
             => Distance(this, target);
 

@@ -2,11 +2,13 @@
 {
     public class WindowSizeEventArgs : System.EventArgs
     {
-        public Size Size { get; }
+        public float Width { get; }
+        public float Height { get; }
 
-        internal WindowSizeEventArgs(Size size)
+        internal WindowSizeEventArgs(float width, float height)
         {
-            Size = size;
+            Width = width;
+            Height = height;
         }
     }
 }

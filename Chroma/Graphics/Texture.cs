@@ -10,16 +10,21 @@ namespace Chroma.Graphics
 
         public bool Disposed { get; private set; }
 
-        public Size Size
+        public float Width
         {
             get
             {
                 EnsureNotDisposed();
+                return ImageHandle.Value.w;
+            }
+        }
 
-                return new Size(
-                    ImageHandle.Value.w,
-                    ImageHandle.Value.h
-                );
+        public float Height
+        {
+            get
+            {
+                EnsureNotDisposed();
+                return ImageHandle.Value.h;
             }
         }
 

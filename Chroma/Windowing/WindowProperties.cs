@@ -10,20 +10,37 @@ namespace Chroma.Windowing
 
         public bool ViewportAutoResize { get; set; } = true;
 
-        public Size Size
+        public float Height
         {
             get
             {
-                SDL.SDL_GetWindowSize(Owner.Handle, out int w, out int h);
-                return new Size(w, h);
+                SDL.SDL_GetWindowSize(Owner.Handle, out int _, out int h);
+                return h;
             }
 
             set
             {
                 if (ViewportAutoResize)
-                    SDL_gpu.GPU_SetWindowResolution((ushort)value.Width, (ushort)value.Height);
+                    SDL_gpu.GPU_SetWindowResolution((ushort)Width, (ushort)value);
                 else
-                    SDL.SDL_SetWindowSize(Owner.Handle, (ushort)value.Width, (ushort)value.Height);
+                    SDL.SDL_SetWindowSize(Owner.Handle, (ushort)Width, (ushort)value);
+            }
+        }
+
+        public float Width
+        {
+            get
+            {
+                SDL.SDL_GetWindowSize(Owner.Handle, out int w, out int _);
+                return w;
+            }
+
+            set
+            {
+                if (ViewportAutoResize)
+                    SDL_gpu.GPU_SetWindowResolution((ushort)value, (ushort)Height);
+                else
+                    SDL.SDL_SetWindowSize(Owner.Handle, (ushort)value, (ushort)Height);
             }
         }
 
@@ -93,7 +110,8 @@ namespace Chroma.Windowing
             Owner = owner;
             Owner.StateChanged += Owner_StateChanged;
 
-            Size = new Size(800, 600);
+            Width = 800;
+            Height = 600;
             Position = new Vector2(SDL.SDL_WINDOWPOS_CENTERED, SDL.SDL_WINDOWPOS_CENTERED);
             Title = "Chroma Engine";
         }

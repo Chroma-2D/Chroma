@@ -49,7 +49,6 @@ namespace Chroma.Windowing
         public WindowProperties Properties { get; }
 
         public float FPS => FpsCounter.FPS;
-        public int DrawCallsThisFrame => FpsCounter.DrawCallsThisFrame;
 
         internal Window(Game game)
         {
@@ -60,8 +59,8 @@ namespace Chroma.Windowing
                 string.Empty,
                 (int)Properties.Position.X,
                 (int)Properties.Position.Y,
-                (int)Properties.Size.Width,
-                (int)Properties.Size.Height,
+                (int)Properties.Width,
+                (int)Properties.Height,
                 SDL.SDL_WindowFlags.SDL_WINDOW_OPENGL
             );
             Properties.Title = "Chroma Engine";
@@ -73,15 +72,13 @@ namespace Chroma.Windowing
 
             RenderTargetPointer = SDL_gpu.GPU_InitRenderer(
                 bestRenderer.renderer,
-                (ushort)Properties.Size.Width,
-                (ushort)Properties.Size.Height,
+                (ushort)Properties.Width,
+                (ushort)Properties.Height,
                 0
             );
 
             FpsCounter = new FpsCounter();
             RenderContext = new RenderContext(this);
-
-            Game.Graphics.VSyncEnabled = true;
 
             EventDispatcher = new EventDispatcher(this);
             new WindowEventHandlers(EventDispatcher);
@@ -103,8 +100,6 @@ namespace Chroma.Windowing
                     EventDispatcher.Dispatch(ev);
 
                 Update?.Invoke(Delta);
-
-                RenderContext.DrawCalls = 0;
                 Draw?.Invoke(RenderContext);
 
                 SDL_gpu.GPU_Flip(RenderTargetPointer);
@@ -130,7 +125,8 @@ namespace Chroma.Windowing
             SDL.SDL_SetWindowFullscreen(Handle, 0);
             SDL_gpu.GPU_SetWindowResolution(width, height);
 
-            Properties.Size = new Size(width, height);
+            Properties.Width = width;
+            Properties.Height = height;
             Properties.Position = new Vector2(SDL.SDL_WINDOWPOS_CENTERED, SDL.SDL_WINDOWPOS_CENTERED);
         }
 
@@ -197,13 +193,14 @@ namespace Chroma.Windowing
             {
                 driverdata = display.UnderlyingDisplayMode.driverdata,
                 format = display.UnderlyingDisplayMode.format,
-                w = (int)display.Dimensions.Width,
-                h = (int)display.Dimensions.Height,
+                w = (int)display.Width,
+                h = (int)display.Height,
                 refresh_rate = display.RefreshRate
             };
 
             SDL_gpu.GPU_SetWindowResolution((ushort)mode.w, (ushort)mode.h);
-            Properties.Size = new Size(mode.w, mode.h);
+            Properties.Width = mode.w;
+            Properties.Height = mode.h;
         }
 
         #region IDisposable

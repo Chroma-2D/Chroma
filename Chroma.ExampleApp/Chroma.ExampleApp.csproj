@@ -8,4 +8,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Chroma\Chroma.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="dvd.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

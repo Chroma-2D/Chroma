@@ -18,7 +18,7 @@ namespace Chroma.ExampleApp
         public ExampleGame()
         {
             _sw = new Stopwatch();
-            
+            Graphics.VSyncEnabled = false;
             Log.Verbosity |= Verbosity.Debug;
 
             Window.GoWindowed(1024, 600);

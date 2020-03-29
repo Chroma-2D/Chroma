@@ -10,23 +10,8 @@ namespace Chroma.Graphics
 
         public bool Disposed { get; private set; }
 
-        public float Width
-        {
-            get
-            {
-                EnsureNotDisposed();
-                return ImageHandle.Value.w;
-            }
-        }
-
-        public float Height
-        {
-            get
-            {
-                EnsureNotDisposed();
-                return ImageHandle.Value.h;
-            }
-        }
+        public float Width { get; }
+        public float Height { get; }
 
         public Vector2 Anchor
         {
@@ -294,7 +279,10 @@ namespace Chroma.Graphics
             if (!File.Exists(filePath))
                 throw new FileNotFoundException("The provided file path does not exist.", filePath);
 
-            ImageHandle = SDL_gpu.GPU_LoadImage(filePath);            
+            ImageHandle = SDL_gpu.GPU_LoadImage(filePath);
+
+            Width = ImageHandle.Value.w;
+            Height = ImageHandle.Value.h;
         }
 
         public void SetBlendingMode(BlendingPreset preset)

@@ -10,8 +10,6 @@ namespace Chroma.Graphics
         internal Window Owner { get; }
         internal SDL_gpu.GPU_Target_PTR CurrentRenderTarget { get; }
 
-        internal static int DrawCalls { get; set; }
-
         internal RenderContext(Window owner)
         {
             Owner = owner;
@@ -55,8 +53,6 @@ namespace Chroma.Graphics
                     color
                 );
             }
-
-            DrawCalls++;
         }
 
         public void Circle(ShapeMode mode, Vector2 position, float radius, Color color)
@@ -81,8 +77,6 @@ namespace Chroma.Graphics
                     color
                 );
             }
-
-            DrawCalls++;
         }
 
         public void Ellipse(ShapeMode mode, Vector2 position, Vector2 radii, float rotation, Color color)
@@ -111,20 +105,16 @@ namespace Chroma.Graphics
                     color
                 );
             }
-
-            DrawCalls++;
         }
 
         public void Line(Vector2 start, Vector2 end, Color color)
         {
             SDL_gpu.GPU_Line(CurrentRenderTarget, start.X, start.Y, end.X, end.Y, color);
-            DrawCalls++;
         }
 
         public void Pixel(Vector2 position, Color color)
         {
             SDL_gpu.GPU_Pixel(CurrentRenderTarget, position.X, position.Y, color);
-            DrawCalls++;
         }
 
         public Color GetPixel(Vector2 position)
@@ -155,11 +145,9 @@ namespace Chroma.Graphics
                     color
                 );
             }
-
-            DrawCalls++;
         }
 
-        public void Rectangle(ShapeMode mode, Vector2 position, Size size, Color color)
+        public void Rectangle(ShapeMode mode, Vector2 position, float width, float height, Color color)
         {
             if (mode == ShapeMode.Stroke)
             {
@@ -167,8 +155,8 @@ namespace Chroma.Graphics
                     CurrentRenderTarget,
                     position.X,
                     position.Y,
-                    position.X + size.Width,
-                    position.Y + size.Height,
+                    position.X + width,
+                    position.Y + height,
                     color
                 );
             }
@@ -178,13 +166,11 @@ namespace Chroma.Graphics
                     CurrentRenderTarget,
                     position.X,
                     position.Y,
-                    position.X + size.Width,
-                    position.Y + size.Height,
+                    position.X + width,
+                    position.Y + height,
                     color
                 );
             }
-
-            DrawCalls++;
         }
 
         public void Triangle(ShapeMode mode, Vector2 a, Vector2 b, Vector2 c, Color color)
@@ -197,21 +183,17 @@ namespace Chroma.Graphics
             {
                 SDL_gpu.GPU_TriFilled(CurrentRenderTarget, a.X, a.Y, b.X, b.Y, c.X, c.Y, color);
             }
-
-            DrawCalls++;
         }
 
-        public void DrawTexture(Texture texture, Vector2 position)
+        public void DrawTexture(Texture texture, float x, float y)
         {
             SDL_gpu.GPU_Blit(
                 texture.ImageHandle, 
                 IntPtr.Zero, 
                 CurrentRenderTarget, 
-                position.X, 
-                position.Y
+                x, 
+                y
             );
-
-            DrawCalls++;
         }
     }
 }

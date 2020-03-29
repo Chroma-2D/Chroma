@@ -51,7 +51,9 @@ namespace Chroma.Graphics
             Log.Info(" Available displays:");
 
             foreach (var d in FetchDisplayInfo())
-                Log.Info($"  {d.Index}: {d.Dimensions.Width}x{d.Dimensions.Height}@{d.RefreshRate}Hz");
+                Log.Info($"  {d.Index}: {d.Width}x{d.Height}@{d.RefreshRate}Hz");
+
+            VSyncEnabled = true;
         }
 
         public List<string> GetRendererNames()

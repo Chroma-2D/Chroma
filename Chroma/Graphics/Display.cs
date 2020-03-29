@@ -8,13 +8,15 @@ namespace Chroma.Graphics
 
         public int Index { get; }
         public int RefreshRate { get; }
-        public Size Dimensions { get; }
+        public float Width { get; }
+        public float Height { get; }
 
         internal Display(int index, int refreshRate, ushort width, ushort height)
         {
             Index = index;
             RefreshRate = refreshRate;
-            Dimensions = new Size(width, height);
+            Width = width;
+            Height = height;
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 using Chroma.Diagnostics;
 using Chroma.Graphics;
 using Chroma.Input;
@@ -38,13 +40,12 @@ namespace Chroma.ExampleApp
             _button = new Button(
                 new Vector2(100, 100),
                 new Size(128, 24),
-                () =>
-                {
-                    Graphics.Gamma = 1.0f;
-                }
+                () => { Graphics.Gamma = 1.0f; }
             );
 
-            _tex = new Texture(@"D:\Pictures\Avatars\392871855133818880.png");
+            var loc = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            _tex = new Texture(Path.Combine(loc, "dvd.png"));
+            _tex.ColorMask = Color.White;
         }
 
         protected override void TextInput(TextInputEventArgs e)
@@ -55,16 +56,22 @@ namespace Chroma.ExampleApp
 
         protected override void Draw(RenderContext context)
         {
-            context.Clear(Color.Black);
+            context.Clear(Color.CornflowerBlue);
             context.Rectangle(ShapeMode.Fill, _position, new Size(32, 32), _color);
 
             _button.Draw(context);
 
-            for (var x = 0; x < 100; x++)
+            for (var x = 0; x < 32; x++)
             {
-                for (var y = 0; y < 100; y++)
+                for (var y = 0; y < 32; y++)
                 {
-                    context.DrawTexture(_tex, new Vector2(x * _tex.Size.Width / 2, y * _tex.Size.Height / 2), Color.White);
+                    context.DrawTexture(
+                        _tex,
+                        new Vector2(
+                            x * _tex.Size.Width,
+                            y * _tex.Size.Height
+                        )
+                    );
                 }
             }
         }

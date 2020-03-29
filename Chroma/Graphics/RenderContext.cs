@@ -201,9 +201,8 @@ namespace Chroma.Graphics
             DrawCalls++;
         }
 
-        public void DrawTexture(Texture texture, Vector2 position, Color color)
+        public void DrawTexture(Texture texture, Vector2 position)
         {
-            texture.ColorMask = color;
             SDL_gpu.GPU_Blit(
                 texture.ImageHandle, 
                 IntPtr.Zero, 

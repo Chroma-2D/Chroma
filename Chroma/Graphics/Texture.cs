@@ -13,7 +13,7 @@ namespace Chroma.Graphics
         public float Width { get; }
         public float Height { get; }
 
-        public Vector2 Anchor
+        public Vector2 Origin
         {
             get
             {

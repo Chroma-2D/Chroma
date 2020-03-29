@@ -254,6 +254,21 @@ namespace Chroma.Graphics
             }
         }
 
+        public TextureSnappingMode SnappingMode
+        {
+            get
+            {
+                EnsureNotDisposed();
+                return (TextureSnappingMode)ImageHandle.Value.snap_mode;
+            }
+
+            set
+            {
+                EnsureNotDisposed();
+                SDL_gpu.GPU_SetSnapMode(ImageHandle, (SDL_gpu.GPU_SnapEnum)value);
+            }
+        }
+
         public Color ColorMask
         {
             get
@@ -268,13 +283,13 @@ namespace Chroma.Graphics
                 SDL_gpu.GPU_SetColor(ImageHandle, value);
             }
         }
-
+        
         public Texture(string filePath)
         {
             if (!File.Exists(filePath))
                 throw new FileNotFoundException("The provided file path does not exist.", filePath);
 
-            ImageHandle = SDL_gpu.GPU_LoadImage(filePath);
+            ImageHandle = SDL_gpu.GPU_LoadImage(filePath);            
         }
 
         public void SetBlendingMode(BlendingPreset preset)

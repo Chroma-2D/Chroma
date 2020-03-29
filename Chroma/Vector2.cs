@@ -4,8 +4,8 @@ namespace Chroma
 {
     public struct Vector2 : IEquatable<Vector2>
     {
-        public readonly float X;
-        public readonly float Y;
+        public float X;
+        public float Y;
 
         public static readonly Vector2 Up = new Vector2(0, -1);
         public static readonly Vector2 Down = new Vector2(0, 1);

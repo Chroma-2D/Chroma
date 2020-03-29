@@ -185,14 +185,17 @@ namespace Chroma.Graphics
             }
         }
 
-        public void DrawTexture(Texture texture, float x, float y)
+        public void DrawTexture(Texture texture, Vector2 position, Vector2 scale, float rotation)
         {
-            SDL_gpu.GPU_Blit(
-                texture.ImageHandle, 
-                IntPtr.Zero, 
-                CurrentRenderTarget, 
-                x, 
-                y
+            SDL_gpu.GPU_BlitTransform(
+                texture.ImageHandle,
+                ref texture.ImageRectangle,
+                CurrentRenderTarget,
+                position.X,
+                position.Y,
+                rotation,
+                scale.X,
+                scale.Y
             );
         }
     }

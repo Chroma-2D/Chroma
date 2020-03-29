@@ -29,7 +29,12 @@ namespace Chroma.ExampleApp
                 ColorMask = Color.White
             };
         }
-
+        
+        protected override void Update(float delta)
+        {
+            Window.Properties.Title = $"{Window.FPS}";
+        }
+        
         protected override void Draw(RenderContext context)
         {
             context.Clear(Color.CornflowerBlue);
@@ -45,11 +50,6 @@ namespace Chroma.ExampleApp
                     );
                 }
             }
-        }
-
-        protected override void Update(float delta)
-        {
-            Window.Properties.Title = $"{Window.FPS}";
         }
     }
 }

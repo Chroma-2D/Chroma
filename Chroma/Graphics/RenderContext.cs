@@ -8,13 +8,16 @@ namespace Chroma.Graphics
     public class RenderContext
     {
         internal Window Owner { get; }
-        internal SDL_gpu.GPU_Target_PTR CurrentRenderTarget { get; }
+        internal SDL_gpu.GPU_Target_PTR CurrentRenderTarget { get; private set; }
+        internal SDL_gpu.GPU_Target_PTR OriginalRenderTarget { get; }
 
         internal RenderContext(Window owner)
         {
             Owner = owner;
+
             CurrentRenderTarget = owner.RenderTargetPointer;
-            
+            OriginalRenderTarget = owner.RenderTargetPointer;
+
             LineThickness = 1;
         }
 
@@ -197,6 +200,18 @@ namespace Chroma.Graphics
                 scale.X,
                 scale.Y
             );
+        }
+
+        public void SetRenderTarget(RenderTarget target)
+        {
+            if (target == null)
+            {
+                CurrentRenderTarget = OriginalRenderTarget;
+            }
+            else
+            {
+                CurrentRenderTarget = target.Handle;
+            }
         }
     }
 }

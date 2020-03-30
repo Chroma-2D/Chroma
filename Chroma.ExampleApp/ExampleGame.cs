@@ -9,9 +9,12 @@ namespace Chroma.ExampleApp
     public class ExampleGame : Game
     {
         private Texture _tex;
+        private RenderTarget _tgt;
+
         private Stopwatch _sw;
 
         private float _rotation;
+        private byte _alpha;
 
         public ExampleGame()
         {
@@ -22,6 +25,9 @@ namespace Chroma.ExampleApp
             Window.GoWindowed(1024, 600);
 
             var loc = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            _tgt = new RenderTarget((ushort)Window.Properties.Width, (ushort)Window.Properties.Height);
+
             _tex = new Texture(Path.Combine(loc, "dvd.png"))
             {
                 ColorMask = Color.White,
@@ -33,12 +39,16 @@ namespace Chroma.ExampleApp
         {
             Window.Properties.Title = $"{Window.FPS}";
             _rotation += 45f * delta;
+
+            _alpha = 255;
+
+            _tex.ColorMask = new Color(255, 255, 255, _alpha);
         }
         
         protected override void Draw(RenderContext context)
         {
-            context.Clear(Color.CornflowerBlue);
-
+            context.SetRenderTarget(_tgt);
+            context.Clear(Color.Yellow);
             for (var x = 0; x < 24; x++)
             {
                 for (var y = 0; y < 24; y++)
@@ -54,6 +64,12 @@ namespace Chroma.ExampleApp
                     );
                 }
             }
+            context.SetRenderTarget(null);
+
+            context.Clear(Color.CornflowerBlue);
+            context.DrawTexture(
+                _tgt.Texture, Vector2.Zero, Vector2.One, 0f
+            );
         }
     }
 }

@@ -288,6 +288,16 @@ namespace Chroma.Graphics
             ImageRectangle = SDL_gpu.GPU_MakeRect(0, 0, Width, Height);
         }
 
+        public Texture(ushort width, ushort height, PixelFormat fmt = PixelFormat.RGBA)
+        {
+            ImageHandle = SDL_gpu.GPU_CreateImage(width, height, (SDL_gpu.GPU_FormatEnum)fmt);
+
+            Width = width;
+            Height = height;
+
+            ImageRectangle = SDL_gpu.GPU_MakeRect(0, 0, width, height);
+        }
+
         public void SetBlendingMode(BlendingPreset preset)
         {
             EnsureNotDisposed();

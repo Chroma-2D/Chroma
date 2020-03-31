@@ -10,13 +10,7 @@ namespace Chroma.Graphics
 
         public RenderTarget(ushort width, ushort height)
         {
-            Texture = new Texture(width, height, PixelFormat.RGB)
-            {
-                Origin = Vector2.Zero
-            };
-
-            Texture.SetBlendingMode(BlendingPreset.Multiply);
-
+            Texture = new Texture(width, height);
             Handle = SDL_gpu.GPU_LoadTarget(Texture.ImageHandle);
         }
     }

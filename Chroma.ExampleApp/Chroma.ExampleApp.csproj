@@ -10,11 +10,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="c64style.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="dvd.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
 
     <None Update="Nouveau_IBM.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+
+    <None Update="skeltal.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

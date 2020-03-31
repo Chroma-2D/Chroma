@@ -1,8 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Chroma.Diagnostics;
 using Chroma.Graphics;
+using Chroma.Graphics.Text;
 
 namespace Chroma.ExampleApp
 {
@@ -30,17 +32,18 @@ namespace Chroma.ExampleApp
 
             _tgt = new RenderTarget((ushort)Window.Properties.Width, (ushort)Window.Properties.Height);
 
-            _tex = new Texture(Path.Combine(loc, "dvd.png"))
+            _tex = new Texture(Path.Combine(loc, "skeltal.png"))
             {
                 ColorMask = Color.White,
             };
 
             _origin = new Vector2(
-                _tex.Width / 2,
-                _tex.Height / 2
+                _tex.Width * .3f / 2,
+                _tex.Height * .3f / 2
             );
-            
-            _font = new Font(Path.Combine(loc, "Nouveau_IBM.ttf"), 16);
+
+            _font = new Font(Path.Combine(loc, "c64style.ttf"), 16);
+            Console.WriteLine(_font.Measure("DOOT ME UP\nINSIDE!11"));
         }
 
         protected override void Update(float delta)
@@ -57,31 +60,23 @@ namespace Chroma.ExampleApp
             context.RenderTo(_tgt, () =>
             {
                 context.Clear(Color.CornflowerBlue);
-                for (var x = 0; x < 100; x++)
+                for (var x = 0; x < 2; x++)
                 {
                     for (var y = 0; y < 2; y++)
                     {
                         context.DrawTexture(
                             _tex,
                             new Vector2(
-                                x * _tex.Width,
-                                y * _tex.Height
+                                x * _tex.Width * .3f,
+                                y * _tex.Height * .3f
                             ) + _origin,
-                            Vector2.One,
+                            new Vector2(.3f),
                             _origin,
                             _rotation
                         );
                     }
                 }
-                
-                context.DrawString(
-                    _font, 
-                    "DOOT",
-                    new Vector2(100, 400),
-                    Vector2.One,
-                    Vector2.Zero,
-                    .0f, Color.Green
-                );
+
             });
 
             context.DrawTexture(
@@ -91,6 +86,9 @@ namespace Chroma.ExampleApp
                 Vector2.Zero,
                 0f
             );
+
+            context.DrawString(_font, "DOOT ME UP\nINSIDE!11", new Vector2(0, 0));
+
         }
     }
 }

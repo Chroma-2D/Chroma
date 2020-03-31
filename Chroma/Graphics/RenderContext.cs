@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Chroma.Graphics.Text;
 using Chroma.SDL2;
 using Chroma.Windowing;
 
@@ -204,27 +205,6 @@ namespace Chroma.Graphics
             );
         }
 
-        public void DrawString(Font font, string text, Vector2 position, Vector2 scale, Vector2 origin, float rotation, Color foreground)
-        {
-            var sdlSurface = font.RenderBlended(text, foreground, out SDL_gpu.GPU_Image_PTR imageHandle);
-
-            SDL_gpu.GPU_BlitTransformX(
-                imageHandle,
-                IntPtr.Zero,
-                CurrentRenderTarget,
-                position.X,
-                position.Y,
-                origin.X,
-                origin.Y,
-                rotation,
-                scale.X,
-                scale.Y
-            );
-            
-            SDL_gpu.GPU_FreeImage(imageHandle);
-            SDL.SDL_FreeSurface(sdlSurface);
-        }
-
         public void RenderTo(RenderTarget target, Action drawingLogic)
         {
             if (target == null)
@@ -236,6 +216,36 @@ namespace Chroma.Graphics
             drawingLogic?.Invoke();
 
             CurrentRenderTarget = OriginalRenderTarget;
+        }
+
+        public void DrawString(Font font, string text, Vector2 position)
+        {
+            var x = position.X;
+            var y = position.Y;
+            foreach (var c in text)
+            {
+                if (c == '\n')
+                {
+                    x = position.X;
+                    y += font.Size;
+                }
+
+                if (!font.HasGlyph(c))
+                    continue;
+
+                var info = font.Atlas.GlyphMetadata[c];
+
+                var srcRect = new SDL_gpu.GPU_Rect
+                {
+                    x = info.PositionInAtlas.X,
+                    y = info.PositionInAtlas.Y,
+                    w = info.Width,
+                    h = info.Height
+                };
+
+                SDL_gpu.GPU_Blit(font.Atlas.Texture.ImageHandle, ref srcRect, CurrentRenderTarget, x, y);
+                x += info.Width;
+            }
         }
     }
 }

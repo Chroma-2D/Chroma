@@ -1077,6 +1077,13 @@ namespace Chroma.SDL2
             ref GPU_Rect src_rect,
             GPU_Target_PTR target,
             float x, float y, float pivot_x, float pivot_y, float degrees, float scaleX, float scaleY);
+        
+        [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_BlitTransformX(
+            GPU_Image_PTR image,
+            IntPtr src_rect,
+            GPU_Target_PTR target,
+            float x, float y, float pivot_x, float pivot_y, float degrees, float scaleX, float scaleY);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_BlitTransformMatrix(

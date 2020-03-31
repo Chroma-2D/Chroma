@@ -23,6 +23,7 @@ namespace Chroma.SDL2.Boot
             }
 
             SDL.SDL_Init(SDL.SDL_INIT_EVERYTHING);
+            SDL_ttf.TTF_Init();
         }
     }
 }

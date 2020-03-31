@@ -7,7 +7,6 @@ namespace Chroma.Graphics
     public class Texture : IDisposable
     {
         internal SDL_gpu.GPU_Image_PTR ImageHandle { get; private set; }
-        internal SDL_gpu.GPU_Rect ImageRectangle;
 
         public bool Disposed { get; private set; }
 
@@ -284,8 +283,6 @@ namespace Chroma.Graphics
 
             Width = ImageHandle.Value.w;
             Height = ImageHandle.Value.h;
-            
-            ImageRectangle = SDL_gpu.GPU_MakeRect(0, 0, Width, Height);
         }
 
         public Texture(ushort width, ushort height, PixelFormat fmt = PixelFormat.RGBA)
@@ -294,8 +291,13 @@ namespace Chroma.Graphics
 
             Width = width;
             Height = height;
+        }
 
-            ImageRectangle = SDL_gpu.GPU_MakeRect(0, 0, width, height);
+        internal Texture(SDL_gpu.GPU_Image_PTR imageHandle)
+        {
+            ImageHandle = imageHandle;
+            Width = imageHandle.Value.w;
+            Height = imageHandle.Value.h;
         }
 
         public void SetBlendingMode(BlendingPreset preset)

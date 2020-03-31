@@ -13,5 +13,9 @@
     <None Update="dvd.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+
+    <None Update="Nouveau_IBM.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

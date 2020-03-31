@@ -192,7 +192,7 @@ namespace Chroma.Graphics
         {
             SDL_gpu.GPU_BlitTransformX(
                 texture.ImageHandle,
-                ref texture.ImageRectangle,
+                IntPtr.Zero,
                 CurrentRenderTarget,
                 position.X,
                 position.Y,
@@ -204,10 +204,32 @@ namespace Chroma.Graphics
             );
         }
 
+        public void DrawString(Font font, string text, Vector2 position, Vector2 scale, Vector2 origin, float rotation, Color foreground)
+        {
+            var sdlSurface = font.RenderBlended(text, foreground, out SDL_gpu.GPU_Image_PTR imageHandle);
+
+            SDL_gpu.GPU_BlitTransformX(
+                imageHandle,
+                IntPtr.Zero,
+                CurrentRenderTarget,
+                position.X,
+                position.Y,
+                origin.X,
+                origin.Y,
+                rotation,
+                scale.X,
+                scale.Y
+            );
+            
+            SDL_gpu.GPU_FreeImage(imageHandle);
+            SDL.SDL_FreeSurface(sdlSurface);
+        }
+
         public void RenderTo(RenderTarget target, Action drawingLogic)
         {
             if (target == null)
-                throw new ArgumentNullException(nameof(target), "You can't just draw an image to a null render target...");
+                throw new ArgumentNullException(nameof(target),
+                    "You can't just draw an image to a null render target...");
 
             CurrentRenderTarget = target.Handle;
 

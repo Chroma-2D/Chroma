@@ -10,6 +10,7 @@ namespace Chroma.ExampleApp
     {
         private Texture _tex;
         private RenderTarget _tgt;
+        private Font _font;
 
         private Stopwatch _sw;
 
@@ -38,6 +39,8 @@ namespace Chroma.ExampleApp
                 _tex.Width / 2,
                 _tex.Height / 2
             );
+            
+            _font = new Font(Path.Combine(loc, "Nouveau_IBM.ttf"), 16);
         }
 
         protected override void Update(float delta)
@@ -53,10 +56,10 @@ namespace Chroma.ExampleApp
         {
             context.RenderTo(_tgt, () =>
             {
-                context.Clear(Color.Yellow);
+                context.Clear(Color.CornflowerBlue);
                 for (var x = 0; x < 100; x++)
                 {
-                    for (var y = 0; y < 100; y++)
+                    for (var y = 0; y < 2; y++)
                     {
                         context.DrawTexture(
                             _tex,
@@ -70,6 +73,15 @@ namespace Chroma.ExampleApp
                         );
                     }
                 }
+                
+                context.DrawString(
+                    _font, 
+                    "DOOT",
+                    new Vector2(100, 400),
+                    Vector2.One,
+                    Vector2.Zero,
+                    .0f, Color.Green
+                );
             });
 
             context.DrawTexture(

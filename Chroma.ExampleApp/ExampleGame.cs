@@ -13,6 +13,7 @@ namespace Chroma.ExampleApp
 
         private Stopwatch _sw;
 
+        private Vector2 _origin;
         private float _rotation;
         private byte _alpha;
 
@@ -31,44 +32,52 @@ namespace Chroma.ExampleApp
             _tex = new Texture(Path.Combine(loc, "dvd.png"))
             {
                 ColorMask = Color.White,
-                Origin = new Vector2(0.5f, 0.5f)
             };
+
+            _origin = new Vector2(
+                _tex.Width / 2,
+                _tex.Height / 2
+            );
         }
-        
+
         protected override void Update(float delta)
         {
             Window.Properties.Title = $"{Window.FPS}";
             _rotation += 45f * delta;
 
             _alpha = 255;
-
             _tex.ColorMask = new Color(255, 255, 255, _alpha);
         }
-        
+
         protected override void Draw(RenderContext context)
         {
-            context.SetRenderTarget(_tgt);
-            context.Clear(Color.Yellow);
-            for (var x = 0; x < 24; x++)
+            context.RenderTo(_tgt, () =>
             {
-                for (var y = 0; y < 24; y++)
+                context.Clear(Color.Yellow);
+                for (var x = 0; x < 100; x++)
                 {
-                    context.DrawTexture(
-                        _tex,
-                        new Vector2(
-                            x * _tex.Width,
-                            y * _tex.Height
-                        ),
-                        new Vector2(1.0f),
-                        _rotation
-                    );
+                    for (var y = 0; y < 100; y++)
+                    {
+                        context.DrawTexture(
+                            _tex,
+                            new Vector2(
+                                x * _tex.Width,
+                                y * _tex.Height
+                            ) + _origin,
+                            Vector2.One,
+                            _origin,
+                            _rotation
+                        );
+                    }
                 }
-            }
-            context.SetRenderTarget(null);
+            });
 
-            context.Clear(Color.CornflowerBlue);
             context.DrawTexture(
-                _tgt.Texture, Vector2.Zero, Vector2.One, 0f
+                _tgt.Texture,
+                Vector2.Zero,
+                Vector2.One,
+                Vector2.Zero,
+                0f
             );
         }
     }

@@ -188,30 +188,32 @@ namespace Chroma.Graphics
             }
         }
 
-        public void DrawTexture(Texture texture, Vector2 position, Vector2 scale, float rotation)
+        public void DrawTexture(Texture texture, Vector2 position, Vector2 scale, Vector2 origin, float rotation)
         {
-            SDL_gpu.GPU_BlitTransform(
+            SDL_gpu.GPU_BlitTransformX(
                 texture.ImageHandle,
                 ref texture.ImageRectangle,
                 CurrentRenderTarget,
                 position.X,
                 position.Y,
+                origin.X,
+                origin.Y,
                 rotation,
                 scale.X,
                 scale.Y
             );
         }
 
-        public void SetRenderTarget(RenderTarget target)
+        public void RenderTo(RenderTarget target, Action drawingLogic)
         {
             if (target == null)
-            {
-                CurrentRenderTarget = OriginalRenderTarget;
-            }
-            else
-            {
-                CurrentRenderTarget = target.Handle;
-            }
+                throw new ArgumentNullException(nameof(target), "You can't just draw an image to a null render target...");
+
+            CurrentRenderTarget = target.Handle;
+
+            drawingLogic?.Invoke();
+
+            CurrentRenderTarget = OriginalRenderTarget;
         }
     }
 }

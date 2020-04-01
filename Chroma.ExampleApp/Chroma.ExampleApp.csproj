@@ -13,6 +13,9 @@
     <None Update="c64style.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="c64_0.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="dvd.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

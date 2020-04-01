@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Chroma.Graphics.Text;
+using Chroma.Graphics.Text.BMFont;
 using Chroma.SDL2;
 using Chroma.Windowing;
 
@@ -218,19 +219,21 @@ namespace Chroma.Graphics
             CurrentRenderTarget = OriginalRenderTarget;
         }
 
-        public void DrawString(Font font, string text, Vector2 position)
+        public void DrawString(BitmapFont font, string text, Vector2 position)
         {
             var x = position.X;
             var y = position.Y;
+            char prev = (char)0;
+
             foreach (var c in text)
             {
                 if (c == '\n')
                 {
                     x = position.X;
-                    y += font.Size;
+                    y += font.LineHeight;
                 }
 
-                if (!font.HasGlyph(c))
+                if (!font.Characters.ContainsKey(c))
                     continue;
 
                 var info = font.Atlas.GlyphMetadata[c];
@@ -243,8 +246,10 @@ namespace Chroma.Graphics
                     h = info.Height
                 };
 
-                SDL_gpu.GPU_Blit(font.Atlas.Texture.ImageHandle, ref srcRect, CurrentRenderTarget, x, y);
+                SDL_gpu.GPU_Blit(font.Pages[0].AtlasHandle, ref srcRect, CurrentRenderTarget, x, y);
                 x += info.Width;
+
+                prev = c;
             }
         }
     }

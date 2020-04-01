@@ -4,7 +4,6 @@ using System.IO;
 using System.Reflection;
 using Chroma.Diagnostics;
 using Chroma.Graphics;
-using Chroma.Graphics.Text;
 
 namespace Chroma.ExampleApp
 {
@@ -12,7 +11,6 @@ namespace Chroma.ExampleApp
     {
         private Texture _tex;
         private RenderTarget _tgt;
-        private Font _font;
 
         private Stopwatch _sw;
 
@@ -42,8 +40,7 @@ namespace Chroma.ExampleApp
                 _tex.Height * .3f / 2
             );
 
-            _font = new Font(Path.Combine(loc, "c64style.ttf"), 16);
-            Console.WriteLine(_font.Measure("DOOT ME UP\nINSIDE!11"));
+            //Console.WriteLine(_font.Measure("DOOT ME UP\nINSIDE!11"));
         }
 
         protected override void Update(float delta)
@@ -87,7 +84,7 @@ namespace Chroma.ExampleApp
                 0f
             );
 
-            context.DrawString(_font, "DOOT ME UP\nINSIDE!11", new Vector2(0, 0));
+            //context.DrawString(_font, "DOOT ME UP\nINSIDE!11", new Vector2(0, 0));
 
         }
     }

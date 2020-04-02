@@ -1,9 +1,9 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Chroma.Diagnostics;
 using Chroma.Graphics;
+using Chroma.Graphics.TextRendering;
 
 namespace Chroma.ExampleApp
 {
@@ -13,6 +13,8 @@ namespace Chroma.ExampleApp
         private RenderTarget _tgt;
 
         private Stopwatch _sw;
+        private TrueTypeFont _ttf;
+        private Texture _ttfMap;
 
         private Vector2 _origin;
         private float _rotation;
@@ -40,6 +42,10 @@ namespace Chroma.ExampleApp
                 _tex.Height * .3f / 2
             );
 
+            _ttf = new TrueTypeFont(Path.Combine(loc, "c64style.ttf"), 16);
+            _ttfMap = _ttf.RenderGlyph('$');
+            _ttfMap.ColorMask = Color.HotPink;
+
             //Console.WriteLine(_font.Measure("DOOT ME UP\nINSIDE!11"));
         }
 
@@ -56,7 +62,7 @@ namespace Chroma.ExampleApp
         {
             context.RenderTo(_tgt, () =>
             {
-                context.Clear(Color.CornflowerBlue);
+                context.Clear(Color.Black);
                 for (var x = 0; x < 2; x++)
                 {
                     for (var y = 0; y < 2; y++)
@@ -84,6 +90,11 @@ namespace Chroma.ExampleApp
                 0f
             );
 
+            context.DrawTexture(
+                _ttfMap,
+                new Vector2(100, 150), Vector2.One,
+                Vector2.Zero, .0f
+            );
             //context.DrawString(_font, "DOOT ME UP\nINSIDE!11", new Vector2(0, 0));
 
         }

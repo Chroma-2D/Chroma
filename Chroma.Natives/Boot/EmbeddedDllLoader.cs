@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace Chroma.SDL2.Boot
+namespace Chroma.Natives.Boot
 {
     internal class EmbeddedDllLoader
     {
@@ -29,12 +29,12 @@ namespace Chroma.SDL2.Boot
         }
 
         private static string ResourceNameToFileName(string resourceName)
-            => resourceName.Replace($"Chroma.SDL2.Binaries.{ArchitectureString}.", "");
+            => resourceName.Replace($"Chroma.Natives.Binaries.{ArchitectureString}.", "");
 
         private static string CreateDllDirectory()
         {
             var path = Path.GetTempPath();
-            var completePath = Path.Combine(path, "ChromaSDL2");
+            var completePath = Path.Combine(path, "Chroma");
 
             if (Directory.Exists(completePath))
                 Directory.Delete(completePath, true);

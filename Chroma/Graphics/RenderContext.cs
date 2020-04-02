@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Chroma.Graphics.Text;
-using Chroma.Graphics.Text.BMFont;
-using Chroma.SDL2;
+using Chroma.Natives.SDL;
+//using Chroma.Graphics.Text;
+//using Chroma.Graphics.Text.BMFont;
 using Chroma.Windowing;
 
 namespace Chroma.Graphics
@@ -219,7 +219,7 @@ namespace Chroma.Graphics
             CurrentRenderTarget = OriginalRenderTarget;
         }
 
-        public void DrawString(BitmapFont font, string text, Vector2 position)
+        /*public void DrawString(BitmapFont font, string text, Vector2 position)
         {
             var x = position.X;
             var y = position.Y;
@@ -251,6 +251,6 @@ namespace Chroma.Graphics
 
                 prev = c;
             }
-        }
+        }*/
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-using Chroma.SDL2;
+using Chroma.Natives.SDL;
 
 namespace Chroma.Input.EventArgs
 {
@@ -17,15 +17,15 @@ namespace Chroma.Input.EventArgs
 
             Button = button switch
             {
-                SDL.SDL_BUTTON_LEFT => MouseButton.Left,
-                SDL.SDL_BUTTON_RIGHT => MouseButton.Right,
-                SDL.SDL_BUTTON_MIDDLE => MouseButton.Middle,
-                SDL.SDL_BUTTON_X1 => MouseButton.X1,
-                SDL.SDL_BUTTON_X2 => MouseButton.X2,
+                SDL2.SDL_BUTTON_LEFT => MouseButton.Left,
+                SDL2.SDL_BUTTON_RIGHT => MouseButton.Right,
+                SDL2.SDL_BUTTON_MIDDLE => MouseButton.Middle,
+                SDL2.SDL_BUTTON_X1 => MouseButton.X1,
+                SDL2.SDL_BUTTON_X2 => MouseButton.X2,
                 _ => throw new Exception("Unexpected mouse button constant.")
             };
 
-            Pressed = state == SDL.SDL_PRESSED;
+            Pressed = state == SDL2.SDL_PRESSED;
             ClickCount = clickCount;
         }
     }

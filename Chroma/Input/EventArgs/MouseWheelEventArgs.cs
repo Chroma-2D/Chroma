@@ -1,4 +1,4 @@
-﻿using Chroma.SDL2;
+﻿using Chroma.Natives.SDL;
 
 namespace Chroma.Input.EventArgs
 {
@@ -10,7 +10,7 @@ namespace Chroma.Input.EventArgs
         internal MouseWheelEventArgs(Vector2 motion, uint direction)
         {
             Motion = motion;
-            DirectionFlipped = direction == (uint)SDL.SDL_MouseWheelDirection.SDL_MOUSEWHEEL_FLIPPED;
+            DirectionFlipped = direction == (uint)SDL2.SDL_MouseWheelDirection.SDL_MOUSEWHEEL_FLIPPED;
         }
     }
 }

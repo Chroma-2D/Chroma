@@ -31,7 +31,7 @@ using System;
 using System.Runtime.InteropServices;
 #endregion
 
-namespace Chroma.SDL2
+namespace Chroma.Natives.SDL
 {
 	public static class SDL_mixer
 	{
@@ -48,9 +48,9 @@ namespace Chroma.SDL2
 		 * running with. You will likely want to check this somewhere in your
 		 * program!
 		 */
-		public const int SDL_MIXER_MAJOR_VERSION =	2;
-		public const int SDL_MIXER_MINOR_VERSION =	0;
-		public const int SDL_MIXER_PATCHLEVEL =		5;
+		public const int SDL_MIXER_MAJOR_VERSION = 2;
+		public const int SDL_MIXER_MINOR_VERSION = 0;
+		public const int SDL_MIXER_PATCHLEVEL = 5;
 
 		/* In C, you can redefine this value before including SDL_mixer.h.
 		 * We're not going to allow this in SDL2#, since the value of this
@@ -60,19 +60,19 @@ namespace Chroma.SDL2
 
 		public static readonly int MIX_DEFAULT_FREQUENCY = 44100;
 		public static readonly ushort MIX_DEFAULT_FORMAT =
-			BitConverter.IsLittleEndian ? SDL.AUDIO_S16LSB : SDL.AUDIO_S16MSB;
+			BitConverter.IsLittleEndian ? SDL2.AUDIO_S16LSB : SDL2.AUDIO_S16MSB;
 		public static readonly int MIX_DEFAULT_CHANNELS = 2;
 		public static readonly byte MIX_MAX_VOLUME = 128;
 
 		[Flags]
 		public enum MIX_InitFlags
 		{
-			MIX_INIT_FLAC =		0x00000001,
-			MIX_INIT_MOD =		0x00000002,
-			MIX_INIT_MP3 =		0x00000008,
-			MIX_INIT_OGG =		0x00000010,
-			MIX_INIT_MID =		0x00000020,
-			MIX_INIT_OPUS =		0x00000040
+			MIX_INIT_FLAC = 0x00000001,
+			MIX_INIT_MOD = 0x00000002,
+			MIX_INIT_MP3 = 0x00000008,
+			MIX_INIT_OGG = 0x00000010,
+			MIX_INIT_MID = 0x00000020,
+			MIX_INIT_OPUS = 0x00000040
 		}
 
 		public struct MIX_Chunk
@@ -138,7 +138,7 @@ namespace Chroma.SDL2
 			IntPtr b // void*
 		);
 
-		public static void SDL_MIXER_VERSION(out SDL.SDL_version X)
+		public static void SDL_MIXER_VERSION(out SDL2.SDL_version X)
 		{
 			X.major = SDL_MIXER_MAJOR_VERSION;
 			X.minor = SDL_MIXER_MINOR_VERSION;
@@ -147,13 +147,13 @@ namespace Chroma.SDL2
 
 		[DllImport(nativeLibName, EntryPoint = "MIX_Linked_Version", CallingConvention = CallingConvention.Cdecl)]
 		private static extern IntPtr INTERNAL_MIX_Linked_Version();
-		public static SDL.SDL_version MIX_Linked_Version()
+		public static SDL2.SDL_version MIX_Linked_Version()
 		{
-			SDL.SDL_version result;
+			SDL2.SDL_version result;
 			IntPtr result_ptr = INTERNAL_MIX_Linked_Version();
-			result = (SDL.SDL_version) Marshal.PtrToStructure(
+			result = (SDL2.SDL_version)Marshal.PtrToStructure(
 				result_ptr,
-				typeof(SDL.SDL_version)
+				typeof(SDL2.SDL_version)
 			);
 			return result;
 		}
@@ -189,12 +189,12 @@ namespace Chroma.SDL2
 			IntPtr src,
 			int freesrc
 		);
-		
+
 		/* IntPtr refers to a Mix_Chunk* */
 		/* This is an RWops macro in the C header. */
 		public static IntPtr Mix_LoadWAV(string file)
 		{
-			IntPtr rwops = SDL.SDL_RWFromFile(file, "rb");
+			IntPtr rwops = SDL2.SDL_RWFromFile(file, "rb");
 			return Mix_LoadWAV_RW(rwops, 1);
 		}
 
@@ -205,7 +205,7 @@ namespace Chroma.SDL2
 		);
 		public static IntPtr Mix_LoadMUS(string file)
 		{
-			return INTERNAL_Mix_LoadMUS(SDL.UTF8_ToNative(file));
+			return INTERNAL_Mix_LoadMUS(SDL2.UTF8_ToNative(file));
 		}
 
 		/* IntPtr refers to a Mix_Chunk* */
@@ -238,7 +238,7 @@ namespace Chroma.SDL2
 		private static extern IntPtr INTERNAL_Mix_GetChunkDecoder(int index);
 		public static string Mix_GetChunkDecoder(int index)
 		{
-			return SDL.UTF8_ToManaged(
+			return SDL2.UTF8_ToManaged(
 				INTERNAL_Mix_GetChunkDecoder(index)
 			);
 		}
@@ -250,7 +250,7 @@ namespace Chroma.SDL2
 		private static extern IntPtr INTERNAL_Mix_GetMusicDecoder(int index);
 		public static string Mix_GetMusicDecoder(int index)
 		{
-			return SDL.UTF8_ToManaged(
+			return SDL2.UTF8_ToManaged(
 				INTERNAL_Mix_GetMusicDecoder(index)
 			);
 		}
@@ -266,7 +266,7 @@ namespace Chroma.SDL2
 		public static extern IntPtr INTERNAL_Mix_GetMusicTitle(IntPtr music);
 		public static string Mix_GetMusicTitle(IntPtr music)
 		{
-			return SDL.UTF8_ToManaged(
+			return SDL2.UTF8_ToManaged(
 				INTERNAL_Mix_GetMusicTitle(music)
 			);
 		}
@@ -278,7 +278,7 @@ namespace Chroma.SDL2
 		public static extern IntPtr INTERNAL_Mix_GetMusicTitleTag(IntPtr music);
 		public static string Mix_GetMusicTitleTag(IntPtr music)
 		{
-			return SDL.UTF8_ToManaged(
+			return SDL2.UTF8_ToManaged(
 				INTERNAL_Mix_GetMusicTitleTag(music)
 			);
 		}
@@ -290,7 +290,7 @@ namespace Chroma.SDL2
 		public static extern IntPtr INTERNAL_Mix_GetMusicArtistTag(IntPtr music);
 		public static string Mix_GetMusicArtistTag(IntPtr music)
 		{
-			return SDL.UTF8_ToManaged(
+			return SDL2.UTF8_ToManaged(
 				INTERNAL_Mix_GetMusicArtistTag(music)
 			);
 		}
@@ -302,7 +302,7 @@ namespace Chroma.SDL2
 		public static extern IntPtr INTERNAL_Mix_GetMusicAlbumTag(IntPtr music);
 		public static string Mix_GetMusicAlbumTag(IntPtr music)
 		{
-			return SDL.UTF8_ToManaged(
+			return SDL2.UTF8_ToManaged(
 				INTERNAL_Mix_GetMusicAlbumTag(music)
 			);
 		}
@@ -314,7 +314,7 @@ namespace Chroma.SDL2
 		public static extern IntPtr INTERNAL_Mix_GetMusicCopyrightTag(IntPtr music);
 		public static string Mix_GetMusicCopyrightTag(IntPtr music)
 		{
-			return SDL.UTF8_ToManaged(
+			return SDL2.UTF8_ToManaged(
 				INTERNAL_Mix_GetMusicCopyrightTag(music)
 			);
 		}
@@ -408,7 +408,8 @@ namespace Chroma.SDL2
 			int channel,
 			IntPtr chunk,
 			int loops
-		) {
+		)
+		{
 			return Mix_PlayChannelTimed(channel, chunk, loops, -1);
 		}
 
@@ -448,7 +449,8 @@ namespace Chroma.SDL2
 			IntPtr chunk,
 			int loops,
 			int ms
-		) {
+		)
+		{
 			return Mix_FadeInChannelTimed(channel, chunk, loops, ms, -1);
 		}
 
@@ -575,7 +577,7 @@ namespace Chroma.SDL2
 		public static int Mix_SetMusicCMD(string command)
 		{
 			return INTERNAL_Mix_SetMusicCMD(
-				SDL.UTF8_ToNative(command)
+				SDL2.UTF8_ToNative(command)
 			);
 		}
 
@@ -592,7 +594,7 @@ namespace Chroma.SDL2
 		public static int Mix_SetSoundFonts(string paths)
 		{
 			return INTERNAL_Mix_SetSoundFonts(
-				SDL.UTF8_ToNative(paths)
+				SDL2.UTF8_ToNative(paths)
 			);
 		}
 
@@ -600,7 +602,7 @@ namespace Chroma.SDL2
 		private static extern IntPtr INTERNAL_Mix_GetSoundFonts();
 		public static string Mix_GetSoundFonts()
 		{
-			return SDL.UTF8_ToManaged(
+			return SDL2.UTF8_ToManaged(
 				INTERNAL_Mix_GetSoundFonts()
 			);
 		}
@@ -623,7 +625,7 @@ namespace Chroma.SDL2
 		public static extern IntPtr INTERNAL_Mix_GetTimidityCfg();
 		public static string Mix_GetTimidityCfg()
 		{
-			return SDL.UTF8_ToManaged(
+			return SDL2.UTF8_ToManaged(
 				INTERNAL_Mix_GetTimidityCfg()
 			);
 		}

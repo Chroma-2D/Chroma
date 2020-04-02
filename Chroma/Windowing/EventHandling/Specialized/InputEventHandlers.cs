@@ -4,7 +4,7 @@ using Chroma.Hardware;
 using Chroma.Input;
 using Chroma.Input.EventArgs;
 using Chroma.Input.Internal;
-using Chroma.SDL2;
+using Chroma.Natives.SDL;
 
 namespace Chroma.Windowing.EventHandling.Specialized
 {
@@ -18,38 +18,38 @@ namespace Chroma.Windowing.EventHandling.Specialized
 
             Dispatcher.Discard(
                 new[] {
-                    SDL.SDL_EventType.SDL_JOYAXISMOTION,
-                    SDL.SDL_EventType.SDL_JOYDEVICEADDED,
-                    SDL.SDL_EventType.SDL_JOYDEVICEREMOVED,
-                    SDL.SDL_EventType.SDL_JOYBUTTONUP,
-                    SDL.SDL_EventType.SDL_JOYBUTTONDOWN,
-                    SDL.SDL_EventType.SDL_JOYHATMOTION,
-                    SDL.SDL_EventType.SDL_JOYBALLMOTION,
-                    SDL.SDL_EventType.SDL_KEYMAPCHANGED,
-                    SDL.SDL_EventType.SDL_TEXTEDITING
+                    SDL2.SDL_EventType.SDL_JOYAXISMOTION,
+                    SDL2.SDL_EventType.SDL_JOYDEVICEADDED,
+                    SDL2.SDL_EventType.SDL_JOYDEVICEREMOVED,
+                    SDL2.SDL_EventType.SDL_JOYBUTTONUP,
+                    SDL2.SDL_EventType.SDL_JOYBUTTONDOWN,
+                    SDL2.SDL_EventType.SDL_JOYHATMOTION,
+                    SDL2.SDL_EventType.SDL_JOYBALLMOTION,
+                    SDL2.SDL_EventType.SDL_KEYMAPCHANGED,
+                    SDL2.SDL_EventType.SDL_TEXTEDITING
 
                 }
             );
 
-            Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_CONTROLLERDEVICEADDED, ControllerConnected);
-            Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_CONTROLLERDEVICEREMOVED, ControllerDisconnected);
-            Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_CONTROLLERBUTTONDOWN, ControllerButtonPressed);
-            Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_CONTROLLERBUTTONUP, ControllerButtonReleased);
-            Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_CONTROLLERAXISMOTION, ControllerAxisMoved);
+            Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_CONTROLLERDEVICEADDED, ControllerConnected);
+            Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_CONTROLLERDEVICEREMOVED, ControllerDisconnected);
+            Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_CONTROLLERBUTTONDOWN, ControllerButtonPressed);
+            Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_CONTROLLERBUTTONUP, ControllerButtonReleased);
+            Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_CONTROLLERAXISMOTION, ControllerAxisMoved);
 
-            Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_KEYUP, KeyReleased);
-            Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_KEYDOWN, KeyPressed);
-            Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_TEXTINPUT, TextInput);
+            Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_KEYUP, KeyReleased);
+            Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_KEYDOWN, KeyPressed);
+            Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_TEXTINPUT, TextInput);
 
-            Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_MOUSEMOTION, MouseMoved);
-            Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_MOUSEWHEEL, WheelMoved);
-            Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_MOUSEBUTTONDOWN, MousePressed);
-            Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_MOUSEBUTTONUP, MouseReleased);
+            Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_MOUSEMOTION, MouseMoved);
+            Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_MOUSEWHEEL, WheelMoved);
+            Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_MOUSEBUTTONDOWN, MousePressed);
+            Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_MOUSEBUTTONUP, MouseReleased);
         }
 
-        private void ControllerAxisMoved(Window owner, SDL.SDL_Event ev)
+        private void ControllerAxisMoved(Window owner, SDL2.SDL_Event ev)
         {
-            var instance = SDL.SDL_GameControllerFromInstanceID(ev.caxis.which);
+            var instance = SDL2.SDL_GameControllerFromInstanceID(ev.caxis.which);
             var controller = ControllerRegistry.Instance.GetControllerInfoByPointer(instance);
 
             var axis = (ControllerAxis)ev.caxis.axis;
@@ -63,9 +63,9 @@ namespace Chroma.Windowing.EventHandling.Specialized
             );
         }
 
-        private void ControllerButtonPressed(Window owner, SDL.SDL_Event ev)
+        private void ControllerButtonPressed(Window owner, SDL2.SDL_Event ev)
         {
-            var instance = SDL.SDL_GameControllerFromInstanceID(ev.cbutton.which);
+            var instance = SDL2.SDL_GameControllerFromInstanceID(ev.cbutton.which);
             var controller = ControllerRegistry.Instance.GetControllerInfoByPointer(instance);
 
             var button = (ControllerButton)ev.cbutton.button;
@@ -78,9 +78,9 @@ namespace Chroma.Windowing.EventHandling.Specialized
             );
         }
 
-        private void ControllerButtonReleased(Window owner, SDL.SDL_Event ev)
+        private void ControllerButtonReleased(Window owner, SDL2.SDL_Event ev)
         {
-            var instance = SDL.SDL_GameControllerFromInstanceID(ev.cbutton.which);
+            var instance = SDL2.SDL_GameControllerFromInstanceID(ev.cbutton.which);
             var controller = ControllerRegistry.Instance.GetControllerInfoByPointer(instance);
 
             var button = (ControllerButton)ev.cbutton.button;
@@ -93,19 +93,19 @@ namespace Chroma.Windowing.EventHandling.Specialized
             );
         }
 
-        private void ControllerConnected(Window owner, SDL.SDL_Event ev)
+        private void ControllerConnected(Window owner, SDL2.SDL_Event ev)
         {
-            var instance = SDL.SDL_GameControllerOpen(ev.cdevice.which);
-            var joyInstance = SDL.SDL_GameControllerGetJoystick(instance);
-            var instanceId = SDL.SDL_JoystickInstanceID(joyInstance);
+            var instance = SDL2.SDL_GameControllerOpen(ev.cdevice.which);
+            var joyInstance = SDL2.SDL_GameControllerGetJoystick(instance);
+            var instanceId = SDL2.SDL_JoystickInstanceID(joyInstance);
 
             var playerIndex = ControllerRegistry.Instance.GetFirstFreePlayerSlot();
-            SDL.SDL_GameControllerSetPlayerIndex(instance, playerIndex);
+            SDL2.SDL_GameControllerSetPlayerIndex(instance, playerIndex);
 
-            var name = SDL.SDL_GameControllerName(instance);
+            var name = SDL2.SDL_GameControllerName(instance);
             var productInfo = new ProductInfo(
-                SDL.SDL_GameControllerGetVendor(instance),
-                SDL.SDL_GameControllerGetProduct(instance)
+                SDL2.SDL_GameControllerGetVendor(instance),
+                SDL2.SDL_GameControllerGetProduct(instance)
             );
 
             var controllerInfo = new ControllerInfo(instance, instanceId, playerIndex, name, productInfo);
@@ -116,9 +116,9 @@ namespace Chroma.Windowing.EventHandling.Specialized
             );
         }
 
-        private void ControllerDisconnected(Window owner, SDL.SDL_Event ev)
+        private void ControllerDisconnected(Window owner, SDL2.SDL_Event ev)
         {
-            var instance = SDL.SDL_GameControllerFromInstanceID(ev.cdevice.which);
+            var instance = SDL2.SDL_GameControllerFromInstanceID(ev.cdevice.which);
             var controllerInfo = ControllerRegistry.Instance.GetControllerInfoByPointer(instance);
 
             ControllerRegistry.Instance.Unregister(instance);
@@ -128,7 +128,7 @@ namespace Chroma.Windowing.EventHandling.Specialized
             );
         }
 
-        private void KeyReleased(Window owner, SDL.SDL_Event ev)
+        private void KeyReleased(Window owner, SDL2.SDL_Event ev)
         {
             Keyboard.OnKeyReleased(
                 owner.Game,
@@ -141,7 +141,7 @@ namespace Chroma.Windowing.EventHandling.Specialized
             );
         }
 
-        private void KeyPressed(Window owner, SDL.SDL_Event ev)
+        private void KeyPressed(Window owner, SDL2.SDL_Event ev)
         {
             Keyboard.OnKeyPressed(
                 owner.Game,
@@ -154,7 +154,7 @@ namespace Chroma.Windowing.EventHandling.Specialized
             );
         }
 
-        private void TextInput(Window owner, SDL.SDL_Event ev)
+        private void TextInput(Window owner, SDL2.SDL_Event ev)
         {
             string textInput;
             unsafe
@@ -167,9 +167,9 @@ namespace Chroma.Windowing.EventHandling.Specialized
             owner.Game.OnTextInput(new TextInputEventArgs(textInput));
         }
 
-        private void MouseMoved(Window owner, SDL.SDL_Event ev)
+        private void MouseMoved(Window owner, SDL2.SDL_Event ev)
         {
-            if (ev.motion.which == SDL.SDL_TOUCH_MOUSEID)
+            if (ev.motion.which == SDL2.SDL_TOUCH_MOUSEID)
                 return;
 
             owner.Game.OnMouseMoved(
@@ -181,9 +181,9 @@ namespace Chroma.Windowing.EventHandling.Specialized
             );
         }
 
-        private void WheelMoved(Window owner, SDL.SDL_Event ev)
+        private void WheelMoved(Window owner, SDL2.SDL_Event ev)
         {
-            if (ev.wheel.which == SDL.SDL_TOUCH_MOUSEID)
+            if (ev.wheel.which == SDL2.SDL_TOUCH_MOUSEID)
                 return;
 
             owner.Game.OnWheelMoved(
@@ -194,9 +194,9 @@ namespace Chroma.Windowing.EventHandling.Specialized
             );
         }
 
-        private void MousePressed(Window owner, SDL.SDL_Event ev)
+        private void MousePressed(Window owner, SDL2.SDL_Event ev)
         {
-            if (ev.button.which == SDL.SDL_TOUCH_MOUSEID)
+            if (ev.button.which == SDL2.SDL_TOUCH_MOUSEID)
                 return;
 
             owner.Game.OnMousePressed(
@@ -212,9 +212,9 @@ namespace Chroma.Windowing.EventHandling.Specialized
             );
         }
 
-        private void MouseReleased(Window owner, SDL.SDL_Event ev)
+        private void MouseReleased(Window owner, SDL2.SDL_Event ev)
         {
-            if (ev.button.which == SDL.SDL_TOUCH_MOUSEID)
+            if (ev.button.which == SDL2.SDL_TOUCH_MOUSEID)
                 return;
 
             owner.Game.OnMouseReleased(

@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Chroma.SDL2
+namespace Chroma.Natives.FT
 {
     public static class FreeType
     {
+        private const string NativeLibraryName = "libfreetype";
+
+        internal static IntPtr FreeTypeLibraryHandle;
+        public static IntPtr LibraryHandle => FreeTypeLibraryHandle;
+
         #region freetype.h
         [StructLayout(LayoutKind.Sequential)]
         public struct FT_GlyphMetrics
@@ -63,6 +68,50 @@ namespace Chroma.SDL2
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        public struct FT_SizeRec
+        {
+            IntPtr face;
+            IntPtr generic;
+            IntPtr metrics;
+            IntPtr @internal;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct FT_GlyphSlotRec
+        {
+            IntPtr library;
+            IntPtr face;
+            IntPtr next;
+            uint glyph_index;
+            IntPtr generic;
+
+            FT_GlyphMetrics metrics;
+            int linearHoriAdvance;
+            int linearVertAdvance;
+            FT_Vector advance;
+
+            FT_Glyph_Format format;
+
+            FT_Bitmap bitmap;
+            int bitmap_left;
+            int bitmap_top;
+
+            FT_Outline outline;
+
+            uint num_subglyphs;
+            IntPtr subglyphs;
+
+            IntPtr control_data;
+            int control_len;
+
+            int lsb_delta;
+            int rsb_delta;
+
+            IntPtr other;
+            IntPtr @internal;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         public struct FT_FaceRec
         {
             int num_faces;
@@ -77,18 +126,44 @@ namespace Chroma.SDL2
             string style_name;
 
             int num_fixed_sizes;
-            IntPtr available_sizes;
+            IntPtr available_sizes; // FT_BitmapSize*
 
             int num_charmaps;
-            IntPtr charmaps;
+            IntPtr charmaps;  // FT_CharMapRec*
 
             IntPtr generic;
+
+            FT_BBox bbox;
+
+            ushort units_per_EM;
+            short ascender;
+            short descender;
+            short height;
+
+            short max_advance_width;
+            short max_advance_height;
+
+            short underline_position;
+            short underline_thickness;
+
+            IntPtr glyph; // FT_GlyphSlotRec
+            IntPtr size;  // FT_SizeRec
+            IntPtr charmap; // FT_CharMapRec
         }
 
         public static uint FT_ENC_TAG(uint a, uint b, uint c, uint d)
         {
             return ((a << 24) | (b << 16) | (c << 8) | (d));
         }
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int FT_Init_FreeType(out IntPtr library);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int FT_Done_FreeType(IntPtr library);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int FT_New_Face(IntPtr library, string filePath, int face_index, ref FT_FaceRec aface);
         #endregion
 
         #region ftimage.h

@@ -1,5 +1,5 @@
 ﻿using Chroma.Diagnostics;
-using Chroma.SDL2;
+using Chroma.Natives.SDL;
 
 namespace Chroma.Windowing
 {
@@ -14,7 +14,7 @@ namespace Chroma.Windowing
         {
             get
             {
-                SDL.SDL_GetWindowSize(Owner.Handle, out int _, out int h);
+                SDL2.SDL_GetWindowSize(Owner.Handle, out int _, out int h);
                 return h;
             }
 
@@ -23,7 +23,7 @@ namespace Chroma.Windowing
                 if (ViewportAutoResize)
                     SDL_gpu.GPU_SetWindowResolution((ushort)Width, (ushort)value);
                 else
-                    SDL.SDL_SetWindowSize(Owner.Handle, (ushort)Width, (ushort)value);
+                    SDL2.SDL_SetWindowSize(Owner.Handle, (ushort)Width, (ushort)value);
             }
         }
 
@@ -31,7 +31,7 @@ namespace Chroma.Windowing
         {
             get
             {
-                SDL.SDL_GetWindowSize(Owner.Handle, out int w, out int _);
+                SDL2.SDL_GetWindowSize(Owner.Handle, out int w, out int _);
                 return w;
             }
 
@@ -40,7 +40,7 @@ namespace Chroma.Windowing
                 if (ViewportAutoResize)
                     SDL_gpu.GPU_SetWindowResolution((ushort)value, (ushort)Height);
                 else
-                    SDL.SDL_SetWindowSize(Owner.Handle, (ushort)value, (ushort)Height);
+                    SDL2.SDL_SetWindowSize(Owner.Handle, (ushort)value, (ushort)Height);
             }
         }
 
@@ -48,17 +48,17 @@ namespace Chroma.Windowing
         {
             get
             {
-                SDL.SDL_GetWindowPosition(Owner.Handle, out int w, out int h);
+                SDL2.SDL_GetWindowPosition(Owner.Handle, out int w, out int h);
                 return new Vector2(w, h);
             }
 
-            set => SDL.SDL_SetWindowPosition(Owner.Handle, (int)value.X, (int)value.Y);
+            set => SDL2.SDL_SetWindowPosition(Owner.Handle, (int)value.X, (int)value.Y);
         }
 
         public string Title
         {
-            get => SDL.SDL_GetWindowTitle(Owner.Handle);
-            set => SDL.SDL_SetWindowTitle(Owner.Handle, value);
+            get => SDL2.SDL_GetWindowTitle(Owner.Handle);
+            set => SDL2.SDL_SetWindowTitle(Owner.Handle, value);
         }
 
         public WindowState State
@@ -70,23 +70,23 @@ namespace Chroma.Windowing
                 switch (value)
                 {
                     case WindowState.Maximized:
-                        var flags = (SDL.SDL_WindowFlags)SDL.SDL_GetWindowFlags(Owner.Handle);
+                        var flags = (SDL2.SDL_WindowFlags)SDL2.SDL_GetWindowFlags(Owner.Handle);
 
-                        if (!flags.HasFlag(SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE))
+                        if (!flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_RESIZABLE))
                         {
                             Log.Warning("Refusing to maximize a non-resizable window.");
                             return;
                         }
 
-                        SDL.SDL_MaximizeWindow(Owner.Handle);
+                        SDL2.SDL_MaximizeWindow(Owner.Handle);
                         break;
 
                     case WindowState.Minimized:
-                        SDL.SDL_MinimizeWindow(Owner.Handle);
+                        SDL2.SDL_MinimizeWindow(Owner.Handle);
                         break;
 
                     case WindowState.Normal:
-                        SDL.SDL_RestoreWindow(Owner.Handle);
+                        SDL2.SDL_RestoreWindow(Owner.Handle);
                         break;
                 }
 
@@ -98,10 +98,10 @@ namespace Chroma.Windowing
         {
             get
             {
-                var flags = (SDL.SDL_WindowFlags)SDL.SDL_GetWindowFlags(Owner.Handle);
+                var flags = (SDL2.SDL_WindowFlags)SDL2.SDL_GetWindowFlags(Owner.Handle);
 
-                return flags.HasFlag(SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN)
-                    || flags.HasFlag(SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP);
+                return flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN)
+                    || flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP);
             }
         }
 
@@ -112,7 +112,7 @@ namespace Chroma.Windowing
 
             Width = 800;
             Height = 600;
-            Position = new Vector2(SDL.SDL_WINDOWPOS_CENTERED, SDL.SDL_WINDOWPOS_CENTERED);
+            Position = new Vector2(SDL2.SDL_WINDOWPOS_CENTERED, SDL2.SDL_WINDOWPOS_CENTERED);
             Title = "Chroma Engine";
         }
 

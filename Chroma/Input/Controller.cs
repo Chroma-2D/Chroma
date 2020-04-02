@@ -1,7 +1,7 @@
 ﻿using System;
 using Chroma.Hardware;
 using Chroma.Input.Internal;
-using Chroma.SDL2;
+using Chroma.Natives.SDL;
 
 namespace Chroma.Input
 {
@@ -60,7 +60,7 @@ namespace Chroma.Input
             if (controller == null)
                 return null;
 
-            return SDL.SDL_GameControllerName(controller.InstancePointer);
+            return SDL2.SDL_GameControllerName(controller.InstancePointer);
         }
 
         public static string GetMappings(int playerIndex)
@@ -70,7 +70,7 @@ namespace Chroma.Input
             if (controller == null)
                 return null;
 
-            return SDL.SDL_GameControllerMapping(controller.InstancePointer);
+            return SDL2.SDL_GameControllerMapping(controller.InstancePointer);
         }
 
         public static short GetAxisValue(int playerIndex, ControllerAxis axis)
@@ -80,9 +80,9 @@ namespace Chroma.Input
             if (controller == null)
                 return 0;
 
-            var axisValue = SDL.SDL_GameControllerGetAxis(
+            var axisValue = SDL2.SDL_GameControllerGetAxis(
                 controller.InstancePointer,
-                (SDL.SDL_GameControllerAxis)axis
+                (SDL2.SDL_GameControllerAxis)axis
             );
 
             if (CanIgnoreAxisMotion(playerIndex, axis, axisValue))
@@ -101,9 +101,9 @@ namespace Chroma.Input
             if (controller == null)
                 return false;
 
-            return SDL.SDL_GameControllerGetButton(
+            return SDL2.SDL_GameControllerGetButton(
                 controller.InstancePointer,
-                (SDL.SDL_GameControllerButton)button
+                (SDL2.SDL_GameControllerButton)button
             ) > 0;
         }
 
@@ -114,7 +114,7 @@ namespace Chroma.Input
             if (controller == null)
                 return;
 
-            SDL.SDL_GameControllerRumble(
+            SDL2.SDL_GameControllerRumble(
                 controller.InstancePointer,
                 lowFreq,
                 highFreq,
@@ -129,8 +129,8 @@ namespace Chroma.Input
             if (controller == null)
                 return BatteryStatus.Unknown;
 
-            var joystickInstance = SDL.SDL_GameControllerGetJoystick(controller.InstancePointer);
-            return (BatteryStatus)SDL.SDL_JoystickCurrentPowerLevel(joystickInstance);
+            var joystickInstance = SDL2.SDL_GameControllerGetJoystick(controller.InstancePointer);
+            return (BatteryStatus)SDL2.SDL_JoystickCurrentPowerLevel(joystickInstance);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Chroma.SDL2;
+﻿using Chroma.Natives.SDL;
 
 namespace Chroma.Diagnostics
 {
@@ -11,12 +11,12 @@ namespace Chroma.Diagnostics
 
         internal FpsCounter()
         {
-            _lastTime = SDL.SDL_GetTicks();
+            _lastTime = SDL2.SDL_GetTicks();
         }
 
         internal void Update()
         {
-            var currentTime = SDL.SDL_GetTicks();
+            var currentTime = SDL2.SDL_GetTicks();
 
             if (currentTime - _lastTime > 1000)
             {

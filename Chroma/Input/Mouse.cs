@@ -1,4 +1,4 @@
-﻿using Chroma.SDL2;
+﻿using Chroma.Natives.SDL;
 
 namespace Chroma.Input
 {
@@ -6,14 +6,14 @@ namespace Chroma.Input
     {
         public static Vector2 GetPosition()
         {
-            _ = SDL.SDL_GetMouseState(out int x, out int y);
+            _ = SDL2.SDL_GetMouseState(out int x, out int y);
             return new Vector2(x, y);
         }
 
         public static bool IsButtonDown(MouseButton button)
         {
-            var state = SDL.SDL_GetMouseState(out int _, out int _);
-            var mask = SDL.SDL_BUTTON((uint)button);
+            var state = SDL2.SDL_GetMouseState(out int _, out int _);
+            var mask = SDL2.SDL_BUTTON((uint)button);
 
             return (state & mask) != 0;
         }

@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Binaries\Win32\freetype.dll" />
     <None Remove="Binaries\Win32\libFLAC-8.dll" />
+    <None Remove="Binaries\Win32\libfreetype.dll" />
     <None Remove="Binaries\Win32\libjpeg-9.dll" />
     <None Remove="Binaries\Win32\libmodplug-1.dll" />
     <None Remove="Binaries\Win32\libmpg123-0.dll" />
@@ -25,8 +25,8 @@
     <None Remove="Binaries\Win32\SDL2_image.dll" />
     <None Remove="Binaries\Win32\SDL2_mixer.dll" />
     <None Remove="Binaries\Win32\zlib1.dll" />
-    <None Remove="Binaries\Win64\freetype.dll" />
     <None Remove="Binaries\Win64\libFLAC-8.dll" />
+    <None Remove="Binaries\Win64\libfreetype.dll" />
     <None Remove="Binaries\Win64\libjpeg-9.dll" />
     <None Remove="Binaries\Win64\libmodplug-1.dll" />
     <None Remove="Binaries\Win64\libmpg123-0.dll" />
@@ -46,7 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Binaries\Win32\freetype.dll" />
+    <EmbeddedResource Include="Binaries\Win32\libfreetype.dll" />
     <EmbeddedResource Include="Binaries\Win32\libFLAC-8.dll" />
     <EmbeddedResource Include="Binaries\Win32\libjpeg-9.dll" />
     <EmbeddedResource Include="Binaries\Win32\libmodplug-1.dll" />
@@ -64,7 +64,7 @@
     <EmbeddedResource Include="Binaries\Win32\SDL2_image.dll" />
     <EmbeddedResource Include="Binaries\Win32\SDL2_mixer.dll" />
     <EmbeddedResource Include="Binaries\Win32\zlib1.dll" />
-    <EmbeddedResource Include="Binaries\Win64\freetype.dll" />
+    <EmbeddedResource Include="Binaries\Win64\libfreetype.dll" />
     <EmbeddedResource Include="Binaries\Win64\libFLAC-8.dll" />
     <EmbeddedResource Include="Binaries\Win64\libjpeg-9.dll" />
     <EmbeddedResource Include="Binaries\Win64\libmodplug-1.dll" />

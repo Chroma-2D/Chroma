@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chroma", "Chroma\Chroma.csproj", "{CDA5EAE4-B4E5-4BC0-B1D5-1D51E95888F3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chroma.SDL2", "Chroma.SDL2\Chroma.SDL2.csproj", "{A1A33968-8944-4FD7-AF2F-99A712B5F3B1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chroma.Natives", "Chroma.Natives\Chroma.Natives.csproj", "{A1A33968-8944-4FD7-AF2F-99A712B5F3B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chroma.ExampleApp", "Chroma.ExampleApp\Chroma.ExampleApp.csproj", "{91BB628A-0AED-4D14-BA78-69967BF3DC47}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chroma.ExampleApp", "Chroma.ExampleApp\Chroma.ExampleApp.csproj", "{91BB628A-0AED-4D14-BA78-69967BF3DC47}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

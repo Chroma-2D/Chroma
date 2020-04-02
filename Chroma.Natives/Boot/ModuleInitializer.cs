@@ -1,6 +1,8 @@
 ﻿using System;
+using Chroma.Natives.FT;
+using Chroma.Natives.SDL;
 
-namespace Chroma.SDL2.Boot
+namespace Chroma.Natives.Boot
 {
     internal static class ModuleInitializer
     {
@@ -8,7 +10,7 @@ namespace Chroma.SDL2.Boot
 
         public static void Initialize()
         {
-            Console.WriteLine("Chroma.SDL2 bindings initializing...");
+            Console.WriteLine("Chroma.Natives initializing...");
 
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
@@ -22,8 +24,13 @@ namespace Chroma.SDL2.Boot
                 Console.WriteLine("    If any of those are missing, the engine will fail right about... now.");
             }
 
-            SDL.SDL_Init(SDL.SDL_INIT_EVERYTHING);
-            SDL_ttf.TTF_Init();
+            Console.WriteLine("---");
+            Console.WriteLine("Initializing SDL2 core...");
+            SDL2.SDL_Init(SDL2.SDL_INIT_EVERYTHING);
+
+            Console.WriteLine("Initializing FreeType...");
+            FreeType.FT_Init_FreeType(out IntPtr library);
+            FreeType.FreeTypeLibraryHandle = library;
         }
     }
 }

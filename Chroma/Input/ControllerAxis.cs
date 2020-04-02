@@ -1,14 +1,14 @@
-﻿using Chroma.SDL2;
+﻿using Chroma.Natives.SDL;
 
 namespace Chroma.Input
 {
     public enum ControllerAxis
     {
-        LeftStickX = SDL.SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_LEFTX,
-        LeftStickY = SDL.SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_LEFTY,
-        LeftTrigger = SDL.SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_TRIGGERLEFT,
-        RightStickX = SDL.SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_RIGHTX,
-        RightStickY = SDL.SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_RIGHTY,
-        RightTrigger = SDL.SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_TRIGGERRIGHT
+        LeftStickX = SDL2.SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_LEFTX,
+        LeftStickY = SDL2.SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_LEFTY,
+        LeftTrigger = SDL2.SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_TRIGGERLEFT,
+        RightStickX = SDL2.SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_RIGHTX,
+        RightStickY = SDL2.SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_RIGHTY,
+        RightTrigger = SDL2.SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_TRIGGERRIGHT
     }
 }

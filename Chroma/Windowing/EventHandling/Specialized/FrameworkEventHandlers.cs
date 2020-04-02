@@ -1,4 +1,4 @@
-﻿using Chroma.SDL2;
+﻿using Chroma.Natives.SDL;
 using Chroma.Windowing.EventArgs;
 
 namespace Chroma.Windowing.EventHandling.Specialized
@@ -11,10 +11,10 @@ namespace Chroma.Windowing.EventHandling.Specialized
         {
             Dispatcher = dispatcher;
 
-            Dispatcher.RegisterEventHandler(SDL.SDL_EventType.SDL_QUIT, QuitRequested);
+            Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_QUIT, QuitRequested);
         }
 
-        private void QuitRequested(Window owner, SDL.SDL_Event ev)
+        private void QuitRequested(Window owner, SDL2.SDL_Event ev)
             => owner.OnQuitRequested(new CancelEventArgs());
     }
 }

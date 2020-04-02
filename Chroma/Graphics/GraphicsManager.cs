@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Chroma.Diagnostics;
-using Chroma.SDL2;
+using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics
 {
@@ -20,26 +20,23 @@ namespace Chroma.Graphics
 
                 if (!value)
                 {
-                    SDL.SDL_GL_SetSwapInterval(0);
+                    SDL2.SDL_GL_SetSwapInterval(0);
                 }
                 else
                 {
-                    SDL.SDL_GL_SetSwapInterval(1);
+                    SDL2.SDL_GL_SetSwapInterval(1);
                 }
             }
         }
 
         public float Gamma
         {
-            get => SDL.SDL_GetWindowBrightness(Game.Window.Handle);
-            set => SDL.SDL_SetWindowBrightness(Game.Window.Handle, value);
+            get => SDL2.SDL_GetWindowBrightness(Game.Window.Handle);
+            set => SDL2.SDL_SetWindowBrightness(Game.Window.Handle, value);
         }
 
         internal GraphicsManager(Game game)
         {
-            if (SDL.SDL_WasInit(SDL.SDL_INIT_EVERYTHING) == 0)
-                SDL.SDL_Init(SDL.SDL_INIT_EVERYTHING);
-
             Game = game;
 
             Log.Info("GraphicsManager initializing...");
@@ -57,12 +54,12 @@ namespace Chroma.Graphics
         }
 
         public List<string> GetRendererNames()
-            => GetRegisteredRenderers().Select(x => $"{x.name.Value} ({x.major_version}.{x.minor_version})").ToList();
+            => GetRegisteredRenderers().Select(x => $"{x.name} ({x.major_version}.{x.minor_version})").ToList();
 
         public List<Display> FetchDisplayInfo()
         {
             var displays = new List<Display>();
-            var count = SDL.SDL_GetNumVideoDisplays();
+            var count = SDL2.SDL_GetNumVideoDisplays();
 
             for (var i = 0; i < count; i++)
             {
@@ -78,7 +75,7 @@ namespace Chroma.Graphics
         public List<Display> FetchDesktopDisplayInfo()
         {
             var displays = new List<Display>();
-            var count = SDL.SDL_GetNumVideoDisplays();
+            var count = SDL2.SDL_GetNumVideoDisplays();
 
             for (var i = 0; i < count; i++)
             {
@@ -93,7 +90,7 @@ namespace Chroma.Graphics
 
         public Display FetchDisplayInfo(int index)
         {
-            if (SDL.SDL_GetCurrentDisplayMode(index, out SDL.SDL_DisplayMode mode) == 0)
+            if (SDL2.SDL_GetCurrentDisplayMode(index, out SDL2.SDL_DisplayMode mode) == 0)
             {
                 return new Display(index, mode.refresh_rate, (ushort)mode.w, (ushort)mode.h)
                 {
@@ -102,14 +99,14 @@ namespace Chroma.Graphics
             }
             else
             {
-                Log.Error($"Failed to retrieve display {index} info: {SDL.SDL_GetError()}");
+                Log.Error($"Failed to retrieve display {index} info: {SDL2.SDL_GetError()}");
                 return null;
             }
         }
 
         public Display FetchDesktopDisplayInfo(int index)
         {
-            if (SDL.SDL_GetDesktopDisplayMode(index, out SDL.SDL_DisplayMode mode) == 0)
+            if (SDL2.SDL_GetDesktopDisplayMode(index, out SDL2.SDL_DisplayMode mode) == 0)
             {
                 return new Display(index, mode.refresh_rate, (ushort)mode.w, (ushort)mode.h)
                 {
@@ -118,7 +115,7 @@ namespace Chroma.Graphics
             }
             else
             {
-                Log.Error($"Failed to retrieve desktop display {index} info: {SDL.SDL_GetError()}");
+                Log.Error($"Failed to retrieve desktop display {index} info: {SDL2.SDL_GetError()}");
                 return null;
             }
         }

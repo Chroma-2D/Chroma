@@ -1,5 +1,4 @@
 ﻿using System;
-using Chroma.Natives.FT;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Natives.Boot
@@ -27,10 +26,6 @@ namespace Chroma.Natives.Boot
             Console.WriteLine("---");
             Console.WriteLine("Initializing SDL2 core...");
             SDL2.SDL_Init(SDL2.SDL_INIT_EVERYTHING);
-
-            Console.WriteLine("Initializing FreeType...");
-            FreeType.FT_Init_FreeType(out IntPtr library);
-            FreeType.FreeTypeLibraryHandle = library;
         }
     }
 }

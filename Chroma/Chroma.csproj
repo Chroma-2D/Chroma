@@ -4,7 +4,12 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <UserSecretsId>31002ba1-1418-43c6-b3c3-cb69feb955f4</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FreeTypeSharp" Version="1.1.0" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Chroma.Natives\Chroma.Natives.csproj" />

@@ -27,8 +27,9 @@
 using System;
 using System.Text;
 using System.Runtime.InteropServices;
+using Chroma.Natives.SDL;
 
-namespace Chroma.SDL2
+namespace Chroma.Natives
 {
     internal unsafe class LPUtf8StrMarshaler : ICustomMarshaler
     {
@@ -80,7 +81,7 @@ namespace Chroma.SDL2
                 throw new ArgumentException("ManagedObj must be a string.", "ManagedObj");
             }
             var bytes = Encoding.UTF8.GetBytes(str);
-            var mem = SDL.SDL_malloc((IntPtr)bytes.Length + 1);
+            var mem = SDL2.SDL_malloc((IntPtr)bytes.Length + 1);
             Marshal.Copy(bytes, 0, mem, bytes.Length);
             ((byte*)mem)[bytes.Length] = 0;
             return mem;
@@ -94,7 +95,7 @@ namespace Chroma.SDL2
         {
             if (!_leaveAllocated)
             {
-                SDL.SDL_free(pNativeData);
+                SDL2.SDL_free(pNativeData);
             }
         }
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Chroma.Diagnostics;
-using Chroma.SDL2;
+using Chroma.Natives.SDL;
 
 namespace Chroma.Windowing.EventHandling
 {
@@ -8,28 +8,28 @@ namespace Chroma.Windowing.EventHandling
     {
         private Window Owner { get; }
 
-        internal delegate void SdlEventHandler(Window window, SDL.SDL_Event ev);
-        internal delegate void WindowEventHandler(Window window, SDL.SDL_WindowEvent ev);
+        internal delegate void SdlEventHandler(Window window, SDL2.SDL_Event ev);
+        internal delegate void WindowEventHandler(Window window, SDL2.SDL_WindowEvent ev);
 
-        internal Dictionary<SDL.SDL_EventType, SdlEventHandler> SdlEventHandlers { get; }
-        internal Dictionary<SDL.SDL_WindowEventID, WindowEventHandler> WindowEventHandlers { get; }
-        internal Dictionary<SDL.SDL_EventType, bool> DiscardedEventTypes { get; }
+        internal Dictionary<SDL2.SDL_EventType, SdlEventHandler> SdlEventHandlers { get; }
+        internal Dictionary<SDL2.SDL_WindowEventID, WindowEventHandler> WindowEventHandlers { get; }
+        internal Dictionary<SDL2.SDL_EventType, bool> DiscardedEventTypes { get; }
 
         internal EventDispatcher(Window owner)
         {
             Owner = owner;
             
-            SdlEventHandlers = new Dictionary<SDL.SDL_EventType, SdlEventHandler>();
-            WindowEventHandlers = new Dictionary<SDL.SDL_WindowEventID, WindowEventHandler>();
-            DiscardedEventTypes = new Dictionary<SDL.SDL_EventType, bool>();
+            SdlEventHandlers = new Dictionary<SDL2.SDL_EventType, SdlEventHandler>();
+            WindowEventHandlers = new Dictionary<SDL2.SDL_WindowEventID, WindowEventHandler>();
+            DiscardedEventTypes = new Dictionary<SDL2.SDL_EventType, bool>();
         }
 
-        internal void Dispatch(SDL.SDL_Event ev)
+        internal void Dispatch(SDL2.SDL_Event ev)
         {
             if (DiscardedEventTypes.ContainsKey(ev.type))
                 return;
 
-            if (ev.type == SDL.SDL_EventType.SDL_WINDOWEVENT)
+            if (ev.type == SDL2.SDL_EventType.SDL_WINDOWEVENT)
             {
                 DispatchWindowEvent(ev.window);
                 return;
@@ -38,7 +38,7 @@ namespace Chroma.Windowing.EventHandling
             DispatchEvent(ev);
         }
 
-        internal void DispatchWindowEvent(SDL.SDL_WindowEvent ev)
+        internal void DispatchWindowEvent(SDL2.SDL_WindowEvent ev)
         {
             if (WindowEventHandlers.ContainsKey(ev.windowEvent))
             {
@@ -50,7 +50,7 @@ namespace Chroma.Windowing.EventHandling
             }
         }
 
-        internal void DispatchEvent(SDL.SDL_Event ev)
+        internal void DispatchEvent(SDL2.SDL_Event ev)
         {
             if (SdlEventHandlers.ContainsKey(ev.type))
             {
@@ -62,7 +62,7 @@ namespace Chroma.Windowing.EventHandling
             }
         }
 
-        internal void RegisterWindowEventHandler(SDL.SDL_WindowEventID eventId, WindowEventHandler handler)
+        internal void RegisterWindowEventHandler(SDL2.SDL_WindowEventID eventId, WindowEventHandler handler)
         {
             if (WindowEventHandlers.ContainsKey(eventId))
             {
@@ -75,7 +75,7 @@ namespace Chroma.Windowing.EventHandling
             }
         }
 
-        internal void RegisterEventHandler(SDL.SDL_EventType type, SdlEventHandler handler)
+        internal void RegisterEventHandler(SDL2.SDL_EventType type, SdlEventHandler handler)
         {
             if (SdlEventHandlers.ContainsKey(type))
             {
@@ -88,7 +88,7 @@ namespace Chroma.Windowing.EventHandling
             }
         }
 
-        internal void Discard(params SDL.SDL_EventType[] types)
+        internal void Discard(params SDL2.SDL_EventType[] types)
         {
             foreach (var type in types)
             {

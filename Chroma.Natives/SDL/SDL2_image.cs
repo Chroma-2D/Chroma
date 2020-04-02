@@ -31,7 +31,7 @@ using System;
 using System.Runtime.InteropServices;
 #endregion
 
-namespace Chroma.SDL2
+namespace Chroma.Natives.SDL
 {
 	public static class SDL_image
 	{
@@ -48,20 +48,20 @@ namespace Chroma.SDL2
 		 * running with. You will likely want to check this somewhere in your
 		 * program!
 		 */
-		public const int SDL_IMAGE_MAJOR_VERSION =	2;
-		public const int SDL_IMAGE_MINOR_VERSION =	0;
-		public const int SDL_IMAGE_PATCHLEVEL =		6;
+		public const int SDL_IMAGE_MAJOR_VERSION = 2;
+		public const int SDL_IMAGE_MINOR_VERSION = 0;
+		public const int SDL_IMAGE_PATCHLEVEL = 6;
 
 		[Flags]
 		public enum IMG_InitFlags
 		{
-			IMG_INIT_JPG =	0x00000001,
-			IMG_INIT_PNG =	0x00000002,
-			IMG_INIT_TIF =	0x00000004,
-			IMG_INIT_WEBP =	0x00000008
+			IMG_INIT_JPG = 0x00000001,
+			IMG_INIT_PNG = 0x00000002,
+			IMG_INIT_TIF = 0x00000004,
+			IMG_INIT_WEBP = 0x00000008
 		}
 
-		public static void SDL_IMAGE_VERSION(out SDL.SDL_version X)
+		public static void SDL_IMAGE_VERSION(out SDL2.SDL_version X)
 		{
 			X.major = SDL_IMAGE_MAJOR_VERSION;
 			X.minor = SDL_IMAGE_MINOR_VERSION;
@@ -70,13 +70,13 @@ namespace Chroma.SDL2
 
 		[DllImport(nativeLibName, EntryPoint = "IMG_Linked_Version", CallingConvention = CallingConvention.Cdecl)]
 		private static extern IntPtr INTERNAL_IMG_Linked_Version();
-		public static SDL.SDL_version IMG_Linked_Version()
+		public static SDL2.SDL_version IMG_Linked_Version()
 		{
-			SDL.SDL_version result;
+			SDL2.SDL_version result;
 			IntPtr result_ptr = INTERNAL_IMG_Linked_Version();
-			result = (SDL.SDL_version) Marshal.PtrToStructure(
+			result = (SDL2.SDL_version)Marshal.PtrToStructure(
 				result_ptr,
-				typeof(SDL.SDL_version)
+				typeof(SDL2.SDL_version)
 			);
 			return result;
 		}
@@ -94,7 +94,7 @@ namespace Chroma.SDL2
 		);
 		public static IntPtr IMG_Load(string file)
 		{
-			return INTERNAL_IMG_Load(SDL.UTF8_ToNative(file));
+			return INTERNAL_IMG_Load(SDL2.UTF8_ToNative(file));
 		}
 
 		/* src refers to an SDL_RWops*, IntPtr to an SDL_Surface* */
@@ -117,11 +117,12 @@ namespace Chroma.SDL2
 			IntPtr src,
 			int freesrc,
 			string type
-		) {
+		)
+		{
 			return INTERNAL_IMG_LoadTyped_RW(
 				src,
 				freesrc,
-				SDL.UTF8_ToNative(type)
+				SDL2.UTF8_ToNative(type)
 			);
 		}
 
@@ -134,10 +135,11 @@ namespace Chroma.SDL2
 		public static IntPtr IMG_LoadTexture(
 			IntPtr renderer,
 			string file
-		) {
+		)
+		{
 			return INTERNAL_IMG_LoadTexture(
 				renderer,
-				SDL.UTF8_ToNative(file)
+				SDL2.UTF8_ToNative(file)
 			);
 		}
 
@@ -170,12 +172,13 @@ namespace Chroma.SDL2
 			IntPtr src,
 			int freesrc,
 			string type
-		) {
+		)
+		{
 			return INTERNAL_IMG_LoadTextureTyped_RW(
 				renderer,
 				src,
 				freesrc,
-				SDL.UTF8_ToNative(type)
+				SDL2.UTF8_ToNative(type)
 			);
 		}
 
@@ -196,7 +199,7 @@ namespace Chroma.SDL2
 		{
 			return INTERNAL_IMG_SavePNG(
 				surface,
-				SDL.UTF8_ToNative(file)
+				SDL2.UTF8_ToNative(file)
 			);
 		}
 
@@ -220,7 +223,7 @@ namespace Chroma.SDL2
 		{
 			return INTERNAL_IMG_SaveJPG(
 				surface,
-				SDL.UTF8_ToNative(file),
+				SDL2.UTF8_ToNative(file),
 				quality
 			);
 		}

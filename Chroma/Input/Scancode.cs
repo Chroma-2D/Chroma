@@ -1,4 +1,4 @@
-using static Chroma.SDL2.SDL;
+using static Chroma.Natives.SDL.SDL2;
 
 namespace Chroma.Input
 {

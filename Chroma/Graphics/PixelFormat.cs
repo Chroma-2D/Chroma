@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Chroma.SDL2;
+using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics
 {

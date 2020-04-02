@@ -1,7 +1,7 @@
 ﻿using System;
 using Chroma.Diagnostics;
 using Chroma.Graphics;
-using Chroma.SDL2;
+using Chroma.Natives.SDL;
 using Chroma.Windowing.EventArgs;
 using Chroma.Windowing.EventHandling;
 using Chroma.Windowing.EventHandling.Specialized;
@@ -10,7 +10,7 @@ namespace Chroma.Windowing
 {
     public sealed class Window : IDisposable
     {
-        private ulong _nowFrameTime = SDL.SDL_GetPerformanceCounter();
+        private ulong _nowFrameTime = SDL2.SDL_GetPerformanceCounter();
         private ulong _lastFrameTime = 0;
 
         private float Delta { get; set; }
@@ -55,17 +55,17 @@ namespace Chroma.Windowing
             Game = game;
             Properties = new WindowProperties(this);
 
-            Handle = SDL.SDL_CreateWindow(
+            Handle = SDL2.SDL_CreateWindow(
                 string.Empty,
                 (int)Properties.Position.X,
                 (int)Properties.Position.Y,
                 (int)Properties.Width,
                 (int)Properties.Height,
-                SDL.SDL_WindowFlags.SDL_WINDOW_OPENGL
+                SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL
             );
             Properties.Title = "Chroma Engine";
 
-            SDL_gpu.GPU_SetInitWindow(SDL.SDL_GetWindowID(Handle));
+            SDL_gpu.GPU_SetInitWindow(SDL2.SDL_GetWindowID(Handle));
 
             var bestRenderer = Game.Graphics.GetBestRenderer();
             Log.Info($"Selecting best renderer: {bestRenderer.name}");
@@ -93,10 +93,10 @@ namespace Chroma.Windowing
             while (Running)
             {
                 _lastFrameTime = _nowFrameTime;
-                _nowFrameTime = SDL.SDL_GetPerformanceCounter();
-                Delta = (_nowFrameTime - _lastFrameTime) / (float)SDL.SDL_GetPerformanceFrequency();
+                _nowFrameTime = SDL2.SDL_GetPerformanceCounter();
+                Delta = (_nowFrameTime - _lastFrameTime) / (float)SDL2.SDL_GetPerformanceFrequency();
 
-                while (SDL.SDL_PollEvent(out SDL.SDL_Event ev) != 0)
+                while (SDL2.SDL_PollEvent(out SDL2.SDL_Event ev) != 0)
                     EventDispatcher.Dispatch(ev);
 
                 Update?.Invoke(Delta);
@@ -109,12 +109,12 @@ namespace Chroma.Windowing
 
         public void GoFullscreen(bool exclusive = false, bool autoRes = true)
         {
-            var flag = (uint)SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP;
+            var flag = (uint)SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP;
 
             if (exclusive)
-                flag = (uint)SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN;
+                flag = (uint)SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN;
 
-            SDL.SDL_SetWindowFullscreen(Handle, flag);
+            SDL2.SDL_SetWindowFullscreen(Handle, flag);
 
             if (autoRes)
                 DetermineNativeResolution();
@@ -122,12 +122,12 @@ namespace Chroma.Windowing
 
         public void GoWindowed(ushort width, ushort height)
         {
-            SDL.SDL_SetWindowFullscreen(Handle, 0);
+            SDL2.SDL_SetWindowFullscreen(Handle, 0);
             SDL_gpu.GPU_SetWindowResolution(width, height);
 
             Properties.Width = width;
             Properties.Height = height;
-            Properties.Position = new Vector2(SDL.SDL_WINDOWPOS_CENTERED, SDL.SDL_WINDOWPOS_CENTERED);
+            Properties.Position = new Vector2(SDL2.SDL_WINDOWPOS_CENTERED, SDL2.SDL_WINDOWPOS_CENTERED);
         }
 
         internal void OnClosed()
@@ -156,7 +156,7 @@ namespace Chroma.Windowing
 
         internal void OnFocusOffered()
         {
-            SDL.SDL_SetWindowInputFocus(Handle);
+            SDL2.SDL_SetWindowInputFocus(Handle);
         }
 
         internal void OnFocused()
@@ -186,10 +186,10 @@ namespace Chroma.Windowing
 
         private void DetermineNativeResolution()
         {
-            var thisDisplayIndex = SDL.SDL_GetWindowDisplayIndex(Handle);
+            var thisDisplayIndex = SDL2.SDL_GetWindowDisplayIndex(Handle);
             var display = Game.Graphics.FetchDesktopDisplayInfo(thisDisplayIndex);
 
-            var mode = new SDL.SDL_DisplayMode
+            var mode = new SDL2.SDL_DisplayMode
             {
                 driverdata = display.UnderlyingDisplayMode.driverdata,
                 format = display.UnderlyingDisplayMode.format,
@@ -217,7 +217,7 @@ namespace Chroma.Windowing
 
                 SDL_gpu.GPU_FreeTarget(RenderTargetPointer);
                 SDL_gpu.GPU_Quit();
-                SDL.SDL_Quit();
+                SDL2.SDL_Quit();
 
                 Disposed = true;
             }

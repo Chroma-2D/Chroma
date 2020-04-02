@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Chroma.SDL2
+namespace Chroma.Natives.SDL
 {
     public static class SDL_gpu
     {
@@ -30,10 +30,10 @@ namespace Chroma.SDL2
             GPU_FEATURE_WRAP_REPEAT_MIRRORED = 0x800,
 
             GPU_FEATURE_ALL_BASE = GPU_FEATURE_RENDER_TARGETS,
-            GPU_FEATURE_ALL_BLEND_PRESETS = (GPU_FEATURE_BLEND_EQUATIONS | GPU_FEATURE_BLEND_FUNC_SEPARATE),
-            GPU_FEATURE_ALL_GL_FORMATS = (GPU_FEATURE_GL_BGR | GPU_FEATURE_GL_BGRA | GPU_FEATURE_GL_ABGR),
-            GPU_FEATURE_BASIC_SHADERS = (GPU_FEATURE_FRAGMENT_SHADER | GPU_FEATURE_VERTEX_SHADER),
-            GPU_FEATURE_ALL_SHADERS = (GPU_FEATURE_FRAGMENT_SHADER | GPU_FEATURE_VERTEX_SHADER | GPU_FEATURE_GEOMETRY_SHADER)
+            GPU_FEATURE_ALL_BLEND_PRESETS = GPU_FEATURE_BLEND_EQUATIONS | GPU_FEATURE_BLEND_FUNC_SEPARATE,
+            GPU_FEATURE_ALL_GL_FORMATS = GPU_FEATURE_GL_BGR | GPU_FEATURE_GL_BGRA | GPU_FEATURE_GL_ABGR,
+            GPU_FEATURE_BASIC_SHADERS = GPU_FEATURE_FRAGMENT_SHADER | GPU_FEATURE_VERTEX_SHADER,
+            GPU_FEATURE_ALL_SHADERS = GPU_FEATURE_FRAGMENT_SHADER | GPU_FEATURE_VERTEX_SHADER | GPU_FEATURE_GEOMETRY_SHADER
         }
 
         public enum GPU_RendererEnum : uint
@@ -70,11 +70,11 @@ namespace Chroma.SDL2
 
         /* The window corresponding to 'windowID' will be used to create the rendering context instead of creating a new window. */
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_SetInitWindow(UInt32 windowID);
+        public static extern void GPU_SetInitWindow(uint windowID);
 
         /* Returns the window ID that has been set via GPU_SetInitWindow(). */
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern UInt32 GPU_GetInitWindow();
+        public static extern uint GPU_GetInitWindow();
 
         /* Set special flags to use for initialization. Set these before calling GPU_Init().
 
@@ -128,11 +128,11 @@ namespace Chroma.SDL2
 			GPU_SetRendererOrder() 
 		 */
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern GPU_Target_PTR GPU_Init(UInt16 w, UInt16 h, SDL.SDL_WindowFlags SDL_flags);
+        public static extern GPU_Target_PTR GPU_Init(ushort w, ushort h, SDL2.SDL_WindowFlags SDL_flags);
 
         /* Initializes SDL and SDL_gpu. Creates a window and the requested renderer context. */
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern GPU_Target_PTR GPU_InitRenderer(GPU_RendererEnum renderer_enum, UInt16 w, UInt16 h, SDL.SDL_WindowFlags SDL_flags);
+        public static extern GPU_Target_PTR GPU_InitRenderer(GPU_RendererEnum renderer_enum, ushort w, ushort h, SDL2.SDL_WindowFlags SDL_flags);
 
         /* Initializes SDL and SDL_gpu. Creates a window and the requested renderer context.
 		   By requesting a renderer via ID, you can specify the major and minor versions of
@@ -141,7 +141,7 @@ namespace Chroma.SDL2
 		   See also
 			GPU_MakeRendererID */
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern GPU_Target_PTR GPU_InitRendererByID(GPU_RendererID renderer_request, UInt16 w, UInt16 h, SDL.SDL_WindowFlags SDL_flags);
+        public static extern GPU_Target_PTR GPU_InitRendererByID(GPU_RendererID renderer_request, ushort w, ushort h, SDL2.SDL_WindowFlags SDL_flags);
 
         /* Checks for important GPU features which may not be supported depending on a device's
 		   extension support. Feature flags (GPU_FEATURE_*) can be bitwise OR'd together.
@@ -301,7 +301,7 @@ namespace Chroma.SDL2
             /*! Struct identifier of the renderer. */
             public GPU_RendererID id;
             public GPU_RendererID requested_id;
-            public SDL.SDL_WindowFlags SDL_init_flags;
+            public SDL2.SDL_WindowFlags SDL_init_flags;
             public GPU_InitFlagEnum GPU_init_flags;
 
             public GPU_ShaderLanguageEnum shader_language;
@@ -330,7 +330,7 @@ namespace Chroma.SDL2
 
             public static GPU_Renderer_PTR Null
             {
-                get { return default(GPU_Renderer_PTR); }
+                get { return default; }
             }
         }
 
@@ -414,7 +414,7 @@ namespace Chroma.SDL2
 
             public static GPU_Context_PTR Null
             {
-                get { return default(GPU_Context_PTR); }
+                get { return default; }
             }
         }
 
@@ -422,16 +422,16 @@ namespace Chroma.SDL2
         public static extern GPU_Target_PTR GPU_GetContextTarget();
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern GPU_Target_PTR GPU_GetWindowTarget(UInt32 windowID);
+        public static extern GPU_Target_PTR GPU_GetWindowTarget(uint windowID);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern GPU_Target_PTR GPU_CreateTargetFromWindow(UInt32 windowID);
+        public static extern GPU_Target_PTR GPU_CreateTargetFromWindow(uint windowID);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_MakeCurrent(GPU_Target_PTR target, UInt32 windowID);
+        public static extern void GPU_MakeCurrent(GPU_Target_PTR target, uint windowID);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern byte GPU_SetWindowResolution(UInt16 w, UInt16 h);
+        public static extern byte GPU_SetWindowResolution(ushort w, ushort h);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern byte GPU_SetFullscreen(byte enable_fullscreen, byte use_desktop_resolution);
@@ -488,7 +488,7 @@ namespace Chroma.SDL2
 
             public static GPU_Camera_PTR Null
             {
-                get { return default(GPU_Camera_PTR); }
+                get { return default; }
             }
         }
 
@@ -511,13 +511,13 @@ namespace Chroma.SDL2
             /* void* */
             public IntPtr data;
 
-            public UInt16 w, h;
+            public ushort w, h;
             public byte using_virtual_resolution;
-            public UInt16 base_w, base_h;  // The true dimensions of the underlying image or window
+            public ushort base_w, base_h;  // The true dimensions of the underlying image or window
             public byte use_clip_rect;
             public GPU_Rect clip_rect;
             public byte use_color;
-            public SDL.SDL_Color color;
+            public SDL2.SDL_Color color;
 
             public GPU_Rect viewport;
 
@@ -543,7 +543,7 @@ namespace Chroma.SDL2
 
             public static GPU_Target_PTR Null
             {
-                get { return default(GPU_Target_PTR); }
+                get { return default; }
             }
         }
 
@@ -557,10 +557,10 @@ namespace Chroma.SDL2
         public static extern void GPU_FreeTarget(GPU_Target_PTR target);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_SetVirtualResolution(IntPtr target, UInt16 w, UInt16 h);
+        public static extern void GPU_SetVirtualResolution(IntPtr target, ushort w, ushort h);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_GetVirtualResolution(GPU_Target_PTR target, out UInt16 w, out UInt16 h);
+        public static extern void GPU_GetVirtualResolution(GPU_Target_PTR target, out ushort w, out ushort h);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_GetVirtualCoords(GPU_Target_PTR target, ref float x, ref float y, float displayX, float displayY);
@@ -572,7 +572,7 @@ namespace Chroma.SDL2
         public static extern GPU_Rect GPU_MakeRect(float x, float y, float w, float h);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL.SDL_Color GPU_MakeColor(byte r, byte g, byte b, byte a);
+        public static extern SDL2.SDL_Color GPU_MakeColor(byte r, byte g, byte b, byte a);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_SetViewport(GPU_Target_PTR target, GPU_Rect viewport);
@@ -591,19 +591,19 @@ namespace Chroma.SDL2
         public static extern GPU_Camera GPU_SetCamera(GPU_Target_PTR target, GPU_Camera_PTR cam);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL.SDL_Color GPU_GetPixel(GPU_Target_PTR target, Int16 x, Int16 y);
+        public static extern SDL2.SDL_Color GPU_GetPixel(GPU_Target_PTR target, short x, short y);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern GPU_Rect GPU_SetClipRect(GPU_Target_PTR target, GPU_Rect rect);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern GPU_Rect GPU_SetClip(GPU_Target_PTR target, Int16 x, Int16 y, UInt16 w, UInt16 h);
+        public static extern GPU_Rect GPU_SetClip(GPU_Target_PTR target, short x, short y, ushort w, ushort h);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_UnsetClip(GPU_Target_PTR target);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_SetTargetColor(GPU_Target_PTR target, SDL.SDL_Color color);
+        public static extern void GPU_SetTargetColor(GPU_Target_PTR target, SDL2.SDL_Color color);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_SetTargetRGB(GPU_Target_PTR target, byte r, byte g, byte b);
@@ -734,19 +734,19 @@ namespace Chroma.SDL2
             public IntPtr context_target;
             public IntPtr target;
 
-            public UInt16 w, h;
+            public ushort w, h;
             public byte using_virtual_resolution;
             public GPU_FormatEnum format;
             public int num_layers;
             public int bytes_per_pixel;
-            public UInt16 base_w, base_h;  // Original image dimensions
-            public UInt16 texture_w, texture_h;  // Underlying texture dimensions
+            public ushort base_w, base_h;  // Original image dimensions
+            public ushort texture_w, texture_h;  // Underlying texture dimensions
             public byte has_mipmaps;
 
             public float anchor_x;
             public float anchor_y;
 
-            public SDL.SDL_Color color;
+            public SDL2.SDL_Color color;
             public byte use_blending;
             public GPU_BlendMode blend_mode;
             public GPU_FilterEnum filter_mode;
@@ -778,10 +778,10 @@ namespace Chroma.SDL2
         }
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern GPU_Image_PTR GPU_CreateImage(UInt16 w, UInt16 h, GPU_FormatEnum format);
+        public static extern GPU_Image_PTR GPU_CreateImage(ushort w, ushort h, GPU_FormatEnum format);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern GPU_Image_PTR GPU_CreateImageUsingTexture(UInt32 handle, byte take_ownership);
+        public static extern GPU_Image_PTR GPU_CreateImageUsingTexture(uint handle, byte take_ownership);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern GPU_Image_PTR GPU_LoadImage(
@@ -829,7 +829,7 @@ namespace Chroma.SDL2
         public static extern void GPU_GenerateMipmaps(GPU_Image_PTR image);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_SetColor(GPU_Image_PTR image, SDL.SDL_Color color);
+        public static extern void GPU_SetColor(GPU_Image_PTR image, SDL2.SDL_Color color);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_SetRGB(GPU_Image_PTR image, byte r, byte g, byte b);
@@ -1018,7 +1018,7 @@ namespace Chroma.SDL2
         public static extern void GPU_Clear(GPU_Target_PTR target);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_ClearColor(GPU_Target_PTR target, SDL.SDL_Color color);
+        public static extern void GPU_ClearColor(GPU_Target_PTR target, SDL2.SDL_Color color);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_ClearRGB(GPU_Target_PTR target, byte r, byte g, byte b);
@@ -1077,7 +1077,7 @@ namespace Chroma.SDL2
             ref GPU_Rect src_rect,
             GPU_Target_PTR target,
             float x, float y, float pivot_x, float pivot_y, float degrees, float scaleX, float scaleY);
-        
+
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_BlitTransformX(
             GPU_Image_PTR image,
@@ -1140,52 +1140,52 @@ namespace Chroma.SDL2
         #region Shapes
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_Pixel(GPU_Target_PTR target, float x, float y, SDL.SDL_Color color);
+        public static extern void GPU_Pixel(GPU_Target_PTR target, float x, float y, SDL2.SDL_Color color);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_Line(GPU_Target_PTR target, float x1, float y1, float x2, float y2, SDL.SDL_Color color);
+        public static extern void GPU_Line(GPU_Target_PTR target, float x1, float y1, float x2, float y2, SDL2.SDL_Color color);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_Arc(GPU_Target_PTR target, float x, float y, float radius, float start_angle, float end_angle, SDL.SDL_Color color);
+        public static extern void GPU_Arc(GPU_Target_PTR target, float x, float y, float radius, float start_angle, float end_angle, SDL2.SDL_Color color);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_ArcFilled(GPU_Target_PTR target, float x, float y, float radius, float start_angle, float end_angle, SDL.SDL_Color color);
+        public static extern void GPU_ArcFilled(GPU_Target_PTR target, float x, float y, float radius, float start_angle, float end_angle, SDL2.SDL_Color color);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_Circle(GPU_Target_PTR target, float x, float y, float radius, SDL.SDL_Color color);
+        public static extern void GPU_Circle(GPU_Target_PTR target, float x, float y, float radius, SDL2.SDL_Color color);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_CircleFilled(GPU_Target_PTR target, float x, float y, float radius, SDL.SDL_Color color);
+        public static extern void GPU_CircleFilled(GPU_Target_PTR target, float x, float y, float radius, SDL2.SDL_Color color);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_Ellipse(GPU_Target_PTR target, float x, float y, float rx, float ry, float degrees, SDL.SDL_Color color);
+        public static extern void GPU_Ellipse(GPU_Target_PTR target, float x, float y, float rx, float ry, float degrees, SDL2.SDL_Color color);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_EllipseFilled(GPU_Target_PTR target, float x, float y, float rx, float ry, float degrees, SDL.SDL_Color color);
+        public static extern void GPU_EllipseFilled(GPU_Target_PTR target, float x, float y, float rx, float ry, float degrees, SDL2.SDL_Color color);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_Sector(GPU_Target_PTR target, float x, float y, float inner_radius, float outer_radius, float start_angle, float end_angle, SDL.SDL_Color color);
+        public static extern void GPU_Sector(GPU_Target_PTR target, float x, float y, float inner_radius, float outer_radius, float start_angle, float end_angle, SDL2.SDL_Color color);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_SectorFilled(GPU_Target_PTR target, float x, float y, float inner_radius, float outer_radius, float start_angle, float end_angle, SDL.SDL_Color color);
+        public static extern void GPU_SectorFilled(GPU_Target_PTR target, float x, float y, float inner_radius, float outer_radius, float start_angle, float end_angle, SDL2.SDL_Color color);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_Tri(GPU_Target_PTR target, float x1, float y1, float x2, float y2, float x3, float y3, SDL.SDL_Color color);
+        public static extern void GPU_Tri(GPU_Target_PTR target, float x1, float y1, float x2, float y2, float x3, float y3, SDL2.SDL_Color color);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_TriFilled(GPU_Target_PTR target, float x1, float y1, float x2, float y2, float x3, float y3, SDL.SDL_Color color);
+        public static extern void GPU_TriFilled(GPU_Target_PTR target, float x1, float y1, float x2, float y2, float x3, float y3, SDL2.SDL_Color color);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_Rectangle(GPU_Target_PTR target, float x1, float y1, float x2, float y2, SDL.SDL_Color color);
+        public static extern void GPU_Rectangle(GPU_Target_PTR target, float x1, float y1, float x2, float y2, SDL2.SDL_Color color);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_RectangleFilled(GPU_Target_PTR target, float x1, float y1, float x2, float y2, SDL.SDL_Color color);
+        public static extern void GPU_RectangleFilled(GPU_Target_PTR target, float x1, float y1, float x2, float y2, SDL2.SDL_Color color);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_RectangleRound(GPU_Target_PTR target, float x1, float y1, float x2, float y2, float radius, SDL.SDL_Color color);
+        public static extern void GPU_RectangleRound(GPU_Target_PTR target, float x1, float y1, float x2, float y2, float radius, SDL2.SDL_Color color);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_RectangleRoundFilled(GPU_Target_PTR target, float x1, float y1, float x2, float y2, float radius, SDL.SDL_Color color);
+        public static extern void GPU_RectangleRoundFilled(GPU_Target_PTR target, float x1, float y1, float x2, float y2, float radius, SDL2.SDL_Color color);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_Polygon(
@@ -1193,7 +1193,7 @@ namespace Chroma.SDL2
             uint num_vertices,
             [In()][MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] vertices,
-            SDL.SDL_Color color);
+            SDL2.SDL_Color color);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_PolygonFilled(
@@ -1201,7 +1201,7 @@ namespace Chroma.SDL2
             uint num_vertices,
             [In()][MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] vertices,
-            SDL.SDL_Color color);
+            SDL2.SDL_Color color);
 
         #endregion
 
@@ -1299,52 +1299,52 @@ namespace Chroma.SDL2
         };
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern UInt32 GPU_CreateShaderProgram();
+        public static extern uint GPU_CreateShaderProgram();
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_FreeShaderProgram(UInt32 program_object);
+        public static extern void GPU_FreeShaderProgram(uint program_object);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern UInt32 GPU_CompileShader_RW(GPU_ShaderEnum shader_type, IntPtr /* SDL_RWops* */ shader_source);
+        public static extern uint GPU_CompileShader_RW(GPU_ShaderEnum shader_type, IntPtr /* SDL_RWops* */ shader_source);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern UInt32 GPU_CompileShader(
+        public static extern uint GPU_CompileShader(
                 GPU_ShaderEnum shader_type,
                 [In()] [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
                 string shader_source);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern UInt32 GPU_LoadShader(
+        public static extern uint GPU_LoadShader(
                 GPU_ShaderEnum shader_type,
                 [In()] [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
                 string filename);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern UInt32 GPU_LinkShaders(UInt32 shader_object1, UInt32 shader_object2);
+        public static extern uint GPU_LinkShaders(uint shader_object1, uint shader_object2);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_FreeShader(UInt32 shader_object);
+        public static extern void GPU_FreeShader(uint shader_object);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_AttachShader(UInt32 program_object, UInt32 shader_object);
+        public static extern void GPU_AttachShader(uint program_object, uint shader_object);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_DetachShader(UInt32 program_object, UInt32 shader_object);
+        public static extern void GPU_DetachShader(uint program_object, uint shader_object);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern byte GPU_LinkShaderProgram(UInt32 program_object);
+        public static extern byte GPU_LinkShaderProgram(uint program_object);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern UInt32 GPU_GetCurrentShaderProgram();
+        public static extern uint GPU_GetCurrentShaderProgram();
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern byte GPU_IsDefaultShaderProgram(UInt32 program_object);
+        public static extern byte GPU_IsDefaultShaderProgram(uint program_object);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_ActivateShaderProgram(UInt32 program_object, ref GPU_ShaderBlock block);
+        public static extern void GPU_ActivateShaderProgram(uint program_object, ref GPU_ShaderBlock block);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_ActivateShaderProgram(UInt32 program_object, IntPtr block);
+        public static extern void GPU_ActivateShaderProgram(uint program_object, IntPtr block);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_DeactivateShaderProgram();
@@ -1355,7 +1355,7 @@ namespace Chroma.SDL2
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern int GPU_GetAttributeLocation(
-            UInt32 program_object,
+            uint program_object,
             [In()] [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
             string attrib_name);
 
@@ -1390,13 +1390,13 @@ namespace Chroma.SDL2
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern int GPU_GetUniformLocation(
-                UInt32 program_object,
+                uint program_object,
                 [In()] [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
                 string uniform_name);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern GPU_ShaderBlock GPU_LoadShaderBlock(
-                UInt32 program_object,
+                uint program_object,
                 [In()] [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
                 string position_name,
                 [In()] [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]

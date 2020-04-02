@@ -1,10 +1,10 @@
-﻿using Chroma.SDL2;
+﻿using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics
 {
     public class Display
     {
-        internal SDL.SDL_DisplayMode UnderlyingDisplayMode { get; set; }
+        internal SDL2.SDL_DisplayMode UnderlyingDisplayMode { get; set; }
 
         public int Index { get; }
         public int RefreshRate { get; }

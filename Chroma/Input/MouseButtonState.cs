@@ -1,4 +1,4 @@
-﻿using Chroma.SDL2;
+﻿using Chroma.Natives.SDL;
 
 namespace Chroma.Input
 {
@@ -12,11 +12,11 @@ namespace Chroma.Input
 
         internal MouseButtonState(uint sdlMask)
         {
-            Left = (sdlMask & SDL.SDL_BUTTON_LMASK) != 0;
-            Right = (sdlMask & SDL.SDL_BUTTON_RMASK) != 0;
-            Middle = (sdlMask & SDL.SDL_BUTTON_MMASK) != 0;
-            X1 = (sdlMask & SDL.SDL_BUTTON_X1MASK) != 0;
-            X2 = (sdlMask & SDL.SDL_BUTTON_X2MASK) != 0;
+            Left = (sdlMask & SDL2.SDL_BUTTON_LMASK) != 0;
+            Right = (sdlMask & SDL2.SDL_BUTTON_RMASK) != 0;
+            Middle = (sdlMask & SDL2.SDL_BUTTON_MMASK) != 0;
+            X1 = (sdlMask & SDL2.SDL_BUTTON_X1MASK) != 0;
+            X2 = (sdlMask & SDL2.SDL_BUTTON_X2MASK) != 0;
         }
     }
 }

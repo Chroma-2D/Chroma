@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Chroma.SDL2
+namespace Chroma.Natives
 {
     public struct CString
     {

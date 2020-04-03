@@ -1,11 +1,12 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using FT_Pos = System.IntPtr;
 
 namespace Chroma.Natives.FreeType.Native
 {
-	[StructLayout(LayoutKind.Sequential)]
-	public struct FT_Glyph_Metrics
-	{
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FT_Glyph_Metrics
+    {
 		public FT_Pos width;
 		public FT_Pos height;
 
@@ -16,5 +17,5 @@ namespace Chroma.Natives.FreeType.Native
 		public FT_Pos vertBearingX;
 		public FT_Pos vertBearingY;
 		public FT_Pos vertAdvance;
-	}
+    }
 }

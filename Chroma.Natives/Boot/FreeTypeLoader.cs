@@ -55,7 +55,7 @@ namespace Chroma.Natives.Boot
                 if (throwIfNotFound)
                     throw new EntryPointNotFoundException(function);
 
-                return default;
+                return default(T);
             }
 
             return Marshal.GetDelegateForFunctionPointer<T>(ret);

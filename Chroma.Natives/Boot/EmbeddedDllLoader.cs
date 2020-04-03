@@ -52,6 +52,9 @@ namespace Chroma.Natives.Boot
             using var ms = EmbeddedResources.GetResourceStream(fqn);
             ms.CopyTo(fs);
 
+            if (actualFileName == "freetype.dll")
+                return;
+
             Console.WriteLine($"    {actualFileName}");
             LoadLibrary(actualFileName);
         }

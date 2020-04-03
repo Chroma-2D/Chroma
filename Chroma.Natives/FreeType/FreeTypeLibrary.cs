@@ -8,12 +8,12 @@ namespace Chroma.Natives.FreeType
     /// </summary>
     public sealed unsafe class FreeTypeLibrary : IDisposable
     {
-        private bool disposed;
+        private Boolean disposed;
 
         /// <summary>
         /// Gets a value indicating whether the object has been disposed.
         /// </summary>
-        public bool Disposed
+        public Boolean Disposed
         {
             get { return disposed; }
         }
@@ -43,7 +43,7 @@ namespace Chroma.Natives.FreeType
         }
 
         /// <inheritdoc/>
-        void Dispose(bool disposing)
+        void Dispose(Boolean disposing)
         {
             if (Native != IntPtr.Zero)
             {

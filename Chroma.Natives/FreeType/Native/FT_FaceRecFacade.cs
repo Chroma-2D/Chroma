@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
+using Chroma.Natives.FreeType.Native;
 
 namespace Chroma.Natives.FreeType.Native
 {
@@ -17,7 +18,7 @@ namespace Chroma.Natives.FreeType.Native
         public FT_FaceRecFacade(IntPtr face, IntPtr library)
         {
             _Face = face;
-            _FaceRec = (FT_FaceRec*)_Face;
+            _FaceRec = (FT_FaceRec*)this._Face;
             _Library = library;
         }
 
@@ -70,7 +71,7 @@ namespace Chroma.Natives.FreeType.Native
         /// </summary>
         /// <param name="c">The character to evaluate.</param>
         /// <returns>The specified character, if it is defined by this face; otherwise, <see langword="null"/>.</returns>
-        public char? GetCharIfDefined(char c) { return FT.FT_Get_Char_Index(_Face, c) > 0 ? c : (char?)null; }
+        public char? GetCharIfDefined(Char c) { return FT.FT_Get_Char_Index(_Face, c) > 0 ? c : (char?)null; }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private int GetFixedSizeInPixels(FT_FaceRec* face, int ix)
@@ -112,7 +113,7 @@ namespace Chroma.Natives.FreeType.Native
 
         public bool EmboldenGlyphBitmap(int xStrength, int yStrength)
         {
-            var err = FT.FT_Bitmap_Embolden(_Library, (IntPtr)GlyphBitmapPtr, (IntPtr)xStrength, (IntPtr)yStrength);
+            var err = FT.FT_Bitmap_Embolden(_Library, (IntPtr)(GlyphBitmapPtr), (IntPtr)xStrength, (IntPtr)yStrength);
             if (err != FT_Error.FT_Err_Ok)
                 return false;
 
@@ -128,7 +129,7 @@ namespace Chroma.Natives.FreeType.Native
             _FaceRec->glyph->metrics.vertBearingY += yStrength;
             _FaceRec->glyph->metrics.vertAdvance += yStrength;
 
-            _FaceRec->glyph->bitmap_top += yStrength >> 6;
+            _FaceRec->glyph->bitmap_top += (yStrength >> 6);
 
             return true;
         }
@@ -138,7 +139,7 @@ namespace Chroma.Natives.FreeType.Native
         /// </summary>
         /// <param name="flag">The flag to evaluate.</param>
         /// <returns><see langword="true"/> if the face has the specified flag defined; otherwise, <see langword="false"/>.</returns>
-        public bool HasFaceFlag(int flag) { return ((int)_FaceRec->face_flags & flag) != 0; }
+        public bool HasFaceFlag(int flag) { return (((int)_FaceRec->face_flags) & flag) != 0; }
 
         /// <summary>
         /// Gets a value indicating whether the face has the FT_FACE_FLAG_SCALABLE flag set.
@@ -167,7 +168,7 @@ namespace Chroma.Natives.FreeType.Native
         /// <summary>
         /// Gets a value indicating whether the face has any bitmap strikes with fixed sizes.
         /// </summary>
-        public bool HasBitmapStrikes { get { return _FaceRec->num_fixed_sizes > 0; } }
+        public bool HasBitmapStrikes { get { return (_FaceRec->num_fixed_sizes) > 0; } }
 
         /// <summary>
         /// Gets the current glyph bitmap.

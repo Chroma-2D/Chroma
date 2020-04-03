@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using Chroma.Natives.FreeType.Native;
 
 namespace Chroma.Natives.FreeType.Native
 {

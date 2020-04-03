@@ -7,13 +7,13 @@ namespace Chroma.Natives.FreeType.Native
     [StructLayout(LayoutKind.Sequential)]
     public unsafe struct FT_Bitmap
     {
-        public uint rows;
-        public uint width;
-        public int pitch;
+        public UInt32 rows;
+        public UInt32 width;
+        public Int32 pitch;
         public IntPtr buffer;
-        public ushort num_grays;
-        public byte pixel_mode;
-        public byte palette_mode;
+        public UInt16 num_grays;
+        public Byte pixel_mode;
+        public Byte palette_mode;
         public IntPtr palette;
     }
 #pragma warning restore 1591

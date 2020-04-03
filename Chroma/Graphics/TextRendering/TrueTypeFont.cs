@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Chroma.Natives.FreeType;
+using Chroma.Natives.FreeType.Native;
 using Chroma.Natives.SDL;
-using FreeTypeSharp;
-using FreeTypeSharp.Native;
 
 namespace Chroma.Graphics.TextRendering
 {
@@ -11,6 +13,9 @@ namespace Chroma.Graphics.TextRendering
         internal static FreeTypeLibrary Library { get; }
         internal IntPtr Face { get; }
         internal FT_FaceRec FaceRec { get; }
+
+        public Dictionary<char, Glyph> RenderInfo { get; }
+        public Texture Atlas { get; private set; }
 
         public bool Disposed { get; private set; }
 
@@ -32,50 +37,108 @@ namespace Chroma.Graphics.TextRendering
 
             FT.FT_Set_Pixel_Sizes(Face, 0, (uint)Size);
             FaceRec = Marshal.PtrToStructure<FT_FaceRec>(Face);
+
+            RenderInfo = new Dictionary<char, Glyph>();
+            Atlas = GenerateTextureAtlas();
         }
 
-        public Texture RenderGlyph(char c)
+        public bool HasGlyph(char c)
+            => FT.FT_Get_Char_Index(Face, c) != 0;
+
+        private Texture GenerateTextureAtlas(int maxGlyphs = 512)
         {
-            var index = FT.FT_Get_Char_Index(Face, c);
-            FT.FT_Load_Glyph(Face, index, FT.FT_LOAD_RENDER);
+            var maxDim = (1 + FaceRec.size->metrics.height.ToInt32() >> 6) * MathF.Ceiling(MathF.Sqrt(maxGlyphs));
+            var texWidth = 1;
 
-            var bitmap = FaceRec.glyph->bitmap;
-            byte* bitmapBuffer = (byte*)bitmap.buffer.ToPointer();
+            while (texWidth < maxDim) texWidth <<= 1;
+            var texHeight = texWidth;
 
-            var pixPtr = Marshal.AllocHGlobal((int)bitmap.width * (int)bitmap.rows * 4);
-            byte* pixPtrPtr = (byte*)pixPtr.ToPointer();
+            byte* pixels = stackalloc byte[texWidth * texHeight];
+            int penX = 0;
+            int penY = 0;
 
-            for (var y = 0; y < bitmap.rows; y++)
+            var glyphsGenerated = 0;
+            for (char c = (char)0; c < char.MaxValue; ++c)
             {
-                for (var x = 0; x < bitmap.width; x++)
+                if (!HasGlyph(c))
+                    continue;
+
+                if (glyphsGenerated >= maxGlyphs)
+                    break;
+
+                FT.FT_Load_Char(Face, c, FT.FT_LOAD_RENDER);
+                var bmp = FaceRec.glyph->bitmap;
+                var buffer = (byte*)FaceRec.glyph->bitmap.buffer.ToPointer();
+
+                if (penX + bmp.width >= texWidth)
                 {
-                    byte value = bitmapBuffer[(bitmap.pitch * y) + x];
-                    var origin = ((bitmap.width * y) + x) * 4;
-                    pixPtrPtr[origin] = 0xFF;
-                    pixPtrPtr[origin + 1] = 0xFF;
-                    pixPtrPtr[origin + 2] = 0xFF;
-                    pixPtrPtr[origin + 3] = value;
+                    penX = 0;
+                    penY += ((FaceRec.size->metrics.height.ToInt32() >> 6) + 1);
                 }
+
+                for (var row = 0; row < bmp.rows; ++row)
+                {
+                    for (var col = 0; col < bmp.width; ++col)
+                    {
+                        var x = penX + col;
+                        var y = penY + row;
+
+                        pixels[y * texWidth + x] = buffer[row * bmp.pitch + col];
+                    }
+                }
+
+                var glyph = new Glyph
+                {
+                    Position = new Vector2(penX, penY),
+                    Dimensions = new Vector2(bmp.width, bmp.rows),
+                    Offset = new Vector2(FaceRec.glyph->bitmap_left, FaceRec.glyph->bitmap_top),
+                    Advance = FaceRec.glyph->advance.x.ToInt32() >> 6
+                };
+
+                penX += (int)bmp.width + 1;
+                glyphsGenerated++;
+            }
+
+            return CreateTextureFromFTBitmap(pixels, texWidth, texHeight);
+        }
+
+        private Texture CreateTextureFromFTBitmap(byte* pixels, int texWidth, int texHeight)
+        {
+            var surfaceSize = texWidth * texHeight * 4;
+
+            IntPtr managedSurfaceData = Marshal.AllocHGlobal(surfaceSize);
+            byte* surfaceData = (byte*)managedSurfaceData.ToPointer();
+
+            for (var i = 0; i < surfaceSize; i++)
+                surfaceData[i] = 0;
+
+            for (var i = 0; i < texWidth * texHeight; ++i)
+            {
+                surfaceData[i * 4 + 0] = 0xFF;
+                surfaceData[i * 4 + 1] = 0xFF;
+                surfaceData[i * 4 + 2] = 0xFF;
+                surfaceData[i * 4 + 3] |= pixels[i];
             }
 
             var surface = SDL2.SDL_CreateRGBSurfaceFrom(
-                pixPtr,
-                (int)bitmap.width,
-                (int)bitmap.rows,
+                new IntPtr(surfaceData),
+                texWidth,
+                texHeight,
                 32,
-                (int)bitmap.width * 4,
+                texWidth * 4,
                 0x000000FF,
                 0x0000FF00,
                 0x00FF0000,
                 0xFF000000
             );
-
             SDL2.SDL_SetSurfaceBlendMode(surface, SDL2.SDL_BlendMode.SDL_BLENDMODE_BLEND);
 
-            var imageptr = SDL_gpu.GPU_CopyImageFromSurface(surface);
+            var gpuImage = SDL_gpu.GPU_CopyImageFromSurface(surface);
+
             SDL2.SDL_FreeSurface(surface);
-            Marshal.FreeHGlobal(pixPtr);
-            return new Texture(imageptr);
+            Marshal.FreeHGlobal(managedSurfaceData);
+
+            return new Texture(gpuImage);
         }
 
         #region IDisposable

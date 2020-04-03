@@ -135,7 +135,7 @@ namespace Chroma.Natives.FreeType
 
             fixed (byte* inPtr = input, outPtr = output)
             {
-                FT_Error err = FT.FT_Gzip_Uncompress(Reference, new IntPtr(outPtr), ref len, new IntPtr(inPtr), new IntPtr(input.Length));
+                FT_Error err = FT.FT_Gzip_Uncompress(Reference, (IntPtr)outPtr, ref len, (IntPtr)inPtr, (IntPtr)input.Length);
 
                 if (err != FT_Error.FT_Err_Ok)
                     throw new FreeTypeException(err);

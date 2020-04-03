@@ -14,7 +14,6 @@ namespace Chroma.ExampleApp
 
         private Stopwatch _sw;
         private TrueTypeFont _ttf;
-        private Texture _ttfMap;
 
         private Vector2 _origin;
         private float _rotation;
@@ -42,9 +41,7 @@ namespace Chroma.ExampleApp
                 _tex.Height * .3f / 2
             );
 
-            _ttf = new TrueTypeFont(Path.Combine(loc, "c64style.ttf"), 16);
-            _ttfMap = _ttf.RenderGlyph('$');
-            _ttfMap.ColorMask = Color.HotPink;
+            _ttf = new TrueTypeFont(Path.Combine(loc, "TAHOMA.TTF"), 32);
 
             //Console.WriteLine(_font.Measure("DOOT ME UP\nINSIDE!11"));
         }
@@ -91,8 +88,9 @@ namespace Chroma.ExampleApp
             );
 
             context.DrawTexture(
-                _ttfMap,
-                new Vector2(100, 150), Vector2.One,
+                _ttf.Atlas,
+                Vector2.Zero,//new Vector2(300, 300), 
+                Vector2.One,
                 Vector2.Zero, .0f
             );
             //context.DrawString(_font, "DOOT ME UP\nINSIDE!11", new Vector2(0, 0));

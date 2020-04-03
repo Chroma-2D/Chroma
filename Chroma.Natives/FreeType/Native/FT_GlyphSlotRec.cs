@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using FT_Fixed = System.IntPtr;
 using FT_Pos = System.IntPtr;
 
@@ -7,7 +8,7 @@ namespace Chroma.Natives.FreeType.Native
     [StructLayout(LayoutKind.Sequential)]
     public unsafe struct FT_GlyphSlotRec
     {
-        public FT_Fixed library;
+        public IntPtr library;
         public FT_FaceRec* face;
         public FT_GlyphSlotRec* next;
         public uint reserved;
@@ -29,14 +30,14 @@ namespace Chroma.Natives.FreeType.Native
         public uint num_subglyphs;
         public FT_SubGlyphRec* subglyphs;
 
-        public FT_Fixed control_data;
+        public IntPtr control_data;
         public FT_Fixed control_len;
 
         public FT_Pos lsb_delta;
         public FT_Pos rsb_delta;
 
-        public FT_Fixed other;
+        public IntPtr other;
 
-        public FT_Fixed @internal;
+        public IntPtr @internal;
     }
 }

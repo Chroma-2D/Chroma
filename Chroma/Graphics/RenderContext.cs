@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Chroma.Graphics.TextRendering;
 using Chroma.Natives.SDL;
 //using Chroma.Graphics.Text;
 //using Chroma.Graphics.Text.BMFont;
@@ -219,11 +221,11 @@ namespace Chroma.Graphics
             CurrentRenderTarget = OriginalRenderTarget;
         }
 
-        /*public void DrawString(BitmapFont font, string text, Vector2 position)
+        public void DrawString(TrueTypeFont font, string text, Vector2 position)
         {
             var x = position.X;
             var y = position.Y;
-            char prev = (char)0;
+            var prevChar = (char)0;
 
             foreach (var c in text)
             {
@@ -233,24 +235,37 @@ namespace Chroma.Graphics
                     y += font.LineHeight;
                 }
 
-                if (!font.Characters.ContainsKey(c))
+                if (!font.HasGlyph(c))
                     continue;
 
-                var info = font.Atlas.GlyphMetadata[c];
+                var info = font.RenderInfo[c];
 
                 var srcRect = new SDL_gpu.GPU_Rect
                 {
-                    x = info.PositionInAtlas.X,
-                    y = info.PositionInAtlas.Y,
-                    w = info.Width,
-                    h = info.Height
+                    x = info.Position.X,
+                    y = info.Position.Y,
+                    w = info.Size.X,
+                    h = info.Size.Y
                 };
 
-                SDL_gpu.GPU_Blit(font.Pages[0].AtlasHandle, ref srcRect, CurrentRenderTarget, x, y);
-                x += info.Width;
+                var kerning = Vector2.Zero;
 
-                prev = c;
+                if (prevChar != 0)
+                    kerning = font.GetKerning(prevChar, c);
+
+                // info.Size.X / 2 and info.Size.Y / 2
+                // to compensate for blitting anchor
+                SDL_gpu.GPU_Blit(
+                    font.Atlas.ImageHandle,
+                    ref srcRect,
+                    CurrentRenderTarget,
+                    x + info.BitmapCoordinates.X + (info.Size.X / 2),
+                    y - info.BitmapCoordinates.Y + (info.Size.Y / 2)  + font.Ascender 
+                );
+
+                x += info.Advance;
+                prevChar = c;
             }
-        }*/
+        }
     }
 }

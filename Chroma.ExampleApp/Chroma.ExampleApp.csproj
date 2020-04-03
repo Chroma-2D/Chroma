@@ -16,6 +16,9 @@
     <None Update="c64_0.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="delet.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="dvd.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

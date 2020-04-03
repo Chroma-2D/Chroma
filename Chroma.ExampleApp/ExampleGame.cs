@@ -31,7 +31,7 @@ namespace Chroma.ExampleApp
 
             _tgt = new RenderTarget((ushort)Window.Properties.Width, (ushort)Window.Properties.Height);
 
-            _tex = new Texture(Path.Combine(loc, "skeltal.png"))
+            _tex = new Texture(Path.Combine(loc, "delet.png"))
             {
                 ColorMask = Color.White,
             };
@@ -41,9 +41,7 @@ namespace Chroma.ExampleApp
                 _tex.Height * .3f / 2
             );
 
-            _ttf = new TrueTypeFont(Path.Combine(loc, "TAHOMA.TTF"), 32);
-
-            //Console.WriteLine(_font.Measure("DOOT ME UP\nINSIDE!11"));
+            _ttf = new TrueTypeFont(Path.Combine(loc, "nouveau_ibm.ttf"), 16);
         }
 
         protected override void Update(float delta)
@@ -57,26 +55,26 @@ namespace Chroma.ExampleApp
 
         protected override void Draw(RenderContext context)
         {
-            context.RenderTo(_tgt, () =>
+            context.Clear(Color.Black);
+
+           /* context.RenderTo(_tgt, () =>
             {
                 context.Clear(Color.Black);
-                for (var x = 0; x < 2; x++)
+                for (var x = 0; x < 100; x++)
                 {
-                    for (var y = 0; y < 2; y++)
+                    for (var y = 0; y < 100; y++)
                     {
                         context.DrawTexture(
                             _tex,
                             new Vector2(
-                                x * _tex.Width * .3f,
-                                y * _tex.Height * .3f
+                                100, 100
                             ) + _origin,
-                            new Vector2(.3f),
+                            Vector2.One,
                             _origin,
                             _rotation
                         );
                     }
                 }
-
             });
 
             context.DrawTexture(
@@ -85,15 +83,16 @@ namespace Chroma.ExampleApp
                 Vector2.One,
                 Vector2.Zero,
                 0f
-            );
+            );*/
 
-            context.DrawTexture(
+           /* context.DrawTexture(
                 _ttf.Atlas,
                 Vector2.Zero,//new Vector2(300, 300), 
                 Vector2.One,
                 Vector2.Zero, .0f
-            );
-            //context.DrawString(_font, "DOOT ME UP\nINSIDE!11", new Vector2(0, 0));
+            );*/
+
+            context.DrawString(_ttf, "THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG 1234567890\nthe quick brown fox jumps over the lazy dog 1234567890\nLoReM iPsUm dOlOr sIt AmEt\nX", Vector2.Zero);
 
         }
     }

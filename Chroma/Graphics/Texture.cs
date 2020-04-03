@@ -283,6 +283,8 @@ namespace Chroma.Graphics
 
             Width = ImageHandle.Value.w;
             Height = ImageHandle.Value.h;
+
+            Anchor = new Vector2(0);
         }
 
         public Texture(ushort width, ushort height, PixelFormat fmt = PixelFormat.RGBA)
@@ -291,13 +293,18 @@ namespace Chroma.Graphics
 
             Width = width;
             Height = height;
+
+            Anchor = new Vector2(0);
         }
 
         internal Texture(SDL_gpu.GPU_Image_PTR imageHandle)
         {
             ImageHandle = imageHandle;
+
             Width = imageHandle.Value.w;
             Height = imageHandle.Value.h;
+
+            // Anchor = new Vector2(0);
         }
 
         public void SetBlendingMode(BlendingPreset preset)

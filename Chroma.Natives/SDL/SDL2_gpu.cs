@@ -361,6 +361,9 @@ namespace Chroma.Natives.SDL
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_ResetRendererState();
 
+        [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetDefaultAnchor(float anchor_x, float anchor_y);
+
         #endregion
 
         #region Context Controls

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Chroma.Natives.FreeType;
 using Chroma.Natives.FreeType.Native;
@@ -22,6 +21,10 @@ namespace Chroma.Graphics.TextRendering
         public string FileName { get; }
         public int Size { get; }
 
+        public int LineHeight { get; }
+        public int Ascender { get; }
+        public int Descender { get; }
+
         static TrueTypeFont()
         {
             Library = new FreeTypeLibrary();
@@ -38,6 +41,12 @@ namespace Chroma.Graphics.TextRendering
             FT.FT_Set_Pixel_Sizes(Face, 0, (uint)Size);
             FaceRec = Marshal.PtrToStructure<FT_FaceRec>(Face);
 
+            LineHeight = FaceRec.size->metrics.height.ToInt32() >> 6;
+            Ascender = FaceRec.size->metrics.ascender.ToInt32() >> 6;
+
+            Descender = (FaceRec.descender >> 6);
+
+
             RenderInfo = new Dictionary<char, Glyph>();
             Atlas = GenerateTextureAtlas();
         }
@@ -53,7 +62,9 @@ namespace Chroma.Graphics.TextRendering
             while (texWidth < maxDim) texWidth <<= 1;
             var texHeight = texWidth;
 
-            byte* pixels = stackalloc byte[texWidth * texHeight];
+            IntPtr managedPixels = Marshal.AllocHGlobal(texWidth * texHeight);
+            byte* pixels = (byte*)managedPixels.ToPointer();
+
             int penX = 0;
             int penY = 0;
 
@@ -66,7 +77,7 @@ namespace Chroma.Graphics.TextRendering
                 if (glyphsGenerated >= maxGlyphs)
                     break;
 
-                FT.FT_Load_Char(Face, c, FT.FT_LOAD_RENDER);
+                FT.FT_Load_Char(Face, c, FT.FT_LOAD_RENDER | FT.FT_LOAD_FORCE_AUTOHINT | FT.FT_LOAD_TARGET_NORMAL);
                 var bmp = FaceRec.glyph->bitmap;
                 var buffer = (byte*)FaceRec.glyph->bitmap.buffer.ToPointer();
 
@@ -90,16 +101,33 @@ namespace Chroma.Graphics.TextRendering
                 var glyph = new Glyph
                 {
                     Position = new Vector2(penX, penY),
-                    Dimensions = new Vector2(bmp.width, bmp.rows),
-                    Offset = new Vector2(FaceRec.glyph->bitmap_left, FaceRec.glyph->bitmap_top),
+                    Size = new Vector2((int)bmp.width, (int)bmp.rows),
+                    BitmapCoordinates = new Vector2(
+                        FaceRec.glyph->bitmap_left,
+                        FaceRec.glyph->bitmap_top
+                    ),
+                    Bearing = new Vector2(
+                        FaceRec.glyph->metrics.horiBearingX.ToInt32() >> 6,
+                        FaceRec.glyph->metrics.horiBearingY.ToInt32() >> 6
+                    ),
                     Advance = FaceRec.glyph->advance.x.ToInt32() >> 6
                 };
+                RenderInfo.Add(c, glyph);
 
                 penX += (int)bmp.width + 1;
                 glyphsGenerated++;
             }
 
-            return CreateTextureFromFTBitmap(pixels, texWidth, texHeight);
+            var tex = CreateTextureFromFTBitmap(pixels, texWidth, texHeight);
+
+            Marshal.FreeHGlobal(managedPixels);
+            return tex;
+        }
+
+        public Vector2 GetKerning(char prev, char current)
+        {
+            FT.FT_Get_Kerning(Face, prev, current, 0, out FT_Vector kerning);
+            return new Vector2(kerning.x.ToInt32(), kerning.y.ToInt32());
         }
 
         private Texture CreateTextureFromFTBitmap(byte* pixels, int texWidth, int texHeight)

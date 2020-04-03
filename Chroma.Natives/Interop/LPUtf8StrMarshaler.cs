@@ -29,7 +29,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using Chroma.Natives.SDL;
 
-namespace Chroma.Natives
+namespace Chroma.Natives.Interop
 {
     internal unsafe class LPUtf8StrMarshaler : ICustomMarshaler
     {

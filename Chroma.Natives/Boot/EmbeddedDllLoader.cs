@@ -13,18 +13,19 @@ namespace Chroma.Natives.Boot
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         private static extern bool LoadLibrary(string path);
 
-        private static readonly string ArchitectureString = Environment.Is64BitOperatingSystem ? "Win64" : "Win32";
+        internal static readonly string ArchitectureString = Environment.Is64BitOperatingSystem ? "Win64" : "Win32";
+        internal static string DllDirectoryPath { get; private set; }
 
         internal void InitializeNativeDlls()
         {
-            var tempDirPath = CreateDllDirectory();
-            SetDllDirectory(tempDirPath);
+            DllDirectoryPath = CreateDllDirectory();
+            SetDllDirectory(DllDirectoryPath);
 
             var dependencies = EmbeddedResources.GetResourceNames()
                                                 .Where(x => x.Contains(ArchitectureString) && x.EndsWith(".dll"));
             foreach (var dep in dependencies)
             {
-                ExtractAndLoadEmbeddedDependency(tempDirPath, dep);
+                ExtractAndLoadEmbeddedDependency(DllDirectoryPath, dep);
             }
         }
 

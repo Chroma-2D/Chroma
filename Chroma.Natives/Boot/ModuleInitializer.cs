@@ -18,8 +18,8 @@ namespace Chroma.Natives.Boot
             }
             else
             {
-                Console.WriteLine(" => Non-windows platform. Make sure the following libraries are available:");
-                Console.WriteLine("    SDL2, SDL2_image, SDL2_mixer, SDL2_ttf, SDL2_gpu.\n");
+                Console.WriteLine(" => Non-windows platform. Make sure the following packages are available:");
+                Console.WriteLine("    SDL2, SDL2_image, SDL2_mixer, freetype, SDL2_gpu.\n");
                 Console.WriteLine("    If any of those are missing, the engine will fail right about... now.");
             }
 

@@ -32,6 +32,7 @@ namespace Chroma.Natives.Boot
 
         static FreeTypeLoader()
         {
+            Console.WriteLine("Initializing FreeType...");
 
             if (Environment.OSVersion.Platform == PlatformID.Unix ||
                 Environment.OSVersion.Platform == PlatformID.MacOSX ||

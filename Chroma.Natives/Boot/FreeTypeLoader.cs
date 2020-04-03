@@ -33,11 +33,9 @@ namespace Chroma.Natives.Boot
         static FreeTypeLoader()
         {
 
-            // Figure out which OS we're on. Windows or "other".
             if (Environment.OSVersion.Platform == PlatformID.Unix ||
-                        Environment.OSVersion.Platform == PlatformID.MacOSX ||
-                        // Legacy mono value. See https://www.mono-project.com/docs/faq/technical/
-                        (int)Environment.OSVersion.Platform == 128)
+                Environment.OSVersion.Platform == PlatformID.MacOSX ||
+                (int)Environment.OSVersion.Platform == 128)
             {
                 _freetypeAddr = LoadPosixLibrary(out _symbolLookup);
             }
@@ -67,45 +65,30 @@ namespace Chroma.Natives.Boot
             string libFile = "freetype.dll";
             string arch = EmbeddedDllLoader.ArchitectureString;
 
-            var paths = new[]
-            {
-                // This is where native libraries in our nupkg should end up
-                Path.Combine(EmbeddedDllLoader.DllDirectoryPath, libFile),
-            };
+            var path = Path.Combine(EmbeddedDllLoader.DllDirectoryPath, libFile);
 
-            foreach (var path in paths)
-            {
-                if (path == null) continue;
-                if (!File.Exists(path)) continue;
+            if (!File.Exists(path))
+                throw new Exception($"LoadLibrary failed: unable to locate library {libFile}");
 
-                var addr = LoadLibrary(path);
-                if (addr == IntPtr.Zero)
-                    throw new Exception("LoadLibrary failed: " + path);
+            var addr = LoadLibrary(path);
+            if (addr == IntPtr.Zero)
+                throw new Exception("LoadLibrary failed: " + path);
 
-                symbolLookup = GetProcAddress;
-                NativeLibraryPath = path;
-                return addr;
-            }
-
-            throw new Exception("LoadLibrary failed: unable to locate library " + libFile + ". Searched: " + paths.Aggregate((a, b) => a + "; " + b));
+            symbolLookup = GetProcAddress;
+            NativeLibraryPath = path;
+            return addr;
         }
 
         private static IntPtr LoadPosixLibrary(out SymbolLookupDelegate symbolLookup)
         {
             string rootDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-            // Environment.OSVersion.Platform returns "Unix" for Unix or OSX, so use RuntimeInformation here
             var isOsx = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
             string libFile = isOsx ? "libfreetype.dylib" : "libfreetype.so";
             string arch = isOsx ? "osx" : "linux-" + (Environment.Is64BitProcess ? "x64" : "x86");
 
-            // Search a few different locations for our native assembly
             var paths = new[]
             {
-                // This is where native libraries in our nupkg should end up
-                Path.Combine(rootDirectory, "runtimes", arch, "native", libFile),
-                // The build output folder
-                Path.Combine(rootDirectory, libFile),
                 Path.Combine("/usr/local/lib", libFile),
                 Path.Combine("/usr/lib", libFile)
             };
@@ -118,7 +101,6 @@ namespace Chroma.Natives.Boot
                 var addr = dlopen(path, RTLD_NOW);
                 if (addr == IntPtr.Zero)
                 {
-                    // Not using NanosmgException because it depends on nn_errno.
                     var error = Marshal.PtrToStringAnsi(dlerror());
                     throw new Exception("dlopen failed: " + path + " : " + error);
                 }

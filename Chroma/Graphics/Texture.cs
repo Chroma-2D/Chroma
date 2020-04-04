@@ -297,14 +297,38 @@ namespace Chroma.Graphics
             Anchor = new Vector2(0);
         }
 
+        public Texture(Stream stream)
+        {
+            var bytes = new byte[stream.Length];
+            stream.Read(bytes, 0, bytes.Length);
+
+            IntPtr surfaceHandle;
+            SDL2.SDL_Surface surface;
+
+            unsafe
+            {
+                fixed (byte* bp = &bytes[0])
+                {
+                    var rwops = SDL2.SDL_RWFromMem(new IntPtr(bp), bytes.Length);
+                    surfaceHandle = SDL_image.IMG_Load_RW(rwops, 1);
+                    surface = *(SDL2.SDL_Surface*)surfaceHandle.ToPointer();
+                }
+            }
+
+            ImageHandle = SDL_gpu.GPU_CopyImageFromSurface(surfaceHandle);
+
+            Width = surface.w;
+            Height = surface.h;
+
+            SDL2.SDL_FreeSurface(surfaceHandle);
+        }
+
         internal Texture(SDL_gpu.GPU_Image_PTR imageHandle)
         {
             ImageHandle = imageHandle;
 
             Width = imageHandle.Value.w;
             Height = imageHandle.Value.h;
-
-            // Anchor = new Vector2(0);
         }
 
         public void SetBlendingMode(BlendingPreset preset)

@@ -15,6 +15,9 @@ namespace Chroma.Graphics
         internal SDL_gpu.GPU_Target_PTR CurrentRenderTarget { get; private set; }
         internal SDL_gpu.GPU_Target_PTR OriginalRenderTarget { get; }
 
+        public bool RenderingToWindow
+            => CurrentRenderTarget.Pointer == OriginalRenderTarget.Pointer;
+
         internal RenderContext(Window owner)
         {
             Owner = owner;
@@ -242,7 +245,7 @@ namespace Chroma.Graphics
             for (var i = 0; i < text.Length; i++)
             {
                 var c = text[i];
-                
+
                 if (c == '\n')
                 {
                     x = position.X;
@@ -269,16 +272,15 @@ namespace Chroma.Graphics
                 // for some reason settings the blitting anchor to [0, 0]
                 // makes the entire text blurry at time of blitting
 
-                var xPos = x + info.Bearing.X + (info.BitmapSize.X / 2);
-                var yPos = y - info.Bearing.Y + (info.BitmapSize.Y / 2) + maxBearing;
+
+                var xPos = x + (info.BitmapSize.X / 2) + info.Bearing.X;
+                var yPos = y + (info.BitmapSize.Y / 2) - info.Bearing.Y + maxBearing;
 
                 GlyphTransformData transform = new GlyphTransformData(new Vector2(xPos, yPos));
 
                 if (perCharTransform != null)
-                {
                     transform = perCharTransform(c, i, new Vector2(xPos, yPos), info);
-                }
-                          
+
                 SDL_gpu.GPU_SetColor(font.Atlas.ImageHandle, transform.Color);
                 SDL_gpu.GPU_BlitTransform(
                     font.Atlas.ImageHandle,

@@ -51,10 +51,10 @@ namespace Chroma.ExampleApp
                 Color.Yellow,
                 Color.Lime,
                 Color.CornflowerBlue,
-                Color.Purple,
-                Color.Pink
+                Color.Indigo,
+                Color.Violet
             };
-            _ttf = new TrueTypeFont(Path.Combine(loc, "c64style.ttf"), 16);
+            _ttf = new TrueTypeFont(Path.Combine(loc, "DooM.ttf"), 16);
         }
 
         protected override void Update(float delta)
@@ -70,36 +70,48 @@ namespace Chroma.ExampleApp
         {
             context.Clear(Color.Black);
 
-            context.RenderTo(_tgt, () =>
-            {
-                context.Clear(Color.Black);
-                context.DrawString(
-                    _ttf,
-                    "the quick brown fox jumps over the lazy dog 1234567890\nTHE QUICK BROWN FOX JUMPS OVER THE LAZY DOG 1234567890",
-                    new Vector2(150),
-                    (c, i, p) =>
+            context.DrawString(
+                _ttf,
+                "PICKED UP SOME SHELLS",
+                new Vector2(16),
+                (c, i, p, g) =>
+                {
+                    var glyphTransform = new GlyphTransformData(p)
                     {
-                        var glyphTransform = new GlyphTransformData(p)
-                        {
-                            Color = _colors[i % _colors.Count],
-                        };
+                        Color = Color.Red
+                    };
 
-                        var verticalNudge = 2 * (float)Math.Sin(i + _rotation);
-                        glyphTransform.Position = new Vector2(p.X, p.Y + verticalNudge);
+                    var verticalNudge = 2 * (float)Math.Sin(i + _rotation);
 
-                        return glyphTransform;
-                    });
-            });
+                    glyphTransform.Position = new Vector2(p.X, p.Y + verticalNudge);
 
-            context.DrawTexture(
-                _tgt.Texture,
-                Vector2.Zero,
-                Vector2.One,
-                Vector2.Zero,
-                0
+                    return glyphTransform;
+                }
             );
 
-            /* context.DrawTexture(
+            context.DrawString(
+                _ttf,
+                "PICKED UP BFG AMMO!",
+                new Vector2(16, 32),
+                (c, i, p, g) =>
+                {
+                    var glyphTransform = new GlyphTransformData(p)
+                    {
+                        Color = Color.Red
+                    };
+
+                    if (c == 'B' || c == 'F' || c == 'G')
+                        glyphTransform.Color = Color.Lime;
+
+                    var horizontalNudge = 3 * (float)Math.Cos(i + _rotation);
+
+                    glyphTransform.Position = new Vector2(p.X + horizontalNudge, p.Y);
+
+                    return glyphTransform;
+                }
+            );
+
+            /*context.DrawTexture(
                  _ttf.Atlas,
                  Vector2.Zero,//new Vector2(300, 300), 
                  Vector2.One,

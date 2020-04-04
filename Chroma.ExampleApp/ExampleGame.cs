@@ -41,7 +41,7 @@ namespace Chroma.ExampleApp
                 _tex.Height * .3f / 2
             );
 
-            _ttf = new TrueTypeFont(Path.Combine(loc, "tahoma.ttf"), 24);
+            _ttf = new TrueTypeFont(Path.Combine(loc, "TAHOMA.TTF"), 24);
         }
 
         protected override void Update(float delta)

@@ -225,7 +225,6 @@ namespace Chroma.Graphics
         {
             var x = position.X;
             var y = position.Y;
-            var prevChar = (char)0;
 
             var maxBearing = 0;
 
@@ -261,23 +260,20 @@ namespace Chroma.Graphics
                     h = info.Size.Y
                 };
 
-                var kerning = Vector2.Zero;
-
-                if (prevChar != 0)
-                    kerning = font.GetKerning(prevChar, c);
-
                 // info.Size.X / 2 and info.Size.Y / 2
-                // to compensate for blitting anchor
+                // to compensate for blitting anchor.
+                // for some reason settings the blitting anchor to [0, 0]
+                // makes the entire text blurry at time of blitting
+
                 SDL_gpu.GPU_Blit(
                     font.Atlas.ImageHandle,
                     ref srcRect,
                     CurrentRenderTarget,
-                    x + info.BitmapCoordinates.X + (info.Size.X / 2),
-                    y - info.BitmapCoordinates.Y + (info.Size.Y / 2) + maxBearing
+                    x + info.Bearing.X + (info.Size.X / 2),
+                    y - info.Bearing.Y + (info.Size.Y / 2) + maxBearing
                 );
 
                 x += info.Advance;
-                prevChar = c;
             }
         }
     }

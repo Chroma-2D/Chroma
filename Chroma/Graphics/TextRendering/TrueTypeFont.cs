@@ -46,7 +46,6 @@ namespace Chroma.Graphics.TextRendering
 
             Descender = (FaceRec.descender >> 6);
 
-
             RenderInfo = new Dictionary<char, Glyph>();
             Atlas = GenerateTextureAtlas();
         }
@@ -77,7 +76,7 @@ namespace Chroma.Graphics.TextRendering
                 if (glyphsGenerated >= maxGlyphs)
                     break;
 
-                FT.FT_Load_Char(Face, c, FT.FT_LOAD_RENDER | FT.FT_LOAD_FORCE_AUTOHINT | FT.FT_LOAD_TARGET_NORMAL);
+                FT.FT_Load_Char(Face, c, FT.FT_LOAD_RENDER | FT.FT_LOAD_FORCE_AUTOHINT | FT.FT_LOAD_TARGET_LIGHT);
                 var bmp = FaceRec.glyph->bitmap;
                 var buffer = (byte*)FaceRec.glyph->bitmap.buffer.ToPointer();
 
@@ -127,7 +126,7 @@ namespace Chroma.Graphics.TextRendering
         public Vector2 GetKerning(char prev, char current)
         {
             FT.FT_Get_Kerning(Face, prev, current, 0, out FT_Vector kerning);
-            return new Vector2(kerning.x.ToInt32(), kerning.y.ToInt32());
+            return new Vector2(kerning.x.ToInt32() >> 6, kerning.y.ToInt32() >> 6);
         }
 
         private Texture CreateTextureFromFTBitmap(byte* pixels, int texWidth, int texHeight)

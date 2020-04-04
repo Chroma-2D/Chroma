@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Chroma.Diagnostics;
@@ -18,6 +20,7 @@ namespace Chroma.ExampleApp
         private Vector2 _origin;
         private float _rotation;
         private byte _alpha;
+        private List<Color> _colors;
 
         public ExampleGame()
         {
@@ -41,13 +44,23 @@ namespace Chroma.ExampleApp
                 _tex.Height * .3f / 2
             );
 
-            _ttf = new TrueTypeFont(Path.Combine(loc, "TAHOMA.TTF"), 24);
+            _colors = new List<Color>
+            {
+                Color.Red,
+                Color.Orange,
+                Color.Yellow,
+                Color.Lime,
+                Color.CornflowerBlue,
+                Color.Purple,
+                Color.Pink
+            };
+            _ttf = new TrueTypeFont(Path.Combine(loc, "c64style.ttf"), 16);
         }
 
         protected override void Update(float delta)
         {
             Window.Properties.Title = $"{Window.FPS}";
-            _rotation += 45f * delta;
+            _rotation += 10f * delta;
 
             _alpha = 255;
             _tex.ColorMask = new Color(255, 255, 255, _alpha);
@@ -57,24 +70,25 @@ namespace Chroma.ExampleApp
         {
             context.Clear(Color.Black);
 
-           /* context.RenderTo(_tgt, () =>
+            context.RenderTo(_tgt, () =>
             {
                 context.Clear(Color.Black);
-                for (var x = 0; x < 100; x++)
-                {
-                    for (var y = 0; y < 100; y++)
+                context.DrawString(
+                    _ttf,
+                    "the quick brown fox jumps over the lazy dog 1234567890\nTHE QUICK BROWN FOX JUMPS OVER THE LAZY DOG 1234567890",
+                    new Vector2(150),
+                    (c, i, p) =>
                     {
-                        context.DrawTexture(
-                            _tex,
-                            new Vector2(
-                                100, 100
-                            ) + _origin,
-                            Vector2.One,
-                            _origin,
-                            _rotation
-                        );
-                    }
-                }
+                        var glyphTransform = new GlyphTransformData(p)
+                        {
+                            Color = _colors[i % _colors.Count],
+                        };
+
+                        var verticalNudge = 2 * (float)Math.Sin(i + _rotation);
+                        glyphTransform.Position = new Vector2(p.X, p.Y + verticalNudge);
+
+                        return glyphTransform;
+                    });
             });
 
             context.DrawTexture(
@@ -82,18 +96,15 @@ namespace Chroma.ExampleApp
                 Vector2.Zero,
                 Vector2.One,
                 Vector2.Zero,
-                0f
-            );*/
+                0
+            );
 
-           /* context.DrawTexture(
-                _ttf.Atlas,
-                Vector2.Zero,//new Vector2(300, 300), 
-                Vector2.One,
-                Vector2.Zero, .0f
-            );*/
-
-            context.DrawString(_ttf, "the quick brown fox jumps over the lazy dog 1234567890\nTHE QUICK BROWN FOX JUMPS OVER THE LAZY DOG 1234567890\nLoReM iPsUm dOlOr sIt AmEt\nX", Vector2.Zero);
-
+            /* context.DrawTexture(
+                 _ttf.Atlas,
+                 Vector2.Zero,//new Vector2(300, 300), 
+                 Vector2.One,
+                 Vector2.Zero, .0f
+             );*/
         }
     }
 }

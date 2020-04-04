@@ -41,7 +41,7 @@ namespace Chroma.ExampleApp
                 _tex.Height * .3f / 2
             );
 
-            _ttf = new TrueTypeFont(Path.Combine(loc, "nouveau_ibm.ttf"), 16);
+            _ttf = new TrueTypeFont(Path.Combine(loc, "tahoma.ttf"), 24);
         }
 
         protected override void Update(float delta)
@@ -92,7 +92,7 @@ namespace Chroma.ExampleApp
                 Vector2.Zero, .0f
             );*/
 
-            context.DrawString(_ttf, "THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG 1234567890\nthe quick brown fox jumps over the lazy dog 1234567890\nLoReM iPsUm dOlOr sIt AmEt\nX", Vector2.Zero);
+            context.DrawString(_ttf, "the quick brown fox jumps over the lazy dog 1234567890\nTHE QUICK BROWN FOX JUMPS OVER THE LAZY DOG 1234567890\nLoReM iPsUm dOlOr sIt AmEt\nX", Vector2.Zero);
 
         }
     }

@@ -221,12 +221,15 @@ namespace Chroma.Graphics
             CurrentRenderTarget = OriginalRenderTarget;
         }
 
-        public void DrawString(TrueTypeFont font, string text, Vector2 position)
+        public void DrawString(TrueTypeFont font, string text, Vector2 position, Func<char, int, Vector2, GlyphTransformData> perCharTransform = null)
         {
             var x = position.X;
             var y = position.Y;
 
             var maxBearing = 0;
+
+            // var measure = font.Measure(text);
+            // Rectangle(ShapeMode.Stroke, position, measure.X, measure.Y, Color.Red);
 
             foreach (var c in text)
             {
@@ -239,12 +242,16 @@ namespace Chroma.Graphics
                     maxBearing = (int)info.Bearing.Y;
             }
 
-            foreach (var c in text)
+            for (var i = 0; i < text.Length; i++)
             {
+                var c = text[i];
+                
                 if (c == '\n')
                 {
                     x = position.X;
-                    y += font.LineHeight;
+                    y += font.ScaledLineSpacing;
+
+                    continue;
                 }
 
                 if (!font.HasGlyph(c))
@@ -265,15 +272,34 @@ namespace Chroma.Graphics
                 // for some reason settings the blitting anchor to [0, 0]
                 // makes the entire text blurry at time of blitting
 
-                SDL_gpu.GPU_Blit(
+                var xPos = x + info.Bearing.X /*+ (info.BitmapSize.X / 2)*/;
+                var yPos = y - info.Bearing.Y /*+ (info.BitmapSize.Y / 2)*/ + maxBearing;
+
+                GlyphTransformData transform = new GlyphTransformData(
+                    new Vector2(xPos, yPos)
+                );
+                
+                if (perCharTransform != null)
+                {
+                    transform = perCharTransform(c, i, new Vector2(xPos, yPos));
+                }
+                          
+                SDL_gpu.GPU_SetColor(font.Atlas.ImageHandle, transform.Color);
+                SDL_gpu.GPU_BlitTransformX(
                     font.Atlas.ImageHandle,
                     ref srcRect,
                     CurrentRenderTarget,
-                    x + info.Bearing.X + (info.Size.X / 2),
-                    y - info.Bearing.Y + (info.Size.Y / 2) + maxBearing
+                    transform.Position.X,
+                    transform.Position.Y,
+                    transform.Origin.X,
+                    transform.Origin.Y,
+                    transform.Rotation,
+                    transform.Scale.X,
+                    transform.Scale.Y
                 );
+                SDL_gpu.GPU_SetColor(font.Atlas.ImageHandle, Color.White);
 
-                x += info.Advance;
+                x += info.Advance.X;
             }
         }
     }

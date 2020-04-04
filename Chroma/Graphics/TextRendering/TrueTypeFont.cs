@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Chroma.Natives.FreeType;
 using Chroma.Natives.FreeType.Native;
@@ -21,7 +22,9 @@ namespace Chroma.Graphics.TextRendering
         public string FileName { get; }
         public int Size { get; }
 
-        public int LineHeight { get; }
+        public int ScaledLineSpacing { get; }
+        public int LineSpacing { get; }
+        
         public int Ascender { get; }
         public int Descender { get; }
 
@@ -41,7 +44,9 @@ namespace Chroma.Graphics.TextRendering
             FT.FT_Set_Pixel_Sizes(Face, 0, (uint)Size);
             FaceRec = Marshal.PtrToStructure<FT_FaceRec>(Face);
 
-            LineHeight = FaceRec.size->metrics.height.ToInt32() >> 6;
+            ScaledLineSpacing = FaceRec.size->metrics.height.ToInt32() >> 6;
+            LineSpacing = FaceRec.height >> 6;
+            
             Ascender = FaceRec.size->metrics.ascender.ToInt32() >> 6;
 
             Descender = (FaceRec.descender >> 6);
@@ -52,6 +57,34 @@ namespace Chroma.Graphics.TextRendering
 
         public bool HasGlyph(char c)
             => FT.FT_Get_Char_Index(Face, c) != 0;
+
+        public Vector2 Measure(string text)
+        {
+            var width = 0f;
+
+            var maxWidth = width;
+            var maxHeight = (text.Count(c => c == '\n') + 1) * ScaledLineSpacing;
+            
+            foreach (var c in text)
+            {
+                if (c == '\n')
+                {
+                    if (maxWidth < width)
+                        maxWidth = width;
+
+                    width = 0;
+                    continue;
+                }
+
+                if (!HasGlyph(c))
+                    continue;
+    
+                var info = RenderInfo[c];
+                width += info.Advance.X;
+            }
+            
+            return new Vector2(maxWidth, maxHeight);
+        }
 
         private Texture GenerateTextureAtlas(int maxGlyphs = 512)
         {
@@ -100,7 +133,14 @@ namespace Chroma.Graphics.TextRendering
                 var glyph = new Glyph
                 {
                     Position = new Vector2(penX, penY),
-                    Size = new Vector2((int)bmp.width, (int)bmp.rows),
+                    Size = new Vector2(
+                        FaceRec.glyph->metrics.width.ToInt32() >> 6,
+                        FaceRec.glyph->metrics.height.ToInt32() >> 6
+                    ),
+                    BitmapSize = new Vector2(
+                        (int)bmp.width, 
+                        (int)bmp.rows
+                    ),
                     BitmapCoordinates = new Vector2(
                         FaceRec.glyph->bitmap_left,
                         FaceRec.glyph->bitmap_top
@@ -109,7 +149,10 @@ namespace Chroma.Graphics.TextRendering
                         FaceRec.glyph->metrics.horiBearingX.ToInt32() >> 6,
                         FaceRec.glyph->metrics.horiBearingY.ToInt32() >> 6
                     ),
-                    Advance = FaceRec.glyph->advance.x.ToInt32() >> 6
+                    Advance = new Vector2(
+                        FaceRec.glyph->advance.x.ToInt32() >> 6,
+                        FaceRec.glyph->advance.y.ToInt32() >> 6
+                    )
                 };
                 RenderInfo.Add(c, glyph);
 

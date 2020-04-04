@@ -221,15 +221,12 @@ namespace Chroma.Graphics
             CurrentRenderTarget = OriginalRenderTarget;
         }
 
-        public void DrawString(TrueTypeFont font, string text, Vector2 position, Func<char, int, Vector2, GlyphTransformData> perCharTransform = null)
+        public void DrawString(TrueTypeFont font, string text, Vector2 position, Func<char, int, Vector2, Glyph, GlyphTransformData> perCharTransform = null)
         {
             var x = position.X;
             var y = position.Y;
 
             var maxBearing = 0;
-
-            // var measure = font.Measure(text);
-            // Rectangle(ShapeMode.Stroke, position, measure.X, measure.Y, Color.Red);
 
             foreach (var c in text)
             {
@@ -272,27 +269,23 @@ namespace Chroma.Graphics
                 // for some reason settings the blitting anchor to [0, 0]
                 // makes the entire text blurry at time of blitting
 
-                var xPos = x + info.Bearing.X /*+ (info.BitmapSize.X / 2)*/;
-                var yPos = y - info.Bearing.Y /*+ (info.BitmapSize.Y / 2)*/ + maxBearing;
+                var xPos = x + info.Bearing.X + (info.BitmapSize.X / 2);
+                var yPos = y - info.Bearing.Y + (info.BitmapSize.Y / 2) + maxBearing;
 
-                GlyphTransformData transform = new GlyphTransformData(
-                    new Vector2(xPos, yPos)
-                );
-                
+                GlyphTransformData transform = new GlyphTransformData(new Vector2(xPos, yPos));
+
                 if (perCharTransform != null)
                 {
-                    transform = perCharTransform(c, i, new Vector2(xPos, yPos));
+                    transform = perCharTransform(c, i, new Vector2(xPos, yPos), info);
                 }
                           
                 SDL_gpu.GPU_SetColor(font.Atlas.ImageHandle, transform.Color);
-                SDL_gpu.GPU_BlitTransformX(
+                SDL_gpu.GPU_BlitTransform(
                     font.Atlas.ImageHandle,
                     ref srcRect,
                     CurrentRenderTarget,
                     transform.Position.X,
                     transform.Position.Y,
-                    transform.Origin.X,
-                    transform.Origin.Y,
                     transform.Rotation,
                     transform.Scale.X,
                     transform.Scale.Y

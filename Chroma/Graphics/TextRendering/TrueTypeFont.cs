@@ -94,8 +94,12 @@ namespace Chroma.Graphics.TextRendering
             while (texWidth < maxDim) texWidth <<= 1;
             var texHeight = texWidth;
 
+            var texSize = texWidth * texHeight;
             IntPtr managedPixels = Marshal.AllocHGlobal(texWidth * texHeight);
             byte* pixels = (byte*)managedPixels.ToPointer();
+
+            for (var i = 0; i < texSize; i++)
+                pixels[i] = 0;
 
             int penX = 0;
             int penY = 0;

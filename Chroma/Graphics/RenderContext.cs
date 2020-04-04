@@ -227,6 +227,19 @@ namespace Chroma.Graphics
             var y = position.Y;
             var prevChar = (char)0;
 
+            var maxBearing = 0;
+
+            foreach (var c in text)
+            {
+                if (!font.HasGlyph(c))
+                    continue;
+
+                var info = font.RenderInfo[c];
+
+                if (info.Bearing.Y > maxBearing)
+                    maxBearing = (int)info.Bearing.Y;
+            }
+
             foreach (var c in text)
             {
                 if (c == '\n')
@@ -260,7 +273,7 @@ namespace Chroma.Graphics
                     ref srcRect,
                     CurrentRenderTarget,
                     x + info.BitmapCoordinates.X + (info.Size.X / 2),
-                    y - info.BitmapCoordinates.Y + (info.Size.Y / 2)  + font.Ascender 
+                    y - info.BitmapCoordinates.Y + (info.Size.Y / 2) + maxBearing
                 );
 
                 x += info.Advance;

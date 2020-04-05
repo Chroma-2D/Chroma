@@ -808,6 +808,14 @@ namespace Chroma.Natives.SDL
             ref GPU_Rect surface_rect);
 
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_UpdateImage(
+            GPU_Image_PTR image,
+            GPU_Rect image_rect,
+            IntPtr surface,
+            GPU_Rect surface_rect
+        );
+
+        [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_UpdateSubImage(
             GPU_Image_PTR image,
             ref GPU_Rect image_rect,

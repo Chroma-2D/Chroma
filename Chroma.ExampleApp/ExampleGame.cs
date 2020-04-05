@@ -12,12 +12,14 @@ namespace Chroma.ExampleApp
     public class ExampleGame : Game
     {
         private TrueTypeFont _ttf;
+        private Texture _texture;
+
         private float _rotation;
         private List<Color> _colors;
 
         public ExampleGame()
         {
-            Graphics.VSyncEnabled = true;
+            Graphics.VSyncEnabled = false;
             Log.Verbosity |= Verbosity.Debug;
 
             Window.GoWindowed(1024, 600);
@@ -34,18 +36,36 @@ namespace Chroma.ExampleApp
                 Color.Indigo,
                 Color.Violet
             };
+
             _ttf = new TrueTypeFont(Path.Combine(loc, "c64style.ttf"), 16);
+            _texture = new Texture(256, 256);
         }
-        
+
         protected override void Update(float delta)
         {
             Window.Properties.Title = $"{Window.FPS}";
-            _rotation += 10f * delta;
+            _rotation += 45f * delta;
+
+            for (var i = 0; i < _texture.Width; i++)
+            {
+                for (var j = 0; j < _texture.Height; j++)
+                {
+                    _texture[i, j] = new Color(
+                        (byte)((i + _rotation) % 255),
+                        (byte)((i + j) % 255),
+                        (byte)((i * j) % 255)
+                     );
+                }
+            }
+
+            _texture.Flush();
         }
 
         protected override void Draw(RenderContext context)
         {
             context.Clear(Color.Black);
+
+            context.DrawTexture(_texture, new Vector2(100), Vector2.One, Vector2.Zero, .0f);
 
             context.DrawString(
                 _ttf,

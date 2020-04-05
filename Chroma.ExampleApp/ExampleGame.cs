@@ -11,9 +11,11 @@ namespace Chroma.ExampleApp
     public class ExampleGame : Game
     {
         private TrueTypeFont _ttf;
-        private Texture _texture;
+        private Texture _tex;
 
         private float _rotation;
+        private float _rotation2;
+
         private List<Color> _colors;
 
         public ExampleGame()
@@ -36,52 +38,48 @@ namespace Chroma.ExampleApp
                 Color.Violet
             };
 
+            _tex = new Texture(Path.Combine(loc, "burg.png"));
             _ttf = new TrueTypeFont(Path.Combine(loc, "c64style.ttf"), 16);
-            _texture = new Texture(256, 256);
-
-            for (var i = 0; i < _texture.Width; i++)
-            {
-                for (var j = 0; j < _texture.Height; j++)
-                {
-                    _texture[i, j] = new Color(
-                        (byte)((i + _rotation) % 255),
-                        (byte)((i + j) % 255),
-                        (byte)((i * j) % 255)
-                     );
-                }
-            }
-
-            _texture.Flush();
         }
 
         protected override void Update(float delta)
         {
             Window.Properties.Title = $"{Window.FPS}";
-            _rotation += 45f * delta;
+
+            _rotation += 30f * delta;
+            _rotation %= 360;
+
+            _rotation2 += 100f * delta;
+            _rotation %= 360;
         }
 
         protected override void Draw(RenderContext context)
         {
-            context.Clear(Color.Black);
-
-            context.DrawTexture(_texture, new Vector2(100), Vector2.One, Vector2.Zero, .0f, new Rectangle(0, 0, 32, 32));
+            context.DrawTexture(
+                _tex,
+                new Vector2(400, 72),
+                Vector2.One,
+                new Vector2(_tex.Width / 2, _tex.Height / 2), 
+                _rotation2
+            );
 
             context.DrawString(
                 _ttf,
-                "EAT YOUR BROCCOLI",
-                new Vector2(16, 16),
+                "BURG EMOTE WHEN",
+                new Vector2(300, 140),
                 (c, i, p, g) =>
                 {
-                    var glyphTransform = new GlyphTransformData(p)
+                    var transform = new GlyphTransformData(p)
                     {
                         Color = _colors[i % _colors.Count]
                     };
 
-                    var verticalNudge = 2 * (float)Math.Sin(i + _rotation);
-                    var horizontalNudge = 3 * (float)Math.Sin(i + _rotation);
+                    var verticalNudge = 2f * (float)Math.Sin(i + _rotation);
+                    var horizontalNudge = 3f * (float)Math.Cos(i + _rotation);
 
-                    glyphTransform.Position = new Vector2(p.X + horizontalNudge, p.Y + verticalNudge);
-                    return glyphTransform;
+                    transform.Position = new Vector2(p.X + horizontalNudge, p.Y + verticalNudge);
+
+                    return transform;
                 }
             );
         }

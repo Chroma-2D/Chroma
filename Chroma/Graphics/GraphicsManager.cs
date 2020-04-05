@@ -35,6 +35,8 @@ namespace Chroma.Graphics
             set => SDL2.SDL_SetWindowBrightness(Game.Window.Handle, value);
         }
 
+        public bool AutoClear { get; set; } = true;
+
         internal GraphicsManager(Game game)
         {
             Game = game;

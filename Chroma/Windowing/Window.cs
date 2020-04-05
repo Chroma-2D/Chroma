@@ -45,6 +45,7 @@ namespace Chroma.Windowing
 
         public bool Disposed { get; private set; }
         public IntPtr Handle { get; }
+
         public bool Running { get; set; }
 
         public WindowProperties Properties { get; }
@@ -100,6 +101,10 @@ namespace Chroma.Windowing
                     EventDispatcher.Dispatch(ev);
 
                 Update?.Invoke(Delta);
+
+                if (Game.Graphics.AutoClear)
+                    RenderContext.Clear(Color.Transparent);
+
                 Draw?.Invoke(RenderContext);
 
                 SDL_gpu.GPU_Flip(RenderTargetPointer);

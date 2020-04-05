@@ -103,7 +103,7 @@ namespace Chroma.Windowing
                 Update?.Invoke(Delta);
 
                 if (Game.Graphics.AutoClear)
-                    RenderContext.Clear(Color.Transparent);
+                    RenderContext.Clear(Game.Graphics.AutoClearColor);
 
                 Draw?.Invoke(RenderContext);
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Chroma.Diagnostics;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics
@@ -7,11 +8,35 @@ namespace Chroma.Graphics
     public class Texture : IDisposable
     {
         internal SDL_gpu.GPU_Image_PTR ImageHandle { get; private set; }
+        internal unsafe SDL2.SDL_Surface* Surface { get; private set; }
 
         public bool Disposed { get; private set; }
 
-        public float Width { get; }
-        public float Height { get; }
+        public float Width
+        {
+            get
+            {
+                EnsureNotDisposed();
+
+                unsafe
+                {
+                    return Surface->w;
+                }
+            }
+        }
+
+        public float Height
+        {
+            get
+            {
+                EnsureNotDisposed();
+
+                unsafe
+                {
+                    return Surface->h;
+                }
+            }
+        }
 
         public Vector2 Anchor
         {
@@ -274,30 +299,30 @@ namespace Chroma.Graphics
             }
         }
 
+        public Color this[int x, int y]
+        {
+            get => GetPixel(x, y);
+            set => SetPixel(x, y, value);
+        }
+
         public Texture(Stream stream)
         {
             var bytes = new byte[stream.Length];
             stream.Read(bytes, 0, bytes.Length);
 
             IntPtr surfaceHandle;
-            SDL2.SDL_Surface surface;
-
             unsafe
             {
                 fixed (byte* bp = &bytes[0])
                 {
                     var rwops = SDL2.SDL_RWFromMem(new IntPtr(bp), bytes.Length);
                     surfaceHandle = SDL_image.IMG_Load_RW(rwops, 1);
-                    surface = *(SDL2.SDL_Surface*)surfaceHandle.ToPointer();
+
+                    Surface = (SDL2.SDL_Surface*)surfaceHandle.ToPointer();
                 }
             }
 
             ImageHandle = SDL_gpu.GPU_CopyImageFromSurface(surfaceHandle);
-
-            Width = surface.w;
-            Height = surface.h;
-
-            SDL2.SDL_FreeSurface(surfaceHandle);
         }
 
         public Texture(string filePath)
@@ -305,24 +330,117 @@ namespace Chroma.Graphics
             if (!File.Exists(filePath))
                 throw new FileNotFoundException("The provided file path does not exist.", filePath);
 
-            ImageHandle = SDL_gpu.GPU_LoadImage(filePath);
+            var surfaceHandle = SDL_image.IMG_Load(filePath);
 
-            Width = ImageHandle.Value.w;
-            Height = ImageHandle.Value.h;
+            unsafe
+            {
+                Surface = (SDL2.SDL_Surface*)surfaceHandle.ToPointer();
+            }
+
+            ImageHandle = SDL_gpu.GPU_CopyImageFromSurface(surfaceHandle);
         }
 
         public Texture(Texture other)
-            : this(SDL_gpu.GPU_CopyImage(other.ImageHandle)) { }
+        {
+            unsafe
+            {
+                var handle = SDL2.SDL_CreateRGBSurfaceFrom(
+                    other.Surface->pixels,
+                    other.Surface->w,
+                    other.Surface->h,
+                    32,
+                    other.Surface->pitch,
+                    0x000000FF,
+                    0x0000FF00,
+                    0x00FF0000,
+                    0xFF000000
+                );
 
-        public Texture(ushort width, ushort height, PixelFormat fmt = PixelFormat.RGBA)
-            : this(SDL_gpu.GPU_CreateImage(width, height, (SDL_gpu.GPU_FormatEnum)fmt)) { }
+                other.Surface = (SDL2.SDL_Surface*)handle.ToPointer();
+                other.ImageHandle = SDL_gpu.GPU_CopyImageFromSurface(handle);
+            }
+        }
+
+        public Texture(ushort width, ushort height)
+        {
+            unsafe
+            {
+                var handle = SDL2.SDL_CreateRGBSurface(
+                    0,
+                    width,
+                    height,
+                    32,
+                    0x000000FF,
+                    0x0000FF00,
+                    0x00FF0000,
+                    0xFF000000
+                );
+
+                Surface = (SDL2.SDL_Surface*)handle.ToPointer();
+                ImageHandle = SDL_gpu.GPU_CopyImageFromSurface(handle);
+            }
+        }
 
         internal Texture(SDL_gpu.GPU_Image_PTR imageHandle)
         {
             ImageHandle = imageHandle;
+        }
 
-            Width = imageHandle.Value.w;
-            Height = imageHandle.Value.h;
+        public void SetPixel(int x, int y, Color color)
+        {
+            EnsureNotDisposed();
+
+            if (x < 0 || y < 0 || x >= Width || y >= Height)
+            {
+                Log.Warning($"Tried to set a texture pixel on out-of-bounds coordinates ({x},{y})");
+                return;
+            }
+
+            unsafe
+            {
+                uint* targetPixel = (uint*)(
+                    (byte*)Surface->pixels +
+                    (y * Surface->pitch) +
+                    (x * sizeof(uint))
+                );
+
+                *targetPixel = color.PackedValue;
+            }
+        }
+
+        public Color GetPixel(int x, int y)
+        {
+            EnsureNotDisposed();
+
+            if (x < 0 || y < 0 || x >= Width || y >= Height)
+            {
+                Log.Warning($"Tried to retrieve a texture pixel on out-of-bounds coordinates ({x},{y})");
+                return Color.Black;
+            }
+
+            unsafe
+            {
+                uint* targetPixel = (uint*)(
+                    (byte*)Surface->pixels +
+                    (y * Surface->pitch) +
+                    (x * sizeof(uint))
+                );
+
+                return new Color(*targetPixel);
+            }
+        }
+
+        public void Flush()
+        {
+            EnsureNotDisposed();
+
+            unsafe
+            {
+                var imgRect = new SDL_gpu.GPU_Rect { x = 0, y = 0, w = Width, h = Height };
+                var surfRect = new SDL_gpu.GPU_Rect { x = 0, y = 0, w = Surface->w, h = Surface->h };
+
+                SDL_gpu.GPU_UpdateImage(ImageHandle, imgRect, new IntPtr(Surface), surfRect);
+            }
         }
 
         public void SetBlendingMode(BlendingPreset preset)
@@ -359,6 +477,11 @@ namespace Chroma.Graphics
                 }
 
                 SDL_gpu.GPU_FreeImage(ImageHandle);
+
+                unsafe
+                {
+                    SDL2.SDL_FreeSurface(new IntPtr(Surface));
+                }
                 Disposed = true;
             }
         }

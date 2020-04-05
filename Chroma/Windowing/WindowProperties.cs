@@ -1,4 +1,5 @@
-﻿using Chroma.Diagnostics;
+﻿using System;
+using Chroma.Diagnostics;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Windowing
@@ -6,41 +7,62 @@ namespace Chroma.Windowing
     public class WindowProperties
     {
         private WindowState _state;
+        private int _width;
+        private int _height;
+        private Vector2 _position;
+        private string _title;
+
         internal Window Owner { get; }
 
         public bool ViewportAutoResize { get; set; } = true;
 
-        public float Height
+        public int Height
         {
             get
             {
+                if (Owner.Handle == IntPtr.Zero)
+                    return _height;
+
                 SDL2.SDL_GetWindowSize(Owner.Handle, out int _, out int h);
                 return h;
             }
 
             set
             {
-                if (ViewportAutoResize)
-                    SDL_gpu.GPU_SetWindowResolution((ushort)Width, (ushort)value);
-                else
-                    SDL2.SDL_SetWindowSize(Owner.Handle, (ushort)Width, (ushort)value);
+                _height = value;
+
+                if (Owner.Handle != IntPtr.Zero)
+                {
+                    if (ViewportAutoResize)
+                        SDL_gpu.GPU_SetWindowResolution((ushort)Width, (ushort)_height);
+                    else
+                        SDL2.SDL_SetWindowSize(Owner.Handle, (ushort)Width, (ushort)_height);
+                }
             }
         }
 
-        public float Width
+        public int Width
         {
             get
             {
+                if (Owner.Handle == IntPtr.Zero)
+                    return _width;
+
                 SDL2.SDL_GetWindowSize(Owner.Handle, out int w, out int _);
                 return w;
             }
 
             set
             {
-                if (ViewportAutoResize)
-                    SDL_gpu.GPU_SetWindowResolution((ushort)value, (ushort)Height);
-                else
-                    SDL2.SDL_SetWindowSize(Owner.Handle, (ushort)value, (ushort)Height);
+                _width = value;
+
+                if (Owner.Handle != IntPtr.Zero)
+                {
+                    if (ViewportAutoResize)
+                        SDL_gpu.GPU_SetWindowResolution((ushort)_width, (ushort)Height);
+                    else
+                        SDL2.SDL_SetWindowSize(Owner.Handle, (ushort)_width, (ushort)Height);
+                }
             }
         }
 
@@ -48,17 +70,38 @@ namespace Chroma.Windowing
         {
             get
             {
-                SDL2.SDL_GetWindowPosition(Owner.Handle, out int w, out int h);
-                return new Vector2(w, h);
+                if (Owner.Handle == IntPtr.Zero)
+                    return _position;
+
+                SDL2.SDL_GetWindowPosition(Owner.Handle, out int x, out int y);
+                return new Vector2(x, y);
             }
 
-            set => SDL2.SDL_SetWindowPosition(Owner.Handle, (int)value.X, (int)value.Y);
+            set
+            {
+                _position = value;
+
+                if (Owner.Handle != IntPtr.Zero)
+                    SDL2.SDL_SetWindowPosition(Owner.Handle, (int)_position.X, (int)_position.Y);
+            }
         }
 
         public string Title
         {
-            get => SDL2.SDL_GetWindowTitle(Owner.Handle);
-            set => SDL2.SDL_SetWindowTitle(Owner.Handle, value);
+            get
+            {
+                if (Owner.Handle == IntPtr.Zero)
+                    return _title;
+
+                return SDL2.SDL_GetWindowTitle(Owner.Handle);
+            }
+            set
+            {
+                _title = value;
+
+                if (Owner.Handle != IntPtr.Zero)
+                    SDL2.SDL_SetWindowTitle(Owner.Handle, _title);
+            }
         }
 
         public WindowState State
@@ -67,30 +110,33 @@ namespace Chroma.Windowing
 
             set
             {
-                switch (value)
-                {
-                    case WindowState.Maximized:
-                        var flags = (SDL2.SDL_WindowFlags)SDL2.SDL_GetWindowFlags(Owner.Handle);
-
-                        if (!flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_RESIZABLE))
-                        {
-                            Log.Warning("Refusing to maximize a non-resizable window.");
-                            return;
-                        }
-
-                        SDL2.SDL_MaximizeWindow(Owner.Handle);
-                        break;
-
-                    case WindowState.Minimized:
-                        SDL2.SDL_MinimizeWindow(Owner.Handle);
-                        break;
-
-                    case WindowState.Normal:
-                        SDL2.SDL_RestoreWindow(Owner.Handle);
-                        break;
-                }
-
                 _state = value;
+
+                if (Owner.Handle != IntPtr.Zero)
+                {
+                    switch (value)
+                    {
+                        case WindowState.Maximized:
+                            var flags = (SDL2.SDL_WindowFlags)SDL2.SDL_GetWindowFlags(Owner.Handle);
+
+                            if (!flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_RESIZABLE))
+                            {
+                                Log.Warning("Refusing to maximize a non-resizable window.");
+                                return;
+                            }
+
+                            SDL2.SDL_MaximizeWindow(Owner.Handle);
+                            break;
+
+                        case WindowState.Minimized:
+                            SDL2.SDL_MinimizeWindow(Owner.Handle);
+                            break;
+
+                        case WindowState.Normal:
+                            SDL2.SDL_RestoreWindow(Owner.Handle);
+                            break;
+                    }
+                }
             }
         }
 

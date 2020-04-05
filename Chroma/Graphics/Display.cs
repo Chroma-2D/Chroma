@@ -8,8 +8,8 @@ namespace Chroma.Graphics
 
         public int Index { get; }
         public int RefreshRate { get; }
-        public float Width { get; }
-        public float Height { get; }
+        public ushort Width { get; }
+        public ushort Height { get; }
 
         internal Display(int index, int refreshRate, ushort width, ushort height)
         {

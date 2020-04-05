@@ -60,12 +60,11 @@ namespace Chroma.Windowing
                 string.Empty,
                 (int)Properties.Position.X,
                 (int)Properties.Position.Y,
-                (int)Properties.Width,
-                (int)Properties.Height,
+                Properties.Width,
+                Properties.Height,
                 SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL
             );
             Properties.Title = "Chroma Engine";
-
             SDL_gpu.GPU_SetInitWindow(SDL2.SDL_GetWindowID(Handle));
 
             var bestRenderer = Game.Graphics.GetBestRenderer();
@@ -108,6 +107,15 @@ namespace Chroma.Windowing
             }
         }
 
+        public void Show()
+            => SDL2.SDL_ShowWindow(Handle);
+
+        public void Hide()
+            => SDL2.SDL_HideWindow(Handle);
+
+        public void CenterScreen()
+            => Properties.Position = new Vector2(SDL2.SDL_WINDOWPOS_CENTERED, SDL2.SDL_WINDOWPOS_CENTERED);
+
         public void GoFullscreen(bool exclusive = false, bool autoRes = true)
         {
             var flag = (uint)SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP;
@@ -128,7 +136,8 @@ namespace Chroma.Windowing
 
             Properties.Width = width;
             Properties.Height = height;
-            Properties.Position = new Vector2(SDL2.SDL_WINDOWPOS_CENTERED, SDL2.SDL_WINDOWPOS_CENTERED);
+
+            CenterScreen();
         }
 
         internal void OnClosed()

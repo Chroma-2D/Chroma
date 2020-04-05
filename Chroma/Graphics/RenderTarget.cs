@@ -8,9 +8,12 @@ namespace Chroma.Graphics
 
         public Texture Texture { get; }
 
-        public RenderTarget(ushort width, ushort height)
+        public RenderTarget(ushort width, ushort height) : this(new Texture(width, height)) 
+        { }
+
+        public RenderTarget(Texture texture)
         {
-            Texture = new Texture(width, height);
+            Texture = texture;
             Handle = SDL_gpu.GPU_LoadTarget(Texture.ImageHandle);
         }
     }

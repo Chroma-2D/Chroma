@@ -36,6 +36,7 @@ namespace Chroma.Graphics
         }
 
         public bool AutoClear { get; set; } = true;
+        public Color AutoClearColor { get; set; } = Color.Transparent;
 
         internal GraphicsManager(Game game)
         {

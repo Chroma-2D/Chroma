@@ -1,4 +1,5 @@
 ﻿using System;
+using Chroma.Natives.SDL;
 
 namespace Chroma
 {

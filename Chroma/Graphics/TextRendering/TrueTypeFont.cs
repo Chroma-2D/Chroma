@@ -14,7 +14,7 @@ namespace Chroma.Graphics.TextRendering
         internal IntPtr Face { get; }
         internal FT_FaceRec FaceRec { get; }
 
-        public Dictionary<char, Glyph> RenderInfo { get; }
+        public Dictionary<char, TrueTypeGlyph> RenderInfo { get; }
         public Texture Atlas { get; private set; }
 
         public bool Disposed { get; private set; }
@@ -51,7 +51,7 @@ namespace Chroma.Graphics.TextRendering
 
             Descender = (FaceRec.descender >> 6);
 
-            RenderInfo = new Dictionary<char, Glyph>();
+            RenderInfo = new Dictionary<char, TrueTypeGlyph>();
             Atlas = GenerateTextureAtlas();
         }
 
@@ -134,7 +134,7 @@ namespace Chroma.Graphics.TextRendering
                     }
                 }
 
-                var glyph = new Glyph
+                var glyph = new TrueTypeGlyph
                 {
                     Position = new Vector2(penX, penY),
                     Size = new Vector2(

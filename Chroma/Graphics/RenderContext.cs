@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Chroma.Graphics.TextRendering;
 using Chroma.Natives.SDL;
-//using Chroma.Graphics.Text;
-//using Chroma.Graphics.Text.BMFont;
 using Chroma.Windowing;
 
 namespace Chroma.Graphics
@@ -200,6 +197,30 @@ namespace Chroma.Graphics
             SDL_gpu.GPU_BlitTransformX(
                 texture.ImageHandle,
                 IntPtr.Zero,
+                CurrentRenderTarget,
+                position.X,
+                position.Y,
+                origin.X,
+                origin.Y,
+                rotation,
+                scale.X,
+                scale.Y
+            );
+        }
+
+        public void DrawTexture(Texture texture, Vector2 position, Vector2 scale, Vector2 origin, float rotation, Rectangle sourceRectangle)
+        {
+            var rect = new SDL_gpu.GPU_Rect
+            {
+                x = sourceRectangle.X,
+                y = sourceRectangle.Y,
+                w = sourceRectangle.Width,
+                h = sourceRectangle.Height
+            };
+
+            SDL_gpu.GPU_BlitTransformX(
+                texture.ImageHandle,
+                ref rect,
                 CurrentRenderTarget,
                 position.X,
                 position.Y,

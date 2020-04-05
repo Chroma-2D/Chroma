@@ -245,7 +245,52 @@ namespace Chroma.Graphics
             CurrentRenderTarget = OriginalRenderTarget;
         }
 
-        public void DrawString(TrueTypeFont font, string text, Vector2 position, Func<char, int, Vector2, Glyph, GlyphTransformData> perCharTransform = null)
+        public void DrawString(ImageFont font, string text, Vector2 position, Func<char, int, Vector2, GlyphTransformData> perCharTransform = null)
+        {
+            var x = position.X;
+            var y = position.Y;
+
+            for (var i = 0; i < text.Length; i++)
+            {
+                var c = text[i];
+
+                if (c == '\n')
+                {
+                    x = position.X;
+                    y += font.Height + font.LineMargin;
+
+                    continue;
+                }
+
+                if (!font.HasGlyph(c))
+                    continue;
+
+                var rect = font.GlyphRectangles[c];
+
+                var pos = new Vector2(x, y);
+                var transform = new GlyphTransformData(pos);
+
+                if (perCharTransform != null)
+                    transform = perCharTransform(c, i, pos);
+
+                SDL_gpu.GPU_SetColor(font.Texture.ImageHandle, transform.Color);
+                SDL_gpu.GPU_BlitTransform(
+                    font.Texture.ImageHandle,
+                    ref rect,
+                    CurrentRenderTarget,
+                    transform.Position.X,
+                    transform.Position.Y,
+                    transform.Rotation,
+                    transform.Scale.X,
+                    transform.Scale.Y
+                );
+                SDL_gpu.GPU_SetColor(font.Texture.ImageHandle, Color.White);
+
+                x += rect.w + font.CharSpacing;
+            }
+        }
+
+        public void DrawString(TrueTypeFont font, string text, Vector2 position, Func<char, int, Vector2, TrueTypeGlyph, GlyphTransformData> perCharTransform = null)
         {
             var x = position.X;
             var y = position.Y;
@@ -297,7 +342,7 @@ namespace Chroma.Graphics
                 var xPos = x + (info.BitmapSize.X / 2) + info.Bearing.X;
                 var yPos = y + (info.BitmapSize.Y / 2) - info.Bearing.Y + maxBearing;
 
-                GlyphTransformData transform = new GlyphTransformData(new Vector2(xPos, yPos));
+                var transform = new GlyphTransformData(new Vector2(xPos, yPos));
 
                 if (perCharTransform != null)
                     transform = perCharTransform(c, i, new Vector2(xPos, yPos), info);

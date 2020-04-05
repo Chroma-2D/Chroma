@@ -1,6 +1,6 @@
 ﻿namespace Chroma.Graphics.TextRendering
 {
-    public struct Glyph
+    public struct TrueTypeGlyph
     {
         public Vector2 Position { get; internal set; }
         public Vector2 BitmapSize { get; internal set; }

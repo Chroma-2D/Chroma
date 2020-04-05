@@ -68,7 +68,7 @@ namespace Chroma.Graphics
             set
             {
                 EnsureNotDisposed();
-                
+
                 SDL_gpu.GPU_SetWrapMode(
                     ImageHandle,
                     ImageHandle.Value.wrap_mode_x,
@@ -99,11 +99,11 @@ namespace Chroma.Graphics
                 EnsureNotDisposed();
                 return (BlendingEquation)ImageHandle.Value.blend_mode.color_equation;
             }
-            
+
             set
             {
                 EnsureNotDisposed();
-                
+
                 SDL_gpu.GPU_SetBlendEquation(
                     ImageHandle,
                     (SDL_gpu.GPU_BlendEqEnum)value,
@@ -119,11 +119,11 @@ namespace Chroma.Graphics
                 EnsureNotDisposed();
                 return (BlendingFunction)ImageHandle.Value.blend_mode.source_color;
             }
-            
+
             set
             {
                 EnsureNotDisposed();
-                
+
                 SDL_gpu.GPU_SetBlendFunction(
                     ImageHandle,
                     (SDL_gpu.GPU_BlendFuncEnum)value,
@@ -141,11 +141,11 @@ namespace Chroma.Graphics
                 EnsureNotDisposed();
                 return (BlendingFunction)ImageHandle.Value.blend_mode.dest_color;
             }
-            
+
             set
             {
                 EnsureNotDisposed();
-                
+
                 SDL_gpu.GPU_SetBlendFunction(
                     ImageHandle,
                     ImageHandle.Value.blend_mode.source_color,
@@ -163,11 +163,11 @@ namespace Chroma.Graphics
                 EnsureNotDisposed();
                 return (BlendingEquation)ImageHandle.Value.blend_mode.alpha_equation;
             }
-            
+
             set
             {
                 EnsureNotDisposed();
-                
+
                 SDL_gpu.GPU_SetBlendEquation(
                     ImageHandle,
                     ImageHandle.Value.blend_mode.color_equation,
@@ -183,11 +183,11 @@ namespace Chroma.Graphics
                 EnsureNotDisposed();
                 return (BlendingFunction)ImageHandle.Value.blend_mode.source_color;
             }
-            
+
             set
             {
                 EnsureNotDisposed();
-                
+
                 SDL_gpu.GPU_SetBlendFunction(
                     ImageHandle,
                     ImageHandle.Value.blend_mode.source_color,
@@ -273,29 +273,6 @@ namespace Chroma.Graphics
                 SDL_gpu.GPU_SetColor(ImageHandle, value);
             }
         }
-        
-        public Texture(string filePath)
-        {
-            if (!File.Exists(filePath))
-                throw new FileNotFoundException("The provided file path does not exist.", filePath);
-
-            ImageHandle = SDL_gpu.GPU_LoadImage(filePath);
-
-            Width = ImageHandle.Value.w;
-            Height = ImageHandle.Value.h;
-
-            Anchor = new Vector2(0);
-        }
-
-        public Texture(ushort width, ushort height, PixelFormat fmt = PixelFormat.RGBA)
-        {
-            ImageHandle = SDL_gpu.GPU_CreateImage(width, height, (SDL_gpu.GPU_FormatEnum)fmt);
-
-            Width = width;
-            Height = height;
-
-            Anchor = new Vector2(0);
-        }
 
         public Texture(Stream stream)
         {
@@ -322,6 +299,23 @@ namespace Chroma.Graphics
 
             SDL2.SDL_FreeSurface(surfaceHandle);
         }
+
+        public Texture(string filePath)
+        {
+            if (!File.Exists(filePath))
+                throw new FileNotFoundException("The provided file path does not exist.", filePath);
+
+            ImageHandle = SDL_gpu.GPU_LoadImage(filePath);
+
+            Width = ImageHandle.Value.w;
+            Height = ImageHandle.Value.h;
+        }
+
+        public Texture(Texture other)
+            : this(SDL_gpu.GPU_CopyImage(other.ImageHandle)) { }
+
+        public Texture(ushort width, ushort height, PixelFormat fmt = PixelFormat.RGBA)
+            : this(SDL_gpu.GPU_CreateImage(width, height, (SDL_gpu.GPU_FormatEnum)fmt)) { }
 
         internal Texture(SDL_gpu.GPU_Image_PTR imageHandle)
         {

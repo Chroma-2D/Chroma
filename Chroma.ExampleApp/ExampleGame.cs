@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Chroma.Diagnostics;
@@ -39,12 +38,6 @@ namespace Chroma.ExampleApp
 
             _ttf = new TrueTypeFont(Path.Combine(loc, "c64style.ttf"), 16);
             _texture = new Texture(256, 256);
-        }
-
-        protected override void Update(float delta)
-        {
-            Window.Properties.Title = $"{Window.FPS}";
-            _rotation += 45f * delta;
 
             for (var i = 0; i < _texture.Width; i++)
             {
@@ -61,11 +54,17 @@ namespace Chroma.ExampleApp
             _texture.Flush();
         }
 
+        protected override void Update(float delta)
+        {
+            Window.Properties.Title = $"{Window.FPS}";
+            _rotation += 45f * delta;
+        }
+
         protected override void Draw(RenderContext context)
         {
             context.Clear(Color.Black);
 
-            context.DrawTexture(_texture, new Vector2(100), Vector2.One, Vector2.Zero, .0f);
+            context.DrawTexture(_texture, new Vector2(100), Vector2.One, Vector2.Zero, .0f, new Rectangle(0, 0, 32, 32));
 
             context.DrawString(
                 _ttf,

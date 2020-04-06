@@ -5,6 +5,7 @@ using System.Reflection;
 using Chroma.Diagnostics;
 using Chroma.Graphics;
 using Chroma.Graphics.TextRendering;
+using Chroma.Input;
 using Chroma.Input.EventArgs;
 
 namespace Chroma.ExampleApp
@@ -112,6 +113,12 @@ namespace Chroma.ExampleApp
         protected override void MouseMoved(MouseMoveEventArgs e)
         {
             _position = e.Position;
+        }
+
+        protected override void KeyPressed(KeyEventArgs e)
+        {
+            if (e.KeyCode == KeyCode.Escape)
+                Quit();
         }
     }
 }

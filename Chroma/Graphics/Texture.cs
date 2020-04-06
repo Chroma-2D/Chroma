@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using Chroma.Diagnostics;
 using Chroma.Natives.SDL;
 
@@ -335,6 +336,33 @@ namespace Chroma.Graphics
             unsafe
             {
                 Surface = (SDL2.SDL_Surface*)surfaceHandle.ToPointer();
+                var fmt = ((SDL2.SDL_PixelFormat*)Surface->format.ToPointer());
+
+                var standardPixelFormat = new SDL2.SDL_PixelFormat
+                {
+                    format = SDL2.SDL_PIXELFORMAT_RGBA8888,
+                    palette = IntPtr.Zero,
+                    Rmask = 0x000000FF,
+                    Gmask = 0x0000FF00,
+                    Bmask = 0x00FF0000,
+                    Amask = 0xFF000000,
+                    BitsPerPixel = 32,
+                    BytesPerPixel = 4
+                };
+
+                if (fmt->BytesPerPixel != 4 || fmt->format != SDL2.SDL_PIXELFORMAT_RGBA8888)
+                {
+                    var rgbaSurface = SDL2.SDL_ConvertSurface(
+                        surfaceHandle,
+                        new IntPtr(&standardPixelFormat),
+                        0
+                    );
+
+                    SDL2.SDL_FreeSurface(surfaceHandle);
+                    surfaceHandle = rgbaSurface;
+
+                    Surface = (SDL2.SDL_Surface*)surfaceHandle.ToPointer();
+                }
             }
 
             ImageHandle = SDL_gpu.GPU_CopyImageFromSurface(surfaceHandle);
@@ -386,7 +414,6 @@ namespace Chroma.Graphics
             ImageHandle = imageHandle;
         }
 
-        // fixme: assumes max 32-bit color depth
         public void SetPixel(int x, int y, Color color)
         {
             EnsureNotDisposed();
@@ -399,23 +426,11 @@ namespace Chroma.Graphics
 
             unsafe
             {
-                var pixelValue = color.PackedValue;
+                uint* pixel = (uint*)((byte*)Surface->pixels +
+                                      (y * Surface->pitch) +
+                                      (x * sizeof(uint)));
 
-                byte* pixelOrigin = (byte*)Surface->pixels +
-                                    (y * Surface->pitch) +
-                                    (x * BytesPerPixel);
-
-                if (BytesPerPixel == 3)
-                    pixelValue |= 0xFF;
-                else if (BytesPerPixel == 2)
-                    pixelValue |= 0xFFFF;
-
-                var shift = 24;
-                for (var i = 0; i < BytesPerPixel; i++)
-                {
-                    pixelOrigin[i] = (byte)((pixelValue >> shift) & 0xFF);
-                    shift -= 8;
-                }
+                *pixel = color.PackedValue;
             }
         }
 
@@ -431,26 +446,11 @@ namespace Chroma.Graphics
 
             unsafe
             {
-                uint pixelValue = 0;
+                uint* pixel = (uint*)((byte*)Surface->pixels +
+                                      (y * Surface->pitch) +
+                                      (x * sizeof(uint)));
 
-
-                byte* pixelOrigin = (byte*)Surface->pixels +
-                                    (y * Surface->pitch) +
-                                    (x * BytesPerPixel);
-
-                var shift = 24;
-                for (var i = 0; i < BytesPerPixel; i++)
-                {
-                    pixelValue |= (uint)(pixelOrigin[i] << shift);
-                    shift -= 8;
-                }
-
-                if (BytesPerPixel == 3)
-                    pixelValue |= 0xFF;
-                else if (BytesPerPixel == 2)
-                    pixelValue |= 0xFFFF;
-
-                return new Color(pixelValue);
+                return new Color(*pixel);
             }
         }
 

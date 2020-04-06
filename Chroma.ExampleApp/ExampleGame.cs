@@ -9,7 +9,7 @@ namespace Chroma.ExampleApp
     {
         private Texture _tex;
         private Texture _wall1;
-        
+
         public ExampleGame()
         {
             Graphics.VSyncEnabled = false;
@@ -22,9 +22,11 @@ namespace Chroma.ExampleApp
 
             _wall1 = new Texture(64, 64);
 
-            for(var y = 0; y < 64; y++)
+
+
+            for (var y = 0; y < 64; y++)
             {
-                for(var x = 0; x < 64; x++)
+                for (var x = 0; x < 64; x++)
                 {
                     _wall1[x, y] = _tex[x, y];
                 }
@@ -35,11 +37,21 @@ namespace Chroma.ExampleApp
         protected override void Update(float delta)
         {
             Window.Properties.Title = $"{Window.FPS}";
+
+            for (var y = 0; y < 64; y++)
+            {
+                for (var x = 64; x < 128; x++)
+                {
+                    _tex[x, y] = _wall1[x - 64, y];
+                }
+            }
+            _tex.Flush();
         }
 
         protected override void Draw(RenderContext context)
         {
             context.DrawTexture(_wall1, Vector2.Zero, Vector2.One, Vector2.Zero, .0f);
+            context.DrawTexture(_tex, new Vector2(128, 128), Vector2.One, Vector2.Zero, .0f);
         }
     }
 }

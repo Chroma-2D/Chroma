@@ -245,12 +245,12 @@ namespace Chroma.Graphics
             }
         }
 
-        public int BytesPerPixel
+        public uint BytesPerPixel
         {
             get
             {
                 EnsureNotDisposed();
-                return ImageHandle.Value.bytes_per_pixel;
+                return (uint)ImageHandle.Value.bytes_per_pixel;
             }
         }
 
@@ -335,6 +335,33 @@ namespace Chroma.Graphics
             unsafe
             {
                 Surface = (SDL2.SDL_Surface*)surfaceHandle.ToPointer();
+                var fmt = ((SDL2.SDL_PixelFormat*)Surface->format.ToPointer());
+
+                var standardPixelFormat = new SDL2.SDL_PixelFormat
+                {
+                    format = SDL2.SDL_PIXELFORMAT_RGBA8888,
+                    palette = IntPtr.Zero,
+                    Rmask = 0x000000FF,
+                    Gmask = 0x0000FF00,
+                    Bmask = 0x00FF0000,
+                    Amask = 0xFF000000,
+                    BitsPerPixel = 32,
+                    BytesPerPixel = 4
+                };
+
+                if (fmt->BytesPerPixel != 4 || fmt->format != SDL2.SDL_PIXELFORMAT_RGBA8888)
+                {
+                    var rgbaSurface = SDL2.SDL_ConvertSurface(
+                        surfaceHandle,
+                        new IntPtr(&standardPixelFormat),
+                        0
+                    );
+
+                    SDL2.SDL_FreeSurface(surfaceHandle);
+                    surfaceHandle = rgbaSurface;
+
+                    Surface = (SDL2.SDL_Surface*)surfaceHandle.ToPointer();
+                }
             }
 
             ImageHandle = SDL_gpu.GPU_CopyImageFromSurface(surfaceHandle);
@@ -398,13 +425,11 @@ namespace Chroma.Graphics
 
             unsafe
             {
-                uint* targetPixel = (uint*)(
-                    (byte*)Surface->pixels +
-                    (y * Surface->pitch) +
-                    (x * sizeof(uint))
-                );
+                uint* pixel = (uint*)((byte*)Surface->pixels +
+                                      (y * Surface->pitch) +
+                                      (x * sizeof(uint)));
 
-                *targetPixel = color.PackedValue;
+                *pixel = color.PackedValue;
             }
         }
 
@@ -420,13 +445,11 @@ namespace Chroma.Graphics
 
             unsafe
             {
-                uint* targetPixel = (uint*)(
-                    (byte*)Surface->pixels +
-                    (y * Surface->pitch) +
-                    (x * sizeof(uint))
-                );
+                uint* pixel = (uint*)((byte*)Surface->pixels +
+                                      (y * Surface->pitch) +
+                                      (x * sizeof(uint)));
 
-                return new Color(*targetPixel);
+                return new Color(*pixel);
             }
         }
 

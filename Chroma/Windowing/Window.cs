@@ -26,7 +26,8 @@ namespace Chroma.Windowing
 
         internal Game Game { get; }
         internal EventDispatcher EventDispatcher { get; }
-        internal SDL_gpu.GPU_Target_PTR RenderTargetPointer { get; }
+
+        internal IntPtr RenderTargetHandle { get; }
         internal static IntPtr RendererHandle { get; private set; }
 
         public event EventHandler Closed;
@@ -71,7 +72,7 @@ namespace Chroma.Windowing
             var bestRenderer = Game.Graphics.GetBestRenderer();
             Log.Info($"Selecting best renderer: {bestRenderer.name}");
 
-            RenderTargetPointer = SDL_gpu.GPU_InitRenderer(
+            RenderTargetHandle = SDL_gpu.GPU_InitRenderer(
                 bestRenderer.renderer,
                 (ushort)Properties.Width,
                 (ushort)Properties.Height,
@@ -107,7 +108,7 @@ namespace Chroma.Windowing
 
                 Draw?.Invoke(RenderContext);
 
-                SDL_gpu.GPU_Flip(RenderTargetPointer);
+                SDL_gpu.GPU_Flip(RenderTargetHandle);
                 FpsCounter.Update();
             }
         }
@@ -156,7 +157,7 @@ namespace Chroma.Windowing
 
         internal void OnInvalidated()
         {
-            SDL_gpu.GPU_Flip(RenderTargetPointer);
+            SDL_gpu.GPU_Flip(RenderTargetHandle);
             Invalidated?.Invoke(this, System.EventArgs.Empty);
         }
 
@@ -230,7 +231,7 @@ namespace Chroma.Windowing
                     // No managed resources to free.
                 }
 
-                SDL_gpu.GPU_FreeTarget(RenderTargetPointer);
+                SDL_gpu.GPU_FreeTarget(RenderTargetHandle);
                 SDL_gpu.GPU_Quit();
                 SDL2.SDL_Quit();
 

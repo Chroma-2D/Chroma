@@ -7,7 +7,9 @@ namespace Chroma.Graphics
 {
     public class Texture : IDisposable
     {
-        internal SDL_gpu.GPU_Image_PTR ImageHandle { get; private set; }
+        internal IntPtr ImageHandle { get; private set; }
+
+        internal unsafe SDL_gpu.GPU_Image* Image { get; private set; }
         internal unsafe SDL2.SDL_Surface* Surface { get; private set; }
 
         public bool Disposed { get; private set; }
@@ -44,10 +46,13 @@ namespace Chroma.Graphics
             {
                 EnsureNotDisposed();
 
-                return new Vector2(
-                    ImageHandle.Value.anchor_x,
-                    ImageHandle.Value.anchor_y
-                );
+                unsafe
+                {
+                    return new Vector2(
+                        Image->anchor_x,
+                        Image->anchor_y
+                    );
+                }
             }
 
             set
@@ -67,18 +72,25 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
-                return (TextureWrappingMode)ImageHandle.Value.wrap_mode_x;
+
+                unsafe
+                {
+                    return (TextureWrappingMode)Image->wrap_mode_x;
+                }
             }
 
             set
             {
                 EnsureNotDisposed();
 
-                SDL_gpu.GPU_SetWrapMode(
-                    ImageHandle,
-                    (SDL_gpu.GPU_WrapEnum)value,
-                    ImageHandle.Value.wrap_mode_y
-                );
+                unsafe
+                {
+                    SDL_gpu.GPU_SetWrapMode(
+                        ImageHandle,
+                        (SDL_gpu.GPU_WrapEnum)value,
+                        Image->wrap_mode_y
+                    );
+                }
             }
         }
 
@@ -87,18 +99,25 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
-                return (TextureWrappingMode)ImageHandle.Value.wrap_mode_y;
+
+                unsafe
+                {
+                    return (TextureWrappingMode)Image->wrap_mode_y;
+                }
             }
 
             set
             {
                 EnsureNotDisposed();
 
-                SDL_gpu.GPU_SetWrapMode(
-                    ImageHandle,
-                    ImageHandle.Value.wrap_mode_x,
-                    (SDL_gpu.GPU_WrapEnum)value
-                );
+                unsafe
+                {
+                    SDL_gpu.GPU_SetWrapMode(
+                        ImageHandle,
+                        Image->wrap_mode_x,
+                        (SDL_gpu.GPU_WrapEnum)value
+                    );
+                }
             }
         }
 
@@ -107,13 +126,17 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
-                return ImageHandle.Value.use_blending != 0;
+
+                unsafe
+                {
+                    return Image->use_blending;
+                }
             }
 
             set
             {
                 EnsureNotDisposed();
-                SDL_gpu.GPU_SetBlending(ImageHandle, value ? (byte)1 : (byte)0);
+                SDL_gpu.GPU_SetBlending(ImageHandle, value);
             }
         }
 
@@ -122,18 +145,25 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
-                return (BlendingEquation)ImageHandle.Value.blend_mode.color_equation;
+
+                unsafe
+                {
+                    return (BlendingEquation)Image->blend_mode.color_equation;
+                }
             }
 
             set
             {
                 EnsureNotDisposed();
 
-                SDL_gpu.GPU_SetBlendEquation(
-                    ImageHandle,
-                    (SDL_gpu.GPU_BlendEqEnum)value,
-                    ImageHandle.Value.blend_mode.alpha_equation
-                );
+                unsafe
+                {
+                    SDL_gpu.GPU_SetBlendEquation(
+                        ImageHandle,
+                        (SDL_gpu.GPU_BlendEqEnum)value,
+                        Image->blend_mode.alpha_equation
+                    );
+                }
             }
         }
 
@@ -142,20 +172,27 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
-                return (BlendingFunction)ImageHandle.Value.blend_mode.source_color;
+
+                unsafe
+                {
+                    return (BlendingFunction)Image->blend_mode.source_color;
+                }
             }
 
             set
             {
                 EnsureNotDisposed();
 
-                SDL_gpu.GPU_SetBlendFunction(
-                    ImageHandle,
-                    (SDL_gpu.GPU_BlendFuncEnum)value,
-                    ImageHandle.Value.blend_mode.dest_color,
-                    ImageHandle.Value.blend_mode.source_alpha,
-                    ImageHandle.Value.blend_mode.dest_alpha
-                );
+                unsafe
+                {
+                    SDL_gpu.GPU_SetBlendFunction(
+                        ImageHandle,
+                        (SDL_gpu.GPU_BlendFuncEnum)value,
+                        Image->blend_mode.dest_color,
+                        Image->blend_mode.source_alpha,
+                        Image->blend_mode.dest_alpha
+                    );
+                }
             }
         }
 
@@ -164,20 +201,27 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
-                return (BlendingFunction)ImageHandle.Value.blend_mode.dest_color;
+
+                unsafe
+                {
+                    return (BlendingFunction)Image->blend_mode.dest_color;
+                }
             }
 
             set
             {
                 EnsureNotDisposed();
 
-                SDL_gpu.GPU_SetBlendFunction(
-                    ImageHandle,
-                    ImageHandle.Value.blend_mode.source_color,
-                    (SDL_gpu.GPU_BlendFuncEnum)value,
-                    ImageHandle.Value.blend_mode.source_alpha,
-                    ImageHandle.Value.blend_mode.dest_alpha
-                );
+                unsafe
+                {
+                    SDL_gpu.GPU_SetBlendFunction(
+                        ImageHandle,
+                        Image->blend_mode.source_color,
+                        (SDL_gpu.GPU_BlendFuncEnum)value,
+                        Image->blend_mode.source_alpha,
+                        Image->blend_mode.dest_alpha
+                    );
+                }
             }
         }
 
@@ -186,18 +230,25 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
-                return (BlendingEquation)ImageHandle.Value.blend_mode.alpha_equation;
+             
+                unsafe
+                {
+                    return (BlendingEquation)Image->blend_mode.alpha_equation;
+                }
             }
 
             set
             {
                 EnsureNotDisposed();
 
-                SDL_gpu.GPU_SetBlendEquation(
-                    ImageHandle,
-                    ImageHandle.Value.blend_mode.color_equation,
-                    (SDL_gpu.GPU_BlendEqEnum)value
-                );
+                unsafe
+                {
+                    SDL_gpu.GPU_SetBlendEquation(
+                        ImageHandle,
+                        Image->blend_mode.color_equation,
+                        (SDL_gpu.GPU_BlendEqEnum)value
+                    );
+                }
             }
         }
 
@@ -206,20 +257,27 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
-                return (BlendingFunction)ImageHandle.Value.blend_mode.source_color;
+
+                unsafe
+                {
+                    return (BlendingFunction)Image->blend_mode.source_color;
+                }
             }
 
             set
             {
                 EnsureNotDisposed();
 
-                SDL_gpu.GPU_SetBlendFunction(
-                    ImageHandle,
-                    ImageHandle.Value.blend_mode.source_color,
-                    ImageHandle.Value.blend_mode.dest_color,
-                    (SDL_gpu.GPU_BlendFuncEnum)value,
-                    ImageHandle.Value.blend_mode.dest_alpha
-                );
+                unsafe
+                {
+                    SDL_gpu.GPU_SetBlendFunction(
+                        ImageHandle,
+                        Image->blend_mode.source_color,
+                        Image->blend_mode.dest_color,
+                        (SDL_gpu.GPU_BlendFuncEnum)value,
+                        Image->blend_mode.dest_alpha
+                    );
+                }
             }
         }
 
@@ -228,20 +286,27 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
-                return (BlendingFunction)ImageHandle.Value.blend_mode.dest_color;
+
+                unsafe
+                {
+                    return (BlendingFunction)Image->blend_mode.dest_color;
+                }
             }
 
             set
             {
                 EnsureNotDisposed();
 
-                SDL_gpu.GPU_SetBlendFunction(
-                    ImageHandle,
-                    ImageHandle.Value.blend_mode.source_color,
-                    ImageHandle.Value.blend_mode.dest_color,
-                    ImageHandle.Value.blend_mode.source_alpha,
-                    (SDL_gpu.GPU_BlendFuncEnum)value
-                );
+                unsafe
+                {
+                    SDL_gpu.GPU_SetBlendFunction(
+                        ImageHandle,
+                        Image->blend_mode.source_color,
+                        Image->blend_mode.dest_color,
+                        Image->blend_mode.source_alpha,
+                        (SDL_gpu.GPU_BlendFuncEnum)value
+                    );
+                }
             }
         }
 
@@ -250,7 +315,11 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
-                return (uint)ImageHandle.Value.bytes_per_pixel;
+
+                unsafe
+                {
+                    return (uint)Image->bytes_per_pixel;
+                }
             }
         }
 
@@ -259,7 +328,11 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
-                return (TextureFilteringMode)ImageHandle.Value.filter_mode;
+
+                unsafe
+                {
+                    return (TextureFilteringMode)Image->filter_mode;
+                }
             }
 
             set
@@ -274,7 +347,11 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
-                return (TextureSnappingMode)ImageHandle.Value.snap_mode;
+
+                unsafe
+                {
+                    return (TextureSnappingMode)Image->snap_mode;
+                }
             }
 
             set
@@ -289,7 +366,11 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
-                return ImageHandle.Value.color;
+
+                unsafe
+                {
+                    return Image->color;
+                }
             }
 
             set
@@ -408,7 +489,7 @@ namespace Chroma.Graphics
             }
         }
 
-        internal Texture(SDL_gpu.GPU_Image_PTR imageHandle)
+        internal Texture(IntPtr imageHandle)
         {
             ImageHandle = imageHandle;
         }
@@ -462,7 +543,7 @@ namespace Chroma.Graphics
                 var imgRect = new SDL_gpu.GPU_Rect { x = 0, y = 0, w = Width, h = Height };
                 var surfRect = new SDL_gpu.GPU_Rect { x = 0, y = 0, w = Surface->w, h = Surface->h };
 
-                SDL_gpu.GPU_UpdateImage(ImageHandle, imgRect, new IntPtr(Surface), surfRect);
+                SDL_gpu.GPU_UpdateImage(ImageHandle, ref imgRect, new IntPtr(Surface), ref surfRect);
             }
         }
 

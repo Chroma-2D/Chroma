@@ -4,7 +4,6 @@ using Chroma.Graphics;
 using Chroma.Input.EventArgs;
 using Chroma.Natives.SDL;
 using Chroma.Windowing;
-using Chroma.Windowing.EventArgs;
 
 namespace Chroma
 {

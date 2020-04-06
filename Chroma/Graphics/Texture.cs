@@ -245,12 +245,12 @@ namespace Chroma.Graphics
             }
         }
 
-        public int BytesPerPixel
+        public uint BytesPerPixel
         {
             get
             {
                 EnsureNotDisposed();
-                return ImageHandle.Value.bytes_per_pixel;
+                return (uint)ImageHandle.Value.bytes_per_pixel;
             }
         }
 
@@ -386,6 +386,7 @@ namespace Chroma.Graphics
             ImageHandle = imageHandle;
         }
 
+        // fixme: assumes max 32-bit color depth
         public void SetPixel(int x, int y, Color color)
         {
             EnsureNotDisposed();
@@ -398,13 +399,23 @@ namespace Chroma.Graphics
 
             unsafe
             {
-                uint* targetPixel = (uint*)(
-                    (byte*)Surface->pixels +
-                    (y * Surface->pitch) +
-                    (x * sizeof(uint))
-                );
+                var pixelValue = color.PackedValue;
 
-                *targetPixel = color.PackedValue;
+                byte* pixelOrigin = (byte*)Surface->pixels +
+                                    (y * Surface->pitch) +
+                                    (x * BytesPerPixel);
+
+                if (BytesPerPixel == 3)
+                    pixelValue |= 0xFF;
+                else if (BytesPerPixel == 2)
+                    pixelValue |= 0xFFFF;
+
+                var shift = 24;
+                for (var i = 0; i < BytesPerPixel; i++)
+                {
+                    pixelOrigin[i] = (byte)((pixelValue >> shift) & 0xFF);
+                    shift -= 8;
+                }
             }
         }
 
@@ -420,13 +431,26 @@ namespace Chroma.Graphics
 
             unsafe
             {
-                uint* targetPixel = (uint*)(
-                    (byte*)Surface->pixels +
-                    (y * Surface->pitch) +
-                    (x * sizeof(uint))
-                );
+                uint pixelValue = 0;
 
-                return new Color(*targetPixel);
+
+                byte* pixelOrigin = (byte*)Surface->pixels +
+                                    (y * Surface->pitch) +
+                                    (x * BytesPerPixel);
+
+                var shift = 24;
+                for (var i = 0; i < BytesPerPixel; i++)
+                {
+                    pixelValue |= (uint)(pixelOrigin[i] << shift);
+                    shift -= 8;
+                }
+
+                if (BytesPerPixel == 3)
+                    pixelValue |= 0xFF;
+                else if (BytesPerPixel == 2)
+                    pixelValue |= 0xFFFF;
+
+                return new Color(pixelValue);
             }
         }
 

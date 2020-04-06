@@ -89,5 +89,9 @@
     <None Update="TANTRADEMORegular.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+
+    <None Update="walls.jpeg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using Chroma.Diagnostics;
 using Chroma.Natives.SDL;
 

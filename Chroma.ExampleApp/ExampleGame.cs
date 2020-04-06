@@ -21,9 +21,6 @@ namespace Chroma.ExampleApp
             _tex = new Texture(Path.Combine(loc, "walls.jpeg"));
 
             _wall1 = new Texture(64, 64);
-
-
-
             for (var y = 0; y < 64; y++)
             {
                 for (var x = 0; x < 64; x++)
@@ -38,7 +35,7 @@ namespace Chroma.ExampleApp
         {
             Window.Properties.Title = $"{Window.FPS}";
 
-            for (var y = 0; y < 64; y++)
+            for (var y = 0; y < 64; y += 2)
             {
                 for (var x = 64; x < 128; x++)
                 {

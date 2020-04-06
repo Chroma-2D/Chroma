@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Chroma.Natives.Interop
 {
-    public struct CString
+    public struct AnsiString
     {
         public IntPtr Pointer;
 

@@ -125,7 +125,8 @@ namespace Chroma.Graphics
 
         internal List<SDL_gpu.GPU_RendererID> GetRegisteredRenderers()
         {
-            var registeredRenderers = new SDL_gpu.GPU_RendererID[SDL_gpu.GPU_GetNumRegisteredRenderers()];
+            var renderers = SDL_gpu.GPU_GetNumRegisteredRenderers();
+            var registeredRenderers = new SDL_gpu.GPU_RendererID[renderers];
             SDL_gpu.GPU_GetRegisteredRendererList(registeredRenderers);
 
             return registeredRenderers.ToList();

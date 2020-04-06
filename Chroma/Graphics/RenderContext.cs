@@ -9,18 +9,18 @@ namespace Chroma.Graphics
     public class RenderContext
     {
         internal Window Owner { get; }
-        internal SDL_gpu.GPU_Target_PTR CurrentRenderTarget { get; private set; }
-        internal SDL_gpu.GPU_Target_PTR OriginalRenderTarget { get; }
+        internal IntPtr CurrentRenderTarget { get; private set; }
+        internal IntPtr OriginalRenderTarget { get; }
 
         public bool RenderingToWindow
-            => CurrentRenderTarget.Pointer == OriginalRenderTarget.Pointer;
+            => CurrentRenderTarget == OriginalRenderTarget;
 
         internal RenderContext(Window owner)
         {
             Owner = owner;
 
-            CurrentRenderTarget = owner.RenderTargetPointer;
-            OriginalRenderTarget = owner.RenderTargetPointer;
+            CurrentRenderTarget = owner.RenderTargetHandle;
+            OriginalRenderTarget = owner.RenderTargetHandle;
 
             LineThickness = 1;
         }

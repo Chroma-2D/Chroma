@@ -44,9 +44,9 @@ namespace Chroma.Windowing
         public event EventHandler<CancelEventArgs> QuitRequested;
 
         public bool Disposed { get; private set; }
-        public IntPtr Handle { get; }
+        public bool Running { get; private set; }
 
-        public bool Running { get; set; }
+        public IntPtr Handle { get; }
 
         public WindowProperties Properties { get; }
 
@@ -208,8 +208,8 @@ namespace Chroma.Windowing
             {
                 driverdata = display.UnderlyingDisplayMode.driverdata,
                 format = display.UnderlyingDisplayMode.format,
-                w = (int)display.Width,
-                h = (int)display.Height,
+                w = display.Width,
+                h = display.Height,
                 refresh_rate = display.RefreshRate
             };
 

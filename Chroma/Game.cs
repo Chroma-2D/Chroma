@@ -1,7 +1,10 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using Chroma.Graphics;
 using Chroma.Input.EventArgs;
+using Chroma.Natives.SDL;
 using Chroma.Windowing;
+using Chroma.Windowing.EventArgs;
 
 namespace Chroma
 {
@@ -29,8 +32,12 @@ namespace Chroma
         }
 
         public void Run()
+            => Window.Run();
+
+        public void Quit()
         {
-            Window.Run();
+            SDL2.SDL_Quit();
+            Environment.Exit(0);
         }
 
         protected virtual void Draw(RenderContext context)

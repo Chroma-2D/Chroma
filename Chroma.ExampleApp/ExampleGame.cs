@@ -2,6 +2,7 @@
 using System.Reflection;
 using Chroma.Diagnostics;
 using Chroma.Graphics;
+using Chroma.Graphics.Batching;
 
 namespace Chroma.ExampleApp
 {
@@ -38,8 +39,10 @@ namespace Chroma.ExampleApp
 
         protected override void Draw(RenderContext context)
         {
-            context.DrawTexture(_wall1, Vector2.Zero, Vector2.One, Vector2.Zero, .0f);
-            context.DrawTexture(_tex, new Vector2(128, 128), Vector2.One, Vector2.Zero, .0f);
+            context.Batch(() => context.DrawTexture(_wall1, new Vector2(134, 134), Vector2.One, Vector2.Zero, .0f), 0);
+            context.Batch(() => context.DrawTexture(_tex, new Vector2(128, 128), Vector2.One, Vector2.Zero, .0f), 1);
+
+            context.DrawBatch(DrawOrder.BackToFront);
         }
     }
 }

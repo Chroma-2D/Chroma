@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Chroma.Graphics.Batching;
 using Chroma.Graphics.TextRendering;
 using Chroma.Natives.SDL;
 using Chroma.Windowing;
@@ -8,6 +9,8 @@ namespace Chroma.Graphics
 {
     public class RenderContext
     {
+        internal List<BatchInfo> BatchBuffer { get; }
+
         internal Window Owner { get; }
         internal IntPtr CurrentRenderTarget { get; private set; }
         internal IntPtr OriginalRenderTarget { get; }
@@ -17,30 +20,14 @@ namespace Chroma.Graphics
 
         internal RenderContext(Window owner)
         {
+            BatchBuffer = new List<BatchInfo>();
+
             Owner = owner;
 
             CurrentRenderTarget = owner.RenderTargetHandle;
             OriginalRenderTarget = owner.RenderTargetHandle;
 
             LineThickness = 1;
-
-            var matrix4x4 = new float[] { 
-                10f, 8f, 12f, 2f, 
-                3f, 4f, 1f, .4f, 
-                9f, 10f, 15f, 9f,
-                18f, 12f, 11f, 10f
-            };
-
-            foreach (var f in matrix4x4)
-                Console.Write($"{f} ");
-
-            Console.WriteLine();
-            SDL_gpu.GPU_MatrixOrtho(matrix4x4, 1, 1, 1, 1, -3, 3);
-
-            foreach (var f in matrix4x4)
-                Console.Write($"{f} ");
-
-            Console.WriteLine();
         }
 
         public float LineThickness
@@ -380,6 +367,38 @@ namespace Chroma.Graphics
 
                 x += info.Advance.X;
             }
+        }
+
+        public void DrawBatch(DrawOrder order = DrawOrder.BackToFront, bool discard = true)
+        {
+            BatchBuffer.Sort(
+                (a, b) =>
+                {
+                    if (order == DrawOrder.BackToFront)
+                        return a.Depth.CompareTo(b.Depth);
+                    else return b.Depth.CompareTo(a.Depth);
+                }
+            );
+
+            for (var i = 0; i < BatchBuffer.Count; i++)
+                BatchBuffer[i].DrawAction.Invoke();
+
+            if (discard)
+                BatchBuffer.Clear();
+        }
+
+        public void Batch(Action drawAction, int depth)
+        {
+            if (drawAction == null)
+                return;
+
+            BatchBuffer.Add(
+                new BatchInfo
+                {
+                    DrawAction = drawAction,
+                    Depth = depth
+                }
+            );
         }
     }
 }

@@ -23,6 +23,24 @@ namespace Chroma.Graphics
             OriginalRenderTarget = owner.RenderTargetHandle;
 
             LineThickness = 1;
+
+            var matrix4x4 = new float[] { 
+                10f, 8f, 12f, 2f, 
+                3f, 4f, 1f, .4f, 
+                9f, 10f, 15f, 9f,
+                18f, 12f, 11f, 10f
+            };
+
+            foreach (var f in matrix4x4)
+                Console.Write($"{f} ");
+
+            Console.WriteLine();
+            SDL_gpu.GPU_MatrixOrtho(matrix4x4, 1, 1, 1, 1, -3, 3);
+
+            foreach (var f in matrix4x4)
+                Console.Write($"{f} ");
+
+            Console.WriteLine();
         }
 
         public float LineThickness

@@ -279,6 +279,13 @@ namespace Chroma.Natives.SDL
             GPU_LOG_WARNING,
             GPU_LOG_ERROR
         }
+
+        public enum GPU_MatrixModeEnum
+        {
+            GPU_MODEL = 0,
+            GPU_VIEW = 1,
+            GPU_PROJECTION = 2
+        }
         #endregion
 
         #region Structs
@@ -582,24 +589,49 @@ namespace Chroma.Natives.SDL
         public static extern GPU_DebugLevelEnum GPU_GetDebugLevel();
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_LogInfo(string format, __arglist);
+        public static extern void GPU_LogInfo(
+            [In]
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            string format,
+            __arglist
+        );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_LogWarning(string format, __arglist);
+        public static extern void GPU_LogWarning(
+            [In]
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            string format,
+            __arglist
+        );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_LogError(string format, __arglist);
+        public static extern void GPU_LogError(
+            [In]
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            string format,
+            __arglist
+        );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_SetLogCallback(GPU_LogCallback callback);
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_PushErrorCode(string function, GPU_ErrorEnum error, string details, __arglist);
+        public static extern void GPU_PushErrorCode(
+            [In]
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            string function,
+            GPU_ErrorEnum error,
+            [In]
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            string details,
+            __arglist
+        );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern GPU_ErrorObject GPU_PopErrorCode();
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler), MarshalCookie = LPUtf8StrMarshaler.LeaveAllocated)]
         public static extern string GPU_GetErrorString(GPU_ErrorEnum error);
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
@@ -608,7 +640,14 @@ namespace Chroma.Natives.SDL
 
         #region Renderer Setup
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern GPU_RendererID GPU_MakeRendererID(string name, GPU_RendererEnum renderer, int major_version, int minor_version);
+        public static extern GPU_RendererID GPU_MakeRendererID(
+            [In]
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            string name,
+            GPU_RendererEnum renderer,
+            int major_version,
+            int minor_version
+        );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern GPU_RendererID GPU_GetRendererID(GPU_RendererEnum renderer);
@@ -934,8 +973,334 @@ namespace Chroma.Natives.SDL
         public static extern IntPtr GPU_CopySurfaceFromImage(IntPtr image);
         #endregion
 
-        #region Matrix
-        // TODO: Matrix and vector operations
+        #region 3D Vector Operations
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern float GPU_VectorLength(
+            [In]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] vec3
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_VectorNormalize(
+            [In]
+            [Out]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] vec3
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern float GPU_VectorDot(
+            [In]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] A,
+            [In]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] B
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_VectorCross(
+            [Out]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] result,
+            [In]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] A,
+            [In]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] B
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_VectorCopy(
+            [Out]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] result,
+            [In]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] A
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_VectorApplyMatrix(
+            [Out]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] vec3,
+            [In]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] matrix_4x4
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_Vector4ApplyMatrix(
+            [Out]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] vec4,
+            [In]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] matrix_4x4
+        );
+        #endregion
+
+        #region 4x4 Matrix Operations
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_MatrixCopy(
+            [Out]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] result,
+            [In]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] A
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_MatrixIdentity(
+            [In]
+            [Out]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] result
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_MatrixOrtho(
+            [In]
+            [Out]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] result,
+            float left,
+            float right,
+            float bottom,
+            float top,
+            float z_near,
+            float z_far
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_MatrixFrustum(
+            [In]
+            [Out]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] result,
+            float left,
+            float right,
+            float bottom,
+            float top,
+            float z_near,
+            float z_far
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_MatrixLookAt(
+            [In]
+            [Out]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] matrix,
+            float eye_x,
+            float eye_y,
+            float eye_z,
+            float target_x,
+            float target_y,
+            float target_z,
+            float up_x,
+            float up_y,
+            float up_z
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_MatrixTranslate(
+            [In]
+            [Out]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] result,
+            float x,
+            float y,
+            float z
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_MatrixScale(
+            [In]
+            [Out]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] result,
+            float sx,
+            float sy,
+            float sz
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_MatrixRotate(
+            [In]
+            [Out]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] result,
+            float degrees,
+            float x,
+            float y,
+            float z
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_MatrixMultiply(
+            [In]
+            [Out]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] result,
+            [In]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] A,
+            [In]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] B
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_MultiplyAndAssign(
+            [In]
+            [Out]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] result,
+            [In]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] B
+        );
+        #endregion
+
+        #region Matrix Stack Accessors
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler), MarshalCookie = LPUtf8StrMarshaler.LeaveAllocated)]
+        public static extern string GPU_GetMatrixString(
+            [In]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] A
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+        public static extern float[] GPU_GetCurrentMatrix();
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+        public static extern float[] GPU_GetTopMatrix(IntPtr stack);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+        public static extern float[] GPU_GetModel();
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+        public static extern float[] GPU_GetView();
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+        public static extern float[] GPU_GetProjection();
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_GetModelViewProjection(
+            [In]
+            [Out]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] result
+        );
+        #endregion
+
+        #region Matrix Stack Manipulators
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr GPU_CreateMatrixStack();
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_FreeMatrixStack(IntPtr stack);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_InitMatrixStack(IntPtr stack);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_CopyMatrixStack(IntPtr source, IntPtr dest);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_ClearMatrixStack(IntPtr stack);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_ResetProjection(IntPtr target);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_MatrixMode(IntPtr target, GPU_MatrixModeEnum matrix_mode);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetProjection(
+            [In]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] A
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetView(
+            [In]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] A
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetModel(
+            [In]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] A
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetProjectionFromStack(IntPtr stack);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetViewFromStack(IntPtr stack);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetModelFromStack(IntPtr stack);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_PushMatrix();
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_PopMatrix();
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_LoadIdentity();
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_LoadMatrix(
+            [In]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] matrix4x4
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_Ortho(float left, float right, float bottom, float top, float z_near, float z_far);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_Frustum(float left, float right, float bottom, float top, float z_near, float z_far);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_Perspective(float fovy, float aspect, float z_near, float z_far);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_LookAt(float eye_x, float eye_y, float eye_z, float target_x, float target_y, float target_z, float up_x, float up_y, float up_z);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_Translate(float x, float y, float z);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_Scale(float sx, float sy, float sz);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_Rotate(float degrees, float x, float y, float z);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_MultMatrix(
+            [In]
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] matrix4x4
+        );
         #endregion
 
         #region Rendering
@@ -1123,14 +1488,235 @@ namespace Chroma.Natives.SDL
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_Polyline(
-            IntPtr target, 
+            IntPtr target,
             uint num_vertices,
             [In]
             [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
-            float[] vertices, 
-            SDL_Color color, 
+            float[] vertices,
+            SDL_Color color,
             bool close_loop
         );
+        #endregion
+
+        #region Shader Interface
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern uint GPU_CreateShaderProgram();
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_FreeShaderProgram(uint program_object);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern uint GPU_CompileShader_RW(GPU_ShaderEnum shader_type, IntPtr shader_source, bool free_rwops);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern uint GPU_CompileShader(
+            GPU_ShaderEnum shader_type,
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            string shader_source
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern uint GPU_LoadShader(
+            GPU_ShaderEnum shader_type,
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            string filename
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern uint GPU_LinkShaders(uint shader_object1, uint shader_object2);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern uint GPU_LinkManyShaders(
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U4, SizeParamIndex = 1)]
+            uint[] shader_objects,
+            int count
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_FreeShader(uint shader_object);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_AttachShader(uint program_object, uint shader_object);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_DetachShader(uint program_object, uint shader_object);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_LinkShaderProgram(uint program_object);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern uint GPU_GetCurrentShaderProgram();
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool GPU_IsDefaultShaderProgram(uint program_object);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_ActivateShaderProgram(uint program_object, ref GPU_ShaderBlock block);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_ActivateShaderProgram(uint program_object, IntPtr block);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_DeactivateShaderProgram();
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+        public static extern string GPU_GetShaderMessage();
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GPU_GetAttributeLocation(
+            uint program_object,
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            string attrib_name
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern GPU_AttributeFormat GPU_MakeAttributeFormat(int num_elems_per_vertex, GPU_TypeEnum type, bool normalize, int stride_bytes, int offset_bytes);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern GPU_Attribute GPU_MakeAttribute(int location, IntPtr values, GPU_AttributeFormat format);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GPU_GetUniformLocation(
+            uint program_object,
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            string uniform_name
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern GPU_ShaderBlock GPU_LoadShaderBlock(
+            uint program_object,
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            string position_name,
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            string texcoord_name,
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            string color_name,
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            string modelViewMatrix_name
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetShaderBlock(GPU_ShaderBlock block);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetShaderImage(IntPtr image, int location, int image_unit);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_GetUniformiv(
+            uint program_object,
+            int location,
+            [Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I4)]
+            int[] values
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetUniformi(int location, int value);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetUniformiv(
+            int location,
+            int num_elements_per_value,
+            int num_values,
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I4)]
+            int[] values
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_GetUniformuiv(
+            uint program_object,
+            int location,
+            [Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U4)]
+            uint[] values
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetUniformui(int location, uint value);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetUniformuiv(
+            int location,
+            int num_elements_per_value,
+            int num_values,
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U4)]
+            uint[] values
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_GetUniformfv(
+            uint program_object,
+            int location,
+            [Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] values
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetUniformf(int location, float value);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetUniformfv(
+            int location,
+            int num_elements_per_value,
+            int num_values,
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] values
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_GetUniformMatrixfv(
+            uint program_object,
+            int location,
+            [Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] values
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetUniformMatrixfv(
+            int location,
+            int num_matrices,
+            int num_rows,
+            int num_columns,
+            bool transpose,
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] values
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetAttributef(int location, float value);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetAttributei(int location, int value);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetAttributeui(int location, uint value);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetAttributefv(
+            int location,
+            int num_elements,
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            float[] value
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetAttributeiv(
+            int location,
+            int num_elements,
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.I4)]
+            int[] value
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetAttributeuiv(
+            int location,
+            int num_elements,
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U4)]
+            uint[] value
+        );
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void GPU_SetAttributeSource(int num_values, GPU_Attribute source);
+
         #endregion
     }
 }

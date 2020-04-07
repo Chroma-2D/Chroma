@@ -34,15 +34,6 @@ namespace Chroma.ExampleApp
         protected override void Update(float delta)
         {
             Window.Properties.Title = $"{Window.FPS}";
-
-            for (var y = 0; y < 64; y += 2)
-            {
-                for (var x = 64; x < 128; x++)
-                {
-                    _tex[x, y] = _wall1[x - 64, y];
-                }
-            }
-            _tex.Flush();
         }
 
         protected override void Draw(RenderContext context)

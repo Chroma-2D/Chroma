@@ -541,24 +541,21 @@ namespace Chroma.Natives.SDL
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_GetDefaultRendererOrder(
             ref int order_size,
-            [Out]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Struct, SizeParamIndex = 0)]
+            [Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Struct, SizeParamIndex = 0)]
             GPU_RendererID[] order
         );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_GetRendererOrder(
             ref int order_size,
-            [Out]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Struct, SizeParamIndex = 0)]
+            [Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Struct, SizeParamIndex = 0)]
             GPU_RendererID[] order
         );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_SetRendererOrder(
             ref int order_size,
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Struct)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Struct)]
             GPU_RendererID[] order
         );
 
@@ -590,24 +587,21 @@ namespace Chroma.Natives.SDL
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_LogInfo(
-            [In]
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
             string format,
             __arglist
         );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_LogWarning(
-            [In]
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
             string format,
             __arglist
         );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_LogError(
-            [In]
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
             string format,
             __arglist
         );
@@ -617,12 +611,10 @@ namespace Chroma.Natives.SDL
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_PushErrorCode(
-            [In]
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
             string function,
             GPU_ErrorEnum error,
-            [In]
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
             string details,
             __arglist
         );
@@ -641,8 +633,7 @@ namespace Chroma.Natives.SDL
         #region Renderer Setup
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern GPU_RendererID GPU_MakeRendererID(
-            [In]
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
             string name,
             GPU_RendererEnum renderer,
             int major_version,
@@ -657,8 +648,7 @@ namespace Chroma.Natives.SDL
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_GetRegisteredRendererList(
-            [Out]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Struct)]
+            [Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Struct)]
             GPU_RendererID[] renderers_array
         );
 
@@ -675,8 +665,7 @@ namespace Chroma.Natives.SDL
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_GetActiveRendererList(
-            [Out]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Struct)]
+            [Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Struct)]
             GPU_RendererID[] renderers_array
         );
 
@@ -976,69 +965,55 @@ namespace Chroma.Natives.SDL
         #region 3D Vector Operations
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern float GPU_VectorLength(
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] vec3
         );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_VectorNormalize(
-            [In]
-            [Out]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] vec3
         );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern float GPU_VectorDot(
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] A,
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] B
         );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_VectorCross(
-            [Out]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] result,
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] A,
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] B
         );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_VectorCopy(
-            [Out]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] result,
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] A
         );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_VectorApplyMatrix(
-            [Out]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] vec3,
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] matrix_4x4
         );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_Vector4ApplyMatrix(
-            [Out]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] vec4,
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] matrix_4x4
         );
         #endregion
@@ -1046,27 +1021,21 @@ namespace Chroma.Natives.SDL
         #region 4x4 Matrix Operations
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_MatrixCopy(
-            [Out]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] result,
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] A
         );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_MatrixIdentity(
-            [In]
-            [Out]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] result
         );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_MatrixOrtho(
-            [In]
-            [Out]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] result,
             float left,
             float right,
@@ -1078,9 +1047,7 @@ namespace Chroma.Natives.SDL
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_MatrixFrustum(
-            [In]
-            [Out]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] result,
             float left,
             float right,
@@ -1092,9 +1059,7 @@ namespace Chroma.Natives.SDL
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_MatrixLookAt(
-            [In]
-            [Out]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] matrix,
             float eye_x,
             float eye_y,
@@ -1109,9 +1074,7 @@ namespace Chroma.Natives.SDL
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_MatrixTranslate(
-            [In]
-            [Out]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] result,
             float x,
             float y,
@@ -1120,9 +1083,7 @@ namespace Chroma.Natives.SDL
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_MatrixScale(
-            [In]
-            [Out]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] result,
             float sx,
             float sy,
@@ -1131,9 +1092,7 @@ namespace Chroma.Natives.SDL
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_MatrixRotate(
-            [In]
-            [Out]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] result,
             float degrees,
             float x,
@@ -1143,26 +1102,19 @@ namespace Chroma.Natives.SDL
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_MatrixMultiply(
-            [In]
-            [Out]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] result,
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] A,
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] B
         );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_MultiplyAndAssign(
-            [In]
-            [Out]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] result,
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] B
         );
         #endregion
@@ -1172,8 +1124,7 @@ namespace Chroma.Natives.SDL
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler), MarshalCookie = LPUtf8StrMarshaler.LeaveAllocated)]
         public static extern string GPU_GetMatrixString(
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] A
         );
 
@@ -1199,9 +1150,7 @@ namespace Chroma.Natives.SDL
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_GetModelViewProjection(
-            [In]
-            [Out]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] result
         );
         #endregion
@@ -1230,22 +1179,19 @@ namespace Chroma.Natives.SDL
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_SetProjection(
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] A
         );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_SetView(
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] A
         );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_SetModel(
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] A
         );
 
@@ -1269,8 +1215,7 @@ namespace Chroma.Natives.SDL
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_LoadMatrix(
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] matrix4x4
         );
 
@@ -1297,8 +1242,7 @@ namespace Chroma.Natives.SDL
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_MultMatrix(
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] matrix4x4
         );
         #endregion
@@ -1357,12 +1301,10 @@ namespace Chroma.Natives.SDL
             IntPtr image,
             IntPtr target,
             ushort num_vertices,
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] values,
             uint num_indices,
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2)]
             ushort[] indices,
             GPU_BatchFlagEnum flags
         );
@@ -1374,8 +1316,7 @@ namespace Chroma.Natives.SDL
             ushort num_vertices,
             IntPtr values,
             uint num_indices,
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2)]
             ushort[] indices,
             GPU_BatchFlagEnum flags
         );
@@ -1386,12 +1327,10 @@ namespace Chroma.Natives.SDL
             IntPtr target,
             GPU_PrimitiveEnum primitive_type,
             ushort num_vertices,
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] values,
             uint num_indices,
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2)]
             ushort[] indices,
             GPU_BatchFlagEnum flags
         );
@@ -1404,8 +1343,7 @@ namespace Chroma.Natives.SDL
             ushort num_vertices,
             IntPtr values,
             uint num_indices,
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U2)]
             ushort[] indices,
             GPU_BatchFlagEnum flags
         );
@@ -1470,8 +1408,7 @@ namespace Chroma.Natives.SDL
         public static extern void GPU_Polygon(
             IntPtr target,
             uint num_vertices,
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] vertices,
             SDL_Color color
         );
@@ -1480,8 +1417,7 @@ namespace Chroma.Natives.SDL
         public static extern void GPU_PolygonFilled(
             IntPtr target,
             uint num_vertices,
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] vertices,
             SDL_Color color
         );
@@ -1490,8 +1426,7 @@ namespace Chroma.Natives.SDL
         public static extern void GPU_Polyline(
             IntPtr target,
             uint num_vertices,
-            [In]
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
+            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] vertices,
             SDL_Color color,
             bool close_loop

@@ -1,11 +1,11 @@
-﻿using Chroma.Natives.SDL;
+﻿using System;
+using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics
 {
     public class RenderTarget
     {
-        internal SDL_gpu.GPU_Target_PTR Handle { get; }
-
+        internal IntPtr Handle { get; }
         public Texture Texture { get; }
 
         public RenderTarget(ushort width, ushort height) : this(new Texture(width, height)) 

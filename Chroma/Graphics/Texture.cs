@@ -7,6 +7,8 @@ namespace Chroma.Graphics
 {
     public class Texture : IDisposable
     {
+        private Vector2? _virtualResolution;
+
         internal IntPtr ImageHandle { get; private set; }
 
         internal unsafe SDL_gpu.GPU_Image* Image { get; private set; }
@@ -230,7 +232,7 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
-             
+
                 unsafe
                 {
                     return (BlendingEquation)Image->blend_mode.alpha_equation;
@@ -377,6 +379,40 @@ namespace Chroma.Graphics
             {
                 EnsureNotDisposed();
                 SDL_gpu.GPU_SetColor(ImageHandle, value);
+            }
+        }
+
+        public Vector2? VirtualResolution
+        {
+            get
+            {
+                EnsureNotDisposed();
+
+                if (!_virtualResolution.HasValue)
+                {
+                    _virtualResolution = new Vector2(Width, Height);
+                }
+
+                return _virtualResolution;
+            }
+
+            set
+            {
+                EnsureNotDisposed();
+
+                unsafe
+                {
+                    if (value == null)
+                    {
+                        _virtualResolution = new Vector2(Width, Height);
+                        SDL_gpu.GPU_UnsetImageVirtualResolution(ImageHandle);
+                    }
+                    else
+                    {
+                        _virtualResolution = value;
+                        SDL_gpu.GPU_SetImageVirtualResolution(ImageHandle, (ushort)_virtualResolution.Value.X, (ushort)_virtualResolution.Value.Y);
+                    }
+                }
             }
         }
 

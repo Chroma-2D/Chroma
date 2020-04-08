@@ -3,6 +3,8 @@ using System.Reflection;
 using Chroma.Diagnostics;
 using Chroma.Graphics;
 using Chroma.Graphics.Batching;
+using Chroma.Input;
+using Chroma.Input.EventArgs;
 
 namespace Chroma.ExampleApp
 {
@@ -39,10 +41,19 @@ namespace Chroma.ExampleApp
 
         protected override void Draw(RenderContext context)
         {
-            context.Batch(() => context.DrawTexture(_wall1, new Vector2(134, 134), Vector2.One, Vector2.Zero, .0f), 0);
-            context.Batch(() => context.DrawTexture(_tex, new Vector2(128, 128), Vector2.One, Vector2.Zero, .0f), 1);
+            context.DrawTexture(_wall1, new Vector2(134, 134), Vector2.One, Vector2.Zero, .0f);
+         
+            //context.Batch(() => context.DrawTexture(_tex, new Vector2(128, 128), Vector2.One, Vector2.Zero, .0f), 1);
+        }
 
-            context.DrawBatch(DrawOrder.BackToFront);
+        protected override void KeyPressed(KeyEventArgs e)
+        {
+            if (e.KeyCode == KeyCode.F1)
+                _wall1.VirtualResolution = new Vector2(256, 256);
+            else if (e.KeyCode == KeyCode.F2)
+                _wall1.VirtualResolution = null;
+            else if (e.KeyCode == KeyCode.F3)
+                _wall1.FilteringMode = TextureFilteringMode.NearestNeighbor;
         }
     }
 }

@@ -12,13 +12,13 @@ namespace Chroma.Natives.Boot
         public static string NativeLibraryPath { get; private set; }
         public delegate IntPtr SymbolLookupDelegate(IntPtr addr, string name);
 
-        private static IntPtr _freetypeAddr;
-        private static SymbolLookupDelegate _symbolLookup;
+        private static readonly IntPtr _freetypeAddr;
+        private static readonly SymbolLookupDelegate _symbolLookup;
 
         [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
         private static extern IntPtr LoadLibrary(string lpFileName);
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32")]
         private static extern IntPtr GetProcAddress(IntPtr hModule, string procname);
 
         [DllImport("libdl")]

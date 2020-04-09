@@ -32,6 +32,7 @@ namespace Chroma.ExampleApp
                 }
             }
             _wall1.Flush();
+            _wall1.GenerateMipMaps();
         }
 
         protected override void Update(float delta)
@@ -53,7 +54,7 @@ namespace Chroma.ExampleApp
             else if (e.KeyCode == KeyCode.F2)
                 _wall1.VirtualResolution = null;
             else if (e.KeyCode == KeyCode.F3)
-                _wall1.FilteringMode = TextureFilteringMode.NearestNeighbor;
+                _wall1.FilteringMode = TextureFilteringMode.LinearMipmapped;
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using Chroma.Diagnostics;
 using Chroma.Graphics;
 using Chroma.Natives.SDL;
@@ -46,6 +45,7 @@ namespace Chroma.Windowing
 
         public bool Disposed { get; private set; }
         public bool Running { get; private set; }
+        public bool IsFixedTimeStep { get; private set; }
 
         public IntPtr Handle { get; }
 

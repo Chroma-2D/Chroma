@@ -8,7 +8,7 @@ using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics.TextRendering
 {
-    public unsafe class TrueTypeFont : IDisposable
+    public unsafe class TrueTypeFont : DisposableResource
     {
         internal static FreeTypeLibrary Library { get; }
         internal IntPtr Face { get; }
@@ -16,8 +16,6 @@ namespace Chroma.Graphics.TextRendering
 
         public Dictionary<char, TrueTypeGlyph> RenderInfo { get; }
         public Texture Atlas { get; private set; }
-
-        public bool Disposed { get; private set; }
 
         public string FileName { get; }
         public int Size { get; }
@@ -215,29 +213,9 @@ namespace Chroma.Graphics.TextRendering
             return new Texture(gpuImage);
         }
 
-        #region IDisposable
-        protected virtual void Dispose(bool disposing)
+        protected override void FreeNativeResources()
         {
-            if (!Disposed)
-            {
-                if (disposing)
-                {
-                    // No managed resources to free.
-                }
-
-                FT.FT_Done_Face(Face);
-                Disposed = true;
-            }
+            FT.FT_Done_Face(Face);
         }
-
-        ~TrueTypeFont()
-            => Dispose(false);
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 }

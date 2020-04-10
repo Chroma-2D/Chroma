@@ -40,6 +40,9 @@ namespace Chroma
             X = Y = uniform;
         }
 
+        public float[] AsOrderedArray()
+            => new float[] { X, Y };
+
         public float DistanceTo(Vector2 target)
             => Distance(this, target);
 

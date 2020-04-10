@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Chroma.Diagnostics;
+using Chroma.Graphics.Accelerated;
 using Chroma.Graphics.Batching;
 using Chroma.Graphics.TextRendering;
 using Chroma.Natives.SDL;
@@ -15,25 +17,43 @@ namespace Chroma.Graphics
         internal IntPtr CurrentRenderTarget { get; private set; }
         internal IntPtr OriginalRenderTarget { get; }
 
+        internal static SDL_gpu.GPU_ShaderBlock DefaultShaderBlock;
+        
         public bool RenderingToWindow
             => CurrentRenderTarget == OriginalRenderTarget;
-
-        internal RenderContext(Window owner)
-        {
-            BatchBuffer = new List<BatchInfo>();
-
-            Owner = owner;
-
-            CurrentRenderTarget = owner.RenderTargetHandle;
-            OriginalRenderTarget = owner.RenderTargetHandle;
-
-            LineThickness = 1;
-        }
 
         public float LineThickness
         {
             get => SDL_gpu.GPU_GetLineThickness();
             set => SDL_gpu.GPU_SetLineThickness(value);
+        }
+
+        internal RenderContext(Window owner)
+        {
+            Owner = owner;
+
+            CurrentRenderTarget = owner.RenderTargetHandle;
+            OriginalRenderTarget = owner.RenderTargetHandle;
+
+            BatchBuffer = new List<BatchInfo>();
+            LineThickness = 1;
+        }
+
+        public void ActivateShader(PixelShader shader)
+        {
+            if (shader.ProgramHandle == 0)
+            {
+                Log.Warning($"Refusing to activate invalid shader {shader.FilePath}");
+                return;
+            }
+
+            var block = shader.Block;
+            SDL_gpu.GPU_ActivateShaderProgram(shader.ProgramHandle, ref block);
+        }
+
+        public void DeactivateShader()
+        {
+            SDL_gpu.GPU_ActivateShaderProgram(0, IntPtr.Zero);
         }
 
         public void Clear(Color color)

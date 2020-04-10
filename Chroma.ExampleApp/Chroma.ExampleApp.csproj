@@ -54,6 +54,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
 
+    <None Update="sh.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+
     <None Update="RedFont.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -75,6 +79,10 @@
     </None>
 
     <None Update="SUPER_SMASH_4_1_BY_POKEMON_DIAMOND-D7ZXU6D.TTF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+
+    <None Update="whiterect.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
 

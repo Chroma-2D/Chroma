@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using Chroma.Diagnostics;
 using Chroma.Natives.SDL;
 
@@ -7,10 +9,12 @@ namespace Chroma.Graphics
 {
     public class GraphicsManager
     {
-        private bool _vSyncEnabled;
-
         private Game Game { get; }
-        
+
+        public static bool IsDefaultShaderActive
+            => SDL_gpu.GPU_IsDefaultShaderProgram(SDL_gpu.GPU_GetCurrentShaderProgram());
+
+        private bool _vSyncEnabled;
         public bool VSyncEnabled
         {
             get => _vSyncEnabled;

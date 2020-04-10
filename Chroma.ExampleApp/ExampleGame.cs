@@ -1,8 +1,11 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using Chroma.Diagnostics;
 using Chroma.Graphics;
 using Chroma.Graphics.Accelerated;
+using Chroma.Graphics.TextRendering;
 using Chroma.Input;
 using Chroma.Input.EventArgs;
 
@@ -12,6 +15,16 @@ namespace Chroma.ExampleApp
     {
         private Texture _tex;
         private RenderTarget _tgt;
+        private TrueTypeFont _ttf;
+        private List<Color> _colors = new List<Color>
+        {
+            Color.Red,
+            Color.Orange,
+            Color.Lime,
+            Color.CornflowerBlue,
+            Color.Indigo,
+            Color.Violet
+        };
 
         private PixelShader _pixelShader;
         private float _rot = 0.0f;
@@ -28,6 +41,7 @@ namespace Chroma.ExampleApp
             Window.GoWindowed(1024, 600);
 
             var loc = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            _ttf = new TrueTypeFont(Path.Combine(loc, "c64style.ttf"), 16);
             _tex = new Texture(Path.Combine(loc, "whiterect.png"));
             _tgt = new RenderTarget(1024, 600);
 
@@ -51,30 +65,42 @@ namespace Chroma.ExampleApp
                     _goUp = true;
             }
 
-            _rot += 25f * delta;
+            _rot += 10f * delta;
 
         }
 
         protected override void Draw(RenderContext context)
         {
+            context.RenderTo(_tgt, () =>
+            {
+                context.Clear(Color.Black);
+                context.DrawString(_ttf, "WE ARE 100 PERCENT BLACK\n -> ME TOO.", new Vector2(64, 64), (c, i, p, g) =>
+                {
+                    var color = _colors[i % _colors.Count];
+                    var nudgeVert = 3.5f * MathF.Sin(i + _rot);
+
+                    return new GlyphTransformData(p)
+                    {
+                        Color = color,
+                        Position = new Vector2(p.X, p.Y + nudgeVert)
+                    };
+                });
+            });
+
             if (_doot)
             {
                 context.ActivateShader(_pixelShader);
-                _pixelShader.SetUniform("rotation", _rot % 360);
+                _pixelShader.SetUniform("screenSize", new Vector2(Window.Properties.Width, Window.Properties.Height));
+                _pixelShader.SetUniform("scanlineDensity", 2f);
+                _pixelShader.SetUniform("blurDistance", .88f);
             }
 
-            context.RenderTo(_tgt, () =>
-            {
-                context.Clear(Color.CornflowerBlue);
-                context.DrawTexture(_tex, new Vector2(480, 300), Vector2.One, new Vector2(_tex.Width / 2, _tex.Height / 2), 0);
-            });
+            context.DrawTexture(_tgt.Texture, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
 
             if (_doot)
             {
                 context.DeactivateShader();
             }
-
-            context.DrawTexture(_tgt.Texture, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
             //context.Batch(() => context.DrawTexture(_tex, new Vector2(128, 128), Vector2.One, Vector2.Zero, .0f), 1);
         }
 

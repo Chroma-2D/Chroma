@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <None Remove="Resources\logo.png" />
+    <None Remove="Resources\shader\default.frag" />
+    <None Remove="Resources\shader\default.vert" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,6 +19,8 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\logo.png" />
+    <EmbeddedResource Include="Resources\shader\default.frag" />
+    <EmbeddedResource Include="Resources\shader\default.vert" />
   </ItemGroup>
 
 </Project>

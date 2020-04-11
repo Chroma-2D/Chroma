@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Numerics;
 using Chroma.Diagnostics;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics
 {
-    public class Texture : IDisposable
+    public class Texture : DisposableResource
     {
         private Vector2? _virtualResolution;
 
@@ -13,8 +14,6 @@ namespace Chroma.Graphics
 
         internal unsafe SDL_gpu.GPU_Image* Image { get; private set; }
         internal unsafe SDL2.SDL_Surface* Surface { get; private set; }
-
-        public bool Disposed { get; private set; }
 
         public float Width
         {
@@ -486,6 +485,9 @@ namespace Chroma.Graphics
 
         public Texture(Texture other)
         {
+            if (other.Disposed)
+                throw new InvalidOperationException("The source texture has been disposed.");
+
             unsafe
             {
                 var handle = SDL2.SDL_CreateRGBSurfaceFrom(
@@ -599,41 +601,14 @@ namespace Chroma.Graphics
             SDL_gpu.GPU_GenerateMipmaps(ImageHandle);
         }
 
-        private void EnsureNotDisposed()
+        protected override void FreeNativeResources()
         {
-            if (Disposed)
-                throw new InvalidOperationException("This texture has already been disposed.");
-        }
+            SDL_gpu.GPU_FreeImage(ImageHandle);
 
-        #region IDisposable
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!Disposed)
+            unsafe
             {
-                if (disposing)
-                {
-                    // No unmanaged resources to free.
-                }
-
-                SDL_gpu.GPU_FreeImage(ImageHandle);
-
-                unsafe
-                {
-                    SDL2.SDL_FreeSurface(new IntPtr(Surface));
-                }
-                Disposed = true;
+                SDL2.SDL_FreeSurface(new IntPtr(Surface));
             }
         }
-
-        ~Texture() => Dispose(false);
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        #endregion
     }
 }

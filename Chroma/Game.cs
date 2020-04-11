@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Numerics;
 using System.Reflection;
+using System.Threading;
 using Chroma.Graphics;
 using Chroma.Input.EventArgs;
 using Chroma.Natives.SDL;
@@ -9,15 +11,19 @@ namespace Chroma
 {
     public class Game
     {
+        private readonly Thread _fixedUpdateThread;
+
         public Texture LogoTexture { get; }
 
         public Window Window { get; }
         public GraphicsManager Graphics { get; }
 
-        public bool Running { get; private set; }
+        public int FixedUpdateFrequency { get; protected set; } = 75;
 
         public Game()
         {
+            _fixedUpdateThread = new Thread(FixedUpdateThread);
+
             Graphics = new GraphicsManager(this);
 
             Window = new Window(this)
@@ -31,7 +37,9 @@ namespace Chroma
         }
 
         public void Run()
-            => Window.Run();
+        {
+            Window.Run(() => _fixedUpdateThread.Start());
+        }
 
         public void Quit()
         {
@@ -58,6 +66,10 @@ namespace Chroma
         }
 
         protected virtual void Update(float delta)
+        {
+        }
+
+        protected virtual void FixedUpdate(float fixedDelta)
         {
         }
 
@@ -144,5 +156,22 @@ namespace Chroma
 
         internal void OnControllerAxisMoved(ControllerAxisEventArgs e)
             => ControllerAxisMoved(e);
+
+        private void FixedUpdateThread()
+        {
+            while (true)
+            {
+                if (!Window.Running)
+                    break;
+
+                var waitTime = 1f / FixedUpdateFrequency;
+
+                lock (this)
+                {
+                    FixedUpdate(waitTime);
+                }
+                Thread.Sleep((int)(waitTime * 1000));
+            }
+        }
     }
 }

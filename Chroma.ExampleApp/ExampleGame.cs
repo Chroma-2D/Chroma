@@ -60,8 +60,6 @@ namespace Chroma.ExampleApp
 
         protected override void FixedUpdate(float fixedDelta)
         {
-            Console.WriteLine(fixedDelta);
-
             if (_goUp)
             {
                 _x += 60f * fixedDelta;

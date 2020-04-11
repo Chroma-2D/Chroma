@@ -1492,6 +1492,9 @@ namespace Chroma.Natives.SDL
         public static extern void GPU_ActivateShaderProgram(uint program_object, IntPtr block);
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe void GPU_ActivateShaderProgram(uint program_object, GPU_ShaderBlock* block);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_DeactivateShaderProgram();
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]

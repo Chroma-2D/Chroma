@@ -1,4 +1,6 @@
-﻿namespace Chroma.Windowing.EventArgs
+﻿using System.Numerics;
+
+namespace Chroma.Windowing.EventArgs
 {
     public class WindowMoveEventArgs : System.EventArgs
     {

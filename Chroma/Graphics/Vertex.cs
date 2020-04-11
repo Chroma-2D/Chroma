@@ -1,4 +1,6 @@
-﻿namespace Chroma.Graphics
+﻿using System.Numerics;
+
+namespace Chroma.Graphics
 {
     public struct Vertex
     {

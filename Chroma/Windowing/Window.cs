@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Numerics;
+using System.Threading;
 using Chroma.Diagnostics;
 using Chroma.Graphics;
 using Chroma.Natives.SDL;
@@ -8,7 +10,7 @@ using Chroma.Windowing.EventHandling.Specialized;
 
 namespace Chroma.Windowing
 {
-    public sealed class Window : IDisposable
+    public sealed class Window : DisposableResource
     {
         private ulong _nowFrameTime = SDL2.SDL_GetPerformanceCounter();
         private ulong _lastFrameTime = 0;
@@ -43,9 +45,7 @@ namespace Chroma.Windowing
         public event EventHandler<WindowSizeEventArgs> Resized;
         public event EventHandler<CancelEventArgs> QuitRequested;
 
-        public bool Disposed { get; private set; }
         public bool Running { get; private set; }
-        public bool IsFixedTimeStep { get; private set; }
 
         public IntPtr Handle { get; }
 
@@ -88,9 +88,11 @@ namespace Chroma.Windowing
             new InputEventHandlers(EventDispatcher);
         }
 
-        public void Run()
+        public void Run(Action postStatusSetAction = null)
         {
             Running = true;
+
+            postStatusSetAction?.Invoke();
 
             while (Running)
             {
@@ -110,6 +112,9 @@ namespace Chroma.Windowing
 
                 SDL_gpu.GPU_Flip(RenderTargetHandle);
                 FpsCounter.Update();
+
+                if (Game.Graphics.LimitFramerate)
+                    Thread.Sleep(1);
             }
         }
 
@@ -219,36 +224,11 @@ namespace Chroma.Windowing
             Properties.Height = mode.h;
         }
 
-        #region IDisposable
-        private void Dispose(bool disposing)
+        protected override void FreeNativeResources()
         {
-            if (!Disposed)
-            {
-                Running = false;
-
-                if (disposing)
-                {
-                    // No managed resources to free.
-                }
-
-                SDL_gpu.GPU_FreeTarget(RenderTargetHandle);
-                SDL_gpu.GPU_Quit();
-                SDL2.SDL_Quit();
-
-                Disposed = true;
-            }
+            SDL_gpu.GPU_FreeTarget(RenderTargetHandle);
+            SDL_gpu.GPU_Quit();
+            SDL2.SDL_Quit();
         }
-
-        ~Window()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 }

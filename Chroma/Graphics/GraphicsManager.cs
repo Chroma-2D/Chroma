@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using Chroma.Diagnostics;
 using Chroma.Natives.SDL;
 
@@ -7,36 +9,31 @@ namespace Chroma.Graphics
 {
     public class GraphicsManager
     {
-        private bool _vSyncEnabled;
-
         private Game Game { get; }
         
+        public bool LimitFramerate { get; set; } = true;
+        public bool AutoClear { get; set; } = true;
+        public Color AutoClearColor { get; set; } = Color.Transparent;
+        
+        private bool _vSyncEnabled;
         public bool VSyncEnabled
         {
             get => _vSyncEnabled;
             set
             {
                 _vSyncEnabled = value;
-
-                if (!value)
-                {
-                    SDL2.SDL_GL_SetSwapInterval(0);
-                }
-                else
-                {
-                    SDL2.SDL_GL_SetSwapInterval(1);
-                }
+                SDL2.SDL_GL_SetSwapInterval(value ? 1 : 0);
             }
         }
 
-        public float Gamma
+        public float ScreenGamma
         {
             get => SDL2.SDL_GetWindowBrightness(Game.Window.Handle);
             set => SDL2.SDL_SetWindowBrightness(Game.Window.Handle, value);
         }
-
-        public bool AutoClear { get; set; } = true;
-        public Color AutoClearColor { get; set; } = Color.Transparent;
+        
+        public bool IsDefaultShaderActive
+            => SDL_gpu.GPU_IsDefaultShaderProgram(SDL_gpu.GPU_GetCurrentShaderProgram());
 
         internal GraphicsManager(Game game)
         {
@@ -100,11 +97,9 @@ namespace Chroma.Graphics
                     UnderlyingDisplayMode = mode
                 };
             }
-            else
-            {
-                Log.Error($"Failed to retrieve display {index} info: {SDL2.SDL_GetError()}");
-                return null;
-            }
+
+            Log.Error($"Failed to retrieve display {index} info: {SDL2.SDL_GetError()}");
+            return null;
         }
 
         public Display FetchDesktopDisplayInfo(int index)
@@ -116,11 +111,9 @@ namespace Chroma.Graphics
                     UnderlyingDisplayMode = mode
                 };
             }
-            else
-            {
-                Log.Error($"Failed to retrieve desktop display {index} info: {SDL2.SDL_GetError()}");
-                return null;
-            }
+
+            Log.Error($"Failed to retrieve desktop display {index} info: {SDL2.SDL_GetError()}");
+            return null;
         }
 
         internal List<SDL_gpu.GPU_RendererID> GetRegisteredRenderers()

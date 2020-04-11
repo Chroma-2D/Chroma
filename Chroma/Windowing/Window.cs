@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using System.Threading;
 using Chroma.Diagnostics;
 using Chroma.Graphics;
 using Chroma.Natives.SDL;
@@ -45,7 +46,6 @@ namespace Chroma.Windowing
         public event EventHandler<CancelEventArgs> QuitRequested;
 
         public bool Running { get; private set; }
-        public bool IsFixedTimeStep { get; private set; }
 
         public IntPtr Handle { get; }
 
@@ -88,9 +88,11 @@ namespace Chroma.Windowing
             new InputEventHandlers(EventDispatcher);
         }
 
-        public void Run()
+        public void Run(Action postStatusSetAction = null)
         {
             Running = true;
+
+            postStatusSetAction?.Invoke();
 
             while (Running)
             {
@@ -110,6 +112,9 @@ namespace Chroma.Windowing
 
                 SDL_gpu.GPU_Flip(RenderTargetHandle);
                 FpsCounter.Update();
+
+                if (Game.Graphics.LimitFramerate)
+                    Thread.Sleep(1);
             }
         }
 

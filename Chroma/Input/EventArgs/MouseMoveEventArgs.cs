@@ -1,4 +1,6 @@
-﻿namespace Chroma.Input.EventArgs
+﻿using System.Numerics;
+
+namespace Chroma.Input.EventArgs
 {
     public class MouseMoveEventArgs : System.EventArgs
     {

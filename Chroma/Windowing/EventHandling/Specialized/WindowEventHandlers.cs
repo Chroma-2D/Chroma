@@ -1,4 +1,5 @@
-﻿using Chroma.Natives.SDL;
+﻿using System.Numerics;
+using Chroma.Natives.SDL;
 using Chroma.Windowing.EventArgs;
 
 namespace Chroma.Windowing.EventHandling.Specialized

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Input.EventArgs

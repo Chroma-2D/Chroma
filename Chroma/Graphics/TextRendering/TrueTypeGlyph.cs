@@ -1,4 +1,6 @@
-﻿namespace Chroma.Graphics.TextRendering
+﻿using System.Numerics;
+
+namespace Chroma.Graphics.TextRendering
 {
     public struct TrueTypeGlyph
     {

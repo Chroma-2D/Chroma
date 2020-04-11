@@ -1,3 +1,5 @@
+using System.Numerics;
+
 namespace Chroma.Graphics.TextRendering
 {
     public struct GlyphTransformData

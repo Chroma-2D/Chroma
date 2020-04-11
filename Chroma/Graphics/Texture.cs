@@ -12,7 +12,7 @@ namespace Chroma.Graphics
 
         internal IntPtr ImageHandle { get; private set; }
 
-        internal unsafe SDL_gpu.GPU_Image* Image { get; private set; }
+        internal unsafe SDL_gpu.GPU_Image* Image => (SDL_gpu.GPU_Image*)ImageHandle.ToPointer();
         internal unsafe SDL2.SDL_Surface* Surface { get; private set; }
 
         public float Width

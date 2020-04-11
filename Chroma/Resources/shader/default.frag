@@ -1,4 +1,6 @@
-﻿uniform sampler2D tex;
+﻿#version 130
+
+uniform sampler2D tex;
 
 in vec4 color;
 in vec2 texCoord;

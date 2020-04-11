@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Reflection;
-using System.Threading;
 using Chroma.Diagnostics;
 using Chroma.Graphics;
 using Chroma.Graphics.Accelerated;
@@ -29,8 +28,6 @@ namespace Chroma.ExampleApp
         };
 
         private PixelShader _pixelShader;
-        private VertexShader _vertexShader;
-        private CompoundShader _compoundShader;
 
         private Vector2 _screenSize;
         private float _rot = 0.0f;
@@ -48,16 +45,10 @@ namespace Chroma.ExampleApp
 
             var loc = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             _ttf = new TrueTypeFont(Path.Combine(loc, "c64style.ttf"), 16);
-            _tex = new Texture(Path.Combine(loc, "whiterect.png"));
+            _tex = new Texture(Path.Combine(loc, "burg.png"));
             _tgt = new RenderTarget(1024, 600);
 
             _pixelShader = new PixelShader(Path.Combine(loc, "sh.frag"));
-            _vertexShader = new VertexShader(Path.Combine(loc, "sh.vert"));
-            _compoundShader = new CompoundShader(
-                Path.Combine(loc, "sh.frag"),
-                Path.Combine(loc, "sh.vert")
-            );
-
             _screenSize = new Vector2(Window.Properties.Width, Window.Properties.Height);
         }
 
@@ -101,18 +92,17 @@ namespace Chroma.ExampleApp
                         Position = new Vector2(p.X, p.Y + nudgeVert)
                     };
                 });
+
+                context.DrawTexture(_tex, new Vector2(50, 150), Vector2.One, Vector2.Zero, _rot);
+                context.Rectangle(ShapeMode.Fill, new Vector2(150, 150), 100, 100, Color.Red);
             });
 
             if (_doot)
             {
-                _compoundShader.Activate();
-
-                //_pixelShader.Activate();
-
-                _compoundShader.SetUniform("screenSize", _screenSize);
-                _compoundShader.SetUniform("scanlineDensity", 2f);
-                _compoundShader.SetUniform("blurDistance", .88f);
-                //_vertexShader.Activate();
+                _pixelShader.Activate();
+                _pixelShader.SetUniform("screenSize", _screenSize);
+                _pixelShader.SetUniform("scanlineDensity", 2f);
+                _pixelShader.SetUniform("blurDistance", .88f);
             }
 
             context.DrawTexture(_tgt.Texture, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);

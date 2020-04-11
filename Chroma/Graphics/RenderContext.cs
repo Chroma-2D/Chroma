@@ -41,17 +41,6 @@ namespace Chroma.Graphics
             LineThickness = 1;
         }
 
-        public void ActivateShader(PixelShader shader)
-        {
-            if (shader.ProgramHandle == 0)
-            {
-                Log.Warning($"Refusing to activate invalid shader {shader.FilePath}");
-                return;
-            }
-
-            var block = shader.Block;
-            SDL_gpu.GPU_ActivateShaderProgram(shader.ProgramHandle, ref block);
-        }
 
         public void DeactivateShader()
         {

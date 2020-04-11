@@ -39,6 +39,7 @@ namespace Chroma.Graphics
             set => SDL2.SDL_SetWindowBrightness(Game.Window.Handle, value);
         }
 
+        public bool LimitFramerate { get; set; } = true;
         public bool AutoClear { get; set; } = true;
         public Color AutoClearColor { get; set; } = Color.Transparent;
 

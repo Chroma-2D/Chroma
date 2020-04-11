@@ -10,7 +10,18 @@ namespace Chroma.Graphics.Accelerated
         internal uint VertexShaderObjectHandle { get; set; }
         internal uint PixelShaderObjectHandle { get; set; }
 
-        internal SDL_gpu.GPU_ShaderBlock Block { get; set; }
+        internal SDL_gpu.GPU_ShaderBlock Block;
+
+        public void Activate()
+        {
+            if (ProgramHandle == 0)
+            {
+                Log.Warning($"Refusing to activate invalid shader.");
+                return;
+            }
+
+            SDL_gpu.GPU_ActivateShaderProgram(ProgramHandle, ref Block);
+        }
 
         public void SetUniform(string name, float value)
         {

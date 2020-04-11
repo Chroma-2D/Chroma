@@ -22,6 +22,13 @@ namespace Chroma.Graphics.Accelerated
                 throw new ShaderException("Compilation failed.", SDL_gpu.GPU_GetShaderMessage());
 
             CompileAndSetDefaultPixelShader();
+            if (PixelShaderObjectHandle == 0)
+            {
+                throw new ShaderException(
+                    "Default Chroma pixel shader compilation failed. " +
+                    "Report an issue - be sure to include GLSL errors or I'll fuck you up just like I did with this framework.", SDL_gpu.GPU_GetShaderMessage());
+            }
+
             ProgramHandle = SDL_gpu.GPU_LinkShaders(PixelShaderObjectHandle, VertexShaderObjectHandle);
 
             if (ProgramHandle == 0)

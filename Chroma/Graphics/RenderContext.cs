@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Numerics;
 using Chroma.Diagnostics;
 using Chroma.Graphics.Accelerated;
 using Chroma.Graphics.Batching;

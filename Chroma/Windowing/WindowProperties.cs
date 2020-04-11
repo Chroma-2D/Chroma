@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using Chroma.Diagnostics;
 using Chroma.Natives.SDL;
 

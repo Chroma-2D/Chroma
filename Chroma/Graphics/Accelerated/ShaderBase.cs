@@ -1,4 +1,5 @@
-﻿using Chroma.Diagnostics;
+﻿using System.Numerics;
+using Chroma.Diagnostics;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics.Accelerated
@@ -24,6 +25,19 @@ namespace Chroma.Graphics.Accelerated
             SDL_gpu.GPU_SetUniformf(loc, value);
         }
 
+        public void SetUniform(string name, int value)
+        {
+            var loc = SDL_gpu.GPU_GetUniformLocation(ProgramHandle, name);
+
+            if (loc == -1)
+            {
+                Log.Warning($"Int uniform '{name}' does not exist.");
+                return;
+            }
+
+            SDL_gpu.GPU_SetUniformi(loc, value);
+        }
+
         public void SetUniform(string name, Vector2 value)
         {
             var loc = SDL_gpu.GPU_GetUniformLocation(ProgramHandle, name);
@@ -34,7 +48,7 @@ namespace Chroma.Graphics.Accelerated
                 return;
             }
 
-            SDL_gpu.GPU_SetUniformfv(loc, 2, 1, value.AsOrderedArray());
+            SDL_gpu.GPU_SetUniformfv(loc, 2, 1, new float[] { value.X, value.Y });
         }
 
         public void SetUniform(string name, Color value)

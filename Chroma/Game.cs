@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using System.Reflection;
 using Chroma.Graphics;
 using Chroma.Input.EventArgs;

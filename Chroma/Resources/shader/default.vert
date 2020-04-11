@@ -1,4 +1,6 @@
-﻿in vec3 gpu_Vertex;
+﻿#version 130
+
+in vec3 gpu_Vertex;
 in vec2 gpu_TexCoord;
 in vec4 gpu_Color;
 

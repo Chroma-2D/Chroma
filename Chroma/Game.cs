@@ -11,16 +11,14 @@ namespace Chroma
 {
     public class Game
     {
-        private Thread _fixedUpdateThread;
+        private readonly Thread _fixedUpdateThread;
 
         public Texture LogoTexture { get; }
 
         public Window Window { get; }
         public GraphicsManager Graphics { get; }
 
-        public int FixedUpdateFrequency { get; protected set; } = 240;
-
-        public bool Running { get; private set; }
+        public int FixedUpdateFrequency { get; protected set; } = 75;
 
         public Game()
         {

@@ -29,6 +29,8 @@ namespace Chroma.ExampleApp
         };
 
         private PixelShader _pixelShader;
+        private VertexShader _vertexShader;
+        private CompoundShader _compoundShader;
 
         private Vector2 _screenSize;
         private float _rot = 0.0f;
@@ -50,6 +52,12 @@ namespace Chroma.ExampleApp
             _tgt = new RenderTarget(1024, 600);
 
             _pixelShader = new PixelShader(Path.Combine(loc, "sh.frag"));
+            _vertexShader = new VertexShader(Path.Combine(loc, "sh.vert"));
+            _compoundShader = new CompoundShader(
+                Path.Combine(loc, "sh.frag"),
+                Path.Combine(loc, "sh.vert")
+            );
+
             _screenSize = new Vector2(Window.Properties.Width, Window.Properties.Height);
         }
 
@@ -97,11 +105,14 @@ namespace Chroma.ExampleApp
 
             if (_doot)
             {
-                _pixelShader.Activate();
+                _compoundShader.Activate();
 
-                _pixelShader.SetUniform("screenSize", _screenSize);
-                _pixelShader.SetUniform("scanlineDensity", 2f);
-                _pixelShader.SetUniform("blurDistance", .88f);
+                //_pixelShader.Activate();
+
+                _compoundShader.SetUniform("screenSize", _screenSize);
+                _compoundShader.SetUniform("scanlineDensity", 2f);
+                _compoundShader.SetUniform("blurDistance", .88f);
+                //_vertexShader.Activate();
             }
 
             context.DrawTexture(_tgt.Texture, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);

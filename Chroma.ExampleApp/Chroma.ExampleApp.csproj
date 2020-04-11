@@ -70,6 +70,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
 
+    <None Update="sh.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+
     <None Update="skeltal.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

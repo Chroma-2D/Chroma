@@ -12,5 +12,5 @@ void main(void)
     color = gpu_Color;
     texCoord = vec2(gpu_TexCoord);
 
-    gl_Position = gpu_ModelViewProjectionMatrix * vec4(gpu_Vertex, 1.0);
+    gl_Position = gpu_ModelViewProjectionMatrix * vec4(gpu_Vertex, 0.5);
 }

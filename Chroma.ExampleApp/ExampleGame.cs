@@ -17,6 +17,7 @@ namespace Chroma.ExampleApp
         private Texture _tex;
         private RenderTarget _tgt;
         private TrueTypeFont _ttf;
+
         private List<Color> _colors = new List<Color>
         {
             Color.Red,
@@ -43,13 +44,15 @@ namespace Chroma.ExampleApp
 
             Window.GoWindowed(1024, 600);
 
-            var loc = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            _ttf = new TrueTypeFont(Path.Combine(loc, "c64style.ttf"), 16);
-            _tex = new Texture(Path.Combine(loc, "burg.png"));
             _tgt = new RenderTarget(1024, 600);
-
-            _pixelShader = new PixelShader(Path.Combine(loc, "sh.frag"));
             _screenSize = new Vector2(Window.Properties.Width, Window.Properties.Height);
+        }
+
+        protected override void LoadContent()
+        {
+            _ttf = Content.Load<TrueTypeFont>("Fonts/c64style.ttf", 16);
+            _tex = Content.Load<Texture>("Textures/burg.png");
+            _pixelShader = Content.Load<PixelShader>("Shaders/sh.frag");
         }
 
         protected override void Update(float delta)

@@ -45,7 +45,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Float attribute '{name}' does not exist.");
+                Game.Log.Warning($"Float attribute '{name}' does not exist.");
                 return;
             }
 
@@ -60,7 +60,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Int attribute '{name}' does not exist.");
+                Game.Log.Warning($"Int attribute '{name}' does not exist.");
                 return;
             }
 
@@ -75,7 +75,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Uint attribute '{name}' does not exist.");
+                Game.Log.Warning($"Uint attribute '{name}' does not exist.");
                 return;
             }
 
@@ -90,7 +90,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Vec2 attribute '{name}' does not exist.");
+                Game.Log.Warning($"Vec2 attribute '{name}' does not exist.");
                 return;
             }
 
@@ -105,7 +105,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Vec3 attribute '{name}' does not exist.");
+                Game.Log.Warning($"Vec3 attribute '{name}' does not exist.");
                 return;
             }
 
@@ -120,7 +120,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Vec4 attribute '{name}' does not exist.");
+                Game.Log.Warning($"Vec4 attribute '{name}' does not exist.");
                 return;
             }
 
@@ -135,7 +135,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Vec4 attribute '{name}' does not exist.");
+                Game.Log.Warning($"Vec4 attribute '{name}' does not exist.");
                 return;
             }
 

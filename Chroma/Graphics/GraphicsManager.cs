@@ -38,17 +38,18 @@ namespace Chroma.Graphics
         internal GraphicsManager(Game game)
         {
             Game = game;
+            var renderers = GetRendererNames();
 
-            Log.Info("GraphicsManager initializing...");
-            Log.Info(" Registered renderers:");
+            Game.Log.Info("GraphicsManager initializing...");
+            Game.Log.Info(" Registered renderers:");
 
-            foreach (var s in GetRendererNames())
-                Log.Info($"  {s}");
+            foreach (var s in renderers)
+                Game.Log.Info($"  {s}");
 
-            Log.Info(" Available displays:");
+            Game.Log.Info(" Available displays:");
 
             foreach (var d in FetchDisplayInfo())
-                Log.Info($"  {d.Index}: {d.Width}x{d.Height}@{d.RefreshRate}Hz");
+                Game.Log.Info($"  {d.Index}: {d.Width}x{d.Height}@{d.RefreshRate}Hz");
 
             VSyncEnabled = true;
         }
@@ -98,7 +99,7 @@ namespace Chroma.Graphics
                 };
             }
 
-            Log.Error($"Failed to retrieve display {index} info: {SDL2.SDL_GetError()}");
+            Game.Log.Error($"Failed to retrieve display {index} info: {SDL2.SDL_GetError()}");
             return null;
         }
 
@@ -112,7 +113,7 @@ namespace Chroma.Graphics
                 };
             }
 
-            Log.Error($"Failed to retrieve desktop display {index} info: {SDL2.SDL_GetError()}");
+            Game.Log.Error($"Failed to retrieve desktop display {index} info: {SDL2.SDL_GetError()}");
             return null;
         }
 

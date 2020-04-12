@@ -122,7 +122,7 @@ namespace Chroma.Windowing
 
                             if (!flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_RESIZABLE))
                             {
-                                Log.Warning("Refusing to maximize a non-resizable window.");
+                                Game.Log.Warning("Refusing to maximize a non-resizable window.");
                                 return;
                             }
 

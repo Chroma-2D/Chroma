@@ -35,7 +35,7 @@ namespace Chroma.Graphics.TextRendering
                 {
                     if (x + 1 > Texture.Width)
                     {
-                        Log.Warning($"Character '{c}' is out of bounds for image font.");
+                        Game.Log.Warning($"Character '{c}' is out of bounds for image font.");
                         break;
                     }
                 }

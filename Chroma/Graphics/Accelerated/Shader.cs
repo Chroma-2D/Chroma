@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Numerics;
 using System.Reflection;
 using Chroma.Diagnostics;
@@ -14,6 +15,70 @@ namespace Chroma.Graphics.Accelerated
         internal uint PixelShaderObjectHandle;
 
         internal SDL_gpu.GPU_ShaderBlock Block;
+
+        public static bool IsDefaultGpuShaderActive
+            => SDL_gpu.GPU_IsDefaultShaderProgram(SDL_gpu.GPU_GetCurrentShaderProgram());
+
+        public static Matrix4x4 ModelViewProjectionMatrix
+        {
+            get
+            {
+                EnsureCustomShaderActive();
+
+                var m = new float[16];
+
+                unsafe
+                {
+                    fixed (float* ptr = &m[0])
+                    {
+                        SDL_gpu.GPU_GetModelViewProjection(ptr);
+                        return CreateMatrixFromPointer(ptr);
+                    }
+                }
+            }
+        }
+
+        public static Matrix4x4 ProjectionMatrix
+        {
+            get
+            {
+                EnsureCustomShaderActive();
+
+                unsafe
+                {
+                    float* mtxptr = SDL_gpu.GPU_GetProjection();
+                    return CreateMatrixFromPointer(mtxptr);
+                }
+            }
+        }
+
+        public static Matrix4x4 ViewMatrix
+        {
+            get
+            {
+                EnsureCustomShaderActive();
+
+                unsafe
+                {
+                    float* mtxptr = SDL_gpu.GPU_GetView();
+                    return CreateMatrixFromPointer(mtxptr);
+                }
+            }
+        }
+
+        public static Matrix4x4 ModelMatrix
+        {
+            get
+            {
+                EnsureCustomShaderActive();
+
+                unsafe
+                {
+                    float* mtxptr = SDL_gpu.GPU_GetModel();
+                    return CreateMatrixFromPointer(mtxptr);
+                }
+            }
+        }
 
         public void Activate()
         {
@@ -143,7 +208,7 @@ namespace Chroma.Graphics.Accelerated
             EnsureNotDisposed();
 
             var loc = SDL_gpu.GPU_GetUniformLocation(ProgramHandle, name);
-            
+
             if (loc == -1)
             {
                 Log.Warning($"Vec4 uniform '{name}' does not exist.");
@@ -198,6 +263,22 @@ namespace Chroma.Graphics.Accelerated
 
             if (ProgramHandle != 0)
                 SDL_gpu.GPU_FreeShaderProgram(ProgramHandle);
+        }
+
+        protected static void EnsureCustomShaderActive()
+        {
+            if (IsDefaultGpuShaderActive)
+                throw new InvalidOperationException("You cannot retrieve a model-view-projection matrix without a custom shader being active.");
+        }
+
+        private static unsafe Matrix4x4 CreateMatrixFromPointer(float* mtxptr)
+        {
+            return new Matrix4x4(
+                mtxptr[0], mtxptr[1], mtxptr[2], mtxptr[3],
+                mtxptr[4], mtxptr[5], mtxptr[6], mtxptr[7],
+                mtxptr[8], mtxptr[9], mtxptr[10], mtxptr[11],
+                mtxptr[12], mtxptr[13], mtxptr[14], mtxptr[15]
+            );
         }
     }
 }

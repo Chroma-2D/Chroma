@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Chroma.Diagnostics;
+using Chroma.Diagnostics.Logging;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics
@@ -10,6 +11,7 @@ namespace Chroma.Graphics
     public class GraphicsManager
     {
         private Game Game { get; }
+        private Log Log => LogManager.GetForCurrentAssembly();
         
         public bool LimitFramerate { get; set; } = true;
         public bool AutoClear { get; set; } = true;
@@ -40,16 +42,16 @@ namespace Chroma.Graphics
             Game = game;
             var renderers = GetRendererNames();
 
-            Game.Log.Info("GraphicsManager initializing...");
-            Game.Log.Info(" Registered renderers:");
+            Log.Info("GraphicsManager initializing...");
+            Log.Info(" Registered renderers:");
 
             foreach (var s in renderers)
-                Game.Log.Info($"  {s}");
+                Log.Info($"  {s}");
 
-            Game.Log.Info(" Available displays:");
+            Log.Info(" Available displays:");
 
             foreach (var d in FetchDisplayInfo())
-                Game.Log.Info($"  {d.Index}: {d.Width}x{d.Height}@{d.RefreshRate}Hz");
+                Log.Info($"  {d.Index}: {d.Width}x{d.Height}@{d.RefreshRate}Hz");
 
             VSyncEnabled = true;
         }
@@ -99,7 +101,7 @@ namespace Chroma.Graphics
                 };
             }
 
-            Game.Log.Error($"Failed to retrieve display {index} info: {SDL2.SDL_GetError()}");
+            Log.Error($"Failed to retrieve display {index} info: {SDL2.SDL_GetError()}");
             return null;
         }
 
@@ -113,7 +115,7 @@ namespace Chroma.Graphics
                 };
             }
 
-            Game.Log.Error($"Failed to retrieve desktop display {index} info: {SDL2.SDL_GetError()}");
+            Log.Error($"Failed to retrieve desktop display {index} info: {SDL2.SDL_GetError()}");
             return null;
         }
 

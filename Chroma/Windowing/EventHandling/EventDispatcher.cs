@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Chroma.Diagnostics;
+using Chroma.Diagnostics.Logging;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Windowing.EventHandling
@@ -7,6 +7,7 @@ namespace Chroma.Windowing.EventHandling
     public sealed class EventDispatcher
     {
         private Window Owner { get; }
+        private Log Log => LogManager.GetForCurrentAssembly();
 
         internal delegate void SdlEventHandler(Window window, SDL2.SDL_Event ev);
         internal delegate void WindowEventHandler(Window window, SDL2.SDL_WindowEvent ev);
@@ -46,7 +47,7 @@ namespace Chroma.Windowing.EventHandling
             }
             else
             {
-                Game.Log.Debug($"Unsupported window event: {ev.windowEvent}.");
+                Log.Debug($"Unsupported window event: {ev.windowEvent}.");
             }
         }
 
@@ -58,7 +59,7 @@ namespace Chroma.Windowing.EventHandling
             }
             else
             {
-                Game.Log.Debug($"Unsupported generic event: {ev.type}.");
+                Log.Debug($"Unsupported generic event: {ev.type}.");
             }
         }
 
@@ -66,7 +67,7 @@ namespace Chroma.Windowing.EventHandling
         {
             if (WindowEventHandlers.ContainsKey(eventId))
             {
-                Game.Log.Warning($"{eventId} handler is getting redefined.");
+                Log.Warning($"{eventId} handler is getting redefined.");
                 WindowEventHandlers[eventId] = handler;
             }
             else
@@ -79,7 +80,7 @@ namespace Chroma.Windowing.EventHandling
         {
             if (SdlEventHandlers.ContainsKey(type))
             {
-                Game.Log.Warning($"{type} handler is getting redefined.");
+                Log.Warning($"{type} handler is getting redefined.");
                 SdlEventHandlers[type] = handler;
             }
             else
@@ -94,7 +95,7 @@ namespace Chroma.Windowing.EventHandling
             {
                 if (DiscardedEventTypes.ContainsKey(type))
                 {
-                    Game.Log.Warning($"{type} handler is getting discarded yet another time. Ignoring.");
+                    Log.Warning($"{type} handler is getting discarded yet another time. Ignoring.");
                     continue;
                 }
 

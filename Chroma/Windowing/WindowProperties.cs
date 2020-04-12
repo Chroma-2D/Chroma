@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Numerics;
 using Chroma.Diagnostics;
+using Chroma.Diagnostics.Logging;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Windowing
@@ -14,6 +15,7 @@ namespace Chroma.Windowing
         private string _title;
 
         internal Window Owner { get; }
+        private Log Log => LogManager.GetForCurrentAssembly();
 
         public bool ViewportAutoResize { get; set; } = true;
 
@@ -122,7 +124,7 @@ namespace Chroma.Windowing
 
                             if (!flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_RESIZABLE))
                             {
-                                Game.Log.Warning("Refusing to maximize a non-resizable window.");
+                                Log.Warning("Refusing to maximize a non-resizable window.");
                                 return;
                             }
 

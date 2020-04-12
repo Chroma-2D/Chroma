@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Chroma.Diagnostics;
+using Chroma.Diagnostics.Logging;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics.TextRendering
 {
     public class ImageFont
     {
+        private Log Log => LogManager.GetForCurrentAssembly();
+
         internal Dictionary<char, SDL_gpu.GPU_Rect> GlyphRectangles { get; }
         
         public Texture Texture { get; }
@@ -35,7 +37,7 @@ namespace Chroma.Graphics.TextRendering
                 {
                     if (x + 1 > Texture.Width)
                     {
-                        Game.Log.Warning($"Character '{c}' is out of bounds for image font.");
+                        Log.Warning($"Character '{c}' is out of bounds for image font.");
                         break;
                     }
                 }

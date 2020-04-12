@@ -545,7 +545,7 @@ namespace Chroma.Graphics
 
             if (x < 0 || y < 0 || x >= Width || y >= Height)
             {
-                Log.Warning($"Tried to set a texture pixel on out-of-bounds coordinates ({x},{y})");
+                Game.Log.Warning($"Tried to set a texture pixel on out-of-bounds coordinates ({x},{y})");
                 return;
             }
 
@@ -565,7 +565,7 @@ namespace Chroma.Graphics
 
             if (x < 0 || y < 0 || x >= Width || y >= Height)
             {
-                Log.Warning($"Tried to retrieve a texture pixel on out-of-bounds coordinates ({x},{y})");
+                Game.Log.Warning($"Tried to retrieve a texture pixel on out-of-bounds coordinates ({x},{y})");
                 return Color.Black;
             }
 

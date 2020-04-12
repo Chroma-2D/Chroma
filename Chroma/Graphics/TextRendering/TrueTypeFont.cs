@@ -90,7 +90,7 @@ namespace Chroma.Graphics.TextRendering
             return new Vector2(maxWidth, maxHeight);
         }
 
-        private Texture GenerateTextureAtlas(int maxGlyphs = 512)
+        private Texture GenerateTextureAtlas(int maxGlyphs = 65536)
         {
             var maxDim = (1 + FaceRec.size->metrics.height.ToInt32() >> 6) * MathF.Ceiling(MathF.Sqrt(maxGlyphs));
             var texWidth = 1;

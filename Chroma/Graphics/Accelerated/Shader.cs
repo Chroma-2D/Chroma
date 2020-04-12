@@ -86,7 +86,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (ProgramHandle == 0)
             {
-                Log.Warning($"Refusing to activate invalid shader.");
+                Game.Log.Warning($"Refusing to activate invalid shader.");
                 return;
             }
 
@@ -101,7 +101,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Float uniform '{name}' does not exist.");
+                Game.Log.Warning($"Float uniform '{name}' does not exist.");
                 return;
             }
 
@@ -116,7 +116,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Int uniform '{name}' does not exist.");
+                Game.Log.Warning($"Int uniform '{name}' does not exist.");
                 return;
             }
 
@@ -131,7 +131,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Uint uniform '{name}' does not exist.");
+                Game.Log.Warning($"Uint uniform '{name}' does not exist.");
                 return;
             }
 
@@ -146,7 +146,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Vec2 uniform '{name}' does not exist.");
+                Game.Log.Warning($"Vec2 uniform '{name}' does not exist.");
                 return;
             }
 
@@ -161,7 +161,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Vec3 uniform '{name}' does not exist.");
+                Game.Log.Warning($"Vec3 uniform '{name}' does not exist.");
                 return;
             }
 
@@ -176,7 +176,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Vec4 uniform '{name}' does not exist.");
+                Game.Log.Warning($"Vec4 uniform '{name}' does not exist.");
                 return;
             }
 
@@ -191,7 +191,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Mat4 uniform '{name}' does not exist.");
+               Game.Log.Warning($"Mat4 uniform '{name}' does not exist.");
                 return;
             }
 
@@ -211,7 +211,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Vec4 uniform '{name}' does not exist.");
+                Game.Log.Warning($"Vec4 uniform '{name}' does not exist.");
                 return;
             }
 

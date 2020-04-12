@@ -46,7 +46,7 @@ namespace Chroma.Windowing.EventHandling
             }
             else
             {
-                Log.Debug($"Unsupported window event: {ev.windowEvent}.");
+                Game.Log.Debug($"Unsupported window event: {ev.windowEvent}.");
             }
         }
 
@@ -58,7 +58,7 @@ namespace Chroma.Windowing.EventHandling
             }
             else
             {
-                Log.Debug($"Unsupported generic event: {ev.type}.");
+                Game.Log.Debug($"Unsupported generic event: {ev.type}.");
             }
         }
 
@@ -66,7 +66,7 @@ namespace Chroma.Windowing.EventHandling
         {
             if (WindowEventHandlers.ContainsKey(eventId))
             {
-                Log.Warning($"{eventId} handler is getting redefined.");
+                Game.Log.Warning($"{eventId} handler is getting redefined.");
                 WindowEventHandlers[eventId] = handler;
             }
             else
@@ -79,7 +79,7 @@ namespace Chroma.Windowing.EventHandling
         {
             if (SdlEventHandlers.ContainsKey(type))
             {
-                Log.Warning($"{type} handler is getting redefined.");
+                Game.Log.Warning($"{type} handler is getting redefined.");
                 SdlEventHandlers[type] = handler;
             }
             else
@@ -94,7 +94,7 @@ namespace Chroma.Windowing.EventHandling
             {
                 if (DiscardedEventTypes.ContainsKey(type))
                 {
-                    Log.Warning($"{type} handler is getting discarded yet another time. Ignoring.");
+                    Game.Log.Warning($"{type} handler is getting discarded yet another time. Ignoring.");
                     continue;
                 }
 

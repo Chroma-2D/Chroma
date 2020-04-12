@@ -71,7 +71,7 @@ namespace Chroma.Windowing
             SDL_gpu.GPU_SetInitWindow(SDL2.SDL_GetWindowID(Handle));
 
             var bestRenderer = Game.Graphics.GetBestRenderer();
-            Log.Info($"Selecting best renderer: {bestRenderer.name}");
+            Game.Log.Info($"Selecting best renderer: {bestRenderer.name}");
 
             RenderTargetHandle = SDL_gpu.GPU_InitRenderer(
                 bestRenderer.renderer,

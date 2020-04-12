@@ -2,6 +2,7 @@
 using System.Numerics;
 using System.Reflection;
 using Chroma.Diagnostics;
+using Chroma.MemoryManagement;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics.Accelerated

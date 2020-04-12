@@ -2,6 +2,7 @@
 using System.IO;
 using System.Numerics;
 using Chroma.Diagnostics;
+using Chroma.MemoryManagement;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics
@@ -439,6 +440,7 @@ namespace Chroma.Graphics
             }
 
             ImageHandle = SDL_gpu.GPU_CopyImageFromSurface(surfaceHandle);
+            SnappingMode = TextureSnappingMode.None;
         }
 
         public Texture(string filePath)
@@ -481,6 +483,8 @@ namespace Chroma.Graphics
             }
 
             ImageHandle = SDL_gpu.GPU_CopyImageFromSurface(surfaceHandle);
+
+            SnappingMode = TextureSnappingMode.None;
         }
 
         public Texture(Texture other)
@@ -505,6 +509,7 @@ namespace Chroma.Graphics
                 other.Surface = (SDL2.SDL_Surface*)handle.ToPointer();
                 other.ImageHandle = SDL_gpu.GPU_CopyImageFromSurface(handle);
             }
+            SnappingMode = TextureSnappingMode.None;
         }
 
         public Texture(ushort width, ushort height)
@@ -525,11 +530,13 @@ namespace Chroma.Graphics
                 Surface = (SDL2.SDL_Surface*)handle.ToPointer();
                 ImageHandle = SDL_gpu.GPU_CopyImageFromSurface(handle);
             }
+            SnappingMode = TextureSnappingMode.None;
         }
 
         internal Texture(IntPtr imageHandle)
         {
             ImageHandle = imageHandle;
+            SnappingMode = TextureSnappingMode.None;
         }
 
         public void SetPixel(int x, int y, Color color)

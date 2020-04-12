@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Chroma
+namespace Chroma.MemoryManagement
 {
     public class DisposableResource : IDisposable
     {

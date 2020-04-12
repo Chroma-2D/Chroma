@@ -43,14 +43,14 @@ namespace Chroma.Natives.Interop
             return Encoding.UTF8.GetString(bytes);
         }
 
-        public IntPtr MarshalManagedToNative(object ManagedObj)
+        public IntPtr MarshalManagedToNative(object managedObj)
         {
-            if (ManagedObj == null)
+            if (managedObj == null)
                 return IntPtr.Zero;
 
-            if (!(ManagedObj is string str))
+            if (!(managedObj is string str))
             {
-                throw new ArgumentException("ManagedObj must be a string.", "ManagedObj");
+                throw new ArgumentException("ManagedObj must be a string.", nameof(managedObj));
             }
 
             var bytes = Encoding.UTF8.GetBytes(str);

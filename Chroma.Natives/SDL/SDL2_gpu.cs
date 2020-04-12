@@ -1123,36 +1123,25 @@ namespace Chroma.Natives.SDL
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler), MarshalCookie = LPUtf8StrMarshaler.LeaveAllocated)]
-        public static extern string GPU_GetMatrixString(
-            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
-            float[] A
-        );
+        public static unsafe extern string GPU_GetMatrixString(float* matrix);
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
-        public static extern float[] GPU_GetCurrentMatrix();
+        public static unsafe extern float* GPU_GetCurrentMatrix();
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
-        public static extern float[] GPU_GetTopMatrix(IntPtr stack);
+        public static unsafe extern float* GPU_GetTopMatrix(GPU_MatrixStack* stack);
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
-        public static extern float[] GPU_GetModel();
+        public static unsafe extern float* GPU_GetModel();
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
-        public static extern float[] GPU_GetView();
+        public static unsafe extern float* GPU_GetView();
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
-        public static extern float[] GPU_GetProjection();
+        public static unsafe extern float* GPU_GetProjection();
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GPU_GetModelViewProjection(
-            [In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
-            float[] result
-        );
+        public static unsafe extern void GPU_GetModelViewProjection(float* result);
         #endregion
 
         #region Matrix Stack Manipulators

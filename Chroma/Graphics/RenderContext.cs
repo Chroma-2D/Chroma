@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-using Chroma.Diagnostics;
-using Chroma.Graphics.Accelerated;
 using Chroma.Graphics.Batching;
 using Chroma.Graphics.TextRendering;
 using Chroma.Natives.SDL;
@@ -19,8 +17,6 @@ namespace Chroma.Graphics
         internal IntPtr CurrentRenderTarget { get; private set; }
         internal IntPtr OriginalRenderTarget { get; }
 
-        internal static SDL_gpu.GPU_ShaderBlock DefaultShaderBlock;
-        
         public bool RenderingToWindow
             => CurrentRenderTarget == OriginalRenderTarget;
 

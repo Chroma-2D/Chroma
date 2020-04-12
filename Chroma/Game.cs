@@ -4,7 +4,6 @@ using System.Reflection;
 using System.Threading;
 using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
-using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.Input.EventArgs;
 using Chroma.Natives.SDL;
@@ -15,8 +14,6 @@ namespace Chroma
     public class Game
     {
         private readonly Thread _fixedUpdateThread;
-
-        internal static Log Log => LogManager.GetForCurrentAssembly();
 
         public Texture LogoTexture { get; }
 

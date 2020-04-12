@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Numerics;
-using Chroma.Diagnostics;
+using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
 using Chroma.Natives.SDL;
 
@@ -9,8 +9,9 @@ namespace Chroma.Graphics
 {
     public class Texture : DisposableResource
     {
-        private Vector2? _virtualResolution;
 
+
+        private Log Log => LogManager.GetForCurrentAssembly();
         internal IntPtr ImageHandle { get; private set; }
 
         internal unsafe SDL_gpu.GPU_Image* Image => (SDL_gpu.GPU_Image*)ImageHandle.ToPointer();
@@ -382,6 +383,7 @@ namespace Chroma.Graphics
             }
         }
 
+        private Vector2? _virtualResolution;
         public Vector2? VirtualResolution
         {
             get
@@ -545,7 +547,7 @@ namespace Chroma.Graphics
 
             if (x < 0 || y < 0 || x >= Width || y >= Height)
             {
-                Game.Log.Warning($"Tried to set a texture pixel on out-of-bounds coordinates ({x},{y})");
+                Log.Warning($"Tried to set a texture pixel on out-of-bounds coordinates ({x},{y})");
                 return;
             }
 
@@ -565,7 +567,7 @@ namespace Chroma.Graphics
 
             if (x < 0 || y < 0 || x >= Width || y >= Height)
             {
-                Game.Log.Warning($"Tried to retrieve a texture pixel on out-of-bounds coordinates ({x},{y})");
+                Log.Warning($"Tried to retrieve a texture pixel on out-of-bounds coordinates ({x},{y})");
                 return Color.Black;
             }
 

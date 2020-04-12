@@ -2,6 +2,7 @@
 using System.Numerics;
 using System.Threading;
 using Chroma.Diagnostics;
+using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.MemoryManagement;
 using Chroma.Natives.SDL;
@@ -15,6 +16,8 @@ namespace Chroma.Windowing
     {
         private ulong _nowFrameTime = SDL2.SDL_GetPerformanceCounter();
         private ulong _lastFrameTime = 0;
+
+        private Log Log => LogManager.GetForCurrentAssembly();
 
         private float Delta { get; set; }
         private FpsCounter FpsCounter { get; }
@@ -71,7 +74,7 @@ namespace Chroma.Windowing
             SDL_gpu.GPU_SetInitWindow(SDL2.SDL_GetWindowID(Handle));
 
             var bestRenderer = Game.Graphics.GetBestRenderer();
-            Game.Log.Info($"Selecting best renderer: {bestRenderer.name}");
+            Log.Info($"Selecting best renderer: {bestRenderer.name}");
 
             RenderTargetHandle = SDL_gpu.GPU_InitRenderer(
                 bestRenderer.renderer,

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Numerics;
-using Chroma.Diagnostics;
+using Chroma.Diagnostics.Logging;
 using Chroma.Exceptions;
 using Chroma.Natives.SDL;
 
@@ -8,6 +8,8 @@ namespace Chroma.Graphics.Accelerated
 {
     public sealed class VertexShader : Shader
     {
+        private Log Log => LogManager.GetForCurrentAssembly();
+
         public string FilePath { get; }
         public string SourceCode { get; }
 
@@ -45,7 +47,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Game.Log.Warning($"Float attribute '{name}' does not exist.");
+                Log.Warning($"Float attribute '{name}' does not exist.");
                 return;
             }
 
@@ -60,7 +62,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Game.Log.Warning($"Int attribute '{name}' does not exist.");
+                Log.Warning($"Int attribute '{name}' does not exist.");
                 return;
             }
 
@@ -75,7 +77,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Game.Log.Warning($"Uint attribute '{name}' does not exist.");
+                Log.Warning($"Uint attribute '{name}' does not exist.");
                 return;
             }
 
@@ -90,7 +92,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Game.Log.Warning($"Vec2 attribute '{name}' does not exist.");
+                Log.Warning($"Vec2 attribute '{name}' does not exist.");
                 return;
             }
 
@@ -105,7 +107,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Game.Log.Warning($"Vec3 attribute '{name}' does not exist.");
+                Log.Warning($"Vec3 attribute '{name}' does not exist.");
                 return;
             }
 
@@ -120,7 +122,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Game.Log.Warning($"Vec4 attribute '{name}' does not exist.");
+                Log.Warning($"Vec4 attribute '{name}' does not exist.");
                 return;
             }
 
@@ -135,7 +137,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Game.Log.Warning($"Vec4 attribute '{name}' does not exist.");
+                Log.Warning($"Vec4 attribute '{name}' does not exist.");
                 return;
             }
 

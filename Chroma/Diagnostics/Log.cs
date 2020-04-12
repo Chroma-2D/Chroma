@@ -1,55 +1,48 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Chroma.Diagnostics
 {
-    public class Log
+    public static class Log
     {
-        public static Verbosity Verbosity { get; set; } = Verbosity.Standard;
+        private static readonly HashSet<LogSinkDelegate> LogSinks = new HashSet<LogSinkDelegate>();
 
+        public delegate void LogSinkDelegate(string message, Verbosity verbosity);
+        
         public static void Info(string message)
-        {
-            if (!Verbosity.HasFlag(Verbosity.Info))
-                return;
-
-            PushMessage("INF", message, CallerTypeName());
-        }
+            => PushMessage("INF", message, CallerTypeName(), Verbosity.Info);
 
         public static void Warning(string message)
-        {
-            if (!Verbosity.HasFlag(Verbosity.Warning))
-                return;
-
-            PushMessage("WRN", message, CallerTypeName());
-        }
+            => PushMessage("WRN", message, CallerTypeName(), Verbosity.Warning);
 
         public static void Error(string message)
-        {
-            if (!Verbosity.HasFlag(Verbosity.Error))
-                return;
-
-            PushMessage("ERR", message, CallerTypeName());
-        }
+            => PushMessage("ERR", message, CallerTypeName(), Verbosity.Error);
 
         public static void Debug(string message)
-        {
-            if (!Verbosity.HasFlag(Verbosity.Debug))
-                return;
+            => PushMessage("DBG", message, CallerTypeName(), Verbosity.Debug);
 
-            PushMessage("DBG", message, CallerTypeName());
-        }
+        public static void AddLogSink(LogSinkDelegate sink)
+            => LogSinks.Add(sink);
+
+        public static void RemoveLogSink(LogSinkDelegate sink)
+            => LogSinks.Remove(sink);
+
+        public static void RemoveAllSinks()
+            => LogSinks.RemoveWhere(x => true);
 
         private static string CallerTypeName()
         {
             var trace = new StackTrace();
             var frame = trace.GetFrame(2);
 
-            return frame.GetMethod().DeclaringType.FullName;
+            return frame?.GetMethod()?.DeclaringType?.Name;
         }
 
-        private static void PushMessage(string descriptor, string message, string context)
+        private static void PushMessage(string descriptor, string message, string context, Verbosity verbosity)
         {
-            Console.WriteLine($"[{DateTime.Now:HH:mm:ss} {descriptor}] [{context}] {message}");
+            foreach (var sink in LogSinks)
+                sink?.Invoke($"[{DateTime.Now:HH:mm:ss} {descriptor}] [{context}] {message}", verbosity);
         }
     }
 }

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Numerics;
-using System.Reflection;
-using Chroma.Diagnostics;
 using Chroma.Graphics;
 using Chroma.Graphics.Accelerated;
 using Chroma.Graphics.TextRendering;
@@ -40,8 +37,6 @@ namespace Chroma.ExampleApp
         public ExampleGame()
         {
             Graphics.VSyncEnabled = false;
-            Log.Verbosity |= Verbosity.Debug;
-
             Window.GoWindowed(1024, 600);
 
             _tgt = new RenderTarget(1024, 600);

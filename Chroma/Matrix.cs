@@ -3,7 +3,7 @@ using Chroma.Natives.SDL;
 
 namespace Chroma
 {
-    public class Matrix
+    public static class Matrix
     {
         public static string GetStringRepresentation(Matrix4x4 mtx)
         {

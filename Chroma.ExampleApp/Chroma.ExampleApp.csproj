@@ -10,99 +10,99 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="8514OEM.FON">
+    <None Update="Content\Fonts\8514OEM.FON">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Anoxic-Light.ttf">
+    <None Update="Content\Fonts\Anoxic-Light.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Bargain_Demo.ttf">
+    <None Update="Content\Fonts\Bargain_Demo.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="burg.png">
+    <None Update="Content\Textures\burg.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="c64style.ttf">
+    <None Update="Content\Fonts\c64style.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="c64_0.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="delet.png">
+    <None Update="Content\Textures\delet.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="DooM.ttf">
+    <None Update="Content\Fonts\DooM.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="dvd.png">
+    <None Update="Content\Textures\dvd.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="FUTHA___.TTF">
+    <None Update="Content\Fonts\FUTHA___.TTF">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="GrayFont.png">
+    <None Update="Content\ImageFonts\GrayFont.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Hack-Regular.ttf">
+    <None Update="Content\Fonts\Hack-Regular.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="NIRMALA.TTF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-
-    <None Update="Nouveau_IBM.ttf">
+    <None Update="Content\Fonts\NIRMALA.TTF">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
 
-    <None Update="sh.frag">
+    <None Update="Content\Fonts\Nouveau_IBM.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
 
-    <None Update="RedFont.png">
+    <None Update="Content\Shaders\sh.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
 
-    <None Update="Revamped.otf">
+    <None Update="Content\ImageFonts\RedFont.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
 
-    <None Update="SEGMDL2.TTF">
+    <None Update="Content\Fonts\Revamped.otf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
 
-    <None Update="sh.vert">
+    <None Update="Content\Fonts\SEGMDL2.TTF">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
 
-    <None Update="skeltal.png">
+    <None Update="Content\Shaders\sh.vert">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
 
-    <None Update="SPLATOON2.OTF">
+    <None Update="Content\Textures\skeltal.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
 
-    <None Update="SUPER_SMASH_4_1_BY_POKEMON_DIAMOND-D7ZXU6D.TTF">
+    <None Update="Content\Fonts\SPLATOON2.OTF">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
 
-    <None Update="whiterect.png">
+    <None Update="Content\Fonts\SUPER_SMASH_4_1_BY_POKEMON_DIAMOND-D7ZXU6D.TTF">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
 
-    <None Update="TAHOMA.TTF">
+    <None Update="Content\Textures\whiterect.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
 
-    <None Update="TANTRADEMOOutline.ttf">
+    <None Update="Content\Fonts\TAHOMA.TTF">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
 
-    <None Update="TANTRADEMORegular.ttf">
+    <None Update="Content\Fonts\TANTRADEMOOutline.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
 
-    <None Update="walls.jpeg">
+    <None Update="Content\Fonts\TANTRADEMORegular.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+
+    <None Update="Content\Textures\walls.jpeg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

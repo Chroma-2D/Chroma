@@ -39,8 +39,9 @@ namespace Chroma.Graphics
 
             BatchBuffer = new List<BatchInfo>();
             LineThickness = 1;
-        }
 
+            SDL_gpu.GPU_SetDefaultAnchor(0, 0);
+        }
 
         public void DeactivateShader()
         {
@@ -353,10 +354,12 @@ namespace Chroma.Graphics
                 // to compensate for blitting anchor.
                 // for some reason settings the blitting anchor to [0, 0]
                 // makes the entire text blurry at time of blitting
-
-
-                var xPos = x + (info.BitmapSize.X / 2) + info.Bearing.X;
-                var yPos = y + (info.BitmapSize.Y / 2) - info.Bearing.Y + maxBearing;
+                //
+                // 12 apr 2020: fixed by setting Texture snapping mode to
+                // TextureSnappingMode.None by default, along with
+                // defaulting the anchor to 0.
+                var xPos = x + info.Bearing.X;
+                var yPos = y - info.Bearing.Y + maxBearing;
 
                 var transform = new GlyphTransformData(new Vector2(xPos, yPos));
 

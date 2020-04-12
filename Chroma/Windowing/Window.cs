@@ -3,6 +3,7 @@ using System.Numerics;
 using System.Threading;
 using Chroma.Diagnostics;
 using Chroma.Graphics;
+using Chroma.MemoryManagement;
 using Chroma.Natives.SDL;
 using Chroma.Windowing.EventArgs;
 using Chroma.Windowing.EventHandling;

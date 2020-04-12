@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading;
 using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
+using Chroma.Diagnostics;
 using Chroma.Graphics;
 using Chroma.Input.EventArgs;
 using Chroma.Natives.SDL;
@@ -25,6 +26,8 @@ namespace Chroma
 
         public Game()
         {
+            Log.AddLogSink(DefaultLogCallback);
+            
             _fixedUpdateThread = new Thread(FixedUpdateThread);
 
             Graphics = new GraphicsManager(this);
@@ -166,6 +169,9 @@ namespace Chroma
 
         internal void OnControllerAxisMoved(ControllerAxisEventArgs e)
             => ControllerAxisMoved(e);
+
+        private void DefaultLogCallback(string message, Verbosity verbosity)
+            => Console.WriteLine(message);
 
         private void FixedUpdateThread()
         {

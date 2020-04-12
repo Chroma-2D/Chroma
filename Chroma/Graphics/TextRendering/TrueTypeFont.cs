@@ -24,9 +24,10 @@ namespace Chroma.Graphics.TextRendering
 
         public int ScaledLineSpacing { get; }
         public int LineSpacing { get; }
-        
+
         public int Ascender { get; }
         public int Descender { get; }
+        public int MaxBearing { get; private set; }
 
         static TrueTypeFont()
         {
@@ -46,7 +47,7 @@ namespace Chroma.Graphics.TextRendering
 
             ScaledLineSpacing = FaceRec.size->metrics.height.ToInt32() >> 6;
             LineSpacing = FaceRec.height >> 6;
-            
+
             Ascender = FaceRec.size->metrics.ascender.ToInt32() >> 6;
 
             Descender = (FaceRec.descender >> 6);
@@ -64,7 +65,7 @@ namespace Chroma.Graphics.TextRendering
 
             var maxWidth = width;
             var maxHeight = (text.Count(c => c == '\n') + 1) * ScaledLineSpacing;
-            
+
             foreach (var c in text)
             {
                 if (c == '\n')
@@ -78,11 +79,14 @@ namespace Chroma.Graphics.TextRendering
 
                 if (!HasGlyph(c))
                     continue;
-    
+
                 var info = RenderInfo[c];
                 width += info.Advance.X;
             }
-            
+
+            if (maxWidth < width)
+                maxWidth = width;
+
             return new Vector2(maxWidth, maxHeight);
         }
 
@@ -142,7 +146,7 @@ namespace Chroma.Graphics.TextRendering
                         FaceRec.glyph->metrics.height.ToInt32() >> 6
                     ),
                     BitmapSize = new Vector2(
-                        (int)bmp.width, 
+                        (int)bmp.width,
                         (int)bmp.rows
                     ),
                     BitmapCoordinates = new Vector2(
@@ -159,6 +163,9 @@ namespace Chroma.Graphics.TextRendering
                     )
                 };
                 RenderInfo.Add(c, glyph);
+
+                if (glyph.Bearing.Y > MaxBearing)
+                    MaxBearing = (int)glyph.Bearing.Y;
 
                 penX += (int)bmp.width + 1;
                 glyphsGenerated++;

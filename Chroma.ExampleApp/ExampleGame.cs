@@ -84,7 +84,11 @@ namespace Chroma.ExampleApp
             context.RenderTo(_tgt, () =>
             {
                 context.Clear(Color.Black);
-                context.DrawString(_ttf, "WE ARE 100 PERCENT BLACK\n -> ME TOO.", new Vector2(_x, 64), (c, i, p, g) =>
+
+                var measure = _ttf.Measure(".,,,,,-----");
+                context.Rectangle(ShapeMode.Stroke, new Vector2(64, 64), measure.X, measure.Y, Color.Red);
+
+                context.DrawString(_ttf, ".,,,,,-----", new Vector2(64, 64), (c, i, p, g) =>
                 {
                     var color = _colors[i % _colors.Count];
                     var nudgeVert = 3.5f * MathF.Sin(i + _rot);
@@ -92,7 +96,7 @@ namespace Chroma.ExampleApp
                     return new GlyphTransformData(p)
                     {
                         Color = color,
-                        Position = new Vector2(p.X, p.Y + nudgeVert)
+                        // Position = new Vector2(p.X, p.Y + nudgeVert)
                     };
                 });
 

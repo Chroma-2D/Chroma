@@ -43,6 +43,7 @@ namespace Chroma.ExampleApp
                 for (var x = 0; x < _vga.MaxCols; x++)
                 {
                     _vga.SetColorAt(x, y, _colors[x % _colors.Count]);
+                    _vga.SetCharAt(x, y, 'C');
                 }
             }
         }
@@ -72,7 +73,6 @@ namespace Chroma.ExampleApp
             _pixelShader.SetUniform("blurDistance", .88f);
 
             context.DrawTexture(_tgt.Texture, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
-
             context.DeactivateShader();
         }
     }

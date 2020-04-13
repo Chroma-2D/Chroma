@@ -80,7 +80,21 @@ namespace Chroma.ContentManagement.FileSystem
             _importers.Add(typeof(Texture), (path, args) => { return new Texture(path); });
             _importers.Add(typeof(PixelShader), (path, args) => { return new PixelShader(path); });
             _importers.Add(typeof(VertexShader), (path, args) => { return new VertexShader(path); });
-            _importers.Add(typeof(TrueTypeFont), (path, args) => { return new TrueTypeFont(path, (int)args[0]); });
+            _importers.Add(typeof(TrueTypeFont), (path, args) =>
+            {
+                if (args.Length == 2)
+                {
+                    return new TrueTypeFont(path, (int)args[0], (string)args[1]);
+                }
+                else if (args.Length == 1)
+                {
+                    return new TrueTypeFont(path, (int)args[0], null);
+                }
+                else
+                {
+                    return new TrueTypeFont(path, 12, null);
+                }
+            });
             _importers.Add(typeof(ImageFont), (path, args) => { return new ImageFont(path, (string)args[0]); });
         }
 

@@ -40,9 +40,7 @@ namespace Chroma.Graphics
         }
 
         public void DeactivateShader()
-        {
-            SDL_gpu.GPU_ActivateShaderProgram(0, IntPtr.Zero);
-        }
+            => SDL_gpu.GPU_ActivateShaderProgram(0, IntPtr.Zero);
 
         public void Clear(Color color)
             => SDL_gpu.GPU_ClearRGBA(CurrentRenderTarget, color.R, color.G, color.B, color.A);

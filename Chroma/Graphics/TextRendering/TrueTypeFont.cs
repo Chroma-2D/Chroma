@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
 using Chroma.Natives.FreeType;
 using Chroma.Natives.FreeType.Native;
@@ -12,6 +13,8 @@ namespace Chroma.Graphics.TextRendering
 {
     public unsafe class TrueTypeFont : DisposableResource
     {
+        private Log Log => LogManager.GetForCurrentAssembly();
+
         internal static FreeTypeLibrary Library { get; }
         internal IntPtr Face { get; }
         internal FT_FaceRec FaceRec { get; }
@@ -34,7 +37,7 @@ namespace Chroma.Graphics.TextRendering
             Library = new FreeTypeLibrary();
         }
 
-        public TrueTypeFont(string fileName, int size)
+        public TrueTypeFont(string fileName, int size, string alphabet = null)
         {
             FileName = fileName;
             Size = size;
@@ -53,8 +56,15 @@ namespace Chroma.Graphics.TextRendering
             Descender = (FaceRec.descender >> 6);
 
             RenderInfo = new Dictionary<char, TrueTypeGlyph>();
-            Atlas = GenerateTextureAtlas();
+
+            if (string.IsNullOrEmpty(alphabet))
+                Atlas = GenerateTextureAtlas(1..512);
+            else
+                Atlas = GenerateTextureAtlas(alphabet);
         }
+
+        public bool CanRenderGlyph(char c)
+            => RenderInfo.ContainsKey(c);
 
         public bool HasGlyph(char c)
             => FT.FT_Get_Char_Index(Face, c) != 0;
@@ -90,12 +100,26 @@ namespace Chroma.Graphics.TextRendering
             return new Vector2(maxWidth, maxHeight);
         }
 
-        private Texture GenerateTextureAtlas(int maxGlyphs = 65536)
+        private Texture GenerateTextureAtlas(Range glyphRange)
         {
-            var maxDim = (1 + FaceRec.size->metrics.height.ToInt32() >> 6) * MathF.Ceiling(MathF.Sqrt(maxGlyphs));
+            var glyphs = new List<char>();
+
+            for (char c = (char)glyphRange.Start.Value; c < (char)glyphRange.End.Value; c++)
+            {
+                glyphs.Add(c);
+            }
+
+            return GenerateTextureAtlas(glyphs);
+        }
+
+        private Texture GenerateTextureAtlas(IEnumerable<char> glyphs)
+        {
+            var maxDim = (1 + FaceRec.size->metrics.height.ToInt32() >> 6) * MathF.Ceiling(MathF.Sqrt(glyphs.Count()));
             var texWidth = 1;
 
-            while (texWidth < maxDim) texWidth <<= 1;
+            while (texWidth < maxDim)
+                texWidth <<= 1;
+
             var texHeight = texWidth;
 
             var texSize = texWidth * texHeight;
@@ -108,14 +132,19 @@ namespace Chroma.Graphics.TextRendering
             int penX = 0;
             int penY = 0;
 
-            var glyphsGenerated = 0;
-            for (char c = (char)0; c < char.MaxValue; ++c)
+            foreach (var c in glyphs)
             {
                 if (!HasGlyph(c))
+                {
+                    Log.Warning($"The font {FileName} doesn't support the requested glyph \\u{(int) c:X4}");
                     continue;
+                }
 
-                if (glyphsGenerated >= maxGlyphs)
-                    break;
+                if (CanRenderGlyph(c))
+                {
+                    Log.Warning($"The font {FileName} has already generated the glyph for \\u{(int)c:X4}");
+                    continue;
+                }
 
                 FT.FT_Load_Char(Face, c, FT.FT_LOAD_RENDER | FT.FT_LOAD_FORCE_AUTOHINT | FT.FT_LOAD_TARGET_LIGHT);
                 var bmp = FaceRec.glyph->bitmap;
@@ -168,7 +197,6 @@ namespace Chroma.Graphics.TextRendering
                     MaxBearing = (int)glyph.Bearing.Y;
 
                 penX += (int)bmp.width + 1;
-                glyphsGenerated++;
             }
 
             var tex = CreateTextureFromFTBitmap(pixels, texWidth, texHeight);

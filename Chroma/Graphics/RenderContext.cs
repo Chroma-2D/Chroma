@@ -333,12 +333,6 @@ namespace Chroma.Graphics
                     h = info.Size.Y
                 };
 
-                var kerning = new Vector2(0);
-
-                if(i - 1 >= 0)
-                {
-                    kerning = font.GetKerning(text[i - 1], text[i]);
-                }
                 // info.Size.X / 2 and info.Size.Y / 2
                 // to compensate for blitting anchor.
                 // for some reason settings the blitting anchor to [0, 0]
@@ -347,7 +341,6 @@ namespace Chroma.Graphics
                 // 12 apr 2020: fixed by setting Texture snapping mode to
                 // TextureSnappingMode.None by default, along with
                 // defaulting the anchor to 0.
-
                 var xPos = x + info.Bearing.X;
                 var yPos = y - info.Bearing.Y + font.MaxBearing;
 

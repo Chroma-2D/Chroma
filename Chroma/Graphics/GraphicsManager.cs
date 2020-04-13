@@ -1,8 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using Chroma.Diagnostics;
 using Chroma.Diagnostics.Logging;
 using Chroma.Natives.SDL;
 

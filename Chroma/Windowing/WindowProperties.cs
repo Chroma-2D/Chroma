@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Numerics;
-using Chroma.Diagnostics;
 using Chroma.Diagnostics.Logging;
 using Chroma.Natives.SDL;
 

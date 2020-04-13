@@ -1,6 +1,6 @@
 ﻿#version 130
 
-uniform sampler2D texture;
+uniform sampler2D tex;
 
 in vec4 color;
 in vec2 texCoord;
@@ -24,8 +24,8 @@ void main()
     vec4 finalColor;
     vec2 coords = texCoord.xy;
 
-    finalColor = blur5(texture, coords, screenSize, vec2(blurDistance, 0));
-    finalColor += blur5(texture, coords, screenSize, vec2(-blurDistance, 0));
+    finalColor = blur5(tex, coords, screenSize, vec2(blurDistance, 0));
+    finalColor += blur5(tex, coords, screenSize, vec2(-blurDistance, 0));
 
     int actualPixelY = int(coords.y * screenSize.y);
     int modulus = int(mod(actualPixelY, scanlineDensity));
@@ -33,7 +33,7 @@ void main()
     if(modulus == 0 && actualPixelY != 0)
         finalColor /= 1.9f;
 
-    finalColor /= 1.33f;
+    finalColor /= 1.60f;
 
     gl_FragColor = finalColor;
 }

@@ -126,14 +126,10 @@ namespace Chroma.Graphics
         }
 
         public void Line(Vector2 start, Vector2 end, Color color)
-        {
-            SDL_gpu.GPU_Line(CurrentRenderTarget, start.X, start.Y, end.X, end.Y, color);
-        }
+            => SDL_gpu.GPU_Line(CurrentRenderTarget, start.X, start.Y, end.X, end.Y, color);
 
         public void Pixel(Vector2 position, Color color)
-        {
-            SDL_gpu.GPU_Pixel(CurrentRenderTarget, position.X, position.Y, color);
-        }
+            => SDL_gpu.GPU_Pixel(CurrentRenderTarget, position.X, position.Y, color);
 
         public Color GetPixel(Vector2 position)
             => SDL_gpu.GPU_GetPixel(CurrentRenderTarget, (short)position.X, (short)position.Y);
@@ -364,7 +360,7 @@ namespace Chroma.Graphics
             }
         }
 
-        public void DrawBatch(DrawOrder order = DrawOrder.BackToFront, bool discard = true)
+        public void DrawBatch(DrawOrder order = DrawOrder.BackToFront, bool discardBatchAfterUse = true)
         {
             BatchBuffer.Sort(
                 (a, b) =>
@@ -378,7 +374,7 @@ namespace Chroma.Graphics
             for (var i = 0; i < BatchBuffer.Count; i++)
                 BatchBuffer[i].DrawAction.Invoke();
 
-            if (discard)
+            if (discardBatchAfterUse)
                 BatchBuffer.Clear();
         }
 

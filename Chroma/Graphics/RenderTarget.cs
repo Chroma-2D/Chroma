@@ -5,17 +5,17 @@ namespace Chroma.Graphics
 {
     public class RenderTarget : Texture
     {
-        internal IntPtr Handle { get; }
+        internal IntPtr TargetHandle { get; }
 
         public RenderTarget(ushort width, ushort height)
             : base(width, height)
         {
-            Handle = SDL_gpu.GPU_LoadTarget(ImageHandle);
+            TargetHandle = SDL_gpu.GPU_LoadTarget(ImageHandle);
         }
 
         protected override void FreeNativeResources()
         {
-            SDL_gpu.GPU_FreeTarget(Handle);
+            SDL_gpu.GPU_FreeTarget(TargetHandle);
             base.FreeNativeResources();
         }
     }

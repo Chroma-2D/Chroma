@@ -9,8 +9,6 @@ namespace Chroma.Graphics
 {
     public class Texture : DisposableResource
     {
-
-
         private Log Log => LogManager.GetForCurrentAssembly();
         internal IntPtr ImageHandle { get; private set; }
 

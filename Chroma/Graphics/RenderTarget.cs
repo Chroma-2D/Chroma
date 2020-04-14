@@ -3,18 +3,20 @@ using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics
 {
-    public class RenderTarget
+    public class RenderTarget : Texture
     {
         internal IntPtr Handle { get; }
-        public Texture Texture { get; }
 
-        public RenderTarget(ushort width, ushort height) : this(new Texture(width, height)) 
-        { }
-
-        public RenderTarget(Texture texture)
+        public RenderTarget(ushort width, ushort height)
+            : base(width, height)
         {
-            Texture = texture;
-            Handle = SDL_gpu.GPU_LoadTarget(Texture.ImageHandle);
+            Handle = SDL_gpu.GPU_LoadTarget(ImageHandle);
+        }
+
+        protected override void FreeNativeResources()
+        {
+            SDL_gpu.GPU_FreeTarget(Handle);
+            base.FreeNativeResources();
         }
     }
 }

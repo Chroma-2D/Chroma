@@ -72,7 +72,7 @@ namespace Chroma.ExampleApp
             _pixelShader.SetUniform("scanlineDensity", 2f);
             _pixelShader.SetUniform("blurDistance", .88f);
 
-            context.DrawTexture(_tgt.Texture, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
+            context.DrawTexture(_tgt, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
             context.DeactivateShader();
         }
     }

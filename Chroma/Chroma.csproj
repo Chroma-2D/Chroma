@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
@@ -22,5 +21,4 @@
     <EmbeddedResource Include="Resources\shader\default.frag" />
     <EmbeddedResource Include="Resources\shader\default.vert" />
   </ItemGroup>
-
 </Project>

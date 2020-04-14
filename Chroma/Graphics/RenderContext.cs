@@ -245,7 +245,7 @@ namespace Chroma.Graphics
                 throw new ArgumentNullException(nameof(target),
                     "You can't just draw an image to a null render target...");
 
-            CurrentRenderTarget = target.Handle;
+            CurrentRenderTarget = target.TargetHandle;
 
             drawingLogic?.Invoke();
 

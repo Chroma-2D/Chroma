@@ -13,7 +13,7 @@ namespace Chroma.Natives.Boot
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         private static extern bool LoadLibrary(string path);
 
-        internal static readonly string ArchitectureString = Environment.Is64BitOperatingSystem ? "Win64" : "Win32";
+        internal static readonly string ArchitectureString = Environment.Is64BitOperatingSystem ? "Win64" : throw new PlatformNotSupportedException("Chroma supports 64-bit systems only.");
         internal static string DllDirectoryPath { get; private set; }
 
         internal void InitializeNativeDlls()

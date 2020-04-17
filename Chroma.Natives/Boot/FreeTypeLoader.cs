@@ -64,7 +64,6 @@ namespace Chroma.Natives.Boot
         private static IntPtr LoadWindowsLibrary(out SymbolLookupDelegate symbolLookup)
         {
             string libFile = "freetype.dll";
-            string arch = EmbeddedDllLoader.ArchitectureString;
 
             var path = Path.Combine(EmbeddedDllLoader.DllDirectoryPath, libFile);
 

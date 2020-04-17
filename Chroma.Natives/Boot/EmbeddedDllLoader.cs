@@ -13,7 +13,18 @@ namespace Chroma.Natives.Boot
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         private static extern bool LoadLibrary(string path);
 
-        internal static readonly string ArchitectureString = Environment.Is64BitOperatingSystem ? "Win64" : throw new PlatformNotSupportedException("Chroma supports 64-bit systems only.");
+        internal static string PlatformString = Environment.OSVersion.Platform switch
+        {
+            PlatformID.MacOSX => "osx_64",
+            PlatformID.Unix => "linux_64",
+            PlatformID.Win32NT => "windows_64",
+            PlatformID.Win32S => throw new PlatformNotSupportedException("Stop. Get help. Find someone else who uses a sane operating system."),
+            PlatformID.Win32Windows => throw new PlatformNotSupportedException("Seriously, stop using Win9x. Chroma doesn't run on this thing."),
+            PlatformID.WinCE => throw new PlatformNotSupportedException("Chroma doesn't run on Windows CE, although I do appreciate your attempt."),
+            PlatformID.Xbox => throw new PlatformNotSupportedException("Xbox platform is not supported by Chroma (yet?)."),
+            _ => throw new PlatformNotSupportedException("The heck are you using? Whatever it is, it's not supported by Chroma.")
+        };
+
         internal static string DllDirectoryPath { get; private set; }
 
         internal void InitializeNativeDlls()
@@ -21,16 +32,14 @@ namespace Chroma.Natives.Boot
             DllDirectoryPath = CreateDllDirectory();
             SetDllDirectory(DllDirectoryPath);
 
-            var dependencies = EmbeddedResources.GetResourceNames()
-                                                .Where(x => x.Contains(ArchitectureString) && x.EndsWith(".dll"));
+            var resourceNames = EmbeddedResources.GetResourceNames();
+            var dependencies = resourceNames.Where(x => x.Contains(PlatformString) && x.EndsWith(".dll"));
             foreach (var dep in dependencies)
-            {
                 ExtractAndLoadEmbeddedDependency(DllDirectoryPath, dep);
-            }
         }
 
         private static string ResourceNameToFileName(string resourceName)
-            => resourceName.Replace($"Chroma.Natives.Binaries.{ArchitectureString}.", "");
+            => resourceName.Replace($"Chroma.Natives.Binaries.{PlatformString}.", "");
 
         private static string CreateDllDirectory()
         {

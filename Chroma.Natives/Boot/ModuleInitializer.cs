@@ -9,6 +9,9 @@ namespace Chroma.Natives.Boot
 
         public static void Initialize()
         {
+            if (!Environment.Is64BitOperatingSystem)
+                throw new PlatformNotSupportedException("Chroma supports 64-bit systems only.");
+
             Console.WriteLine("Chroma.Natives initializing...");
 
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)

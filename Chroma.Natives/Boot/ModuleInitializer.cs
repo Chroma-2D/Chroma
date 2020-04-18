@@ -1,29 +1,42 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
+using Chroma.Natives.Boot.PlatformSpecific;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Natives.Boot
 {
     internal static class ModuleInitializer
     {
-        private static EmbeddedDllLoader DllLoader { get; } = new EmbeddedDllLoader();
+        internal static IPlatform Platform { get; private set; }
 
         public static void Initialize()
         {
             if (!Environment.Is64BitOperatingSystem)
                 throw new PlatformNotSupportedException("Chroma supports 64-bit systems only.");
 
-            Console.WriteLine("Chroma.Natives initializing...");
+            var libraryFileNames = NativeLibraryExtractor.ExtractAll().Select(
+                x => Path.GetFileName(x)
+            );
 
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                Console.WriteLine(" => Running on Windows. Will extract and load required natives...");
-                DllLoader.InitializeNativeDlls();
+                Platform = new WindowsPlatform();
             }
-            else
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                Console.WriteLine(" => Non-windows platform. Make sure the following packages are available:");
-                Console.WriteLine("    SDL2, SDL2_image, SDL2_mixer, freetype, SDL2_gpu.\n");
-                Console.WriteLine("    If any of those are missing, the engine will fail right about... now.");
+                Platform = new LinuxPlatform();
+            }
+            else //if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                throw new PlatformNotSupportedException("Your current platform is not supported by Chroma Natives just yet.");
+            }
+
+            foreach (var libraryFileName in libraryFileNames)
+            {
+                Console.WriteLine($"{libraryFileName}");
+                Platform.Register(libraryFileName);
             }
 
             Console.WriteLine("---");

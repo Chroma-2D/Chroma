@@ -1,12 +1,12 @@
 using System;
 using System.Runtime.InteropServices;
-using FTL = Chroma.Natives.Boot.FreeTypeLoader;
+using Chroma.Natives.Boot;
 
 namespace Chroma.Natives.FreeType.Native
 {
     public static unsafe partial class FT
     {
-
+        private static NativeLibrary FTL = ModuleInitializer.Platform.Registry.TryRetrieve("libfreetype.so", "freetype.dll");
         #region Core API
 
         #region FreeType Version
@@ -204,7 +204,6 @@ namespace Chroma.Natives.FreeType.Native
         #endregion
 
         #region Mac Specific Interface - check for macOS before calling these methods.
-
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate FT_Error __FT_New_Face_From_FOND(IntPtr library, IntPtr fond, int face_index, out IntPtr aface);
         public static __FT_New_Face_From_FOND FT_New_Face_From_FOND = FTL.LoadFunction<__FT_New_Face_From_FOND>("FT_New_Face_From_FOND");
@@ -228,7 +227,6 @@ namespace Chroma.Natives.FreeType.Native
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate FT_Error __FT_New_Face_From_FSRef(IntPtr library, IntPtr @ref, int face_index, out IntPtr aface);
         public static __FT_New_Face_From_FSRef FT_New_Face_From_FSRef = FTL.LoadFunction<__FT_New_Face_From_FSRef>("FT_New_Face_From_FSRef");
-
         #endregion
 
         #region Size Management
@@ -252,7 +250,6 @@ namespace Chroma.Natives.FreeType.Native
         #region Support API
 
         #region Computations
-
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate IntPtr __FT_MulDiv(IntPtr a, IntPtr b, IntPtr c);
         public static __FT_MulDiv FT_MulDiv = FTL.LoadFunction<__FT_MulDiv>("FT_MulDiv");

@@ -100,7 +100,7 @@ namespace Chroma.Natives.Boot
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ||
                 RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                var handle = Posix.dlopen(absoluteFilePath, Posix.RTLD_NOW);
+                var handle = Posix.dlopen(absoluteFilePath, Posix.RTLD_NOW | Posix.RTLD_GLOBAL);
 
                 if (handle == IntPtr.Zero)
                     throw new NativeLoaderException($"Failed to load '{absoluteFilePath}'. dlerror: {Marshal.PtrToStringAnsi(Posix.dlerror())}");

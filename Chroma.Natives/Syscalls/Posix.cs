@@ -5,7 +5,8 @@ namespace Chroma.Natives.Syscalls
 {
     internal static class Posix
     {
-        internal const int RTLD_NOW = 2;
+        internal const int RTLD_NOW = 0x0002;
+        internal const int RTLD_GLOBAL = 0x0100;
 
         [DllImport("libdl")]
         internal static extern IntPtr dlopen(string fileName, int flags);

@@ -35,7 +35,7 @@ namespace Chroma.Natives.Boot
 
             foreach (var libraryFileName in libraryFileNames)
             {
-                Console.WriteLine($"{libraryFileName}");
+                Console.WriteLine($"Now loading: {libraryFileName}");
                 Platform.Register(libraryFileName);
             }
 

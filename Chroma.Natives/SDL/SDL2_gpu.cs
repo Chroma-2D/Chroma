@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Chroma.Natives.Interop;
+using Chroma.Natives.SDL.Interop;
 using static Chroma.Natives.SDL.SDL2;
 
 namespace Chroma.Natives.SDL

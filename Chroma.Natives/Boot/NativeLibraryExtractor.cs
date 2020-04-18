@@ -27,7 +27,7 @@ namespace Chroma.Natives.Boot
             if (!Directory.Exists(libraryRoot))
                 Directory.CreateDirectory(libraryRoot);
 
-            return libraryRoot;
+            return libraryRoot; 
         }
 
         private static List<string> ExtractLibraries(IEnumerable<string> resourceNames, string targetDir)

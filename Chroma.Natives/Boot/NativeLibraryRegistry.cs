@@ -11,7 +11,7 @@ namespace Chroma.Natives.Boot
         private readonly List<string> _lookupPaths;
         private readonly Dictionary<string, NativeLibrary> _libRegistry;
 
-        public NativeLibraryRegistry(List<string> lookupPaths)
+        public NativeLibraryRegistry(IEnumerable<string> lookupPaths)
         {
             _lookupPaths = new List<string>(lookupPaths);
             _libRegistry = new Dictionary<string, NativeLibrary>();
@@ -49,7 +49,7 @@ namespace Chroma.Natives.Boot
                 }
                 catch (NativeLoaderException)
                 {
-                    continue;
+                    /* Skip to next... */
                 }
             }
 
@@ -64,7 +64,7 @@ namespace Chroma.Natives.Boot
             return _libRegistry[fileName];
         }
 
-        public NativeLibrary TryRetrieve(params string[] fileNames)
+        public NativeLibrary TryRetrieve(bool tryRegisterIfNotFound = true, params string[] fileNames)
         {
             foreach (var fileName in fileNames)
             {
@@ -74,11 +74,25 @@ namespace Chroma.Natives.Boot
                 }
                 catch (NativeLoaderException)
                 {
-                    continue;
+                    if (tryRegisterIfNotFound)
+                    {
+                        Console.WriteLine($"{fileName} not found. Will try to register first...");
+                        
+                        try
+                        {
+                            return Register(fileName);
+                        }
+                        catch (NativeLoaderException)
+                        {
+                            /* Skip to next... */
+                        }
+                    }
+                    
+                    /* Skip to next... */
                 }
             }
             
-            throw new NativeLoaderException("None of the provided file names were ever registered.");
+            throw new NativeLoaderException("None of the provided file names were found.");
         }
 
         private IntPtr RegisterPlatformSpecific(string absoluteFilePath, out NativeLibrary.SymbolLookupDelegate symbolLookup)

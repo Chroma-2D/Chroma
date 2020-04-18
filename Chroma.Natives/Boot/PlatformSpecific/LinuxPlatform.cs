@@ -22,6 +22,7 @@ namespace Chroma.Natives.Boot.PlatformSpecific
         public void Register(string libFilePath)
         {
             var fileName = Path.GetFileName(libFilePath);
+            
             var namesToTry = new[]
             {
                 fileName,
@@ -29,7 +30,7 @@ namespace Chroma.Natives.Boot.PlatformSpecific
                 $"lib{fileName}",
                 $"lib{fileName}.so"
             };
-
+            
             Registry.TryRegister(namesToTry);
         }
     }

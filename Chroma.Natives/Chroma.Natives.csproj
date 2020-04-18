@@ -78,6 +78,10 @@
     <EmbeddedResource Include="Binaries\linux_64\libwebp.so" />
     <None Remove="Binaries\linux_64\libz.so.1.2.11" />
     <EmbeddedResource Include="Binaries\linux_64\libz.so" />
+    <None Remove="Binaries\linux_64\libSDL2_gpu.so" />
+    <EmbeddedResource Include="Binaries\linux_64\libSDL2_gpu.so" />
+    <None Remove="Binaries\linux_64\libogg.so" />
+    <EmbeddedResource Include="Binaries\linux_64\libogg.so" />
   </ItemGroup>
 
   <ItemGroup>

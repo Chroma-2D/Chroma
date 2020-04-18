@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Text;
 using System.Runtime.InteropServices;
-using Chroma.Natives.SDL;
+using System.Text;
 
-namespace Chroma.Natives.Interop
+namespace Chroma.Natives.SDL.Interop
 {
     internal unsafe class LPUtf8StrMarshaler : ICustomMarshaler
     {
@@ -30,7 +29,7 @@ namespace Chroma.Natives.Interop
         {
             if (pNativeData == IntPtr.Zero)
                 return null;
-            
+
             var ptr = (byte*)pNativeData;
 
             while (*ptr != 0)
@@ -54,11 +53,11 @@ namespace Chroma.Natives.Interop
             }
 
             var bytes = Encoding.UTF8.GetBytes(str);
-            
+
             var mem = SDL2.SDL_malloc((IntPtr)bytes.Length + 1);
             Marshal.Copy(bytes, 0, mem, bytes.Length);
             ((byte*)mem)[bytes.Length] = 0;
-            
+
             return mem;
         }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace Chroma.Natives.Boot
 {
@@ -21,12 +22,29 @@ namespace Chroma.Natives.Boot
 
         private static string CreateLibraryDirectory()
         {
-            var configDirPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            var libraryRoot = Path.Combine(configDirPath, "ChromaNatives");
+            string libraryRoot;
+            
+            if (ModuleInitializer.BootConfig.NativesInApplicationDirectory)
+            {
+                var appDirPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                libraryRoot = Path.Combine(appDirPath, "Natives");
+            }
+            else
+            {
+                var configDirPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                libraryRoot = Path.Combine(configDirPath, "ChromaNatives");
+            }
 
-            if (!Directory.Exists(libraryRoot))
-                Directory.CreateDirectory(libraryRoot);
-
+            try
+            {
+                if (!Directory.Exists(libraryRoot))
+                    Directory.CreateDirectory(libraryRoot);
+            }
+            catch (Exception e)
+            {
+                throw new NativeExtractorException("Failed to extract natives to the requested directory.", e);
+            }
+            
             return libraryRoot; 
         }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Chroma.Natives.Interop
+namespace Chroma.Natives.SDL.Interop
 {
     public struct AnsiString
     {

@@ -22,7 +22,13 @@ namespace Chroma.Audio
             );
 
             if (result == -1)
+            {
                 Console.WriteLine($"SDL_mixer: {SDL2.SDL_GetError()}");
+            }
+            else
+            {
+                SDL_mixer.Mix_AllocateChannels(MixingChannelCount);
+            }
         }
 
         public AudioClip CreateClip(string filePath)

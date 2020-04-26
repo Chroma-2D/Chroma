@@ -1,12 +1,15 @@
 ﻿using Chroma.MemoryManagement;
 using Chroma.Natives.SDL;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Chroma.Audio
 {
     public class AudioManager : DisposableResource
     {
-        internal int FreeChannelId = 0;
+        internal Stack<int> FreeMixingChannels { get; }
+        internal SDL_mixer.ChannelFinishedDelegate ChannelFinished { get; }
 
         public int SamplingRate { get; } = 44100; // hz
         public int MixingChannelCount { get; } = 16;
@@ -28,6 +31,13 @@ namespace Chroma.Audio
             else
             {
                 SDL_mixer.Mix_AllocateChannels(MixingChannelCount);
+
+                FreeMixingChannels = new Stack<int>();
+                for (var i = 0; i < MixingChannelCount; i++)
+                    FreeMixingChannels.Push(i);
+
+                ChannelFinished = new SDL_mixer.ChannelFinishedDelegate(ChannelFinishedCallback);
+                SDL_mixer.Mix_ChannelFinished(ChannelFinished);
             }
         }
 
@@ -45,10 +55,13 @@ namespace Chroma.Audio
 
         internal int GetFreeChannel()
         {
-            if (FreeChannelId > MixingChannelCount)
+            if (FreeMixingChannels.Count == 0)
                 return -1;
 
-            return FreeChannelId++;
+            return FreeMixingChannels.Pop();
         }
+
+        private void ChannelFinishedCallback(int channel)
+            => FreeMixingChannels.Push(channel);
     }
 }

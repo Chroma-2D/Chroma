@@ -2,6 +2,7 @@
 using System.Numerics;
 using System.Reflection;
 using System.Threading;
+using Chroma.Audio;
 using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Graphics;
@@ -19,6 +20,7 @@ namespace Chroma
 
         public Window Window { get; }
         public GraphicsManager Graphics { get; }
+        public AudioManager Audio { get; }
         public IContentProvider Content { get; }
 
         public int FixedUpdateFrequency { get; protected set; } = 75;
@@ -28,6 +30,7 @@ namespace Chroma
             _fixedUpdateThread = new Thread(FixedUpdateThread);
 
             Graphics = new GraphicsManager(this);
+            Audio = new AudioManager();
 
             Window = new Window(this)
             {
@@ -38,7 +41,7 @@ namespace Chroma
             using var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Chroma.Resources.logo.png");
             LogoTexture = new Texture(resourceStream);
 
-            Content = new FileSystemContentProvider("Content");
+            Content = new FileSystemContentProvider(this, "Content");
             LoadContent();
         }
 

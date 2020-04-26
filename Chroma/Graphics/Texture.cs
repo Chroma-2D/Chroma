@@ -15,7 +15,7 @@ namespace Chroma.Graphics
         internal unsafe SDL_gpu.GPU_Image* Image => (SDL_gpu.GPU_Image*)ImageHandle.ToPointer();
         internal unsafe SDL2.SDL_Surface* Surface { get; private set; }
 
-        public float Width
+        public int Width
         {
             get
             {
@@ -28,7 +28,7 @@ namespace Chroma.Graphics
             }
         }
 
-        public float Height
+        public int Height
         {
             get
             {
@@ -537,6 +537,22 @@ namespace Chroma.Graphics
         {
             ImageHandle = imageHandle;
             SnappingMode = TextureSnappingMode.None;
+        }
+
+        public void SetPixelData(Color[] colors)
+        {
+            EnsureNotDisposed();
+
+            unsafe
+            {
+                for (var i = 0; i < colors.Length; i++)
+                {
+                    var color = colors[i];
+
+                    uint* pixel = (uint*)Surface->pixels;
+                    *(pixel + i) = color.PackedValue;
+                }
+            }
         }
 
         public void SetPixel(int x, int y, Color color)

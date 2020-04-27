@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Chroma.ContentManagement.Exceptions
+namespace Chroma.ContentManagement
 {
     public class UnsupportedContentException : Exception
     {

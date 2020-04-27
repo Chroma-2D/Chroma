@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Chroma.Diagnostics.Logging.Exceptions
+namespace Chroma.Diagnostics.Logging
 {
     public class DuplicateSinkException : Exception
     {

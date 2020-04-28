@@ -11,6 +11,7 @@ namespace Chroma.Audio
         internal IntPtr Handle { get; }
 
         private byte _volume = 32;
+
         public byte Volume
         {
             get => _volume;
@@ -24,6 +25,8 @@ namespace Chroma.Audio
             }
         }
 
+        public int Channel { get; private set; }
+
         internal AudioClip(IntPtr handle, AudioManager audioManager)
         {
             Handle = handle;
@@ -33,10 +36,17 @@ namespace Chroma.Audio
                 SDL_mixer.Mix_VolumeChunk(Handle, Volume);
         }
 
-        public void Play()
+        public void Play(int channel = -1)
         {
+            EnsureNotDisposed();
+
+            if (channel < 0)
+                Channel = AudioManager.GetFreeChannel();
+
+            Channel = channel;
+            
             SDL_mixer.Mix_PlayChannel(
-                AudioManager.GetFreeChannel(),
+                Channel,
                 Handle,
                 0
             );

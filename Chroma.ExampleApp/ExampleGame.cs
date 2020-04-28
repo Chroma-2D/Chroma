@@ -141,7 +141,7 @@ namespace Chroma.ExampleApp
         {
             if (e.KeyCode == KeyCode.Space)
             {
-                _shotgun.Play();
+                _shotgun.Play(5);
             }
         }
     }

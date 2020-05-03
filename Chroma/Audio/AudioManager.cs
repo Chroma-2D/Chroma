@@ -6,15 +6,26 @@ using System.Collections.Generic;
 
 namespace Chroma.Audio
 {
-    public class AudioManager : DisposableResource
+    public class AudioManager
     {
-        internal Stack<int> FreeMixingChannels { get; }
-        internal SDL_mixer.ChannelFinishedDelegate ChannelFinished { get; }
-
         public int SamplingRate { get; } = 44100; // hz
-        public int MixingChannelCount { get; } = 16;
+
+        private int _mixingChannelCount;
+        public int MixingChannelCount
+        {
+            get => _mixingChannelCount;
+            set
+            {
+                _mixingChannelCount = value;
+                SDL_mixer.Mix_AllocateChannels(_mixingChannelCount);
+            }
+        }
+        
         public int ChunkSize { get; } = 8192; // bytes
 
+        public int PlayingChannelCount => SDL_mixer.Mix_Playing(-1);
+        public int PausedChannelCount => SDL_mixer.Mix_Paused(-1);
+        
         internal AudioManager()
         {
             var result = SDL_mixer.Mix_OpenAudio(
@@ -30,38 +41,22 @@ namespace Chroma.Audio
             }
             else
             {
-                SDL_mixer.Mix_AllocateChannels(MixingChannelCount);
-
-                FreeMixingChannels = new Stack<int>();
-                for (var i = 0; i < MixingChannelCount; i++)
-                    FreeMixingChannels.Push(i);
-
-                ChannelFinished = new SDL_mixer.ChannelFinishedDelegate(ChannelFinishedCallback);
-                SDL_mixer.Mix_ChannelFinished(ChannelFinished);
+                MixingChannelCount = 16;
             }
         }
-
-        public AudioClip CreateClip(string filePath)
+        
+        public Sound CreateSound(string filePath)
         {
             var handle = SDL_mixer.Mix_LoadWAV(filePath);
 
             if (handle != IntPtr.Zero)
-                return new AudioClip(handle, this);
+            {
+                return new Sound(handle, this);
+            }
 
             Console.WriteLine(SDL2.SDL_GetError());
-            // FIXME: throw an instance of audioexception here
+            // TODO: throw an instance of audioexception here
             return null;
         }
-
-        internal int GetFreeChannel()
-        {
-            if (FreeMixingChannels.Count == 0)
-                return -1;
-
-            return FreeMixingChannels.Pop();
-        }
-
-        private void ChannelFinishedCallback(int channel)
-            => FreeMixingChannels.Push(channel);
     }
 }

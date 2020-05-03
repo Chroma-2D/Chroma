@@ -100,7 +100,7 @@ namespace Chroma.ContentManagement.FileSystem
                 }
             });
             _importers.Add(typeof(ImageFont), (path, args) => { return new ImageFont(path, (string)args[0]); });
-            _importers.Add(typeof(AudioClip), (path, args) => { return _game.Audio.CreateClip(path); });
+            _importers.Add(typeof(Sound), (path, args) => { return _game.Audio.CreateSound(path); });
         }
 
         private string MakeAbsolutePath(string relativePath)

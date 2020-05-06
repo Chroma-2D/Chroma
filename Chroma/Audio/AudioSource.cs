@@ -19,19 +19,11 @@ namespace Chroma.Audio
         public abstract void Stop();
 
         public delegate void ChunkProcessorDelegate(Span<byte> chunk);
-        
-        public event EventHandler PlaybackFinished;
 
         internal AudioSource(IntPtr handle, AudioManager audioManager)
         {
             Handle = handle;
             AudioManager = audioManager;
-        }
-
-        protected void OnPlaybackFinished()
-        {
-            Status = PlaybackStatus.Stopped;
-            PlaybackFinished?.Invoke(this, EventArgs.Empty);
         }
     }
 }

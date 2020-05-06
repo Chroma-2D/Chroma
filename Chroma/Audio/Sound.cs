@@ -1,33 +1,32 @@
 ﻿using System;
+using Chroma.Diagnostics.Logging;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Audio
 {
     public class Sound : AudioSource
     {
-        private SDL_mixer.ChannelFinishedDelegate OnFinished { get; set; }
-
         private byte _volume;
+
+        private Log Log => LogManager.GetForCurrentAssembly();
+
         public override byte Volume
         {
             get => _volume;
             set
             {
                 EnsureNotDisposed();
-                
+
                 _volume = value;
-                SDL_mixer.Mix_VolumeChunk(Handle, _volume);
+                SDL_mixer.Mix_VolumeChunk(Handle, AudioManager.NormalizeByteToMixerVolume(_volume));
             }
         }
 
         public int PreferredChannel { get; set; } = -1;
         public int ActualChannel { get; private set; }
 
-        public Sound(IntPtr handle, AudioManager audioManager) : base(handle, audioManager)
-        {
-            OnFinished = OnFinishedHandler;
-            SDL_mixer.Mix_ChannelFinished(OnFinished);
-        }
+        internal Sound(IntPtr handle, AudioManager audioManager) : base(handle, audioManager)
+        { }
 
         public override void Play()
         {
@@ -37,7 +36,7 @@ namespace Chroma.Audio
             {
                 SDL_mixer.Mix_Resume(ActualChannel);
                 Status = PlaybackStatus.Playing;
-                
+
                 return;
             }
 
@@ -52,7 +51,7 @@ namespace Chroma.Audio
             }
             else
             {
-                // TODO: let the user know something's wrong
+                Log.Error($"Failed to play the sound: {SDL2.SDL_GetError()}");
             }
         }
 
@@ -71,7 +70,7 @@ namespace Chroma.Audio
             }
             else
             {
-                // TODO: let the user know something's wrong
+                Log.Error($"Failed to force-play the sound: {SDL2.SDL_GetError()}");
             }
         }
 
@@ -89,7 +88,7 @@ namespace Chroma.Audio
         public override void Stop()
         {
             EnsureNotDisposed();
-            
+
             if (Status == PlaybackStatus.Stopped)
                 return;
 
@@ -101,19 +100,11 @@ namespace Chroma.Audio
         {
             if (Status == PlaybackStatus.Playing)
                 Stop();
-
-            OnFinished = null;
         }
 
         protected override void FreeNativeResources()
-        {           
-            SDL_mixer.Mix_FreeChunk(Handle);
-        }
-        
-        private void OnFinishedHandler(int channel)
         {
-            if (channel == ActualChannel)
-                OnPlaybackFinished();
+            SDL_mixer.Mix_FreeChunk(Handle);
         }
     }
 }

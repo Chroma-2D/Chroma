@@ -119,9 +119,9 @@ namespace Chroma.ExampleApp
             {
                 context.Clear(Color.Black);
 
-                for(var x = 0; x < _tw; x++)
+                for (var x = 0; x < _tw; x++)
                 {
-                    for(var y = 0; y < _th; y++)
+                    for (var y = 0; y < _th; y++)
                     {
                         _tgt.SetPixel(x, y, _pixels[y * _tw + x]);
                     }
@@ -144,25 +144,51 @@ namespace Chroma.ExampleApp
             {
                 _shotgun.Play();
             }
-            else if(e.KeyCode == KeyCode.Q)
+            else if (e.KeyCode == KeyCode.Q)
             {
                 _analo.Play();
                 Console.WriteLine(_analo.Status);
             }
-            else if(e.KeyCode == KeyCode.W)
+            else if (e.KeyCode == KeyCode.W)
             {
                 _analo.Pause();
                 Console.WriteLine(_analo.Status);
 
             }
-            else if(e.KeyCode == KeyCode.E)
+            else if (e.KeyCode == KeyCode.E)
             {
                 _analo.Stop();
                 Console.WriteLine(_analo.Status);
             }
-            else if(e.KeyCode == KeyCode.R)
+            else if (e.KeyCode == KeyCode.R)
             {
                 _analo.Dispose();
+            }
+            else if (e.KeyCode == KeyCode.T)
+            {
+                var r = new Random();
+
+                Audio.HookPostMixProcessor((chunk) =>
+                {
+                    var r = new Random();
+
+                    for (var i = 0; i < chunk.Length; i += 4)
+                    {
+                        var sample = BitConverter.ToSingle(chunk.Slice(i, 4));
+
+                        sample += ((float)r.NextDouble() / 4);
+                        var x = BitConverter.GetBytes(sample);
+
+                        chunk[i] = x[0];
+                        chunk[i + 1] = x[1];
+                        chunk[i + 2] = x[2];
+                        chunk[i + 3] = x[3];
+                    }
+                });
+            }
+            else if (e.KeyCode == KeyCode.Y)
+            {
+                Audio.UnhookPostMixProcessor();
             }
         }
     }

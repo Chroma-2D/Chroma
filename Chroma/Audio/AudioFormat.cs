@@ -36,8 +36,12 @@ namespace Chroma.Audio
             { SampleFormat.F32, SDL2.AUDIO_F32SYS }
         };
 
-        public static readonly AudioFormat Default = BitConverter.IsLittleEndian ? new AudioFormat(SampleFormat.S16, ByteOrder.LittleEndian)
-                                                                                 : new AudioFormat(SampleFormat.S16, ByteOrder.BigEndian);
+        public static readonly AudioFormat Default = BitConverter.IsLittleEndian ? new AudioFormat(SampleFormat.U16, ByteOrder.LittleEndian)
+                                                                                 : new AudioFormat(SampleFormat.U16, ByteOrder.BigEndian);
+
+        public static readonly AudioFormat ChromaDefault = BitConverter.IsLittleEndian ? new AudioFormat(SampleFormat.F32, ByteOrder.LittleEndian)
+                                                                                       : new AudioFormat(SampleFormat.F32, ByteOrder.BigEndian);
+
 
         public SampleFormat SampleFormat { get; private set; }
         public ByteOrder ByteOrder { get; private set; }

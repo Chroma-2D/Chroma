@@ -10,6 +10,9 @@ namespace Chroma.Audio
     {
         private SDL_mixer.ChannelFinishedDelegate _channelFinished;
         private SDL_mixer.MusicFinishedDelegate _musicFinished;
+        private SDL_mixer.MixFuncDelegate _postMixFunc;
+
+        private AudioSource.DataProcessorDelegate _postMixDataProcessor;
 
         private Dictionary<IntPtr, Sound> _soundBank;
         private Dictionary<IntPtr, Music> _musicBank;
@@ -48,7 +51,7 @@ namespace Chroma.Audio
         {
             var result = SDL_mixer.Mix_OpenAudio(
                 SamplingRate,
-                AudioFormat.Default.SdlMixerFormat,
+                AudioFormat.ChromaDefault.SdlMixerFormat,
                 SDL_mixer.MIX_DEFAULT_CHANNELS,
                 ChunkSize
             );
@@ -64,11 +67,13 @@ namespace Chroma.Audio
 
                 _channelFinished = OnChannelFinished;
                 _musicFinished = OnMusicFinished;
+                _postMixFunc = OnPostMix;
 
                 MixingChannelCount = 16;
 
                 SDL_mixer.Mix_ChannelFinished(_channelFinished);
                 SDL_mixer.Mix_HookMusicFinished(_musicFinished);
+                SDL_mixer.Mix_SetPostMix(_postMixFunc, IntPtr.Zero);
             }
         }
 
@@ -115,6 +120,12 @@ namespace Chroma.Audio
             // TODO: throw an instance of audioexception here?
             return null;
         }
+
+        public void HookPostMixProcessor(AudioSource.DataProcessorDelegate func)
+            => _postMixDataProcessor = func;
+
+        public void UnhookPostMixProcessor()
+            => _postMixDataProcessor = null;
 
         internal PlaybackStatus BeginMusicPlayback(Music music)
         {
@@ -171,6 +182,15 @@ namespace Chroma.Audio
             CurrentlyPlayedMusic = null;
 
             MusicPlaybackFinished?.Invoke(this, new MusicEventArgs(music));
+        }
+
+        internal void OnPostMix(IntPtr udata, IntPtr stream, int length)
+        {
+            unsafe
+            {
+                if (_postMixDataProcessor != null)
+                    _postMixDataProcessor?.Invoke(new Span<byte>(stream.ToPointer(), length));
+            }
         }
 
         internal void AudioResourceDisposing(object sender, EventArgs e)

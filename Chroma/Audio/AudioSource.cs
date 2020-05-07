@@ -11,14 +11,13 @@ namespace Chroma.Audio
         
         public abstract byte Volume { get; set; }
 
-        public virtual int LoopCount { get; set; }
         public virtual PlaybackStatus Status { get; protected set; } = PlaybackStatus.Stopped;
         
         public abstract void Play();
         public abstract void Pause();
         public abstract void Stop();
 
-        public delegate void ChunkProcessorDelegate(Span<byte> chunk);
+        public delegate void DataProcessorDelegate(Span<byte> chunk);
 
         internal AudioSource(IntPtr handle, AudioManager audioManager)
         {

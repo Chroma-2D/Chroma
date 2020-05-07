@@ -1,5 +1,4 @@
-﻿using Chroma.Diagnostics.Logging;
-using Chroma.Natives.SDL;
+﻿using Chroma.Natives.SDL;
 using System;
 
 namespace Chroma.Audio

@@ -23,6 +23,9 @@
     <None Update="Content\Fonts\Bargain_Demo.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Content\Music\analo.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Content\Sounds\dsshotgn.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

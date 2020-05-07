@@ -55,14 +55,14 @@ namespace Chroma.Audio
             }
         }
 
-        public void ForcePlay()
+        public void PlayOneShot()
         {
             EnsureNotDisposed();
 
             if (Status == PlaybackStatus.Paused || Status == PlaybackStatus.Playing)
                 SDL_mixer.Mix_HaltChannel(ActualChannel);
 
-            ActualChannel = SDL_mixer.Mix_PlayChannel(PreferredChannel, Handle, LoopCount);
+            ActualChannel = SDL_mixer.Mix_PlayChannel(PreferredChannel, Handle, 0);
 
             if (ActualChannel >= 0)
             {
@@ -70,7 +70,7 @@ namespace Chroma.Audio
             }
             else
             {
-                Log.Error($"Failed to force-play the sound: {SDL2.SDL_GetError()}");
+                Log.Error($"Failed to one-shot play the sound: {SDL2.SDL_GetError()}");
             }
         }
 

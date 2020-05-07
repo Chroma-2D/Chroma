@@ -22,6 +22,7 @@ namespace Chroma.Audio
             }
         }
 
+        public int LoopCount { get; set; } = 0;
         public int PreferredChannel { get; set; } = -1;
         public int ActualChannel { get; private set; }
 

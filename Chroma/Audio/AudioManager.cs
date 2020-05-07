@@ -116,7 +116,7 @@ namespace Chroma.Audio
             return null;
         }
 
-        internal PlaybackStatus BeginMusicPlayback(Music music, bool fadeIn, int fadeMillis = 0)
+        internal PlaybackStatus BeginMusicPlayback(Music music)
         {
             if (music.Status == PlaybackStatus.Playing)
                 return music.Status;
@@ -125,14 +125,7 @@ namespace Chroma.Audio
             {
                 var loopCount = music.Loop ? -1 : 0;
 
-                if (fadeIn)
-                {
-                    SDL_mixer.Mix_FadeInMusic(music.Handle, loopCount, fadeMillis);
-                }
-                else
-                {
-                    SDL_mixer.Mix_PlayMusic(music.Handle, loopCount);
-                }
+                SDL_mixer.Mix_PlayMusic(music.Handle, loopCount);
                 CurrentlyPlayedMusic = music;
             }
             else if (music.Status == PlaybackStatus.Paused)

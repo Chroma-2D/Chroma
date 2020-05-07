@@ -20,7 +20,7 @@ namespace Chroma.Audio
         public override void Play()
         {
             EnsureNotDisposed();
-            Status = AudioManager.BeginMusicPlayback(this, false);
+            Status = AudioManager.BeginMusicPlayback(this);
         }
 
         public override void Pause()

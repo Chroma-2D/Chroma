@@ -60,6 +60,7 @@ namespace Chroma.Audio
             else
             {
                 _soundBank = new Dictionary<IntPtr, Sound>();
+                _musicBank = new Dictionary<IntPtr, Music>();
 
                 _channelFinished = OnChannelFinished;
                 _musicFinished = OnMusicFinished;
@@ -97,10 +98,70 @@ namespace Chroma.Audio
         {
             var handle = SDL_mixer.Mix_LoadMUS(filePath);
 
-            if(handle != IntPtr.Zero)
+            if (handle != IntPtr.Zero)
             {
                 var music = new Music(handle, this);
+
+                if (!_musicBank.TryAdd(handle, music))
+                {
+                    Log.Error("Failed to add a music object to the internal music bank.");
+                }
+
+                music.Disposing += AudioResourceDisposing;
+                return music;
             }
+
+            Log.Error($"CreateMusic: {SDL2.SDL_GetError()}");
+            // TODO: throw an instance of audioexception here?
+            return null;
+        }
+
+        internal PlaybackStatus BeginMusicPlayback(Music music, bool fadeIn, int fadeMillis = 0)
+        {
+            if (music.Status == PlaybackStatus.Playing)
+                return music.Status;
+
+            if (music.Status == PlaybackStatus.Stopped)
+            {
+                var loopCount = music.Loop ? -1 : 0;
+
+                if (fadeIn)
+                {
+                    SDL_mixer.Mix_FadeInMusic(music.Handle, loopCount, fadeMillis);
+                }
+                else
+                {
+                    SDL_mixer.Mix_PlayMusic(music.Handle, loopCount);
+                }
+                CurrentlyPlayedMusic = music;
+            }
+            else if (music.Status == PlaybackStatus.Paused)
+            {
+                SDL_mixer.Mix_ResumeMusic();
+            }
+
+            return PlaybackStatus.Playing;
+        }
+
+        internal void PauseMusicPlayback()
+        {
+            if (CurrentlyPlayedMusic == null)
+                return;
+
+            if (CurrentlyPlayedMusic.Status == PlaybackStatus.Playing)
+                SDL_mixer.Mix_PauseMusic();
+        }
+
+        internal void StopMusicPlayback()
+        {
+            if (CurrentlyPlayedMusic == null)
+                return;
+
+            if (CurrentlyPlayedMusic.Status == PlaybackStatus.Stopped)
+                return;
+
+            SDL_mixer.Mix_HaltMusic();
+            CurrentlyPlayedMusic = null;
         }
 
         internal void OnChannelFinished(int channel)
@@ -125,6 +186,8 @@ namespace Chroma.Audio
 
             if (sender is Sound sound)
                 _soundBank.Remove(sound.Handle);
+            else if (sender is Music music)
+                _musicBank.Remove(music.Handle);
         }
 
         internal static byte NormalizeByteToMixerVolume(byte volume)

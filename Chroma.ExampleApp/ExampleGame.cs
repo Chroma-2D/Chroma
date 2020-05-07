@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
-using Chroma.Audio;
+﻿using Chroma.Audio;
 using Chroma.Graphics;
 using Chroma.Graphics.Accelerated;
 using Chroma.Graphics.TextRendering;
 using Chroma.Input;
 using Chroma.Input.EventArgs;
+using System;
+using System.Numerics;
 
 namespace Chroma.ExampleApp
 {
@@ -17,7 +16,8 @@ namespace Chroma.ExampleApp
         private TrueTypeFont _ttf;
         private PixelShader _pixelShader;
         private VGA _vga;
-        private AudioClip _shotgun;
+        private Sound _shotgun;
+        private Music _analo; // thanks beasuce
 
         private Vector2 _screenSize;
         private Color[] _palette = new[]
@@ -58,7 +58,8 @@ namespace Chroma.ExampleApp
         {
             _ttf = Content.Load<TrueTypeFont>("Fonts/c64style.ttf", 16);
             _pixelShader = Content.Load<PixelShader>("Shaders/sh.frag");
-            _shotgun = Content.Load<AudioClip>("Sounds/dsshotgn.wav");
+            _shotgun = Content.Load<Sound>("Sounds/dsshotgn.wav");
+            _analo = Content.Load<Music>("Music/analo.mp3");
         }
 
         protected override void Update(float delta)
@@ -141,7 +142,27 @@ namespace Chroma.ExampleApp
         {
             if (e.KeyCode == KeyCode.Space)
             {
-                _shotgun.Play(5);
+                _shotgun.Play();
+            }
+            else if(e.KeyCode == KeyCode.Q)
+            {
+                _analo.Play();
+                Console.WriteLine(_analo.Status);
+            }
+            else if(e.KeyCode == KeyCode.W)
+            {
+                _analo.Pause();
+                Console.WriteLine(_analo.Status);
+
+            }
+            else if(e.KeyCode == KeyCode.E)
+            {
+                _analo.Stop();
+                Console.WriteLine(_analo.Status);
+            }
+            else if(e.KeyCode == KeyCode.R)
+            {
+                _analo.Dispose();
             }
         }
     }

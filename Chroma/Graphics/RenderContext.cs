@@ -161,6 +161,22 @@ namespace Chroma.Graphics
             }
         }
 
+        public void PolyLine(List<Vertex> vertices, Color color, bool closeLoop)
+        {
+            var floatVertexList = new List<float>();
+
+            foreach (var v in vertices)
+                floatVertexList.AddRange(v.ToGpuVertexArray());
+
+            SDL_gpu.GPU_Polyline(
+                CurrentRenderTarget,
+                (uint)vertices.Count,
+                floatVertexList.ToArray(),
+                color,
+                closeLoop
+            );
+        }
+
         public void Rectangle(ShapeMode mode, Vector2 position, float width, float height, Color color)
         {
             if (mode == ShapeMode.Stroke)

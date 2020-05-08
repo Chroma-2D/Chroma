@@ -1,10 +1,16 @@
-﻿using Chroma.Audio;
+﻿using Accord.Audio;
+using Accord.Audio.Filters;
+using Accord.Math;
+using Accord.Math.Metrics;
+using Accord.Math.Transforms;
+using Chroma.Audio;
 using Chroma.Graphics;
 using Chroma.Graphics.Accelerated;
 using Chroma.Graphics.TextRendering;
 using Chroma.Input;
 using Chroma.Input.EventArgs;
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace Chroma.ExampleApp
@@ -15,7 +21,6 @@ namespace Chroma.ExampleApp
         private RenderTarget _tgt;
         private TrueTypeFont _ttf;
         private PixelShader _pixelShader;
-        private VGA _vga;
         private Sound _shotgun;
         private Music _analo; // thanks beasuce
 
@@ -59,85 +64,69 @@ namespace Chroma.ExampleApp
             _ttf = Content.Load<TrueTypeFont>("Fonts/c64style.ttf", 16);
             _pixelShader = Content.Load<PixelShader>("Shaders/sh.frag");
             _shotgun = Content.Load<Sound>("Sounds/dsshotgn.wav");
-            _analo = Content.Load<Music>("Music/analo.mp3");
+            _analo = Content.Load<Music>("Music/sinetest.mp3");
         }
 
         protected override void Update(float delta)
         {
             Window.Properties.Title = $"FPS: {Window.FPS}";
+
+            if (_fftBuffer == null)
+                return;
+
+            for (var i = 0; i < _fftBuffer.Length; i += 6)
+            {
+                var c = _fftBuffer[i];
+                var y = GetYPosLog(c);
+
+                _vertices.Add(new Vertex(0 + i, 320 + y));
+            }
         }
 
         protected override void FixedUpdate(float fixedDelta)
         {
-            _a += 0.0025f;
 
-            float a2 = _a * 2f;
-            for (int x = 0; x < _tw - 2; x += 2)
-            {
-                float x2 = x / 3184f;
-                for (int y = 0; y < _th - 2; y += 2)
-                {
-                    float y2 = y / 2048f;
-                    float v1 = 256f + 192f * MathF.Sin(y2 + a2);
-                    float v2 = MathF.Sin(_a - x2 + y2 * 2);
-
-                    float r = 6 * MathF.Cos(a2 + x / v1 + v2);
-                    float g = 6 * MathF.Sin((x + y) / v1 * v2);
-                    float b = 6 * MathF.Cos((x * v2 - y) / v1);
-
-                    var c1 = y * _tw + x;
-                    var c2 = y * _tw + (x + 1);
-                    var c3 = (y + 1) * _tw + x;
-                    var c4 = (y + 1) * _tw + (x + 1);
-
-                    ref var p1 = ref _pixels[c1];
-                    ref var p2 = ref _pixels[c2];
-                    ref var p3 = ref _pixels[c3];
-                    ref var p4 = ref _pixels[c4];
-
-                    p1.R = (byte)(_palette[(int)MathF.Abs(MathF.Floor(r))].R * b);
-                    p1.G = (byte)(_palette[(int)MathF.Abs(MathF.Floor(r))].B - g);
-                    p1.B = (byte)(_palette[(int)MathF.Abs(MathF.Floor(r))].G + r);
-                    p1.A = 255;
-
-                    p2.R = (byte)(_palette[(int)MathF.Abs(MathF.Floor(g))].G - p1.G);
-                    p2.G = (byte)(_palette[(int)MathF.Abs(MathF.Floor(g))].B + p1.R);
-                    p2.B = _palette[(int)MathF.Abs(MathF.Floor(g))].R;
-                    p2.A = 255;
-
-                    p3.R = _palette[(int)MathF.Abs(MathF.Floor(b))].B;
-                    p3.G = _palette[(int)MathF.Abs(MathF.Floor(b))].G;
-                    p3.B = _palette[(int)MathF.Abs(MathF.Floor(b))].R;
-                    p3.A = 255;
-                }
-            }
         }
 
+        private List<Vertex> _vertices = new List<Vertex>();
         protected override void Draw(RenderContext context)
         {
-            context.RenderTo(_tgt, () =>
-            {
-                context.Clear(Color.Black);
+            if (_fftBuffer == null)
+                return;
 
-                for (var x = 0; x < _tw; x++)
-                {
-                    for (var y = 0; y < _th; y++)
-                    {
-                        _tgt.SetPixel(x, y, _pixels[y * _tw + x]);
-                    }
-                }
-                _tgt.Flush();
-            });
-
-            //_pixelShader.Activate();
-            //_pixelShader.SetUniform("screenSize", _screenSize);
-            //_pixelShader.SetUniform("scanlineDensity", 2f);
-            //_pixelShader.SetUniform("blurDistance", .88f);
-
-            context.DrawTexture(_tgt, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
-            context.DeactivateShader();
+            context.PolyLine(_vertices, Color.HotPink, false);
+            _vertices.Clear();
         }
 
+        private float Lerp(float firstFloat, float secondFloat, float by)
+        {
+            return firstFloat * (1 - by) + secondFloat * by;
+        }
+
+        private Vector2 Lerp(Vector2 firstVector, Vector2 secondVector, float by)
+        {
+            float retX = Lerp(firstVector.X, secondVector.X, by);
+            float retY = Lerp(firstVector.Y, secondVector.Y, by);
+            return new Vector2(retX, retY);
+        }
+
+        private float GetYPosLog(Complex c)
+        {
+            float intensityDB = 10 * MathF.Log10(
+                MathF.Sqrt(
+                    (float)(c.Real * c.Real) + 
+                    (float)(c.Imaginary * c.Imaginary)
+                )
+            );
+
+            float minDB = -60;
+            if (intensityDB < minDB) intensityDB = minDB;
+            float percent = intensityDB / minDB;
+
+            return percent * 100f;
+        }
+
+        private Complex[] _fftBuffer;
         protected override void KeyPressed(KeyEventArgs e)
         {
             if (e.KeyCode == KeyCode.Space)
@@ -167,28 +156,28 @@ namespace Chroma.ExampleApp
             else if (e.KeyCode == KeyCode.T)
             {
                 var r = new Random();
-
-                Audio.HookPostMixProcessor((chunk) =>
+                Audio.HookPostMixProcessor<float>((chunk, bytes) =>
                 {
-                    var r = new Random();
+                    var signal = new Signal(
+                        bytes.ToArray(),
+                        1,
+                        chunk.Length,
+                        Audio.SamplingRate,
+                        Accord.Audio.SampleFormat.Format32BitIeeeFloat
+                    );
+                    var complex = signal.ToComplex();
 
-                    for (var i = 0; i < chunk.Length; i += 4)
-                    {
-                        var sample = BitConverter.ToSingle(chunk.Slice(i, 4));
-
-                        sample += ((float)r.NextDouble() / 4);
-                        var x = BitConverter.GetBytes(sample);
-
-                        chunk[i] = x[0];
-                        chunk[i + 1] = x[1];
-                        chunk[i + 2] = x[2];
-                        chunk[i + 3] = x[3];
-                    }
+                    _fftBuffer = complex.ToArray(1);
+                    FourierTransform2.FFT(_fftBuffer, FourierTransform.Direction.Forward);
                 });
             }
             else if (e.KeyCode == KeyCode.Y)
             {
                 Audio.UnhookPostMixProcessor();
+            }
+            else if (e.KeyCode == KeyCode.Left)
+            {
+
             }
         }
     }

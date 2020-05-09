@@ -1,9 +1,8 @@
-﻿using Chroma.Diagnostics.Logging;
+﻿using System;
+using System.Collections.Generic;
+using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
 using Chroma.Natives.SDL;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using static Chroma.Audio.AudioSource;
 
@@ -295,7 +294,8 @@ namespace Chroma.Audio
                 if (AudioFormat.SampleFormat == SampleFormat.F32)
                 {
                     var deleg = _postMixProcessor as PostMixWaveformProcessor<float>;
-                    deleg?.Invoke(new Span<float>(streamPtr, length / sizeof(float)), new Span<byte>(streamPtr, length));
+                    deleg?.Invoke(new Span<float>(streamPtr, length / sizeof(float)),
+                        new Span<byte>(streamPtr, length));
                 }
                 else if (AudioFormat.SampleFormat == SampleFormat.S32)
                 {
@@ -305,12 +305,14 @@ namespace Chroma.Audio
                 else if (AudioFormat.SampleFormat == SampleFormat.S16)
                 {
                     var deleg = _postMixProcessor as PostMixWaveformProcessor<short>;
-                    deleg?.Invoke(new Span<short>(streamPtr, length / sizeof(short)), new Span<byte>(streamPtr, length));
+                    deleg?.Invoke(new Span<short>(streamPtr, length / sizeof(short)),
+                        new Span<byte>(streamPtr, length));
                 }
                 else if (AudioFormat.SampleFormat == SampleFormat.U16)
                 {
                     var deleg = _postMixProcessor as PostMixWaveformProcessor<ushort>;
-                    deleg?.Invoke(new Span<ushort>(streamPtr, length / sizeof(ushort)), new Span<byte>(streamPtr, length));
+                    deleg?.Invoke(new Span<ushort>(streamPtr, length / sizeof(ushort)),
+                        new Span<byte>(streamPtr, length));
                 }
                 else if (AudioFormat.SampleFormat == SampleFormat.S8)
                 {

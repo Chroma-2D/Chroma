@@ -4,6 +4,7 @@ using Chroma.Natives.SDL;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using static Chroma.Audio.AudioSource;
 
 namespace Chroma.Audio
@@ -20,12 +21,13 @@ namespace Chroma.Audio
         private Dictionary<IntPtr, Music> _musicBank;
         private int _mixingChannelCount;
 
+        private bool _isOpen = false;
+
         private Log Log => LogManager.GetForCurrentAssembly();
 
-        public AudioFormat AudioFormat { get; } = AudioFormat.ChromaDefault;
-
-        public int SamplingRate { get; } = 44100; // hz
-        public int ChunkSize { get; } = 4096; // bytes
+        public AudioFormat AudioFormat { get; private set; }
+        public int SamplingRate { get; private set; } // hz
+        public int ChunkSize { get; private set; } // bytes
 
         public int MixingChannelCount
         {
@@ -53,6 +55,21 @@ namespace Chroma.Audio
 
         internal AudioManager()
         {
+            InitializeAudioMixer(AudioFormat.ChromaDefault, 44100, 4096);
+        }
+
+        public void InitializeAudioMixer(AudioFormat audioFormat, int samplingRate,  int chunkSize)
+        {
+            if (_isOpen)
+            {
+                Log.Warning("The audio system was already open. Closing it beforehand for you...");
+                ShutdownAudioMixer();
+            }
+            
+            SamplingRate = samplingRate;
+            AudioFormat = audioFormat;
+            ChunkSize = chunkSize;
+            
             var result = SDL_mixer.Mix_OpenAudio(
                 SamplingRate,
                 AudioFormat.SdlMixerFormat,
@@ -78,7 +95,33 @@ namespace Chroma.Audio
                 SDL_mixer.Mix_ChannelFinished(_channelFinished);
                 SDL_mixer.Mix_HookMusicFinished(_musicFinished);
                 SDL_mixer.Mix_SetPostMix(_postMixFunc, IntPtr.Zero);
+                
+                _isOpen = true;
             }
+        }
+
+        public void ShutdownAudioMixer()
+        {
+            UnhookPostMixProcessor();
+            SDL_mixer.Mix_ChannelFinished(null);
+            SDL_mixer.Mix_HookMusicFinished(null);
+
+            foreach (var sound in _soundBank.Values)
+            {
+                sound.Disposing -= AudioResourceDisposing;
+                sound.Dispose();
+            }
+            _soundBank.Clear();
+
+            foreach (var track in _musicBank.Values)
+            {
+                track.Disposing -= AudioResourceDisposing;
+                track.Dispose();
+            }
+            _musicBank.Clear();
+
+            SDL_mixer.Mix_CloseAudio();
+            _isOpen = false;
         }
 
         public Sound CreateSound(string filePath)
@@ -124,6 +167,12 @@ namespace Chroma.Audio
             // TODO: throw an instance of audioexception here?
             return null;
         }
+
+        public IEnumerable<Sound> FindSoundsByPreferredChannel(int channel)
+            => _soundBank.Values.Where(sound => sound.PreferredChannel == channel);
+
+        public IEnumerable<Sound> FindSoundsByActualChannel(int channel)
+            => _soundBank.Values.Where(sound => sound.ActualChannel == channel);
 
         public void HookPostMixProcessor<T>(PostMixWaveformProcessor<T> func) where T : struct
         {

@@ -11,7 +11,9 @@ using Chroma.Input;
 using Chroma.Input.EventArgs;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Numerics;
+using Color = Chroma.Graphics.Color;
 
 namespace Chroma.ExampleApp
 {
@@ -64,7 +66,7 @@ namespace Chroma.ExampleApp
             _ttf = Content.Load<TrueTypeFont>("Fonts/c64style.ttf", 16);
             _pixelShader = Content.Load<PixelShader>("Shaders/sh.frag");
             _shotgun = Content.Load<Sound>("Sounds/dsshotgn.wav");
-            _analo = Content.Load<Music>("Music/sinetest.mp3");
+            _analo = Content.Load<Music>("Music/analo.mp3");
         }
 
         protected override void Update(float delta)
@@ -79,7 +81,7 @@ namespace Chroma.ExampleApp
                 var c = _fftBuffer[i];
                 var y = GetYPosLog(c);
 
-                _vertices.Add(new Vertex(0 + i, 320 + y));
+                _vertices.Add(new Point(0 + i, 320 + (int)y));
             }
         }
 
@@ -88,13 +90,13 @@ namespace Chroma.ExampleApp
 
         }
 
-        private List<Vertex> _vertices = new List<Vertex>();
+        private List<Point> _vertices = new List<Point>();
         protected override void Draw(RenderContext context)
         {
             if (_fftBuffer == null)
                 return;
 
-            context.PolyLine(_vertices, Color.HotPink, false);
+            context.Polyline(_vertices, Color.HotPink, false);
             _vertices.Clear();
         }
 

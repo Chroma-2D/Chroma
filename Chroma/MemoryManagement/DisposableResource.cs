@@ -5,6 +5,8 @@ namespace Chroma.MemoryManagement
     public class DisposableResource : IDisposable
     {
         public bool Disposed { get; private set; }
+        
+        public event EventHandler Disposing;
 
         ~DisposableResource()
         {
@@ -36,7 +38,9 @@ namespace Chroma.MemoryManagement
 
         public void Dispose()
         {
+            Disposing?.Invoke(this, EventArgs.Empty);
             Dispose(true);
+
             GC.SuppressFinalize(this);
         }
 

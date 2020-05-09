@@ -1401,7 +1401,7 @@ namespace Chroma.Natives.SDL
             float[] vertices,
             SDL_Color color
         );
-
+        
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_PolygonFilled(
             IntPtr target,
@@ -1410,13 +1410,22 @@ namespace Chroma.Natives.SDL
             float[] vertices,
             SDL_Color color
         );
-
+        
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_Polyline(
             IntPtr target,
             uint num_vertices,
             [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.R4)]
             float[] vertices,
+            SDL_Color color,
+            bool close_loop
+        );
+        
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe void GPU_Polyline(
+            IntPtr target,
+            uint num_vertices,
+            float* vertices,
             SDL_Color color,
             bool close_loop
         );

@@ -34,10 +34,7 @@ namespace Chroma.Natives.Boot
                 Environment.Exit(1);
             }
 
-            Console.WriteLine("---");
-            Console.WriteLine("Initializing SDL2 core...");
-            
-            SDL2.SDL_Init(BootConfig.SdlModules.SdlInitFlags);
+            InitializeSdlSystems();
         }
 
         private static void ReadBootConfig()
@@ -93,6 +90,15 @@ namespace Chroma.Natives.Boot
                 Console.WriteLine($"Now loading: {libraryFileName}");
                 Platform.Register(libraryFileName);
             }
+        }
+
+        private static void InitializeSdlSystems()
+        {
+            Console.WriteLine("---");
+            Console.WriteLine("Initializing SDL2 core...");
+
+            SDL2.SDL_Init(BootConfig.SdlModules.SdlInitFlags);
+            SDL_mixer.Mix_Init(BootConfig.MixerModules.SdlMixerFlags);
         }
     }
 }

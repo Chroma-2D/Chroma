@@ -134,19 +134,22 @@ namespace Chroma.Graphics
         public Color GetPixel(Vector2 position)
             => SDL_gpu.GPU_GetPixel(CurrentRenderTarget, (short)position.X, (short)position.Y);
 
-        public void Polygon(ShapeMode mode, List<Vertex> vertices, Color color)
+        public void Polygon(ShapeMode mode, List<Point> vertices, Color color)
         {
-            var floatVertexList = new List<float>();
+            var floatArray = new float[vertices.Count * 2];
 
-            foreach (var v in vertices)
-                floatVertexList.AddRange(v.ToGpuVertexArray());
+            for (var i = 0; i < vertices.Count; i++)
+            {
+                floatArray[i * 2] = vertices[i].X;
+                floatArray[i * 2 + 1] = vertices[i].Y;
+            }
 
             if (mode == ShapeMode.Stroke)
             {
                 SDL_gpu.GPU_Polygon(
                     CurrentRenderTarget,
                     (uint)vertices.Count,
-                    floatVertexList.ToArray(),
+                    floatArray,
                     color
                 );
             }
@@ -155,10 +158,29 @@ namespace Chroma.Graphics
                 SDL_gpu.GPU_PolygonFilled(
                     CurrentRenderTarget,
                     (uint)vertices.Count,
-                    floatVertexList.ToArray(),
+                    floatArray,
                     color
                 );
             }
+        }
+
+        public void Polyline(List<Point> vertices, Color color, bool closeLoop)
+        {
+            var floatArray = new float[vertices.Count * 2];
+            
+            for (var i = 0; i < vertices.Count; i++)
+            {
+                floatArray[i * 2] = vertices[i].X;
+                floatArray[i * 2 + 1] = vertices[i].Y;
+            }
+
+            SDL_gpu.GPU_Polyline(
+                CurrentRenderTarget,
+                (uint)vertices.Count,
+                floatArray,
+                color,
+                closeLoop
+            );
         }
 
         public void Rectangle(ShapeMode mode, Vector2 position, float width, float height, Color color)
@@ -215,7 +237,8 @@ namespace Chroma.Graphics
             );
         }
 
-        public void DrawTexture(Texture texture, Vector2 position, Vector2 scale, Vector2 origin, float rotation, Rectangle sourceRectangle)
+        public void DrawTexture(Texture texture, Vector2 position, Vector2 scale, Vector2 origin, float rotation,
+                                Rectangle sourceRectangle)
         {
             var rect = new SDL_gpu.GPU_Rect
             {
@@ -243,7 +266,7 @@ namespace Chroma.Graphics
         {
             if (target == null)
                 throw new ArgumentNullException(nameof(target),
-                    "You can't just draw an image to a null render target...");
+                                                "You can't just draw an image to a null render target...");
 
             CurrentRenderTarget = target.TargetHandle;
 
@@ -252,7 +275,8 @@ namespace Chroma.Graphics
             CurrentRenderTarget = OriginalRenderTarget;
         }
 
-        public void DrawString(ImageFont font, string text, Vector2 position, Func<char, int, Vector2, GlyphTransformData> perCharTransform = null)
+        public void DrawString(ImageFont font, string text, Vector2 position,
+                               Func<char, int, Vector2, GlyphTransformData> perCharTransform = null)
         {
             var x = position.X;
             var y = position.Y;
@@ -297,7 +321,8 @@ namespace Chroma.Graphics
             }
         }
 
-        public void DrawString(TrueTypeFont font, string text, Vector2 position, Func<char, int, Vector2, TrueTypeGlyph, GlyphTransformData> perCharTransform = null)
+        public void DrawString(TrueTypeFont font, string text, Vector2 position,
+                               Func<char, int, Vector2, TrueTypeGlyph, GlyphTransformData> perCharTransform = null)
         {
             var x = position.X;
             var y = position.Y;

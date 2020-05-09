@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Chroma.Exceptions;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics.Accelerated

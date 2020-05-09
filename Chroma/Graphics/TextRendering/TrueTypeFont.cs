@@ -136,7 +136,7 @@ namespace Chroma.Graphics.TextRendering
             {
                 if (!HasGlyph(c))
                 {
-                    Log.Warning($"The font {FileName} doesn't support the requested glyph \\u{(int) c:X4}");
+                    // Log.Warning($"The font {FileName} doesn't support the requested glyph \\u{(int) c:X4}");
                     continue;
                 }
 

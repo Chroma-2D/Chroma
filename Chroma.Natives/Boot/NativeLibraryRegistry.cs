@@ -29,7 +29,7 @@ namespace Chroma.Natives.Boot
                 if (!File.Exists(libPath))
                     continue;
 
-                var handle = RegisterPlatformSpecific(libPath, out NativeLibrary.SymbolLookupDelegate symbolLookup);
+                var handle = RegisterPlatformSpecific(libPath, out var symbolLookup);
                 var nativeInfo = new NativeLibrary(libPath, handle, symbolLookup);
 
                 _libRegistry.Add(fileName, nativeInfo);
@@ -85,6 +85,7 @@ namespace Chroma.Natives.Boot
                         catch (NativeLoaderException)
                         {
                             /* Skip to next... */
+                            Console.WriteLine($"{fileName} is not available. Moving onto next on the list...");
                         }
                     }
                     
@@ -108,7 +109,8 @@ namespace Chroma.Natives.Boot
                 symbolLookup = Posix.dlsym;
                 return handle;
             }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 var dllDirectory = Path.GetDirectoryName(absoluteFilePath);
                 var fileName = Path.GetFileName(absoluteFilePath);
@@ -122,10 +124,8 @@ namespace Chroma.Natives.Boot
                 symbolLookup = Windows.GetProcAddress;
                 return handle;
             }
-            else
-            {
-                throw new NativeLoaderException($"Platform '{Environment.OSVersion.Platform}' is not supported.");
-            }
+
+            throw new NativeLoaderException($"Platform '{Environment.OSVersion.Platform}' is not supported.");
         }
     }
 }

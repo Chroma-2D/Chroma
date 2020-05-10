@@ -22,7 +22,7 @@
     <Title>Chroma Framework</Title>
     <Package>2D Game Framework which *doesn't* try so hard to resemble XNA</Package>
     <PackageId>Chroma</PackageId>
-    <Version>0.1.0-alpha</Version>
+    <Version>0.1.1-alpha</Version>
     <Author>Ciastex</Author>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Ciastex/Chroma</RepositoryUrl>
@@ -37,7 +37,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Chroma.Natives\Chroma.Natives.csproj">
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
       <IncludeAssets>Chroma.Natives.dll</IncludeAssets>
     </ProjectReference>
   </ItemGroup>

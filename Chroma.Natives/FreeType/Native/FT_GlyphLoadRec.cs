@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Chroma.Natives.FreeType.Native
 {
     [StructLayout(LayoutKind.Sequential)]
-    public unsafe struct FT_GlyphLoadRec
+    internal unsafe struct FT_GlyphLoadRec
     {
         public FT_Outline outline;
         public FT_Vector* extra_points;

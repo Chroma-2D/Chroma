@@ -220,7 +220,7 @@ namespace Chroma.Graphics
         public static bool operator !=(Color left, Color right)
             => !(left == right);
 
-        public static implicit operator SDL2.SDL_Color(Color color)
+        internal static SDL2.SDL_Color ToSdlColor(Color color)
             => new SDL2.SDL_Color
             {
                 r = color.R,
@@ -229,7 +229,7 @@ namespace Chroma.Graphics
                 a = color.A
             };
 
-        public static implicit operator Color(SDL2.SDL_Color color)
+        internal static Color FromSdlColor(SDL2.SDL_Color color)
             => new Color(color.r, color.g, color.b, color.a);
     }
 }

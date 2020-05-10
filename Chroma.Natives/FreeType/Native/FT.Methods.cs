@@ -4,7 +4,7 @@ using Chroma.Natives.Boot;
 
 namespace Chroma.Natives.FreeType.Native
 {
-    public static unsafe partial class FT
+    internal static unsafe partial class FT
     {
         private static NativeLibrary FTL = ModuleInitializer.Platform.Registry.TryRetrieve(true, "libfreetype.so", "freetype.dll");
         #region Core API

@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Chroma.Natives.FreeType.Native
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct FT_BitmapGlyphRec
+    internal struct FT_BitmapGlyphRec
     {
         public FT_GlyphRec root;
         public int left;

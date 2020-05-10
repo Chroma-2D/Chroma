@@ -5,7 +5,7 @@ using FT_Pos = System.IntPtr;
 namespace Chroma.Natives.FreeType.Native
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct FT_Glyph_Metrics
+    internal struct FT_Glyph_Metrics
     {
 		public FT_Pos width;
 		public FT_Pos height;

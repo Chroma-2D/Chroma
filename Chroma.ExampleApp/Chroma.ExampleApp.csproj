@@ -114,5 +114,19 @@
     <None Update="Content\Textures\walls.jpeg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+
+    <None Remove="Properties\PublishProfiles\**" />
+
+    <None Remove="Properties\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Properties\PublishProfiles\**" />
+    <Compile Remove="Properties\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Properties\PublishProfiles\**" />
+    <EmbeddedResource Remove="Properties\**" />
   </ItemGroup>
 </Project>

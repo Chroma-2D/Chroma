@@ -6,7 +6,7 @@ using FT_Pos = System.IntPtr;
 namespace Chroma.Natives.FreeType.Native
 {
     [StructLayout(LayoutKind.Sequential)]
-    public unsafe struct FT_GlyphSlotRec
+    internal unsafe struct FT_GlyphSlotRec
     {
         public IntPtr library;
         public FT_FaceRec* face;

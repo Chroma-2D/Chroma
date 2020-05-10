@@ -5,7 +5,7 @@ using FT_Long = System.IntPtr;
 namespace Chroma.Natives.FreeType.Native
 {
     [StructLayout(LayoutKind.Sequential)]
-    public unsafe struct FT_FaceRec
+    internal unsafe struct FT_FaceRec
     {
         public FT_Long num_faces;
         public FT_Long face_index;

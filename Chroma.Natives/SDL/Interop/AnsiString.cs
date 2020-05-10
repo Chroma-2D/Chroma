@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Chroma.Natives.SDL.Interop
 {
-    public struct AnsiString
+    internal struct AnsiString
     {
         public IntPtr Pointer;
 

@@ -1,6 +1,6 @@
 ﻿namespace Chroma.Natives.FreeType.Native
 {
-    static partial class FT
+    internal static partial class FT
     {
         // face flags
         public const int FT_FACE_FLAG_SCALABLE = 1 << 0;

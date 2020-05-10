@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Chroma.Natives.Boot
 {
-    public class NativeLibrary
+    internal class NativeLibrary
     {
         public delegate IntPtr SymbolLookupDelegate(IntPtr handle, string name);
 

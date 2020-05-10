@@ -56,7 +56,7 @@ namespace Chroma.Graphics
                     radius,
                     startAngle,
                     endAngle,
-                    color
+                    Color.ToSdlColor(color)
                 );
             }
             else if (mode == ShapeMode.Fill)
@@ -68,7 +68,7 @@ namespace Chroma.Graphics
                     radius,
                     startAngle,
                     endAngle,
-                    color
+                    Color.ToSdlColor(color)
                 );
             }
         }
@@ -82,7 +82,7 @@ namespace Chroma.Graphics
                     position.X,
                     position.Y,
                     radius,
-                    color
+                    Color.ToSdlColor(color)
                 );
             }
             else if (mode == ShapeMode.Fill)
@@ -92,7 +92,7 @@ namespace Chroma.Graphics
                     position.X,
                     position.Y,
                     radius,
-                    color
+                    Color.ToSdlColor(color)
                 );
             }
         }
@@ -108,7 +108,7 @@ namespace Chroma.Graphics
                     radii.X,
                     radii.Y,
                     rotation,
-                    color
+                    Color.ToSdlColor(color)
                 );
             }
             else if (mode == ShapeMode.Fill)
@@ -120,19 +120,19 @@ namespace Chroma.Graphics
                     radii.X,
                     radii.Y,
                     rotation,
-                    color
+                    Color.ToSdlColor(color)
                 );
             }
         }
 
         public void Line(Vector2 start, Vector2 end, Color color)
-            => SDL_gpu.GPU_Line(CurrentRenderTarget, start.X, start.Y, end.X, end.Y, color);
+            => SDL_gpu.GPU_Line(CurrentRenderTarget, start.X, start.Y, end.X, end.Y, Color.ToSdlColor(color));
 
         public void Pixel(Vector2 position, Color color)
-            => SDL_gpu.GPU_Pixel(CurrentRenderTarget, position.X, position.Y, color);
+            => SDL_gpu.GPU_Pixel(CurrentRenderTarget, position.X, position.Y, Color.ToSdlColor(color));
 
         public Color GetPixel(Vector2 position)
-            => SDL_gpu.GPU_GetPixel(CurrentRenderTarget, (short)position.X, (short)position.Y);
+            => Color.FromSdlColor(SDL_gpu.GPU_GetPixel(CurrentRenderTarget, (short)position.X, (short)position.Y));
 
         public void Polygon(ShapeMode mode, List<Point> vertices, Color color)
         {
@@ -150,7 +150,7 @@ namespace Chroma.Graphics
                     CurrentRenderTarget,
                     (uint)vertices.Count,
                     floatArray,
-                    color
+                    Color.ToSdlColor(color)
                 );
             }
             else if (mode == ShapeMode.Fill)
@@ -159,7 +159,7 @@ namespace Chroma.Graphics
                     CurrentRenderTarget,
                     (uint)vertices.Count,
                     floatArray,
-                    color
+                    Color.ToSdlColor(color)
                 );
             }
         }
@@ -178,7 +178,7 @@ namespace Chroma.Graphics
                 CurrentRenderTarget,
                 (uint)vertices.Count,
                 floatArray,
-                color,
+                Color.ToSdlColor(color),
                 closeLoop
             );
         }
@@ -193,7 +193,7 @@ namespace Chroma.Graphics
                     position.Y,
                     position.X + width,
                     position.Y + height,
-                    color
+                    Color.ToSdlColor(color)
                 );
             }
             else if (mode == ShapeMode.Fill)
@@ -204,7 +204,7 @@ namespace Chroma.Graphics
                     position.Y,
                     position.X + width,
                     position.Y + height,
-                    color
+                    Color.ToSdlColor(color)
                 );
             }
         }
@@ -213,11 +213,11 @@ namespace Chroma.Graphics
         {
             if (mode == ShapeMode.Stroke)
             {
-                SDL_gpu.GPU_Tri(CurrentRenderTarget, a.X, a.Y, b.X, b.Y, c.X, c.Y, color);
+                SDL_gpu.GPU_Tri(CurrentRenderTarget, a.X, a.Y, b.X, b.Y, c.X, c.Y, Color.ToSdlColor(color));
             }
             else if (mode == ShapeMode.Fill)
             {
-                SDL_gpu.GPU_TriFilled(CurrentRenderTarget, a.X, a.Y, b.X, b.Y, c.X, c.Y, color);
+                SDL_gpu.GPU_TriFilled(CurrentRenderTarget, a.X, a.Y, b.X, b.Y, c.X, c.Y, Color.ToSdlColor(color));
             }
         }
 
@@ -304,7 +304,7 @@ namespace Chroma.Graphics
                 if (perCharTransform != null)
                     transform = perCharTransform(c, i, pos);
 
-                SDL_gpu.GPU_SetColor(font.Texture.ImageHandle, transform.Color);
+                SDL_gpu.GPU_SetColor(font.Texture.ImageHandle, Color.ToSdlColor(transform.Color));
                 SDL_gpu.GPU_BlitTransform(
                     font.Texture.ImageHandle,
                     ref rect,
@@ -315,7 +315,7 @@ namespace Chroma.Graphics
                     transform.Scale.X,
                     transform.Scale.Y
                 );
-                SDL_gpu.GPU_SetColor(font.Texture.ImageHandle, Color.White);
+                SDL_gpu.GPU_SetColor(font.Texture.ImageHandle, Color.ToSdlColor(Color.White));
 
                 x += rect.w + font.CharSpacing;
             }
@@ -368,7 +368,7 @@ namespace Chroma.Graphics
                 if (perCharTransform != null)
                     transform = perCharTransform(c, i, new Vector2(xPos, yPos), info);
 
-                SDL_gpu.GPU_SetColor(font.Atlas.ImageHandle, transform.Color);
+                SDL_gpu.GPU_SetColor(font.Atlas.ImageHandle, Color.ToSdlColor(transform.Color));
                 SDL_gpu.GPU_BlitTransform(
                     font.Atlas.ImageHandle,
                     ref srcRect,
@@ -379,7 +379,7 @@ namespace Chroma.Graphics
                     transform.Scale.X,
                     transform.Scale.Y
                 );
-                SDL_gpu.GPU_SetColor(font.Atlas.ImageHandle, Color.White);
+                SDL_gpu.GPU_SetColor(font.Atlas.ImageHandle, Color.ToSdlColor(Color.White));
 
                 x += info.Advance.X;
             }

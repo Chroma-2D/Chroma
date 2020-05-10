@@ -1,6 +1,6 @@
 namespace Chroma.Natives.FreeType.Native
 {
-    public enum FT_TrueTypeEngineType
+    internal enum FT_TrueTypeEngineType
     {
         FT_TRUETYPE_ENGINE_TYPE_NONE = 0,
         FT_TRUETYPE_ENGINE_TYPE_UNPATENTED,

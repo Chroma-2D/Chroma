@@ -1,7 +1,7 @@
 ﻿namespace Chroma.Natives.FreeType.Native
 {
 #pragma warning disable 1591
-    public enum FT_Kerning_Mode
+    internal enum FT_Kerning_Mode
     {
         FT_KERNING_DEFAULT,
         FT_KERNING_UNFITTED,

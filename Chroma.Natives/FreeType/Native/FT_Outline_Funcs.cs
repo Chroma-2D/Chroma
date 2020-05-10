@@ -5,7 +5,7 @@ using FT_Pos = System.IntPtr;
 namespace Chroma.Natives.FreeType.Native
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct FT_Outline_Funcs
+    internal struct FT_Outline_Funcs
     {
         public IntPtr moveTo;
         public IntPtr lineTo;

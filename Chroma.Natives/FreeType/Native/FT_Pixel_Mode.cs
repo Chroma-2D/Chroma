@@ -1,7 +1,7 @@
 ﻿namespace Chroma.Natives.FreeType.Native
 {
 #pragma warning disable 1591
-    public enum FT_Pixel_Mode
+    internal enum FT_Pixel_Mode
     {
         FT_PIXEL_MODE_NONE = 0,
         FT_PIXEL_MODE_MONO,

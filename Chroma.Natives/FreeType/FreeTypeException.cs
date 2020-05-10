@@ -3,24 +3,14 @@ using Chroma.Natives.FreeType.Native;
 
 namespace Chroma.Natives.FreeType
 {
-    /// <summary>
-    /// Represents an exception thrown as a result of a FreeType2 API error.
-    /// </summary>
     [Serializable]
-    public sealed class FreeTypeException : Exception
+    internal sealed class FreeTypeException : Exception
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FreeTypeException"/> class.
-        /// </summary>
         public FreeTypeException(FT_Error err)
             : base(GetErrorString(err))
         {
-
         }
 
-        /// <summary>
-        /// Gets the error string for the specified error code.
-        /// </summary>
         private static string GetErrorString(FT_Error err)
         {
             switch (err)

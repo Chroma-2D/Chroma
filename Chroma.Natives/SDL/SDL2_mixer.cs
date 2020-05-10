@@ -33,7 +33,7 @@ using System.Runtime.InteropServices;
 
 namespace Chroma.Natives.SDL
 {
-    public static class SDL_mixer
+    internal static class SDL_mixer
     {
         #region SDL2# Variables
 

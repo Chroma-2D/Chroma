@@ -5,7 +5,7 @@ using static Chroma.Natives.SDL.SDL2;
 
 namespace Chroma.Natives.SDL
 {
-    public static class SDL_gpu
+    internal static class SDL_gpu
     {
         #region SDL2# Variables
 

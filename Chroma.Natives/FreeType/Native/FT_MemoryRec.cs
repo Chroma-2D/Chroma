@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Chroma.Natives.FreeType.Native
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct FT_MemoryRec
+    internal struct FT_MemoryRec
     {
         public IntPtr user;
         public FT_Alloc_Func alloc;

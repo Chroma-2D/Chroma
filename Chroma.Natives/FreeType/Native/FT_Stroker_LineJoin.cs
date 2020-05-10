@@ -1,6 +1,6 @@
 ﻿namespace Chroma.Natives.FreeType.Native
 {
-    public enum FT_Stroker_LineJoin
+    internal enum FT_Stroker_LineJoin
     {
         FT_STROKER_LINEJOIN_ROUND = 0,
         FT_STROKER_LINEJOIN_BEVEL = 1,

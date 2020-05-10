@@ -1,6 +1,6 @@
 namespace Chroma.Natives.FreeType.Native
 {
-    public enum FT_Orientation
+    internal enum FT_Orientation
     {
         FT_ORIENTATION_TRUETYPE = 0,
         FT_ORIENTATION_POSTSCRIPT = 1,

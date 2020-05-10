@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Chroma.Natives.FreeType.Native
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct FT_SubGlyphRec
+    internal struct FT_SubGlyphRec
     {
         public int index;
         public ushort flags;

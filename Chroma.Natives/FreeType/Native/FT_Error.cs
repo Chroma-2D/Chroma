@@ -1,7 +1,7 @@
 ﻿namespace Chroma.Natives.FreeType.Native
 {
 #pragma warning disable 1591
-    public enum FT_Error
+    internal enum FT_Error
     {
         /* generic errors */
         FT_Err_Ok                               = 0x00,

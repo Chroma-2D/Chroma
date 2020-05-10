@@ -541,21 +541,21 @@ namespace Chroma.Natives.SDL
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_GetDefaultRendererOrder(
             ref int order_size,
-            [Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Struct, SizeParamIndex = 0)]
+            [Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)]
             GPU_RendererID[] order
         );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_GetRendererOrder(
             ref int order_size,
-            [Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Struct, SizeParamIndex = 0)]
+            [Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)]
             GPU_RendererID[] order
         );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_SetRendererOrder(
             ref int order_size,
-            [In, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Struct)]
+            [In, MarshalAs(UnmanagedType.LPArray)]
             GPU_RendererID[] order
         );
 
@@ -648,7 +648,7 @@ namespace Chroma.Natives.SDL
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_GetRegisteredRendererList(
-            [Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Struct)]
+            [Out, MarshalAs(UnmanagedType.LPArray)]
             GPU_RendererID[] renderers_array
         );
 
@@ -665,7 +665,7 @@ namespace Chroma.Natives.SDL
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_GetActiveRendererList(
-            [Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.Struct)]
+            [Out, MarshalAs(UnmanagedType.LPArray)]
             GPU_RendererID[] renderers_array
         );
 

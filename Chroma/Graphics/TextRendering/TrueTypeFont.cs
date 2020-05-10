@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -16,6 +17,8 @@ namespace Chroma.Graphics.TextRendering
         private Log Log => LogManager.GetForCurrentAssembly();
 
         private bool _hintingEnabled;
+        private bool _forceAutoHinting;
+        private HintingMode _hintingMode;
 
         internal static FreeTypeLibrary Library { get; }
         internal IntPtr Face { get; }
@@ -36,12 +39,32 @@ namespace Chroma.Graphics.TextRendering
         public int Descender { get; }
         public int MaxBearing { get; private set; }
 
+        public bool ForceAutoHinting
+        {
+            get => _forceAutoHinting;
+            set
+            {
+                _forceAutoHinting = value;
+                RebuildAtlas();
+            }
+        }
+
         public bool HintingEnabled
         {
             get => _hintingEnabled;
             set
             {
-                _hintingEnabled = value;               
+                _hintingEnabled = value;
+                RebuildAtlas();
+            }
+        }
+
+        public HintingMode HintingMode
+        {
+            get => _hintingMode;
+            set
+            {
+                _hintingMode = value;
                 RebuildAtlas();
             }
         }
@@ -56,7 +79,10 @@ namespace Chroma.Graphics.TextRendering
             FileName = fileName;
             Size = size;
 
-            FT.FT_New_Face(Library.Native, fileName, 0, out IntPtr facePtr);
+            if (!File.Exists(fileName))
+                throw new FileNotFoundException("Couldn't fint the font at the provided path.", fileName);
+
+            FT.FT_New_Face(Library.Native, fileName, 0, out var facePtr);
             Face = facePtr;
 
             FT.FT_Set_Pixel_Sizes(Face, 0, (uint)Size);
@@ -72,7 +98,11 @@ namespace Chroma.Graphics.TextRendering
             RenderInfo = new Dictionary<char, TrueTypeGlyph>();
             Alphabet = alphabet;
 
-            HintingEnabled = true; // rebuilds atlas automatically
+            _hintingEnabled = true;
+            _forceAutoHinting = true;
+            _hintingMode = HintingMode.Normal;
+            
+            RebuildAtlas();
         }
 
         public bool CanRenderGlyph(char c)
@@ -116,7 +146,7 @@ namespace Chroma.Graphics.TextRendering
         {
             if (RenderInfo.Count > 0 && Atlas != null)
                 InvalidateFont();
-            
+
             if (string.IsNullOrEmpty(Alphabet))
                 Atlas = GenerateTextureAtlas(1..512);
             else
@@ -126,11 +156,11 @@ namespace Chroma.Graphics.TextRendering
         private void InvalidateFont()
         {
             RenderInfo.Clear();
-            
+
             Atlas.Dispose();
             Atlas = null;
         }
-        
+
         private Texture GenerateTextureAtlas(Range glyphRange)
         {
             var glyphs = new List<char>();
@@ -165,7 +195,6 @@ namespace Chroma.Graphics.TextRendering
             {
                 if (!HasGlyph(c))
                 {
-                    // Log.Warning($"The font {FileName} doesn't support the requested glyph \\u{(int) c:X4}");
                     continue;
                 }
 
@@ -175,14 +204,30 @@ namespace Chroma.Graphics.TextRendering
                     continue;
                 }
 
-                var hintingFlags = FT.FT_LOAD_MONOCHROME;
+                var glyphFlags = FT.FT_LOAD_RENDER;
+
+                if (ForceAutoHinting)
+                {
+                    glyphFlags |= FT.FT_LOAD_FORCE_AUTOHINT;
+                }
 
                 if (HintingEnabled)
-                    hintingFlags = FT.FT_LOAD_RENDER | FT.FT_LOAD_TARGET_LIGHT;
+                {
+                    glyphFlags |= HintingMode switch
+                    {
+                        HintingMode.Normal => FT.FT_LOAD_TARGET_NORMAL,
+                        HintingMode.Light => FT.FT_LOAD_TARGET_LIGHT,
+                        HintingMode.Monochrome => FT.FT_LOAD_TARGET_MONO,
+                        _ => throw new InvalidOperationException("Unsupported hinting mode.")
+                    };
+                }
+                else
+                {
+                    glyphFlags |= FT.FT_LOAD_MONOCHROME;
+                }
 
-                FT.FT_Load_Char(Face, c, FT.FT_LOAD_RENDER | hintingFlags);
+                FT.FT_Load_Char(Face, c, glyphFlags);
                 var bmp = FaceRec.glyph->bitmap;
-                var buffer = (byte*)FaceRec.glyph->bitmap.buffer.ToPointer();
 
                 if (penX + bmp.width >= texWidth)
                 {
@@ -190,41 +235,9 @@ namespace Chroma.Graphics.TextRendering
                     penY += ((FaceRec.size->metrics.height.ToInt32() >> 6) + 1);
                 }
 
-                for (var row = 0; row < bmp.rows; ++row)
-                {
-                    for (var col = 0; col < bmp.width; ++col)
-                    {
-                        var x = penX + col;
-                        var y = penY + row;
-
-                        pixels[y * texWidth + x] = buffer[row * bmp.pitch + col];
-                    }
-                }
-
-                var glyph = new TrueTypeGlyph
-                {
-                    Position = new Vector2(penX, penY),
-                    Size = new Vector2(
-                        FaceRec.glyph->metrics.width.ToInt32() >> 6,
-                        FaceRec.glyph->metrics.height.ToInt32() >> 6
-                    ),
-                    BitmapSize = new Vector2(
-                        (int)bmp.width,
-                        (int)bmp.rows
-                    ),
-                    BitmapCoordinates = new Vector2(
-                        FaceRec.glyph->bitmap_left,
-                        FaceRec.glyph->bitmap_top
-                    ),
-                    Bearing = new Vector2(
-                        FaceRec.glyph->metrics.horiBearingX.ToInt32() >> 6,
-                        FaceRec.glyph->metrics.horiBearingY.ToInt32() >> 6
-                    ),
-                    Advance = new Vector2(
-                        FaceRec.glyph->advance.x.ToInt32() >> 6,
-                        FaceRec.glyph->advance.y.ToInt32() >> 6
-                    )
-                };
+                RenderGlyphToBitmap(bmp, penX, penY, texWidth, pixels);
+                var glyph = BuildGlyphInfo(bmp, penX, penY);
+                
                 RenderInfo.Add(c, glyph);
 
                 if (glyph.Bearing.Y > MaxBearing)
@@ -241,8 +254,59 @@ namespace Chroma.Graphics.TextRendering
 
         public Vector2 GetKerning(char prev, char current)
         {
-            FT.FT_Get_Kerning(Face, prev, current, 0, out FT_Vector kerning);
+            FT.FT_Get_Kerning(Face, prev, current, 0, out var kerning);
             return new Vector2(kerning.x.ToInt32() >> 6, kerning.y.ToInt32() >> 6);
+        }
+
+        private TrueTypeGlyph BuildGlyphInfo(FT_Bitmap bmp, int penX, int penY)
+        {
+            return new TrueTypeGlyph
+            {
+                Position = new Vector2(penX, penY),
+                Size = new Vector2(
+                    (FaceRec.glyph->metrics.width.ToInt32() >> 6),
+                    FaceRec.glyph->metrics.height.ToInt32() >> 6
+                ),
+                BitmapSize = new Vector2(
+                    (int)bmp.width,
+                    (int)bmp.rows
+                ),
+                BitmapCoordinates = new Vector2(
+                    FaceRec.glyph->bitmap_left,
+                    FaceRec.glyph->bitmap_top
+                ),
+                Bearing = new Vector2(
+                    FaceRec.glyph->metrics.horiBearingX.ToInt32() >> 6,
+                    FaceRec.glyph->metrics.horiBearingY.ToInt32() >> 6
+                ),
+                Advance = new Vector2(
+                    FaceRec.glyph->advance.x.ToInt32() >> 6,
+                    FaceRec.glyph->advance.y.ToInt32() >> 6
+                )
+            };
+        }
+        
+        private void RenderGlyphToBitmap(FT_Bitmap bmp, int penX, int penY, int texWidth, byte* pixels)
+        {
+            var buffer = (byte*)FaceRec.glyph->bitmap.buffer.ToPointer();
+            
+            for (var row = 0; row < bmp.rows; ++row)
+            {
+                for (var col = 0; col < bmp.width; ++col)
+                {
+                    var x = penX + col;
+                    var y = penY + row;
+
+                    if (HintingEnabled && HintingMode != HintingMode.Monochrome)
+                    {
+                        pixels[y * texWidth + x] = buffer[row * bmp.pitch + col];
+                    }
+                    else
+                    {
+                        pixels[y * texWidth + x] = IsMonochromeBitSet(FaceRec.glyph, col, row) ? (byte)0xFF : (byte)0x00;
+                    }
+                }
+            }
         }
 
         private Texture CreateTextureFromFTBitmap(byte* pixels, int texWidth, int texHeight)
@@ -282,6 +346,17 @@ namespace Chroma.Graphics.TextRendering
             Marshal.FreeHGlobal(managedSurfaceData);
 
             return new Texture(gpuImage);
+        }
+        
+        private bool IsMonochromeBitSet(FT_GlyphSlotRec* glyph, int x,  int y)
+        {
+            var pitch = glyph->bitmap.pitch;
+            byte* buf = (byte*)glyph->bitmap.buffer.ToPointer();
+                
+            byte* row = &buf[pitch * y];
+            byte value = row[x >> 3];
+
+            return (value & (0x80 >> (x & 7))) != 0;
         }
 
         protected override void FreeNativeResources()

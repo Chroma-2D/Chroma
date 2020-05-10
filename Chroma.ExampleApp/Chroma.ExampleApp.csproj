@@ -1,132 +1,152 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Chroma\Chroma.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Chroma\Chroma.csproj" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Content\Fonts\8514OEM.FON">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Fonts\Anoxic-Light.ttf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Fonts\Bargain_Demo.ttf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Music\analo.mp3">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Music\sinetest.mp3">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Sounds\dsshotgn.wav">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Textures\burg.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Fonts\c64style.ttf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="c64_0.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Textures\delet.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Fonts\DooM.ttf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Textures\dvd.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Fonts\FUTHA___.TTF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\ImageFonts\GrayFont.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Fonts\Hack-Regular.ttf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Content\Fonts\NIRMALA.TTF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <ItemGroup>
+        <None Update="Content\Fonts\8514OEM.FON">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Fonts\Anoxic-Light.ttf">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Fonts\Bargain_Demo.ttf">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Music\analo.mp3">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Music\sinetest.mp3">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Sounds\dsshotgn.wav">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Textures\burg.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Fonts\c64style.ttf">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="c64_0.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Textures\delet.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Fonts\DooM.ttf">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Textures\dvd.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Fonts\FUTHA___.TTF">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\ImageFonts\GrayFont.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Fonts\Hack-Regular.ttf">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Content\Fonts\NIRMALA.TTF">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
 
-    <None Update="Content\Fonts\Nouveau_IBM.ttf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+        <None Update="Content\Fonts\Nouveau_IBM.ttf">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
 
-    <None Update="Content\Shaders\sh.frag">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+        <None Update="Content\Shaders\sh.frag">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
 
-    <None Update="Content\ImageFonts\RedFont.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+        <None Update="Content\ImageFonts\RedFont.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
 
-    <None Update="Content\Fonts\Revamped.otf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+        <None Update="Content\Fonts\Revamped.otf">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
 
-    <None Update="Content\Fonts\SEGMDL2.TTF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+        <None Update="Content\Fonts\SEGMDL2.TTF">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
 
-    <None Update="Content\Shaders\sh.vert">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+        <None Update="Content\Shaders\sh.vert">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
 
-    <None Update="Content\Textures\skeltal.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+        <None Update="Content\Textures\skeltal.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
 
-    <None Update="Content\Fonts\SPLATOON2.OTF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+        <None Update="Content\Fonts\SPLATOON2.OTF">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
 
-    <None Update="Content\Fonts\SUPER_SMASH_4_1_BY_POKEMON_DIAMOND-D7ZXU6D.TTF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+        <None Update="Content\Fonts\ss41.TTF">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
 
-    <None Update="Content\Textures\whiterect.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+        <None Update="Content\Textures\whiterect.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
 
-    <None Update="Content\Fonts\TAHOMA.TTF">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+        <None Update="Content\Fonts\TAHOMA.TTF">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
 
-    <None Update="Content\Fonts\TANTRADEMOOutline.ttf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+        <None Update="Content\Fonts\TANTRADEMOOutline.ttf">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
 
-    <None Update="Content\Fonts\TANTRADEMORegular.ttf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+        <None Update="Content\Fonts\TANTRADEMORegular.ttf">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
 
-    <None Update="Content\Textures\walls.jpeg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+        <None Update="Content\Fonts\VCR.ttf">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+      
+        <None Update="Content\Textures\walls.jpeg">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
 
-    <None Remove="Properties\PublishProfiles\**" />
+        <None Remove="Properties\PublishProfiles\**" />
 
-    <None Remove="Properties\**" />
-  </ItemGroup>
+        <None Remove="Properties\**" />
 
-  <ItemGroup>
-    <Compile Remove="Properties\PublishProfiles\**" />
-    <Compile Remove="Properties\**" />
-  </ItemGroup>
+        <None Update="Content\Fonts\runescape_uf.ttf">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
 
-  <ItemGroup>
-    <EmbeddedResource Remove="Properties\PublishProfiles\**" />
-    <EmbeddedResource Remove="Properties\**" />
-  </ItemGroup>
+        <None Update="Content\Fonts\vv1989.ttf">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+
+        <None Update="Content\Fonts\venice.ttf">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+
+        <None Update="Content\Fonts\pef.ttf">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Remove="Properties\PublishProfiles\**" />
+        <Compile Remove="Properties\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Remove="Properties\PublishProfiles\**" />
+        <EmbeddedResource Remove="Properties\**" />
+    </ItemGroup>
 </Project>

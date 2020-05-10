@@ -1,21 +1,32 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
+    <ItemGroup>
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))"/>
+    </ItemGroup>
+  </Target>
+  
+  <PropertyGroup>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+  </PropertyGroup>
+  
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IncludeReferencedProjects>true</IncludeReferencedProjects>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
   
   <PropertyGroup>
     <Title>Chroma Framework</Title>
+    <Package>2D Game Framework which *doesn't* try so hard to resemble XNA</Package>
     <PackageId>Chroma</PackageId>
     <Version>0.1.0-alpha</Version>
-    <Authors>Ciastex</Authors>
+    <Author>Ciastex</Author>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Ciastex/Chroma</RepositoryUrl>
-    <PackageTags>gamedev;engine;2d;chroma;framework;sdl;opengl;game</PackageTags>
-    <PackageLicenseUrl>https://github.com/Ciastex/Chroma/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageTags>gamedev;engine;2d;chroma;framework;sdl;opengl;game;xna;netcore</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,7 +36,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Chroma.Natives\Chroma.Natives.csproj" />
+    <ProjectReference Include="..\Chroma.Natives\Chroma.Natives.csproj">
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <IncludeAssets>Chroma.Natives.dll</IncludeAssets>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>

@@ -1014,7 +1014,7 @@ namespace Chroma.Natives.SDL
 		[StructLayout(LayoutKind.Sequential)]
 		public struct SDL_MessageBoxColorScheme
 		{
-			[MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.Struct, SizeConst = (int)SDL_MessageBoxColorType.SDL_MESSAGEBOX_COLOR_MAX)]
+			[MarshalAs(UnmanagedType.ByValArray, SizeConst = (int)SDL_MessageBoxColorType.SDL_MESSAGEBOX_COLOR_MAX)]
 			public SDL_MessageBoxColor[] colors;
 		}
 

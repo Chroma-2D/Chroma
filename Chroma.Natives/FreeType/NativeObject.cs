@@ -2,32 +2,19 @@ using System;
 
 namespace Chroma.Natives.FreeType
 {
-    /// <summary>
-    /// Provide a consistent means for using pointers as references.
-    /// </summary>
-    public abstract class NativeObject
+    internal abstract class NativeObject
     {
-        private IntPtr reference;
+        private IntPtr _reference;
 
-        /// <summary>
-        /// Construct a new NativeObject and assign the reference.
-        /// </summary>
-        /// <param name="reference"></param>
         protected NativeObject(IntPtr reference)
         {
-            this.reference = reference;
+            _reference = reference;
         }
 
         public virtual IntPtr Reference
         {
-            get
-            {
-                return reference;
-            }
-            set
-            {
-                reference = value;
-            }
+            get => _reference;
+            set => _reference = value;
         }
     }
 }

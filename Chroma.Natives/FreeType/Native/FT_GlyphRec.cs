@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Chroma.Natives.FreeType.Native
 {
     [StructLayout(LayoutKind.Sequential)]
-    public unsafe struct FT_GlyphRec
+    internal unsafe struct FT_GlyphRec
     {
         public FT_LibraryRec* library;
         public IntPtr clazz;

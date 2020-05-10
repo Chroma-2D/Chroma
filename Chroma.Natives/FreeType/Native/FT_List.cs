@@ -13,7 +13,7 @@ namespace Chroma.Natives.FreeType.Native
     /// </param>
     /// <returns>Error code.</returns>
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate FT_Error FT_List_Iterator(NativeReference<FT_ListNode> node, IntPtr user);
+    internal delegate FT_Error FT_List_Iterator(NativeReference<FT_ListNode> node, IntPtr user);
 
     /// <summary>
     /// An <see cref="FT_List"/> iterator function which is called during a list finalization by
@@ -25,12 +25,12 @@ namespace Chroma.Natives.FreeType.Native
     /// A typeless pointer passed to <see cref="FT_List.Iterate"/>. It can be used to point to the iteration's state.
     /// </param>
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void FT_List_Destructor(NativeReference<Memory> memory, IntPtr data, IntPtr user);
+    internal delegate void FT_List_Destructor(NativeReference<Memory> memory, IntPtr data, IntPtr user);
 
     /// <summary>
     /// A structure used to hold a simple doubly-linked list. These are used in many parts of FreeType.
     /// </summary>
-    public sealed class FT_List
+    internal sealed class FT_List
     {
         #region Fields
 

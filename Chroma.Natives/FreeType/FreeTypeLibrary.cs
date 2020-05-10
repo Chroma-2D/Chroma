@@ -3,24 +3,10 @@ using Chroma.Natives.FreeType.Native;
 
 namespace Chroma.Natives.FreeType
 {
-    /// <summary>
-    /// Encapsulates the native FreeType2 library object.
-    /// </summary>
-    public sealed unsafe class FreeTypeLibrary : IDisposable
+    internal sealed unsafe class FreeTypeLibrary : IDisposable
     {
-        private Boolean disposed;
+        public bool Disposed { get; private set; }
 
-        /// <summary>
-        /// Gets a value indicating whether the object has been disposed.
-        /// </summary>
-        public Boolean Disposed
-        {
-            get { return disposed; }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FreeTypeLibrary"/> class.
-        /// </summary>
         public FreeTypeLibrary()
         {
             IntPtr lib;
@@ -31,9 +17,6 @@ namespace Chroma.Natives.FreeType
             Native = lib;
         }
 
-        /// <summary>
-        /// Gets the native pointer to the FreeType2 library object.
-        /// </summary>
         public IntPtr Native { get; private set; }
 
         public void Dispose()
@@ -42,8 +25,7 @@ namespace Chroma.Natives.FreeType
             GC.SuppressFinalize(this);
         }
 
-        /// <inheritdoc/>
-        void Dispose(Boolean disposing)
+        private void Dispose(bool disposing)
         {
             if (Native != IntPtr.Zero)
             {
@@ -54,7 +36,7 @@ namespace Chroma.Natives.FreeType
                 Native = IntPtr.Zero;
             }
 
-            disposed = true;
+            Disposed = true;
         }
     }
 }

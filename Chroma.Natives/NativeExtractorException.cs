@@ -2,7 +2,7 @@ using System;
 
 namespace Chroma.Natives
 {
-    public class NativeExtractorException : Exception
+    internal class NativeExtractorException : Exception
     {
         public NativeExtractorException(string message)
             : base(message) { }

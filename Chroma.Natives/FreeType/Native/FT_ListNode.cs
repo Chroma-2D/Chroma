@@ -5,7 +5,7 @@ namespace Chroma.Natives.FreeType.Native
 	/// <summary>
 	/// A structure used to hold a single list element.
 	/// </summary>
-	public class FT_ListNode: NativeObject
+	internal class FT_ListNode: NativeObject
 	{
 		#region Fields
 

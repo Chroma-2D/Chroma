@@ -6,7 +6,7 @@ using FT_Pos = System.IntPtr;
 namespace Chroma.Natives.FreeType.Native
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct FT_Size_Metrics
+    internal struct FT_Size_Metrics
     {
         public ushort x_ppem;
         public ushort y_ppem;

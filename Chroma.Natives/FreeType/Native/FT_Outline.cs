@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Chroma.Natives.FreeType.Native
 {
     [StructLayout(LayoutKind.Sequential)]
-    public unsafe struct FT_Outline
+    internal unsafe struct FT_Outline
     {
         public short n_contour;
         public short n_points;

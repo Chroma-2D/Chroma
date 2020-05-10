@@ -1,6 +1,6 @@
 namespace Chroma.Natives.FreeType.Native
 {
-    public enum FT_LcdFilter
+    internal enum FT_LcdFilter
     {
         FT_LCD_FILTER_NONE = 0,
         FT_LCD_FILTER_DEFAULT = 1,

@@ -1,6 +1,6 @@
 ﻿namespace Chroma.Natives.FreeType.Native
 {
-    public enum FT_Render_Mode
+    internal enum FT_Render_Mode
     {
         FT_RENDER_MODE_NORMAL = 0,
         FT_RENDER_MODE_LIGHT,

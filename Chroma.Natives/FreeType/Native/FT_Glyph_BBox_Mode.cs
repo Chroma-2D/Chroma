@@ -1,6 +1,6 @@
 namespace Chroma.Natives.FreeType.Native
 {
-    public enum FT_Glyph_BBox_Mode
+    internal enum FT_Glyph_BBox_Mode
     {
         FT_GLYPH_BBOX_UNSCALED = 0,
         FT_GLYPH_BBOX_SUBPIXELS = 0,

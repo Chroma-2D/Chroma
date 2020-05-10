@@ -5,7 +5,7 @@ using FT_Pos = System.IntPtr;
 namespace Chroma.Natives.FreeType.Native
 {
     [StructLayout(LayoutKind.Sequential)]
-    public unsafe struct FT_Bitmap_Size
+    internal unsafe struct FT_Bitmap_Size
     {
         public short height;
         public short width;

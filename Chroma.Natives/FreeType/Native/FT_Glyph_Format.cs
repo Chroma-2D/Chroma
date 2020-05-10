@@ -3,7 +3,7 @@
 namespace Chroma.Natives.FreeType.Native
 {
 #pragma warning disable 1591
-    public enum FT_Glyph_Format : uint
+    internal enum FT_Glyph_Format : uint
     {
         FT_GLYPH_FORMAT_NONE = 0,
 

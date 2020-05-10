@@ -33,7 +33,7 @@ using System.Runtime.InteropServices;
 
 namespace Chroma.Natives.SDL
 {
-	public static class SDL_image
+	internal static class SDL_image
 	{
 		#region SDL2# Variables
 

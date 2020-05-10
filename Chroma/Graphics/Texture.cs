@@ -370,14 +370,14 @@ namespace Chroma.Graphics
 
                 unsafe
                 {
-                    return Image->color;
+                    return Color.FromSdlColor(Image->color);
                 }
             }
 
             set
             {
                 EnsureNotDisposed();
-                SDL_gpu.GPU_SetColor(ImageHandle, value);
+                SDL_gpu.GPU_SetColor(ImageHandle, Color.ToSdlColor(value));
             }
         }
 

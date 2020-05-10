@@ -15,9 +15,13 @@ namespace Chroma.Graphics.TextRendering
     {
         private Log Log => LogManager.GetForCurrentAssembly();
 
+        private bool _hintingEnabled;
+
         internal static FreeTypeLibrary Library { get; }
         internal IntPtr Face { get; }
         internal FT_FaceRec FaceRec { get; }
+
+        public string Alphabet { get; }
 
         public Dictionary<char, TrueTypeGlyph> RenderInfo { get; }
         public Texture Atlas { get; private set; }
@@ -31,6 +35,16 @@ namespace Chroma.Graphics.TextRendering
         public int Ascender { get; }
         public int Descender { get; }
         public int MaxBearing { get; private set; }
+
+        public bool HintingEnabled
+        {
+            get => _hintingEnabled;
+            set
+            {
+                _hintingEnabled = value;
+                RebuildAtlas();
+            }
+        }
 
         static TrueTypeFont()
         {
@@ -56,11 +70,9 @@ namespace Chroma.Graphics.TextRendering
             Descender = (FaceRec.descender >> 6);
 
             RenderInfo = new Dictionary<char, TrueTypeGlyph>();
+            Alphabet = alphabet;
 
-            if (string.IsNullOrEmpty(alphabet))
-                Atlas = GenerateTextureAtlas(1..512);
-            else
-                Atlas = GenerateTextureAtlas(alphabet);
+            HintingEnabled = true; // rebuilds atlas automatically
         }
 
         public bool CanRenderGlyph(char c)
@@ -100,6 +112,14 @@ namespace Chroma.Graphics.TextRendering
             return new Vector2(maxWidth, maxHeight);
         }
 
+        private void RebuildAtlas()
+        {
+            if (string.IsNullOrEmpty(Alphabet))
+                Atlas = GenerateTextureAtlas(1..512);
+            else
+                Atlas = GenerateTextureAtlas(Alphabet);
+        }
+        
         private Texture GenerateTextureAtlas(Range glyphRange)
         {
             var glyphs = new List<char>();
@@ -146,7 +166,12 @@ namespace Chroma.Graphics.TextRendering
                     continue;
                 }
 
-                FT.FT_Load_Char(Face, c, FT.FT_LOAD_RENDER | FT.FT_LOAD_FORCE_AUTOHINT | FT.FT_LOAD_TARGET_LIGHT);
+                var hintingFlags = FT.FT_LOAD_MONOCHROME;
+
+                if (HintingEnabled)
+                    hintingFlags = FT.FT_LOAD_RENDER | FT.FT_LOAD_TARGET_LIGHT;
+
+                FT.FT_Load_Char(Face, c, FT.FT_LOAD_RENDER | hintingFlags);
                 var bmp = FaceRec.glyph->bitmap;
                 var buffer = (byte*)FaceRec.glyph->bitmap.buffer.ToPointer();
 

@@ -41,7 +41,7 @@ namespace Chroma.Graphics.TextRendering
             get => _hintingEnabled;
             set
             {
-                _hintingEnabled = value;
+                _hintingEnabled = value;               
                 RebuildAtlas();
             }
         }
@@ -114,20 +114,29 @@ namespace Chroma.Graphics.TextRendering
 
         private void RebuildAtlas()
         {
+            if (RenderInfo.Count > 0 && Atlas != null)
+                InvalidateFont();
+            
             if (string.IsNullOrEmpty(Alphabet))
                 Atlas = GenerateTextureAtlas(1..512);
             else
                 Atlas = GenerateTextureAtlas(Alphabet);
+        }
+
+        private void InvalidateFont()
+        {
+            RenderInfo.Clear();
+            
+            Atlas.Dispose();
+            Atlas = null;
         }
         
         private Texture GenerateTextureAtlas(Range glyphRange)
         {
             var glyphs = new List<char>();
 
-            for (char c = (char)glyphRange.Start.Value; c < (char)glyphRange.End.Value; c++)
-            {
+            for (var c = (char)glyphRange.Start.Value; c < (char)glyphRange.End.Value; c++)
                 glyphs.Add(c);
-            }
 
             return GenerateTextureAtlas(glyphs);
         }

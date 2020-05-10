@@ -348,8 +348,8 @@ namespace Chroma.Graphics
                 {
                     x = info.Position.X,
                     y = info.Position.Y,
-                    w = info.Size.X,
-                    h = info.Size.Y
+                    w = info.BitmapSize.X,
+                    h = info.BitmapSize.Y
                 };
 
                 // info.Size.X / 2 and info.Size.Y / 2

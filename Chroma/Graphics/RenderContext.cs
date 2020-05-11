@@ -166,21 +166,26 @@ namespace Chroma.Graphics
 
         public void Polyline(List<Point> vertices, Color color, bool closeLoop)
         {
-            var floatArray = new float[vertices.Count * 2];
-            
             for (var i = 0; i < vertices.Count; i++)
             {
-                floatArray[i * 2] = vertices[i].X;
-                floatArray[i * 2 + 1] = vertices[i].Y;
+                if (i + 1 >= vertices.Count)
+                    break;
+
+                Line(
+                    new Vector2(vertices[i].X, vertices[i].Y),
+                    new Vector2(vertices[i + 1].X, vertices[i + 1].Y),
+                    color
+                );
             }
 
-            SDL_gpu.GPU_Polyline(
-                CurrentRenderTarget,
-                (uint)vertices.Count,
-                floatArray,
-                Color.ToSdlColor(color),
-                closeLoop
-            );
+            if (closeLoop)
+            {
+                Line(
+                    new Vector2(vertices[0].X, vertices[0].Y),
+                    new Vector2(vertices[vertices.Count - 1].X, vertices[vertices.Count - 1].Y),
+                    color
+                );
+            }
         }
 
         public void Rectangle(ShapeMode mode, Vector2 position, float width, float height, Color color)

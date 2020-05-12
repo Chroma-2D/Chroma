@@ -20,9 +20,9 @@
   
   <PropertyGroup>
     <Title>Chroma Framework</Title>
-    <Package>2D Game Framework which *doesn't* try so hard to resemble XNA</Package>
+    <Description>2D Game Framework which *doesn't* try so hard to resemble XNA</Description>
     <PackageId>Chroma</PackageId>
-    <Version>0.2.1-alpha</Version>
+    <Version>0.3.0-alpha</Version>
     <Author>Ciastex</Author>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Ciastex/Chroma</RepositoryUrl>

@@ -1,31 +1,28 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using Chroma.Graphics;
 using Chroma.Graphics.TextRendering;
 using Chroma.Input;
 using Chroma.Input.EventArgs;
-using Color = Chroma.Graphics.Color;
 
 namespace Chroma.ExampleApp
 {
     public class ExampleGame : Game
     {
         private TrueTypeFont _ttf;
+        private Texture _burg;
         private string _text;
-        private List<Point> _p1;
         private List<Point> _p2;
+        private RenderTarget _tgt;
 
         public ExampleGame()
         {
             Graphics.VSyncEnabled = true;
 
             Window.GoWindowed(1024, 640);
+            _tgt = new RenderTarget((ushort)Window.Properties.Width, (ushort)Window.Properties.Height);
 
-            _p1 = new List<Point>
-            {
-
-            };
-            
             _p2 = new List<Point>
             {
                 new Point(30, 33),
@@ -40,7 +37,8 @@ namespace Chroma.ExampleApp
 
         protected override void LoadContent()
         {
-            _ttf = Content.Load<TrueTypeFont>("Fonts/vv1989.ttf", 48);
+            _ttf = Content.Load<TrueTypeFont>("Fonts/tahoma.ttf", 16);
+            _burg = Content.Load<Texture>("Textures/burg.png");
         }
 
         protected override void Update(float delta)
@@ -55,15 +53,23 @@ namespace Chroma.ExampleApp
 
         protected override void Draw(RenderContext context)
         {
-            //context.DrawString(_ttf, _text, Vector2.One * 10);
-            context.Polyline(_p2, Color.Cyan, false);
+
         }
 
         protected override void KeyPressed(KeyEventArgs e)
         {
             if (e.KeyCode == KeyCode.Space)
             {
-                _ttf.HintingEnabled = !_ttf.HintingEnabled;
+                var bytes = new byte[1024*5120];
+                _tgt.SaveToArray(bytes, ImageFileFormat.PNG);
+
+                using (var ms = new MemoryStream(bytes))
+                {
+                    using (var fs = new FileStream("F:\\yay.png", FileMode.Create))
+                    {
+                        ms.CopyTo(fs);
+                    }
+                }
             }
             else if (e.KeyCode == KeyCode.Return)
             {

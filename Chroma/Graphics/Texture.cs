@@ -10,7 +10,12 @@ namespace Chroma.Graphics
     public class Texture : DisposableResource
     {
         private Log Log => LogManager.GetForCurrentAssembly();
-        internal IntPtr ImageHandle { get; private set; }
+
+        internal IntPtr ImageHandle
+        {
+            get; 
+            private set;
+        }
 
         internal unsafe SDL_gpu.GPU_Image* Image => (SDL_gpu.GPU_Image*)ImageHandle.ToPointer();
         internal unsafe SDL2.SDL_Surface* Surface { get; private set; }
@@ -324,6 +329,18 @@ namespace Chroma.Graphics
             }
         }
 
+        public Span<byte> PixelData
+        {
+            get
+            {
+                unsafe
+                {
+                    var ptr = Surface->pixels.ToPointer();
+                    return new Span<byte>(ptr, (int)(Surface->w * Surface->h * BytesPerPixel));
+                }
+            }
+        }
+
         public TextureFilteringMode FilteringMode
         {
             get
@@ -570,6 +587,29 @@ namespace Chroma.Graphics
                 var surfRect = new SDL_gpu.GPU_Rect { x = 0, y = 0, w = Surface->w, h = Surface->h };
 
                 SDL_gpu.GPU_UpdateImage(ImageHandle, ref imgRect, new IntPtr(Surface), ref surfRect);
+            }
+        }
+
+        public void SaveToFile(string filePath, ImageFileFormat format)
+        {
+            if (!SDL_gpu.GPU_SaveImage(ImageHandle, filePath, (SDL_gpu.GPU_FileFormatEnum)format))
+            {
+                Log.Error($"Saving texture to file failed: {SDL2.SDL_GetError()}");
+            }
+        }
+
+        public void SaveToArray(byte[] buffer, ImageFileFormat format)
+        {
+            unsafe
+            {
+                fixed (byte* ptr = &buffer[0])
+                {
+                    var rwops = SDL2.SDL_RWFromMem(new IntPtr(ptr), buffer.Length);
+                    if (!SDL_gpu.GPU_SaveImage_RW(ImageHandle, rwops, true, (SDL_gpu.GPU_FileFormatEnum)format))
+                    {
+                        Log.Error($"Writing texture to memory failed: {SDL2.SDL_GetError()}");
+                    }
+                }
             }
         }
 

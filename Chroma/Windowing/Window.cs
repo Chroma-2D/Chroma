@@ -104,7 +104,7 @@ namespace Chroma.Windowing
                 _nowFrameTime = SDL2.SDL_GetPerformanceCounter();
                 Delta = (_nowFrameTime - _lastFrameTime) / (float)SDL2.SDL_GetPerformanceFrequency();
 
-                while (SDL2.SDL_PollEvent(out SDL2.SDL_Event ev) != 0)
+                while (SDL2.SDL_PollEvent(out var ev) != 0)
                     EventDispatcher.Dispatch(ev);
 
                 Update?.Invoke(Delta);

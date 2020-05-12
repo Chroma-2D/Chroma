@@ -310,12 +310,14 @@ namespace Chroma.Graphics
                     transform = perCharTransform(c, i, pos);
 
                 SDL_gpu.GPU_SetColor(font.Texture.ImageHandle, Color.ToSdlColor(transform.Color));
-                SDL_gpu.GPU_BlitTransform(
+                SDL_gpu.GPU_BlitTransformX(
                     font.Texture.ImageHandle,
                     ref rect,
                     CurrentRenderTarget,
                     transform.Position.X,
                     transform.Position.Y,
+                    transform.Origin.X,
+                    transform.Origin.Y,
                     transform.Rotation,
                     transform.Scale.X,
                     transform.Scale.Y
@@ -374,12 +376,14 @@ namespace Chroma.Graphics
                     transform = perCharTransform(c, i, new Vector2(xPos, yPos), info);
 
                 SDL_gpu.GPU_SetColor(font.Atlas.ImageHandle, Color.ToSdlColor(transform.Color));
-                SDL_gpu.GPU_BlitTransform(
+                SDL_gpu.GPU_BlitTransformX(
                     font.Atlas.ImageHandle,
                     ref srcRect,
                     CurrentRenderTarget,
                     transform.Position.X,
                     transform.Position.Y,
+                    transform.Origin.X,
+                    transform.Origin.Y,
                     transform.Rotation,
                     transform.Scale.X,
                     transform.Scale.Y

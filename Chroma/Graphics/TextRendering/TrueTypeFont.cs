@@ -173,7 +173,9 @@ namespace Chroma.Graphics.TextRendering
 
         private Texture GenerateTextureAtlas(IEnumerable<char> glyphs)
         {
-            var maxDim = (1 + FaceRec.size->metrics.height.ToInt32() >> 6) * MathF.Ceiling(MathF.Sqrt(glyphs.Count()));
+            var enumerable = glyphs as char[] ?? glyphs.ToArray();
+            
+            var maxDim = (1 + FaceRec.size->metrics.height.ToInt32() >> 6) * MathF.Ceiling(MathF.Sqrt(enumerable.Length));
             var texWidth = 1;
 
             while (texWidth < maxDim)
@@ -191,7 +193,7 @@ namespace Chroma.Graphics.TextRendering
             int penX = 0;
             int penY = 0;
 
-            foreach (var c in glyphs)
+            foreach (var c in enumerable)
             {
                 if (!HasGlyph(c))
                 {
@@ -339,7 +341,6 @@ namespace Chroma.Graphics.TextRendering
                 0xFF000000
             );
             SDL2.SDL_SetSurfaceBlendMode(surface, SDL2.SDL_BlendMode.SDL_BLENDMODE_BLEND);
-
             var gpuImage = SDL_gpu.GPU_CopyImageFromSurface(surface);
 
             SDL2.SDL_FreeSurface(surface);

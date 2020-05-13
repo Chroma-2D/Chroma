@@ -417,18 +417,15 @@ namespace Chroma.Graphics
             {
                 EnsureNotDisposed();
 
-                unsafe
+                 if (value == null)
                 {
-                    if (value == null)
-                    {
-                        _virtualResolution = new Vector2(Width, Height);
-                        SDL_gpu.GPU_UnsetImageVirtualResolution(ImageHandle);
-                    }
-                    else
-                    {
-                        _virtualResolution = value;
-                        SDL_gpu.GPU_SetImageVirtualResolution(ImageHandle, (ushort)_virtualResolution.Value.X, (ushort)_virtualResolution.Value.Y);
-                    }
+                    _virtualResolution = new Vector2(Width, Height);
+                    SDL_gpu.GPU_UnsetImageVirtualResolution(ImageHandle);
+                }
+                else
+                {
+                    _virtualResolution = value;
+                    SDL_gpu.GPU_SetImageVirtualResolution(ImageHandle, (ushort)_virtualResolution.Value.X, (ushort)_virtualResolution.Value.Y);
                 }
             }
         }
@@ -592,6 +589,8 @@ namespace Chroma.Graphics
 
         public void SaveToFile(string filePath, ImageFileFormat format)
         {
+            EnsureNotDisposed();
+            
             if (!SDL_gpu.GPU_SaveImage(ImageHandle, filePath, (SDL_gpu.GPU_FileFormatEnum)format))
             {
                 Log.Error($"Saving texture to file failed: {SDL2.SDL_GetError()}");
@@ -600,6 +599,8 @@ namespace Chroma.Graphics
 
         public void SaveToArray(byte[] buffer, ImageFileFormat format)
         {
+            EnsureNotDisposed();
+            
             unsafe
             {
                 fixed (byte* ptr = &buffer[0])

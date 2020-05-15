@@ -52,7 +52,12 @@ namespace Chroma
 
         public void Quit()
         {
+            Audio.Dispose();
+            
+            SDL_mixer.Mix_Quit();
+            SDL_gpu.GPU_Quit();
             SDL2.SDL_Quit();
+            
             Environment.Exit(0);
         }
 

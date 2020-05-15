@@ -64,7 +64,6 @@ namespace Chroma.ContentManagement.FileSystem
                 throw new ContentNotLoadedException("The content you want to unload was never loaded in the first place.");
 
             loadedResource.Dispose();
-            _loadedResources.Remove(loadedResource);
         }
 
         public Stream Open(string relativePath)
@@ -81,30 +80,85 @@ namespace Chroma.ContentManagement.FileSystem
 
         private void RegisterImporters()
         {
-            _importers.Add(typeof(Texture), (path, args) => { return new Texture(path); });
-            _importers.Add(typeof(PixelShader), (path, args) => { return new PixelShader(path); });
-            _importers.Add(typeof(VertexShader), (path, args) => { return new VertexShader(path); });
+            _importers.Add(typeof(Texture), (path, args) =>
+            {
+                var texture = new Texture(path);
+                texture.Disposing += OnResourceDisposing;
+                
+                return texture;
+            });
+            
+            _importers.Add(typeof(PixelShader), (path, args) =>
+            {
+                var ps = new PixelShader(path);
+                ps.Disposing += OnResourceDisposing;
+                
+                return ps;
+            });
+            
+            _importers.Add(typeof(VertexShader), (path, args) =>
+            {
+                var vs = new VertexShader(path);
+                vs.Disposing += OnResourceDisposing;
+
+                return vs;
+            });
+            
             _importers.Add(typeof(TrueTypeFont), (path, args) =>
             {
+                TrueTypeFont ttf;
                 if (args.Length == 2)
                 {
-                    return new TrueTypeFont(path, (int)args[0], (string)args[1]);
+                    ttf = new TrueTypeFont(path, (int)args[0], (string)args[1]);
                 }
                 else if (args.Length == 1)
                 {
-                    return new TrueTypeFont(path, (int)args[0], null);
+                    ttf = new TrueTypeFont(path, (int)args[0]);
                 }
                 else
                 {
-                    return new TrueTypeFont(path, 12, null);
+                    ttf = new TrueTypeFont(path, 12);
                 }
+                ttf.Disposing += OnResourceDisposing;
+                
+                return ttf;
             });
-            _importers.Add(typeof(ImageFont), (path, args) => { return new ImageFont(path, (string)args[0]); });
-            _importers.Add(typeof(Sound), (path, args) => { return _game.Audio.CreateSound(path); });
-            _importers.Add(typeof(Music), (path, args) => { return _game.Audio.CreateMusic(path); });
+            
+            _importers.Add(typeof(ImageFont), (path, args) =>
+            {
+                var imFont = new ImageFont(path, (string)args[0]);
+                imFont.Disposing += OnResourceDisposing;
+
+                return imFont;
+            });
+            
+            _importers.Add(typeof(Sound), (path, args) =>
+            {
+                var sound = _game.Audio.CreateSound(path);
+                sound.Disposing += OnResourceDisposing;
+
+                return sound;
+            });
+            
+            _importers.Add(typeof(Music), (path, args) =>
+            {
+                var music = _game.Audio.CreateMusic(path);
+                music.Disposing += OnResourceDisposing;
+
+                return music;
+            });
         }
 
         private string MakeAbsolutePath(string relativePath)
             => Path.Combine(ContentRoot, relativePath);
+
+        private void OnResourceDisposing(object sender, EventArgs e)
+        {
+            if (sender is DisposableResource disposable)
+            {
+                disposable.Disposing -= OnResourceDisposing;
+                _loadedResources.Remove(disposable);
+            }
+        }
     }
 }

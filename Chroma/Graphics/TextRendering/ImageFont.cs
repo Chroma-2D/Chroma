@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using Chroma.Diagnostics.Logging;
+using Chroma.MemoryManagement;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics.TextRendering
 {
-    public class ImageFont
+    public class ImageFont : DisposableResource
     {
         private Log Log => LogManager.GetForCurrentAssembly();
 
@@ -13,7 +14,7 @@ namespace Chroma.Graphics.TextRendering
         
         public Texture Texture { get; }
 
-        public int Height => (int)Texture.Height;
+        public int Height => Texture.Height;
 
         public int CharSpacing { get; set; } = 4;
         public int LineMargin { get; set; } = 2;
@@ -57,5 +58,10 @@ namespace Chroma.Graphics.TextRendering
 
         public bool HasGlyph(char c)
             => GlyphRectangles.ContainsKey(c);
+
+        protected override void FreeManagedResources()
+        {
+            Texture.Dispose();
+        }
     }
 }

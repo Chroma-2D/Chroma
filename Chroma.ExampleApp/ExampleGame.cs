@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Numerics;
 using Chroma.Graphics;
 using Chroma.Graphics.TextRendering;
 using Chroma.Input;
@@ -37,7 +38,7 @@ namespace Chroma.ExampleApp
 
         protected override void LoadContent()
         {
-            _ttf = Content.Load<TrueTypeFont>("Fonts/tahoma.ttf", 16);
+            _ttf = Content.Load<TrueTypeFont>("Fonts/TAHOMA.TTF", 16);
             _burg = Content.Load<Texture>("Textures/burg.png");
         }
 
@@ -53,23 +54,14 @@ namespace Chroma.ExampleApp
 
         protected override void Draw(RenderContext context)
         {
-
+            context.DrawString(_ttf, _text, Vector2.Zero);
         }
 
         protected override void KeyPressed(KeyEventArgs e)
         {
             if (e.KeyCode == KeyCode.Space)
             {
-                var bytes = new byte[1024*5120];
-                _tgt.SaveToArray(bytes, ImageFileFormat.PNG);
-
-                using (var ms = new MemoryStream(bytes))
-                {
-                    using (var fs = new FileStream("F:\\yay.png", FileMode.Create))
-                    {
-                        ms.CopyTo(fs);
-                    }
-                }
+                _ttf.HintingEnabled = !_ttf.HintingEnabled;
             }
             else if (e.KeyCode == KeyCode.Return)
             {

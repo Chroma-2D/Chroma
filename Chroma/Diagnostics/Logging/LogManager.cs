@@ -1,10 +1,10 @@
-﻿using Chroma.Diagnostics.Logging.Decorators;
-using Chroma.Diagnostics.Logging.Sinks;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Chroma.Diagnostics.Logging.Decorators;
+using Chroma.Diagnostics.Logging.Sinks;
 
 namespace Chroma.Diagnostics.Logging
 {
@@ -79,6 +79,6 @@ namespace Chroma.Diagnostics.Logging
         }
 
         private static string GetAssemblyLogPath(Assembly assembly)
-            => Path.Combine(LogRoot, $"{assembly.GetName().Name}.log");
+            => Path.Combine(LogRoot, $"{assembly.GetName().Name}_{DateTime.Now:yyyy-MM-dd_hh_mm_ss}.log");
     }
 }

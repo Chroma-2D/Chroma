@@ -792,6 +792,12 @@ namespace Chroma.Natives.SDL
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern GPU_Camera GPU_SetCamera(IntPtr target, ref GPU_Camera camera);
+        
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern GPU_Camera GPU_SetCamera(IntPtr target, IntPtr camera);
+        
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe GPU_Camera GPU_SetCamera(IntPtr target, GPU_Camera* camera);
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_EnableCamera(IntPtr target, bool use_camera);

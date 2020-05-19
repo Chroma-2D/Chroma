@@ -39,6 +39,18 @@ namespace Chroma.Graphics
             SDL_gpu.GPU_SetDefaultAnchor(0, 0);
         }
 
+        public void WithCamera(Camera camera, Action drawingLogic)
+        {
+            if (camera == null)
+                throw new ArgumentNullException(nameof(camera), "Camera cannot be null.");
+
+            SDL_gpu.GPU_SetCamera(CurrentRenderTarget, ref camera.GpuCamera);
+
+            drawingLogic?.Invoke();
+            
+            SDL_gpu.GPU_SetCamera(CurrentRenderTarget, IntPtr.Zero);
+        }
+
         public void DeactivateShader()
             => SDL_gpu.GPU_ActivateShaderProgram(0, IntPtr.Zero);
 
@@ -243,7 +255,7 @@ namespace Chroma.Graphics
         }
 
         public void DrawTexture(Texture texture, Vector2 position, Vector2 scale, Vector2 origin, float rotation,
-                                Rectangle sourceRectangle)
+            Rectangle sourceRectangle)
         {
             var rect = new SDL_gpu.GPU_Rect
             {
@@ -271,7 +283,7 @@ namespace Chroma.Graphics
         {
             if (target == null)
                 throw new ArgumentNullException(nameof(target),
-                                                "You can't just draw an image to a null render target...");
+                    "You can't just draw an image to a null render target...");
 
             CurrentRenderTarget = target.TargetHandle;
 
@@ -281,7 +293,7 @@ namespace Chroma.Graphics
         }
 
         public void DrawString(ImageFont font, string text, Vector2 position,
-                               Func<char, int, Vector2, GlyphTransformData> perCharTransform = null)
+            Func<char, int, Vector2, GlyphTransformData> perCharTransform = null)
         {
             var x = position.X;
             var y = position.Y;
@@ -329,7 +341,7 @@ namespace Chroma.Graphics
         }
 
         public void DrawString(TrueTypeFont font, string text, Vector2 position,
-                               Func<char, int, Vector2, TrueTypeGlyph, GlyphTransformData> perCharTransform = null)
+            Func<char, int, Vector2, TrueTypeGlyph, GlyphTransformData> perCharTransform = null)
         {
             var x = position.X;
             var y = position.Y;

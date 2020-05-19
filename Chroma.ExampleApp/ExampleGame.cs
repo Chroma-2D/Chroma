@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using System.Numerics;
+﻿using System.Numerics;
 using Chroma.Graphics;
 using Chroma.Graphics.TextRendering;
 using Chroma.Input;
@@ -11,10 +9,10 @@ namespace Chroma.ExampleApp
     public class ExampleGame : Game
     {
         private TrueTypeFont _ttf;
-        private Texture _burg;
+        private Texture _bigpic;
         private string _text;
-        private List<Point> _p2;
         private RenderTarget _tgt;
+        private Camera _cam;
 
         public ExampleGame()
         {
@@ -22,57 +20,125 @@ namespace Chroma.ExampleApp
 
             Window.GoWindowed(1024, 640);
             _tgt = new RenderTarget((ushort)Window.Properties.Width, (ushort)Window.Properties.Height);
-
-            _p2 = new List<Point>
-            {
-                new Point(30, 33),
-                new Point(38, 43),
-                new Point(49, 69),
-                new Point(60, 80),
-                new Point(70, 88),
-                new Point(64, 33),
-                new Point(100, 200),
-            };
+            _cam = new Camera();
         }
 
         protected override void LoadContent()
         {
             _ttf = Content.Load<TrueTypeFont>("Fonts/TAHOMA.TTF", 16);
-            _burg = Content.Load<Texture>("Textures/burg.png");
+            _bigpic = Content.Load<Texture>("Textures/bigpic.jpg");
         }
 
         protected override void Update(float delta)
         {
             Window.Properties.Title = $"FPS: {Window.FPS}";
 
-            _text = $"HINTING: {(_ttf.HintingEnabled ? "ENABLED" : "DISABLED")}\n" +
-                    $"FORCED AUTO-HINTING: {(_ttf.ForceAutoHinting ? "YES" : "NO")}\n" +
-                    $"HINTING MODE: {(_ttf.HintingMode)}\n" +
-                    $"the quick brown fox jumps over the lazy dog 1234567890";
+            _text = $"x: {_cam.X}\n" +
+                    $"y: {_cam.Y}\n" +
+                    $"z: {_cam.Z}\n" +
+                    $"far_z: {_cam.FarZ}\n" +
+                    $"near_z: {_cam.NearZ}\n" +
+                    $"zoom_x: {_cam.ZoomX}\n" +
+                    $"zoom_y: {_cam.ZoomY}\n" +
+                    $"rotation: {_cam.Rotation}\n" +
+                    $"center_origin: {_cam.UseCenteredOrigin}";
         }
 
         protected override void Draw(RenderContext context)
         {
+            context.RenderTo(_tgt, () =>
+            {
+                context.WithCamera(_cam, () =>
+                {
+                    context.DrawTexture(_bigpic, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
+                });
+            });
+            
+            context.DrawTexture(_tgt, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
             context.DrawString(_ttf, _text, Vector2.Zero);
         }
 
         protected override void KeyPressed(KeyEventArgs e)
         {
-            if (e.KeyCode == KeyCode.Space)
+            var modifier = 1;
+
+            if (e.Modifiers.HasFlag(KeyModifiers.LeftShift))
+                modifier = 5;
+            
+            if (e.Modifiers.HasFlag(KeyModifiers.LeftControl))
+                modifier *= 2;
+            
+            if (e.KeyCode == KeyCode.Backspace)
             {
-                _ttf.HintingEnabled = !_ttf.HintingEnabled;
+                _cam.Z += modifier;
             }
             else if (e.KeyCode == KeyCode.Return)
             {
-                _ttf.ForceAutoHinting = !_ttf.ForceAutoHinting;
+                _cam.Z -= modifier;
             }
             else if (e.KeyCode == KeyCode.Up)
             {
-                _ttf.HintingMode = (HintingMode)(((int)_ttf.HintingMode + 1) % 3);
+                _cam.Y -= modifier;
             }
-            else if (e.KeyCode == KeyCode.F)
+            else if (e.KeyCode == KeyCode.Down)
             {
-                _ttf.Size++;
+                _cam.Y += modifier;
+            }
+            else if (e.KeyCode == KeyCode.Left)
+            {
+                _cam.X -= modifier;
+            }
+            else if (e.KeyCode == KeyCode.Right)
+            {
+                _cam.X += modifier;
+            }
+            else if (e.KeyCode == KeyCode.F5)
+            {
+                _cam.ZoomX += modifier;
+            }
+            else if (e.KeyCode == KeyCode.F6)
+            {
+                _cam.ZoomX -= modifier;
+            }
+            else if (e.KeyCode == KeyCode.F7)
+            {
+                _cam.ZoomY += modifier;
+            }
+            else if (e.KeyCode == KeyCode.F8)
+            {
+                _cam.ZoomY -= modifier;
+            }
+            else if (e.KeyCode == KeyCode.F1)
+            {
+                _cam.FarZ += modifier;
+            }
+            else if (e.KeyCode == KeyCode.F2)
+            {
+                _cam.FarZ -= modifier;
+            }
+            else if (e.KeyCode == KeyCode.F3)
+            {
+                _cam.NearZ += modifier;
+            }
+            else if (e.KeyCode == KeyCode.F4)
+            {
+                _cam.NearZ -= modifier;
+            }
+            else if (e.KeyCode == KeyCode.Q)
+            {
+                _cam.Rotation -= modifier;
+            }
+            else if (e.KeyCode == KeyCode.E)
+            {
+                _cam.Rotation += modifier;
+            }
+            else if (e.KeyCode == KeyCode.R)
+            {
+                _cam = new Camera();
+            }
+            else if (e.KeyCode == KeyCode.S)
+            {
+                _tgt.SetCamera(_cam);
             }
         }
     }

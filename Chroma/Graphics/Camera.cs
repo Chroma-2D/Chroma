@@ -42,7 +42,7 @@ namespace Chroma.Graphics
             set => GpuCamera.use_centered_origin = value;
         }
 
-        public float Angle
+        public float Rotation
         {
             get => GpuCamera.angle;
             set => GpuCamera.angle = value;
@@ -75,12 +75,12 @@ namespace Chroma.Graphics
         {
         }
 
-        public Camera(int x, int y, int z, float angle)
+        public Camera(int x, int y, int z, float rotation)
         {
             X = x;
             Y = y;
             Z = z;
-            Angle = angle;
+            Rotation = rotation;
 
             ZoomX = 1;
             ZoomY = 1;

@@ -40,7 +40,7 @@ namespace Chroma.ExampleApp
                     $"near_z: {_cam.NearZ}\n" +
                     $"zoom_x: {_cam.ZoomX}\n" +
                     $"zoom_y: {_cam.ZoomY}\n" +
-                    $"angle: {_cam.Angle}\n" +
+                    $"rotation: {_cam.Rotation}\n" +
                     $"center_origin: {_cam.UseCenteredOrigin}";
         }
 
@@ -126,11 +126,11 @@ namespace Chroma.ExampleApp
             }
             else if (e.KeyCode == KeyCode.Q)
             {
-                _cam.Angle -= modifier;
+                _cam.Rotation -= modifier;
             }
             else if (e.KeyCode == KeyCode.E)
             {
-                _cam.Angle += modifier;
+                _cam.Rotation += modifier;
             }
             else if (e.KeyCode == KeyCode.R)
             {

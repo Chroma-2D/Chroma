@@ -138,6 +138,10 @@
         <None Update="Content\Fonts\pef.ttf">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
+
+        <None Update="Content\Textures\bigpic.jpg">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>

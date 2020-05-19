@@ -16,13 +16,14 @@ namespace Chroma.Graphics.TextRendering
     {
         private Log Log => LogManager.GetForCurrentAssembly();
 
+        private int _size;
         private bool _hintingEnabled;
         private bool _forceAutoHinting;
         private HintingMode _hintingMode;
 
         internal static FreeTypeLibrary Library { get; }
         internal IntPtr Face { get; }
-        internal FT_FaceRec FaceRec { get; }
+        internal FT_FaceRec FaceRec { get; private set; }
 
         public string Alphabet { get; }
 
@@ -30,13 +31,24 @@ namespace Chroma.Graphics.TextRendering
         public Texture Atlas { get; private set; }
 
         public string FileName { get; }
-        public int Size { get; }
 
-        public int ScaledLineSpacing { get; }
-        public int LineSpacing { get; }
+        public int Size
+        {
+            get => _size;
+            set
+            {
+                _size = value;
+                
+                ResizeFont();
+                RebuildAtlas();
+            }
+        }
 
-        public int Ascender { get; }
-        public int Descender { get; }
+        public int ScaledLineSpacing { get; private set; }
+        public int LineSpacing { get; private set; }
+
+        public int Ascender { get; private set; }
+        public int Descender { get; private set; }
         public int MaxBearing { get; private set; }
 
         public bool ForceAutoHinting
@@ -77,26 +89,18 @@ namespace Chroma.Graphics.TextRendering
         public TrueTypeFont(string fileName, int size, string alphabet = null)
         {
             FileName = fileName;
-            Size = size;
+            Alphabet = alphabet;
+            _size = size; // do not use property here
 
             if (!File.Exists(fileName))
-                throw new FileNotFoundException("Couldn't fint the font at the provided path.", fileName);
+                throw new FileNotFoundException("Couldn't find the font at the provided path.", fileName);
 
             FT.FT_New_Face(Library.Native, fileName, 0, out var facePtr);
             Face = facePtr;
 
-            FT.FT_Set_Pixel_Sizes(Face, 0, (uint)Size);
-            FaceRec = Marshal.PtrToStructure<FT_FaceRec>(Face);
-
-            ScaledLineSpacing = FaceRec.size->metrics.height.ToInt32() >> 6;
-            LineSpacing = FaceRec.height >> 6;
-
-            Ascender = FaceRec.size->metrics.ascender.ToInt32() >> 6;
-
-            Descender = (FaceRec.descender >> 6);
-
+            ResizeFont();
+            
             RenderInfo = new Dictionary<char, TrueTypeGlyph>();
-            Alphabet = alphabet;
 
             _hintingEnabled = true;
             _forceAutoHinting = true;
@@ -140,6 +144,18 @@ namespace Chroma.Graphics.TextRendering
                 maxWidth = width;
 
             return new Vector2(maxWidth, maxHeight);
+        }
+
+        private void ResizeFont()
+        {
+            FT.FT_Set_Pixel_Sizes(Face, 0, (uint)Size);
+            
+            FaceRec = Marshal.PtrToStructure<FT_FaceRec>(Face);
+            ScaledLineSpacing = FaceRec.size->metrics.height.ToInt32() >> 6;
+            LineSpacing = FaceRec.height >> 6;
+
+            Ascender = FaceRec.size->metrics.ascender.ToInt32() >> 6;
+            Descender = (FaceRec.descender >> 6);
         }
 
         private void RebuildAtlas()

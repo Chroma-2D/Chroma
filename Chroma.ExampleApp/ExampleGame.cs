@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Numerics;
 using Chroma.Graphics;
 using Chroma.Graphics.TextRendering;
@@ -73,26 +72,7 @@ namespace Chroma.ExampleApp
             }
             else if (e.KeyCode == KeyCode.F)
             {
-                Audio.HookPostMixProcessor<float>((chunk, bytes) =>
-                {
-                    for (var i = 0; i < chunk.Length; i++)
-                    {
-                        if (i % 2 == 0)
-                        {
-                            if (i % 32 == 0)
-                            {
-                                chunk[i] = 1.0f;
-                            }
-                        }
-                        else
-                        {
-                            if (i % 31 == 0)
-                            {
-                                chunk[i] = 1.0f;
-                            }
-                        }
-                    }
-                });
+                _ttf.Size++;
             }
         }
     }

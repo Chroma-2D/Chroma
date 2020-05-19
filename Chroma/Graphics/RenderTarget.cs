@@ -13,6 +13,15 @@ namespace Chroma.Graphics
             TargetHandle = SDL_gpu.GPU_LoadTarget(ImageHandle);
         }
 
+        public void SetCamera(Camera camera)
+        {
+            EnsureNotDisposed();
+            SDL_gpu.GPU_SetCamera(TargetHandle, ref camera.GpuCamera);
+        }
+
+        public void ResetCamera()
+            => SDL_gpu.GPU_SetCamera(TargetHandle, IntPtr.Zero);
+
         protected override void FreeNativeResources()
         {
             SDL_gpu.GPU_FreeTarget(TargetHandle);

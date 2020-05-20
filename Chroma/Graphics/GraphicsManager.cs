@@ -90,7 +90,7 @@ namespace Chroma.Graphics
 
         public Display FetchDisplayInfo(int index)
         {
-            if (SDL2.SDL_GetCurrentDisplayMode(index, out SDL2.SDL_DisplayMode mode) == 0)
+            if (SDL2.SDL_GetCurrentDisplayMode(index, out var mode) == 0)
             {
                 return new Display(index, mode.refresh_rate, (ushort)mode.w, (ushort)mode.h)
                 {
@@ -104,7 +104,7 @@ namespace Chroma.Graphics
 
         public Display FetchDesktopDisplayInfo(int index)
         {
-            if (SDL2.SDL_GetDesktopDisplayMode(index, out SDL2.SDL_DisplayMode mode) == 0)
+            if (SDL2.SDL_GetDesktopDisplayMode(index, out var mode) == 0)
             {
                 return new Display(index, mode.refresh_rate, (ushort)mode.w, (ushort)mode.h)
                 {

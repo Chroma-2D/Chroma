@@ -15,7 +15,7 @@ namespace Chroma.Windowing
     public sealed class Window : DisposableResource
     {
         private ulong _nowFrameTime = SDL2.SDL_GetPerformanceCounter();
-        private ulong _lastFrameTime = 0;
+        private ulong _lastFrameTime;
 
         private Log Log => LogManager.GetForCurrentAssembly();
 
@@ -33,7 +33,6 @@ namespace Chroma.Windowing
         internal EventDispatcher EventDispatcher { get; }
 
         internal IntPtr RenderTargetHandle { get; }
-        internal static IntPtr RendererHandle { get; private set; }
 
         public event EventHandler Closed;
         public event EventHandler Hidden;
@@ -87,9 +86,9 @@ namespace Chroma.Windowing
             RenderContext = new RenderContext(this);
 
             EventDispatcher = new EventDispatcher(this);
-            new WindowEventHandlers(EventDispatcher);
-            new FrameworkEventHandlers(EventDispatcher);
-            new InputEventHandlers(EventDispatcher);
+            _ = new WindowEventHandlers(EventDispatcher);
+            _ = new FrameworkEventHandlers(EventDispatcher);
+            _ = new InputEventHandlers(EventDispatcher);
         }
 
         public void Run(Action postStatusSetAction = null)

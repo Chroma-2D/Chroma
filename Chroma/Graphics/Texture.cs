@@ -528,7 +528,7 @@ namespace Chroma.Graphics
                 {
                     var color = colors[i];
 
-                    uint* pixel = (uint*)Surface->pixels;
+                    var pixel = (uint*)Surface->pixels;
                     *(pixel + i) = color.PackedValue;
                 }
             }
@@ -546,9 +546,9 @@ namespace Chroma.Graphics
 
             unsafe
             {
-                uint* pixel = (uint*)((byte*)Surface->pixels +
-                                      (y * Surface->pitch) +
-                                      (x * sizeof(uint)));
+                var pixel = (uint*)((byte*)Surface->pixels +
+                                    (y * Surface->pitch) +
+                                    (x * sizeof(uint)));
 
                 *pixel = color.PackedValue;
             }
@@ -566,9 +566,9 @@ namespace Chroma.Graphics
 
             unsafe
             {
-                uint* pixel = (uint*)((byte*)Surface->pixels +
-                                      (y * Surface->pitch) +
-                                      (x * sizeof(uint)));
+                var pixel = (uint*)((byte*)Surface->pixels +
+                                    (y * Surface->pitch) +
+                                    (x * sizeof(uint)));
 
                 return new Color(*pixel);
             }

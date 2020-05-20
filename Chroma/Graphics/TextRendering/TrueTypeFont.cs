@@ -229,14 +229,14 @@ namespace Chroma.Graphics.TextRendering
             var texHeight = texWidth;
 
             var texSize = texWidth * texHeight;
-            IntPtr managedPixels = Marshal.AllocHGlobal(texWidth * texHeight);
-            byte* pixels = (byte*)managedPixels.ToPointer();
+            var managedPixels = Marshal.AllocHGlobal(texWidth * texHeight);
+            var pixels = (byte*)managedPixels.ToPointer();
 
             for (var i = 0; i < texSize; i++)
                 pixels[i] = 0;
 
-            int penX = 0;
-            int penY = 0;
+            var penX = 0;
+            var penY = 0;
 
             foreach (var c in enumerable)
             {
@@ -361,8 +361,8 @@ namespace Chroma.Graphics.TextRendering
         {
             var surfaceSize = texWidth * texHeight * 4;
 
-            IntPtr managedSurfaceData = Marshal.AllocHGlobal(surfaceSize);
-            byte* surfaceData = (byte*)managedSurfaceData.ToPointer();
+            var managedSurfaceData = Marshal.AllocHGlobal(surfaceSize);
+            var surfaceData = (byte*)managedSurfaceData.ToPointer();
 
             for (var i = 0; i < surfaceSize; i++)
                 surfaceData[i] = 0;
@@ -398,10 +398,10 @@ namespace Chroma.Graphics.TextRendering
         private bool IsMonochromeBitSet(FT_GlyphSlotRec* glyph, int x, int y)
         {
             var pitch = glyph->bitmap.pitch;
-            byte* buf = (byte*)glyph->bitmap.buffer.ToPointer();
+            var buf = (byte*)glyph->bitmap.buffer.ToPointer();
 
-            byte* row = &buf[pitch * y];
-            byte value = row[x >> 3];
+            var row = &buf[pitch * y];
+            var value = row[x >> 3];
 
             return (value & (0x80 >> (x & 7))) != 0;
         }

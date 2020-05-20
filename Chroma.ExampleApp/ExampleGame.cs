@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using System.IO;
+using System.Numerics;
+using System.Reflection;
 using Chroma.Graphics;
 using Chroma.Graphics.TextRendering;
 using Chroma.Input;
@@ -25,7 +27,17 @@ namespace Chroma.ExampleApp
 
         protected override void LoadContent()
         {
-            _ttf = Content.Load<TrueTypeFont>("Fonts/TAHOMA.TTF", 16);
+            //_ttf = Content.Load<TrueTypeFont>("Fonts/TAHOMA.TTF", 16);
+            using (var ms = new MemoryStream())
+            {
+                var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Content", "Fonts", "TAHOMA.TTF");
+                using (var fs = new FileStream(path, FileMode.Open))
+                {
+                    fs.CopyTo(ms);
+                    _ttf = new TrueTypeFont(ms, 16);
+                }
+            }
+            
             _bigpic = Content.Load<Texture>("Textures/bigpic.jpg");
         }
 

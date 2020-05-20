@@ -48,7 +48,7 @@ namespace Chroma.Graphics.Accelerated
 
                 unsafe
                 {
-                    float* mtxptr = SDL_gpu.GPU_GetProjection();
+                    var mtxptr = SDL_gpu.GPU_GetProjection();
                     return CreateMatrixFromPointer(mtxptr);
                 }
             }
@@ -62,7 +62,7 @@ namespace Chroma.Graphics.Accelerated
 
                 unsafe
                 {
-                    float* mtxptr = SDL_gpu.GPU_GetView();
+                    var mtxptr = SDL_gpu.GPU_GetView();
                     return CreateMatrixFromPointer(mtxptr);
                 }
             }
@@ -76,7 +76,7 @@ namespace Chroma.Graphics.Accelerated
 
                 unsafe
                 {
-                    float* mtxptr = SDL_gpu.GPU_GetModel();
+                    var mtxptr = SDL_gpu.GPU_GetModel();
                     return CreateMatrixFromPointer(mtxptr);
                 }
             }

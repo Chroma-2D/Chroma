@@ -268,7 +268,7 @@ namespace Chroma.Audio
         {
             var handle = SDL_mixer.Mix_GetChunk(channel);
 
-            if (_soundBank.TryGetValue(handle, out Sound sound))
+            if (_soundBank.TryGetValue(handle, out var sound))
             {
                 sound.Status = PlaybackStatus.Stopped;
                 SoundPlaybackFinished?.Invoke(this, new SoundEventArgs(sound));
@@ -289,7 +289,7 @@ namespace Chroma.Audio
         {
             unsafe
             {
-                void* streamPtr = stream.ToPointer();
+                var streamPtr = stream.ToPointer();
 
                 if (AudioFormat.SampleFormat == SampleFormat.F32)
                 {

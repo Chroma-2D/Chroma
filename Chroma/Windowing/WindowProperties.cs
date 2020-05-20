@@ -25,7 +25,7 @@ namespace Chroma.Windowing
                 if (Owner.Handle == IntPtr.Zero)
                     return _height;
 
-                SDL2.SDL_GetWindowSize(Owner.Handle, out int _, out int h);
+                SDL2.SDL_GetWindowSize(Owner.Handle, out _, out var h);
                 return h;
             }
 
@@ -50,7 +50,7 @@ namespace Chroma.Windowing
                 if (Owner.Handle == IntPtr.Zero)
                     return _width;
 
-                SDL2.SDL_GetWindowSize(Owner.Handle, out int w, out int _);
+                SDL2.SDL_GetWindowSize(Owner.Handle, out var w, out _);
                 return w;
             }
 
@@ -75,7 +75,7 @@ namespace Chroma.Windowing
                 if (Owner.Handle == IntPtr.Zero)
                     return _position;
 
-                SDL2.SDL_GetWindowPosition(Owner.Handle, out int x, out int y);
+                SDL2.SDL_GetWindowPosition(Owner.Handle, out var x, out var y);
                 return new Vector2(x, y);
             }
 

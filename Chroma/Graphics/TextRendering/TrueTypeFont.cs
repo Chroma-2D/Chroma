@@ -27,7 +27,7 @@ namespace Chroma.Graphics.TextRendering
 
         public string Alphabet { get; }
 
-        public Dictionary<char, TrueTypeGlyph> RenderInfo { get; }
+        public Dictionary<char, TrueTypeGlyph> RenderInfo { get; private set; }
         public Texture Atlas { get; private set; }
 
         public string FileName { get; }
@@ -38,7 +38,7 @@ namespace Chroma.Graphics.TextRendering
             set
             {
                 _size = value;
-                
+
                 ResizeFont();
                 RebuildAtlas();
             }
@@ -94,19 +94,34 @@ namespace Chroma.Graphics.TextRendering
 
             if (!File.Exists(fileName))
                 throw new FileNotFoundException("Couldn't find the font at the provided path.", fileName);
-
+            
             FT.FT_New_Face(Library.Native, fileName, 0, out var facePtr);
             Face = facePtr;
 
-            ResizeFont();
-            
-            RenderInfo = new Dictionary<char, TrueTypeGlyph>();
+            InitializeFontData();
+        }
 
-            _hintingEnabled = true;
-            _forceAutoHinting = true;
-            _hintingMode = HintingMode.Normal;
+        public TrueTypeFont(MemoryStream memoryStream, int size, string alphabet = null)
+        {
+            Alphabet = alphabet;
+            _size = size; // do not use property here
+
+            var faceBytes = memoryStream.ToArray();
+
+            fixed (byte* fontPtr = &faceBytes[0])
+            {
+                FT.FT_New_Memory_Face(
+                    Library.Native,
+                    new IntPtr(fontPtr),
+                    faceBytes.Length,
+                    0,
+                    out var facePtr
+                );
+
+                Face = facePtr;
+            }
             
-            RebuildAtlas();
+            InitializeFontData();
         }
 
         public bool CanRenderGlyph(char c)
@@ -146,10 +161,23 @@ namespace Chroma.Graphics.TextRendering
             return new Vector2(maxWidth, maxHeight);
         }
 
+        private void InitializeFontData()
+        {
+            ResizeFont();
+
+            RenderInfo = new Dictionary<char, TrueTypeGlyph>();
+
+            _hintingEnabled = true;
+            _forceAutoHinting = true;
+            _hintingMode = HintingMode.Normal;
+
+            RebuildAtlas();
+        }
+
         private void ResizeFont()
         {
             FT.FT_Set_Pixel_Sizes(Face, 0, (uint)Size);
-            
+
             FaceRec = Marshal.PtrToStructure<FT_FaceRec>(Face);
             ScaledLineSpacing = FaceRec.size->metrics.height.ToInt32() >> 6;
             LineSpacing = FaceRec.height >> 6;
@@ -190,8 +218,9 @@ namespace Chroma.Graphics.TextRendering
         private Texture GenerateTextureAtlas(IEnumerable<char> glyphs)
         {
             var enumerable = glyphs as char[] ?? glyphs.ToArray();
-            
-            var maxDim = (1 + FaceRec.size->metrics.height.ToInt32() >> 6) * MathF.Ceiling(MathF.Sqrt(enumerable.Length));
+
+            var maxDim = (1 + FaceRec.size->metrics.height.ToInt32() >> 6) *
+                         MathF.Ceiling(MathF.Sqrt(enumerable.Length));
             var texWidth = 1;
 
             while (texWidth < maxDim)
@@ -255,7 +284,7 @@ namespace Chroma.Graphics.TextRendering
 
                 RenderGlyphToBitmap(bmp, penX, penY, texWidth, pixels);
                 var glyph = BuildGlyphInfo(bmp, penX, penY);
-                
+
                 RenderInfo.Add(c, glyph);
 
                 if (glyph.Bearing.Y > MaxBearing)
@@ -303,11 +332,11 @@ namespace Chroma.Graphics.TextRendering
                 )
             };
         }
-        
+
         private void RenderGlyphToBitmap(FT_Bitmap bmp, int penX, int penY, int texWidth, byte* pixels)
         {
             var buffer = (byte*)FaceRec.glyph->bitmap.buffer.ToPointer();
-            
+
             for (var row = 0; row < bmp.rows; ++row)
             {
                 for (var col = 0; col < bmp.width; ++col)
@@ -321,7 +350,8 @@ namespace Chroma.Graphics.TextRendering
                     }
                     else
                     {
-                        pixels[y * texWidth + x] = IsMonochromeBitSet(FaceRec.glyph, col, row) ? (byte)0xFF : (byte)0x00;
+                        pixels[y * texWidth + x] =
+                            IsMonochromeBitSet(FaceRec.glyph, col, row) ? (byte)0xFF : (byte)0x00;
                     }
                 }
             }
@@ -364,12 +394,12 @@ namespace Chroma.Graphics.TextRendering
 
             return new Texture(gpuImage);
         }
-        
-        private bool IsMonochromeBitSet(FT_GlyphSlotRec* glyph, int x,  int y)
+
+        private bool IsMonochromeBitSet(FT_GlyphSlotRec* glyph, int x, int y)
         {
             var pitch = glyph->bitmap.pitch;
             byte* buf = (byte*)glyph->bitmap.buffer.ToPointer();
-                
+
             byte* row = &buf[pitch * y];
             byte value = row[x >> 3];
 

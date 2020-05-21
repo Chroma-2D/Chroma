@@ -25,7 +25,7 @@ namespace Chroma.Graphics.TextRendering
         internal static FreeTypeLibrary Library { get; }
         internal IntPtr Face { get; }
         internal FT_FaceRec FaceRec { get; private set; }
-        internal byte[] FaceData { get; }
+        internal byte[] FaceData { get; private set; }
 
         public string Alphabet { get; }
 
@@ -423,7 +423,8 @@ namespace Chroma.Graphics.TextRendering
 
         protected override void FreeManagedResources()
         {
-            
+            if (FaceData != null && FaceData.Length > 0)
+                FaceData = null;
         }
 
         protected override void FreeNativeResources()

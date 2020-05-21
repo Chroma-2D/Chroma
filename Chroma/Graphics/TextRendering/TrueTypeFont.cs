@@ -21,9 +21,11 @@ namespace Chroma.Graphics.TextRendering
         private bool _forceAutoHinting;
         private HintingMode _hintingMode;
 
+        
         internal static FreeTypeLibrary Library { get; }
         internal IntPtr Face { get; }
         internal FT_FaceRec FaceRec { get; private set; }
+        internal byte[] FaceData { get; }
 
         public string Alphabet { get; }
 
@@ -104,16 +106,18 @@ namespace Chroma.Graphics.TextRendering
         public TrueTypeFont(MemoryStream memoryStream, int size, string alphabet = null)
         {
             Alphabet = alphabet;
-            _size = size; // do not use property here
+            _size = size; // do not use property here to avoid premature atlas building
 
-            var faceBytes = memoryStream.ToArray();
-
-            fixed (byte* fontPtr = &faceBytes[0])
+            // needs to be class-scope property or field
+            // because it gets rekt by GC when ran without
+            // debugger
+            FaceData = memoryStream.ToArray();
+            fixed (byte* fontPtr = &FaceData[0])
             {
                 FT.FT_New_Memory_Face(
                     Library.Native,
                     new IntPtr(fontPtr),
-                    faceBytes.Length,
+                    FaceData.Length,
                     0,
                     out var facePtr
                 );
@@ -128,7 +132,18 @@ namespace Chroma.Graphics.TextRendering
             => RenderInfo.ContainsKey(c);
 
         public bool HasGlyph(char c)
-            => FT.FT_Get_Char_Index(Face, c) != 0;
+        {
+            try
+            {
+                return FT.FT_Get_Char_Index(Face, c) != 0;
+            }
+            catch (AccessViolationException ave)
+            {
+                Console.WriteLine(ave);
+            }
+
+            return false;
+        }
 
         public Vector2 Measure(string text)
         {
@@ -404,6 +419,11 @@ namespace Chroma.Graphics.TextRendering
             var value = row[x >> 3];
 
             return (value & (0x80 >> (x & 7))) != 0;
+        }
+
+        protected override void FreeManagedResources()
+        {
+            
         }
 
         protected override void FreeNativeResources()

@@ -27,17 +27,15 @@ namespace Chroma.ExampleApp
 
         protected override void LoadContent()
         {
-            //_ttf = Content.Load<TrueTypeFont>("Fonts/TAHOMA.TTF", 16);
-            using (var ms = new MemoryStream())
-            {
-                var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Content", "Fonts", "TAHOMA.TTF");
-                using (var fs = new FileStream(path, FileMode.Open))
-                {
-                    fs.CopyTo(ms);
-                    _ttf = new TrueTypeFont(ms, 16);
-                }
-            }
+            // _ttf = Content.Load<TrueTypeFont>("Fonts/TAHOMA.TTF", 16);
+            var ms = new MemoryStream();
+            var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Content", "Fonts",
+                "TAHOMA.TTF");
             
+            var fs = new FileStream(path, FileMode.Open);
+            fs.CopyTo(ms);
+            _ttf = new TrueTypeFont(ms, 16);
+
             _bigpic = Content.Load<Texture>("Textures/bigpic.jpg");
         }
 
@@ -58,14 +56,13 @@ namespace Chroma.ExampleApp
 
         protected override void Draw(RenderContext context)
         {
-            context.RenderTo(_tgt, () =>
-            {
-                context.WithCamera(_cam, () =>
+            context.RenderTo(_tgt,
+                () =>
                 {
-                    context.DrawTexture(_bigpic, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
+                    context.WithCamera(_cam,
+                        () => { context.DrawTexture(_bigpic, Vector2.Zero, Vector2.One, Vector2.Zero, 0f); });
                 });
-            });
-            
+
             context.DrawTexture(_tgt, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
             context.DrawString(_ttf, _text, Vector2.Zero);
         }
@@ -76,10 +73,10 @@ namespace Chroma.ExampleApp
 
             if (e.Modifiers.HasFlag(KeyModifiers.LeftShift))
                 modifier = 5;
-            
+
             if (e.Modifiers.HasFlag(KeyModifiers.LeftControl))
                 modifier *= 2;
-            
+
             if (e.KeyCode == KeyCode.Backspace)
             {
                 _cam.Z += modifier;

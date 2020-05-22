@@ -7,6 +7,7 @@ using System.Text.Json;
 using Chroma.Natives.Boot.Config;
 using Chroma.Natives.Boot.PlatformSpecific;
 using Chroma.Natives.SDL;
+using Chroma.Natives.Syscalls;
 
 namespace Chroma.Natives.Boot
 {
@@ -20,6 +21,7 @@ namespace Chroma.Natives.Boot
             if (!Environment.Is64BitOperatingSystem)
                 throw new PlatformNotSupportedException("Chroma supports 64-bit systems only.");
 
+            SetupConsoleMode();
             ReadBootConfig();
 
             try
@@ -35,6 +37,17 @@ namespace Chroma.Natives.Boot
             }
 
             InitializeSdlSystems();
+        }
+
+        private static void SetupConsoleMode()
+        {
+            var stdHandle = Windows.GetStdHandle(Windows.STD_OUTPUT_HANDLE);
+            
+            Windows.GetConsoleMode(stdHandle, out var consoleMode);
+            consoleMode |= Windows.ENABLE_PROCESSED_OUTPUT;
+            consoleMode |= Windows.ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+
+            Windows.SetConsoleMode(stdHandle, consoleMode);
         }
 
         private static void ReadBootConfig()

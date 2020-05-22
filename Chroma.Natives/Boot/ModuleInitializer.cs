@@ -21,7 +21,9 @@ namespace Chroma.Natives.Boot
             if (!Environment.Is64BitOperatingSystem)
                 throw new PlatformNotSupportedException("Chroma supports 64-bit systems only.");
 
-            SetupConsoleMode();
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                SetupConsoleMode();
+
             ReadBootConfig();
 
             try

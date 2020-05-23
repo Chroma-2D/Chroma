@@ -36,7 +36,7 @@ void main() {
 
     // Cutoff
     if(tc.y > 1.0 || tc.x < 0.0 || tc.x > 1.0 || tc.y < 0.0)
-    cta = vec4(0.0, 1.0, 0.0, 1.0);
+    cta = vec4(0.0);
 
     // Apply
     gl_FragColor = cta * color;

@@ -16,7 +16,10 @@ namespace Chroma.Graphics.Accelerated
             PixelShaderObjectHandle = SDL_gpu.GPU_CompileShader(SDL_gpu.GPU_ShaderEnum.GPU_PIXEL_SHADER, SourceCode);
 
             if (PixelShaderObjectHandle == 0)
-                throw new ShaderException("Compilation failed.", SDL_gpu.GPU_GetShaderMessage());
+            {
+                var gpuMessage = SDL_gpu.GPU_GetShaderMessage();
+                throw new ShaderException("Compilation failed.", gpuMessage);
+            }
 
             CompileAndSetDefaultVertexShader();
 

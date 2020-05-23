@@ -69,7 +69,7 @@ namespace Chroma.Windowing
                 Properties.Height,
                 SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL
             );
-            Properties.Title = "Chroma Engine";
+            Properties.Title = "Chroma Framework";
             SDL_gpu.GPU_SetInitWindow(SDL2.SDL_GetWindowID(Handle));
 
             var bestRenderer = Game.Graphics.GetBestRenderer();

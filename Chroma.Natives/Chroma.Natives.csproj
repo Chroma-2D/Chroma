@@ -7,27 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Remove="Binaries\windows_64\freetype.dll" />
-        <None Remove="Binaries\windows_64\libFLAC-8.dll" />
-        <None Remove="Binaries\windows_64\libjpeg-9.dll" />
-        <None Remove="Binaries\windows_64\libmodplug-1.dll" />
-        <None Remove="Binaries\windows_64\libmpg123-0.dll" />
-        <None Remove="Binaries\windows_64\libogg-0.dll" />
-        <None Remove="Binaries\windows_64\libopus-0.dll" />
-        <None Remove="Binaries\windows_64\libopusfile-0.dll" />
-        <None Remove="Binaries\windows_64\libpng16-16.dll" />
-        <None Remove="Binaries\windows_64\libtiff-5.dll" />
-        <None Remove="Binaries\windows_64\libvorbis-0.dll" />
-        <None Remove="Binaries\windows_64\libvorbisfile-0.dll" />
-        <None Remove="Binaries\windows_64\libwebp-7.dll" />
-        <None Remove="Binaries\windows_64\SDL2.dll" />
-        <None Remove="Binaries\windows_64\SDL2_gpu.dll" />
-        <None Remove="Binaries\windows_64\SDL2_image.dll" />
-        <None Remove="Binaries\windows_64\SDL2_mixer.dll" />
-        <None Remove="Binaries\windows_64\zlib1.dll" />
-    </ItemGroup>
-
-    <ItemGroup>
         <EmbeddedResource Include="Binaries\windows_64\freetype.dll" />
         <EmbeddedResource Include="Binaries\windows_64\libFLAC-8.dll" />
         <EmbeddedResource Include="Binaries\windows_64\libjpeg-9.dll" />
@@ -46,41 +25,23 @@
         <EmbeddedResource Include="Binaries\windows_64\SDL2_image.dll" />
         <EmbeddedResource Include="Binaries\windows_64\SDL2_mixer.dll" />
         <EmbeddedResource Include="Binaries\windows_64\zlib1.dll" />
-        <None Remove="Binaries\linux_64\libFLAC.so.8.3.0" />
         <EmbeddedResource Include="Binaries\linux_64\libFLAC.so" />
-        <None Remove="Binaries\linux_64\libfreetype.so.6.17.1" />
         <EmbeddedResource Include="Binaries\linux_64\libfreetype.so" />
-        <None Remove="Binaries\linux_64\libjpeg.so.62.0.0" />
         <EmbeddedResource Include="Binaries\linux_64\libjpeg.so" />
-        <None Remove="Binaries\linux_64\libmodplug.so" />
         <EmbeddedResource Include="Binaries\linux_64\libmodplug.so" />
-        <None Remove="Binaries\linux_64\libmpg123.so.0.44.10" />
         <EmbeddedResource Include="Binaries\linux_64\libmpg123.so" />
-        <None Remove="Binaries\linux_64\libopus.so.0.8.0" />
         <EmbeddedResource Include="Binaries\linux_64\libopus.so" />
-        <None Remove="Binaries\linux_64\libopusfile.so.0.4.2" />
         <EmbeddedResource Include="Binaries\linux_64\libopusfile.so" />
-        <None Remove="Binaries\linux_64\libpng16.so.16.37.0" />
         <EmbeddedResource Include="Binaries\linux_64\libpng16.so" />
-        <None Remove="Binaries\linux_64\libSDL2-2.0.so.0.12.0" />
         <EmbeddedResource Include="Binaries\linux_64\libSDL2.so" />
-        <None Remove="Binaries\linux_64\libSDL2_image-2.0.so.0.2.3" />
         <EmbeddedResource Include="Binaries\linux_64\libSDL2_image.so" />
-        <None Remove="Binaries\linux_64\libSDL2_mixer-2.0.so.0.2.2" />
         <EmbeddedResource Include="Binaries\linux_64\libSDL2_mixer.so" />
-        <None Remove="Binaries\linux_64\libtiff.so.5.5.0" />
         <EmbeddedResource Include="Binaries\linux_64\libtiff.so" />
-        <None Remove="Binaries\linux_64\libvorbis.so.0.4.8" />
         <EmbeddedResource Include="Binaries\linux_64\libvorbis.so" />
-        <None Remove="Binaries\linux_64\libvorbisfile.so.3.3.7" />
         <EmbeddedResource Include="Binaries\linux_64\libvorbisfile.so" />
-        <None Remove="Binaries\linux_64\libwebp.so.7.1.0" />
         <EmbeddedResource Include="Binaries\linux_64\libwebp.so" />
-        <None Remove="Binaries\linux_64\libz.so.1.2.11" />
         <EmbeddedResource Include="Binaries\linux_64\libz.so" />
-        <None Remove="Binaries\linux_64\libSDL2_gpu.so" />
         <EmbeddedResource Include="Binaries\linux_64\libSDL2_gpu.so" />
-        <None Remove="Binaries\linux_64\libogg.so" />
         <EmbeddedResource Include="Binaries\linux_64\libogg.so" />
     </ItemGroup>
 
@@ -89,16 +50,18 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        
         <PackageReference Include="ModuleInit.Fody" Version="2.1.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="System.Text.Json" Version="4.7.1" />
+        
+        <PackageReference Include="System.Text.Json" Version="4.7.2" />
     </ItemGroup>
 
     <ItemGroup>
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-            <_Parameter1>Chroma</_Parameter1> <!-- We use the value of AssemblyName to declare the value of the attribute -->
+            <_Parameter1>Chroma</_Parameter1>
         </AssemblyAttribute>
     </ItemGroup>
 </Project>

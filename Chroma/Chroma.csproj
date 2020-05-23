@@ -46,4 +46,8 @@
     <EmbeddedResource Include="Resources\shader\default.frag" />
     <EmbeddedResource Include="Resources\shader\default.vert" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="4.7.2" />
+  </ItemGroup>
 </Project>

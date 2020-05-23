@@ -47,12 +47,9 @@ namespace Chroma.Graphics
             SDL_gpu.GPU_SetCamera(CurrentRenderTarget, ref camera.GpuCamera);
 
             drawingLogic?.Invoke();
-            
+
             SDL_gpu.GPU_SetCamera(CurrentRenderTarget, IntPtr.Zero);
         }
-
-        public void DeactivateShader()
-            => SDL_gpu.GPU_ActivateShaderProgram(0, IntPtr.Zero);
 
         public void Clear(Color color)
             => SDL_gpu.GPU_ClearRGBA(CurrentRenderTarget, color.R, color.G, color.B, color.A);
@@ -405,6 +402,9 @@ namespace Chroma.Graphics
                 x += info.Advance.X;
             }
         }
+
+        public void DrawString(TrueTypeFont font, string text, Vector2 position, Color color)
+            => DrawString(font, text, position, (c, i, p, g) => new GlyphTransformData(p) {Color = color});
 
         public void DrawBatch(DrawOrder order = DrawOrder.BackToFront, bool discardBatchAfterUse = true)
         {

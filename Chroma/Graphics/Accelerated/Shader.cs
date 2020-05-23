@@ -82,6 +82,9 @@ namespace Chroma.Graphics.Accelerated
             }
         }
 
+        public static void Deactivate()
+            => SDL_gpu.GPU_ActivateShaderProgram(0, IntPtr.Zero);
+
         public void Activate()
         {
             EnsureNotDisposed();
@@ -101,7 +104,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (value.Disposed)
                 throw new ArgumentException("Texture provided was already diposed.");
-            
+
             var loc = SDL_gpu.GPU_GetUniformLocation(ProgramHandle, name);
 
             if (loc == -1)
@@ -109,7 +112,7 @@ namespace Chroma.Graphics.Accelerated
                 Log.Warning($"Float uniform '{name}' does not exist.");
                 return;
             }
-            
+
             SDL_gpu.GPU_SetShaderImage(value.ImageHandle, loc, textureUnit);
         }
 
@@ -170,7 +173,7 @@ namespace Chroma.Graphics.Accelerated
                 return;
             }
 
-            SDL_gpu.GPU_SetUniformfv(loc, 2, 1, new[] { value.X, value.Y });
+            SDL_gpu.GPU_SetUniformfv(loc, 2, 1, new[] {value.X, value.Y});
         }
 
         public void SetUniform(string name, Vector3 value)
@@ -185,7 +188,7 @@ namespace Chroma.Graphics.Accelerated
                 return;
             }
 
-            SDL_gpu.GPU_SetUniformfv(loc, 3, 1, new[] { value.X, value.Y, value.Z });
+            SDL_gpu.GPU_SetUniformfv(loc, 3, 1, new[] {value.X, value.Y, value.Z});
         }
 
         public void SetUniform(string name, Vector4 value)
@@ -200,7 +203,7 @@ namespace Chroma.Graphics.Accelerated
                 return;
             }
 
-            SDL_gpu.GPU_SetUniformfv(loc, 4, 1, new[] { value.X, value.Y, value.Z, value.W });
+            SDL_gpu.GPU_SetUniformfv(loc, 4, 1, new[] {value.X, value.Y, value.Z, value.W});
         }
 
         public void SetUniform(string name, Matrix4x4 value)
@@ -215,7 +218,8 @@ namespace Chroma.Graphics.Accelerated
                 return;
             }
 
-            SDL_gpu.GPU_SetUniformMatrixfv(loc, 1, 4, 4, false, new[] {
+            SDL_gpu.GPU_SetUniformMatrixfv(loc, 1, 4, 4, false, new[]
+            {
                 value.M11, value.M12, value.M13, value.M14,
                 value.M21, value.M22, value.M23, value.M24,
                 value.M31, value.M32, value.M33, value.M34,
@@ -242,20 +246,24 @@ namespace Chroma.Graphics.Accelerated
         {
             EnsureNotDisposed();
 
-            var shaderSourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Chroma.Resources.shader.default.vert");
+            var shaderSourceStream = Assembly.GetExecutingAssembly()
+                .GetManifestResourceStream("Chroma.Resources.shader.default.vert");
 
             using var sr = new StreamReader(shaderSourceStream);
-            VertexShaderObjectHandle = SDL_gpu.GPU_CompileShader(SDL_gpu.GPU_ShaderEnum.GPU_VERTEX_SHADER, sr.ReadToEnd());
+            VertexShaderObjectHandle =
+                SDL_gpu.GPU_CompileShader(SDL_gpu.GPU_ShaderEnum.GPU_VERTEX_SHADER, sr.ReadToEnd());
         }
 
         protected void CompileAndSetDefaultPixelShader()
         {
             EnsureNotDisposed();
 
-            var shaderSourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Chroma.Resources.shader.default.frag");
+            var shaderSourceStream = Assembly.GetExecutingAssembly()
+                .GetManifestResourceStream("Chroma.Resources.shader.default.frag");
 
             using var sr = new StreamReader(shaderSourceStream);
-            PixelShaderObjectHandle = SDL_gpu.GPU_CompileShader(SDL_gpu.GPU_ShaderEnum.GPU_PIXEL_SHADER, sr.ReadToEnd());
+            PixelShaderObjectHandle =
+                SDL_gpu.GPU_CompileShader(SDL_gpu.GPU_ShaderEnum.GPU_PIXEL_SHADER, sr.ReadToEnd());
         }
 
         protected void CreateShaderBlock()

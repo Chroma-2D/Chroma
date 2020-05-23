@@ -1,11 +1,7 @@
-﻿using System.IO;
-using System.Numerics;
-using System.Reflection;
+﻿using System.Numerics;
 using Chroma.Graphics;
 using Chroma.Graphics.Accelerated;
 using Chroma.Graphics.TextRendering;
-using Chroma.Input;
-using Chroma.Input.EventArgs;
 
 namespace Chroma.ExampleApp
 {
@@ -38,7 +34,6 @@ namespace Chroma.ExampleApp
 
         protected override void Draw(RenderContext context)
         {
-
             context.RenderTo(_tgt,
                 () => { context.DrawTexture(_bigpic, Vector2.Zero, Vector2.One, Vector2.Zero, 0f); });
 

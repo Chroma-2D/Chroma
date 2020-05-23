@@ -4206,7 +4206,7 @@ namespace Chroma.Natives.SDL
 		#region SDL_clipboard.h
 
 		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
-		public static extern SDL_bool SDL_HasClipboardText();
+		public static extern bool SDL_HasClipboardText();
 
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetClipboardText", CallingConvention = CallingConvention.Cdecl)]
 		private static extern IntPtr INTERNAL_SDL_GetClipboardText();

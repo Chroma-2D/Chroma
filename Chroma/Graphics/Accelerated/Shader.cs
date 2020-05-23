@@ -95,6 +95,24 @@ namespace Chroma.Graphics.Accelerated
             SDL_gpu.GPU_ActivateShaderProgram(ProgramHandle, ref Block);
         }
 
+        public void SetUniform(string name, Texture value, int textureUnit)
+        {
+            EnsureNotDisposed();
+
+            if (value.Disposed)
+                throw new ArgumentException("Texture provided was already diposed.");
+            
+            var loc = SDL_gpu.GPU_GetUniformLocation(ProgramHandle, name);
+
+            if (loc == -1)
+            {
+                Log.Warning($"Float uniform '{name}' does not exist.");
+                return;
+            }
+            
+            SDL_gpu.GPU_SetShaderImage(value.ImageHandle, loc, textureUnit);
+        }
+
         public void SetUniform(string name, float value)
         {
             EnsureNotDisposed();
@@ -152,7 +170,7 @@ namespace Chroma.Graphics.Accelerated
                 return;
             }
 
-            SDL_gpu.GPU_SetUniformfv(loc, 2, 1, new float[] { value.X, value.Y });
+            SDL_gpu.GPU_SetUniformfv(loc, 2, 1, new[] { value.X, value.Y });
         }
 
         public void SetUniform(string name, Vector3 value)
@@ -167,7 +185,7 @@ namespace Chroma.Graphics.Accelerated
                 return;
             }
 
-            SDL_gpu.GPU_SetUniformfv(loc, 3, 1, new float[] { value.X, value.Y, value.Z });
+            SDL_gpu.GPU_SetUniformfv(loc, 3, 1, new[] { value.X, value.Y, value.Z });
         }
 
         public void SetUniform(string name, Vector4 value)
@@ -182,7 +200,7 @@ namespace Chroma.Graphics.Accelerated
                 return;
             }
 
-            SDL_gpu.GPU_SetUniformfv(loc, 4, 1, new float[] { value.X, value.Y, value.Z, value.W });
+            SDL_gpu.GPU_SetUniformfv(loc, 4, 1, new[] { value.X, value.Y, value.Z, value.W });
         }
 
         public void SetUniform(string name, Matrix4x4 value)
@@ -197,7 +215,7 @@ namespace Chroma.Graphics.Accelerated
                 return;
             }
 
-            SDL_gpu.GPU_SetUniformMatrixfv(loc, 1, 4, 4, false, new float[] {
+            SDL_gpu.GPU_SetUniformMatrixfv(loc, 1, 4, 4, false, new[] {
                 value.M11, value.M12, value.M13, value.M14,
                 value.M21, value.M22, value.M23, value.M24,
                 value.M31, value.M32, value.M33, value.M34,
@@ -270,7 +288,7 @@ namespace Chroma.Graphics.Accelerated
         protected static void EnsureCustomShaderActive()
         {
             if (IsDefaultGpuShaderActive)
-                throw new InvalidOperationException("You cannot retrieve a model-view-projection matrix without a custom shader being active.");
+                throw new InvalidOperationException("This operation requires a custom shader to be active.");
         }
 
         private static unsafe Matrix4x4 CreateMatrixFromPointer(float* mtxptr)

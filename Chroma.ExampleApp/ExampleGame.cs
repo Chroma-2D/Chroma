@@ -2,6 +2,7 @@
 using System.Numerics;
 using System.Reflection;
 using Chroma.Graphics;
+using Chroma.Graphics.Accelerated;
 using Chroma.Graphics.TextRendering;
 using Chroma.Input;
 using Chroma.Input.EventArgs;
@@ -12,6 +13,8 @@ namespace Chroma.ExampleApp
     {
         private TrueTypeFont _ttf;
         private Texture _bigpic;
+        private PixelShader _ps;
+        private Texture _skeltal;
         private string _text;
         private RenderTarget _tgt;
         private Camera _cam;
@@ -27,16 +30,10 @@ namespace Chroma.ExampleApp
 
         protected override void LoadContent()
         {
-            // _ttf = Content.Load<TrueTypeFont>("Fonts/TAHOMA.TTF", 16);
-            var ms = new MemoryStream();
-            var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Content", "Fonts",
-                "TAHOMA.TTF");
-            
-            var fs = new FileStream(path, FileMode.Open);
-            fs.CopyTo(ms);
-            _ttf = new TrueTypeFont(ms, 16);
-
+            _ttf = Content.Load<TrueTypeFont>("Fonts/TAHOMA.TTF", 16);
             _bigpic = Content.Load<Texture>("Textures/bigpic.jpg");
+            _skeltal = Content.Load<Texture>("Textures/skeltal.png");
+            _ps = Content.Load<PixelShader>("Shaders/sh.frag");
         }
 
         protected override void Update(float delta)
@@ -59,11 +56,15 @@ namespace Chroma.ExampleApp
             context.RenderTo(_tgt,
                 () =>
                 {
+                    _ps.Activate();
+                    _ps.SetUniform("tex2", _skeltal, 1);
                     context.WithCamera(_cam,
                         () => { context.DrawTexture(_bigpic, Vector2.Zero, Vector2.One, Vector2.Zero, 0f); });
                 });
 
             context.DrawTexture(_tgt, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
+            context.DeactivateShader();
+
             context.DrawString(_ttf, _text, Vector2.Zero);
         }
 

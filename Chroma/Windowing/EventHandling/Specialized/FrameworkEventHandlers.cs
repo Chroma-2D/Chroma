@@ -10,6 +10,8 @@ namespace Chroma.Windowing.EventHandling.Specialized
         internal FrameworkEventHandlers(EventDispatcher dispatcher)
         {
             Dispatcher = dispatcher;
+            
+            Dispatcher.Discard(SDL2.SDL_EventType.SDL_CLIPBOARDUPDATE);
 
             Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_QUIT, QuitRequested);
         }

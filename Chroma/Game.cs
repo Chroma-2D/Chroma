@@ -42,17 +42,19 @@ namespace Chroma
             LogoTexture = new Texture(resourceStream);
 
             Content = new FileSystemContentProvider(this, "Content");
-            LoadContent();
         }
 
         public void Run()
         {
+            LoadContent();
+            
             Window.Run(() => _fixedUpdateThread.Start());
         }
 
         public void Quit()
         {
             Audio.Dispose();
+            Content.Dispose();
             
             SDL_mixer.Mix_Quit();
             SDL_gpu.GPU_Quit();

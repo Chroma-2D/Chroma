@@ -11,6 +11,8 @@ namespace Chroma.Graphics
 {
     public class RenderContext
     {
+        private Scissor _scissor = Scissor.None;
+        
         internal List<BatchInfo> BatchBuffer { get; }
 
         internal Window Owner { get; }
@@ -26,6 +28,30 @@ namespace Chroma.Graphics
             set => SDL_gpu.GPU_SetLineThickness(value);
         }
 
+        public Scissor Scissor
+        {
+            get => _scissor;
+            set
+            {
+                _scissor = value;
+
+                if (_scissor == Scissor.None)
+                {
+                    SDL_gpu.GPU_UnsetClip(CurrentRenderTarget);
+                }
+                else
+                {
+                    SDL_gpu.GPU_SetClip(
+                        CurrentRenderTarget,
+                        _scissor.X,
+                        _scissor.Y,
+                        _scissor.Width,
+                        _scissor.Height
+                    );
+                }
+            }
+        }
+
         internal RenderContext(Window owner)
         {
             Owner = owner;
@@ -38,7 +64,7 @@ namespace Chroma.Graphics
 
             SDL_gpu.GPU_SetDefaultAnchor(0, 0);
         }
-
+        
         public void WithCamera(Camera camera, Action drawingLogic)
         {
             if (camera == null)

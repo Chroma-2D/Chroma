@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Chroma.Natives.Compression;
 
 namespace Chroma.Natives.Boot
 {
@@ -54,9 +55,15 @@ namespace Chroma.Natives.Boot
 
             foreach (var resourceName in resourceNames)
             {
-                var embeddedLibraryBytes = EmbeddedResources.GetResourceBytes(resourceName);
+                var embeddedPackageStream = EmbeddedResources.GetResourceStream(resourceName);
+
+                var embeddedLibraryBytes = new byte[1024 * 1024 * 8];
+                var ms = new MemoryStream(embeddedLibraryBytes);
                 
-                var fileName = EmbeddedResources.ResourceNameToFileName(resourceName);
+                using (var bzipStream = new BZip2InputStream(embeddedPackageStream))
+                    bzipStream.CopyTo(ms, 512);
+                
+                var fileName = EmbeddedResources.ResourceNameToFileName(resourceName).Replace(".bz2", "");
                 var libraryPath = Path.Combine(targetDir, fileName);
 
                 filePaths.Add(libraryPath);

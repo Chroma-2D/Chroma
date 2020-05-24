@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
@@ -7,42 +7,43 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="Binaries\windows_64\freetype.dll" />
-        <EmbeddedResource Include="Binaries\windows_64\libFLAC-8.dll" />
-        <EmbeddedResource Include="Binaries\windows_64\libjpeg-9.dll" />
-        <EmbeddedResource Include="Binaries\windows_64\libmodplug-1.dll" />
-        <EmbeddedResource Include="Binaries\windows_64\libmpg123-0.dll" />
-        <EmbeddedResource Include="Binaries\windows_64\libogg-0.dll" />
-        <EmbeddedResource Include="Binaries\windows_64\libopus-0.dll" />
-        <EmbeddedResource Include="Binaries\windows_64\libopusfile-0.dll" />
-        <EmbeddedResource Include="Binaries\windows_64\libpng16-16.dll" />
-        <EmbeddedResource Include="Binaries\windows_64\libtiff-5.dll" />
-        <EmbeddedResource Include="Binaries\windows_64\libvorbis-0.dll" />
-        <EmbeddedResource Include="Binaries\windows_64\libvorbisfile-0.dll" />
-        <EmbeddedResource Include="Binaries\windows_64\libwebp-7.dll" />
-        <EmbeddedResource Include="Binaries\windows_64\SDL2.dll" />
-        <EmbeddedResource Include="Binaries\windows_64\SDL2_gpu.dll" />
-        <EmbeddedResource Include="Binaries\windows_64\SDL2_image.dll" />
-        <EmbeddedResource Include="Binaries\windows_64\SDL2_mixer.dll" />
-        <EmbeddedResource Include="Binaries\windows_64\zlib1.dll" />
-        <EmbeddedResource Include="Binaries\linux_64\libFLAC.so" />
-        <EmbeddedResource Include="Binaries\linux_64\libfreetype.so" />
-        <EmbeddedResource Include="Binaries\linux_64\libjpeg.so" />
-        <EmbeddedResource Include="Binaries\linux_64\libmodplug.so" />
-        <EmbeddedResource Include="Binaries\linux_64\libmpg123.so" />
-        <EmbeddedResource Include="Binaries\linux_64\libopus.so" />
-        <EmbeddedResource Include="Binaries\linux_64\libopusfile.so" />
-        <EmbeddedResource Include="Binaries\linux_64\libpng16.so" />
-        <EmbeddedResource Include="Binaries\linux_64\libSDL2.so" />
-        <EmbeddedResource Include="Binaries\linux_64\libSDL2_image.so" />
-        <EmbeddedResource Include="Binaries\linux_64\libSDL2_mixer.so" />
-        <EmbeddedResource Include="Binaries\linux_64\libtiff.so" />
-        <EmbeddedResource Include="Binaries\linux_64\libvorbis.so" />
-        <EmbeddedResource Include="Binaries\linux_64\libvorbisfile.so" />
-        <EmbeddedResource Include="Binaries\linux_64\libwebp.so" />
-        <EmbeddedResource Include="Binaries\linux_64\libz.so" />
-        <EmbeddedResource Include="Binaries\linux_64\libSDL2_gpu.so" />
-        <EmbeddedResource Include="Binaries\linux_64\libogg.so" />
+        <EmbeddedResource Include="Binaries\windows_64\libFLAC-8.dll.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\freetype.dll.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\libjpeg-9.dll.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\libmodplug-1.dll.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\libmpg123-0.dll.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\libogg-0.dll.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\libopus-0.dll.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\libopusfile-0.dll.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\libpng16-16.dll.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\libtiff-5.dll.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\libvorbis-0.dll.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\libvorbisfile-0.dll.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\libwebp-7.dll.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\SDL2.dll.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\SDL2_gpu.dll.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\SDL2_image.dll.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\SDL2_mixer.dll.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\zlib1.dll.bz2" />
+        
+        <EmbeddedResource Include="Binaries\linux_64\libFLAC.so.bz2" />
+        <EmbeddedResource Include="Binaries\linux_64\libfreetype.so.bz2" />
+        <EmbeddedResource Include="Binaries\linux_64\libjpeg.so.bz2" />
+        <EmbeddedResource Include="Binaries\linux_64\libmodplug.so.bz2" />
+        <EmbeddedResource Include="Binaries\linux_64\libmpg123.so.bz2" />
+        <EmbeddedResource Include="Binaries\linux_64\libogg.so.bz2" />
+        <EmbeddedResource Include="Binaries\linux_64\libopus.so.bz2" />
+        <EmbeddedResource Include="Binaries\linux_64\libopusfile.so.bz2" />
+        <EmbeddedResource Include="Binaries\linux_64\libpng16.so.bz2" />
+        <EmbeddedResource Include="Binaries\linux_64\libtiff.so.bz2" />
+        <EmbeddedResource Include="Binaries\linux_64\libSDL2.so.bz2" />
+        <EmbeddedResource Include="Binaries\linux_64\libSDL2_gpu.so.bz2" />
+        <EmbeddedResource Include="Binaries\linux_64\libSDL2_image.so.bz2" />
+        <EmbeddedResource Include="Binaries\linux_64\libSDL2_mixer.so.bz2" />
+        <EmbeddedResource Include="Binaries\linux_64\libvorbis.so.bz2" />
+        <EmbeddedResource Include="Binaries\linux_64\libvorbisfile.so.bz2" />
+        <EmbeddedResource Include="Binaries\linux_64\libwebp.so.bz2" />
+        <EmbeddedResource Include="Binaries\linux_64\libz.so.bz2" />
     </ItemGroup>
 
     <ItemGroup>

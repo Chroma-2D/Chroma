@@ -51,7 +51,7 @@ namespace Chroma.ExampleApp
                 });
 
             _ps.Activate();
-            _ps.SetUniform("CRT_CURVE_AMNTy", .25f);
+            _ps.SetUniform("CRT_CURVE_AMNTy", .15f);
             _ps.SetUniform("CRT_CURVE_AMNTx", .25f);
             context.DrawTexture(_tgt, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
             Shader.Deactivate();

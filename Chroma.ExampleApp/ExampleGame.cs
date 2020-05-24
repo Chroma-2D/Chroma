@@ -2,7 +2,6 @@
 using Chroma.Graphics;
 using Chroma.Graphics.Accelerated;
 using Chroma.Graphics.TextRendering;
-using Chroma.Input;
 using Chroma.Input.EventArgs;
 
 namespace Chroma.ExampleApp

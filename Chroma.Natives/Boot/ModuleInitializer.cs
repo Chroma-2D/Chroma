@@ -28,6 +28,7 @@ namespace Chroma.Natives.Boot
 
             try
             {
+                Console.WriteLine("Please wait. I'm trying to boot...");
                 LoadNatives();
             }
             catch (NativeExtractorException nee)

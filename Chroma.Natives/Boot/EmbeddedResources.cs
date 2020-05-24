@@ -12,6 +12,17 @@ namespace Chroma.Natives.Boot
         public static string[] GetResourceNames()
             => ThisAssembly.GetManifestResourceNames();
 
+        public static string GetNativeExtensionForCurrentPlatform()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                return ".so";
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                return ".dll";
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                return ".dylib";
+            else throw new PlatformNotSupportedException("Currently running platform is not supported.");
+        }
+
         public static Stream GetResourceStream(string fullyQualifiedName)
             => ThisAssembly.GetManifestResourceStream(fullyQualifiedName);
 

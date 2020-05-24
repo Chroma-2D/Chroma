@@ -7,7 +7,10 @@ namespace Chroma.Natives.Boot.Config
     internal class BootConfig
     {
         [JsonPropertyName("natives_in_appdir")]
-        public bool NativesInApplicationDirectory { get; private set; } = true;
+        public bool NativesInApplicationDirectory { get; set; } = true;
+
+        [JsonPropertyName("skip_checksum_verification")]
+        public bool SkipChecksumVerification { get; set; }
 
         [JsonPropertyName("sdl_modules")]
         public SdlModuleConfig SdlModules { get; private set; } = new SdlModuleConfig();

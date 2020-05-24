@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Chroma.Natives.Boot.Config;
 using Chroma.Natives.Compression;
 
 namespace Chroma.Natives.Boot
@@ -56,29 +57,40 @@ namespace Chroma.Natives.Boot
             foreach (var resourceName in resourceNames)
             {
                 var embeddedPackageStream = EmbeddedResources.GetResourceStream(resourceName);
-
+                var bzipStream = new BZip2InputStream(embeddedPackageStream);
+                
                 var embeddedLibraryBytes = new byte[1024 * 1024 * 8];
-                var ms = new MemoryStream(embeddedLibraryBytes);
+                var memoryStream = new MemoryStream(embeddedLibraryBytes);
 
-                using (var bzipStream = new BZip2InputStream(embeddedPackageStream))
-                    bzipStream.CopyTo(ms, 1024);
-
-                var fileName = Path.GetFileNameWithoutExtension(EmbeddedResources.ResourceNameToFileName(resourceName)) +
-                               EmbeddedResources.GetNativeExtensionForCurrentPlatform();
+                var fileName = Path.GetFileNameWithoutExtension(
+                    EmbeddedResources.ResourceNameToFileName(resourceName)
+                ) + EmbeddedResources.GetNativeExtensionForCurrentPlatform();
 
                 var libraryPath = Path.Combine(targetDir, fileName);
                 filePaths.Add(libraryPath);
 
                 if (File.Exists(libraryPath))
                 {
-                    var existingBytes = File.ReadAllBytes(libraryPath);
-
-                    if (NativeIntegrity.ChecksumsMatch(existingBytes, embeddedLibraryBytes))
+                    if (ModuleInitializer.BootConfig.SkipChecksumVerification)
+                    {
                         continue;
+                    }
+                    else
+                    {
+                        var existingBytes = File.ReadAllBytes(libraryPath);
+                        bzipStream.CopyTo(memoryStream, 1024);
 
-                    File.Delete(libraryPath);
+                        if (NativeIntegrity.ChecksumsMatch(existingBytes, embeddedLibraryBytes))
+                            continue;
+                        
+                        File.Delete(libraryPath);
+                    }
                 }
-
+                else
+                {
+                    bzipStream.CopyTo(memoryStream, 1024);
+                }
+                
                 File.WriteAllBytes(libraryPath, embeddedLibraryBytes);
                 Console.WriteLine($"Extracting: {libraryPath}");
             }

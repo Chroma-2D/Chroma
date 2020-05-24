@@ -24,7 +24,7 @@ namespace Chroma.Natives.Boot
         private static string CreateLibraryDirectory()
         {
             string libraryRoot;
-            
+
             if (ModuleInitializer.BootConfig.NativesInApplicationDirectory)
             {
                 var appDirPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -45,8 +45,8 @@ namespace Chroma.Natives.Boot
             {
                 throw new NativeExtractorException("Failed to extract natives to the requested directory.", e);
             }
-            
-            return libraryRoot; 
+
+            return libraryRoot;
         }
 
         private static List<string> ExtractLibraries(IEnumerable<string> resourceNames, string targetDir)
@@ -59,13 +59,14 @@ namespace Chroma.Natives.Boot
 
                 var embeddedLibraryBytes = new byte[1024 * 1024 * 8];
                 var ms = new MemoryStream(embeddedLibraryBytes);
-                
-                using (var bzipStream = new BZip2InputStream(embeddedPackageStream))
-                    bzipStream.CopyTo(ms, 512);
-                
-                var fileName = EmbeddedResources.ResourceNameToFileName(resourceName).Replace(".bz2", "");
-                var libraryPath = Path.Combine(targetDir, fileName);
 
+                using (var bzipStream = new BZip2InputStream(embeddedPackageStream))
+                    bzipStream.CopyTo(ms, 1024);
+
+                var fileName = Path.GetFileNameWithoutExtension(EmbeddedResources.ResourceNameToFileName(resourceName)) +
+                               EmbeddedResources.GetNativeExtensionForCurrentPlatform();
+
+                var libraryPath = Path.Combine(targetDir, fileName);
                 filePaths.Add(libraryPath);
 
                 if (File.Exists(libraryPath))

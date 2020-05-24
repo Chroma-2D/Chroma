@@ -93,6 +93,9 @@ namespace Chroma.Natives.Boot
                 
                 File.WriteAllBytes(libraryPath, embeddedLibraryBytes);
                 Console.WriteLine($"Extracting: {libraryPath}");
+                
+                bzipStream.Close();
+                memoryStream.Close();
             }
 
             return filePaths;

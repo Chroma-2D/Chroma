@@ -16,18 +16,19 @@ namespace Chroma.Graphics
         internal List<BatchInfo> BatchBuffer { get; }
 
         internal Window Owner { get; }
-        internal IntPtr CurrentRenderTarget { get; private set; }
-        internal IntPtr OriginalRenderTarget { get; }
+        internal IntPtr CurrentRenderTarget => TargetStack.Peek();
+
+        internal Stack<IntPtr> TargetStack { get; }
 
         public bool RenderingToWindow
-            => CurrentRenderTarget == OriginalRenderTarget;
+            => CurrentRenderTarget == Owner.RenderTargetHandle;
 
         public float LineThickness
         {
             get => SDL_gpu.GPU_GetLineThickness();
             set => SDL_gpu.GPU_SetLineThickness(value);
         }
-
+        
         public Scissor Scissor
         {
             get => _scissor;
@@ -56,14 +57,20 @@ namespace Chroma.Graphics
         {
             Owner = owner;
 
-            CurrentRenderTarget = owner.RenderTargetHandle;
-            OriginalRenderTarget = owner.RenderTargetHandle;
-
+            TargetStack = new Stack<IntPtr>();
+            TargetStack.Push(owner.RenderTargetHandle);
+            
             BatchBuffer = new List<BatchInfo>();
             LineThickness = 1;
 
             SDL_gpu.GPU_SetDefaultAnchor(0, 0);
         }
+
+        public void ResetProjection()
+            => SDL_gpu.GPU_ResetProjection(CurrentRenderTarget);
+
+        public void SetMatrixMode(MatrixMode mode)
+            => SDL_gpu.GPU_MatrixMode(CurrentRenderTarget, (SDL_gpu.GPU_MatrixModeEnum)mode);
         
         public void WithCamera(Camera camera, Action drawingLogic)
         {
@@ -308,11 +315,9 @@ namespace Chroma.Graphics
                 throw new ArgumentNullException(nameof(target),
                     "You can't just draw an image to a null render target...");
 
-            CurrentRenderTarget = target.TargetHandle;
-
+            TargetStack.Push(target.TargetHandle);
             drawingLogic?.Invoke();
-
-            CurrentRenderTarget = OriginalRenderTarget;
+            TargetStack.Pop();
         }
 
         public void DrawString(ImageFont font, string text, Vector2 position,

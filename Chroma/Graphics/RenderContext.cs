@@ -12,7 +12,7 @@ namespace Chroma.Graphics
     public class RenderContext
     {
         private Scissor _scissor = Scissor.None;
-        
+
         internal List<BatchInfo> BatchBuffer { get; }
 
         internal Window Owner { get; }
@@ -28,7 +28,7 @@ namespace Chroma.Graphics
             get => SDL_gpu.GPU_GetLineThickness();
             set => SDL_gpu.GPU_SetLineThickness(value);
         }
-        
+
         public Scissor Scissor
         {
             get => _scissor;
@@ -59,7 +59,7 @@ namespace Chroma.Graphics
 
             TargetStack = new Stack<IntPtr>();
             TargetStack.Push(owner.RenderTargetHandle);
-            
+
             BatchBuffer = new List<BatchInfo>();
             LineThickness = 1;
 
@@ -71,7 +71,7 @@ namespace Chroma.Graphics
 
         public void SetMatrixMode(MatrixMode mode)
             => SDL_gpu.GPU_MatrixMode(CurrentRenderTarget, (SDL_gpu.GPU_MatrixModeEnum)mode);
-        
+
         public void WithCamera(Camera camera, Action drawingLogic)
         {
             if (camera == null)
@@ -308,6 +308,28 @@ namespace Chroma.Graphics
                 scale.Y
             );
         }
+
+        public void Shear(float x, float y)
+        {
+            SDL_gpu.GPU_LoadIdentity();
+            Matrix4x4 mtx;
+            
+            unsafe
+            {
+                mtx = Matrix.FromFloatPointer(SDL_gpu.GPU_GetCurrentMatrix());
+            }
+            
+            mtx.M21 = x;
+            mtx.M12 = y;
+
+            SDL_gpu.GPU_LoadMatrix(Matrix.ToFloatArray(mtx));
+        }
+
+        public void Push()
+            => SDL_gpu.GPU_PushMatrix();
+
+        public void Pop()
+            => SDL_gpu.GPU_PopMatrix();
 
         public void RenderTo(RenderTarget target, Action drawingLogic)
         {

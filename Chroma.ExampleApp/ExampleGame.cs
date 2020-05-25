@@ -1,7 +1,9 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 using Chroma.Graphics;
 using Chroma.Graphics.Accelerated;
 using Chroma.Graphics.TextRendering;
+using Chroma.Input;
 using Chroma.Input.EventArgs;
 
 namespace Chroma.ExampleApp
@@ -13,6 +15,7 @@ namespace Chroma.ExampleApp
         private PixelShader _ps;
         private RenderTarget _tgt;
         private Scissor _sc;
+        private Camera _cam;
 
         public ExampleGame()
         {
@@ -28,37 +31,48 @@ namespace Chroma.ExampleApp
             _ps = Content.Load<PixelShader>("Shaders/sh.frag");
             _tgt = new RenderTarget((ushort)Window.Properties.Width, (ushort)Window.Properties.Height);
             _sc = new Scissor(10, 10, 100, 100);
+            _cam = new Camera();
         }
 
         protected override void Update(float delta)
         {
             Window.Properties.Title = delta.ToString();
+
+            var r = (ushort)MathF.Abs(Controller.GetAxisValue(0, ControllerAxis.RightTrigger));
+            var l = (ushort)MathF.Abs(Controller.GetAxisValue(0, ControllerAxis.LeftTrigger));
+
+            if (r > 0)
+                Controller.Vibrate(0, 0, r, 100);
+
+            if (l > 0)
+                Controller.Vibrate(0, l, 0, 100);
         }
 
         protected override void Draw(RenderContext context)
         {
-            context.RenderTo(_tgt,
-                () =>
+            context.RenderTo(_tgt, () =>
+            {
+                context.Clear(Color.Black);
+                context.WithCamera(_cam, () =>
                 {
-                    context.Clear(Color.Black);
-
                     context.Scissor = _sc;
                     context.DrawTexture(_bigpic, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
                     context.Scissor = Scissor.None;
-
-                    context.DrawString(_ttf, $"{Window.FPS} FPS", Vector2.Zero);
                 });
+                context.DrawString(_ttf, $"{Window.FPS} FPS", Vector2.Zero);
+            });
 
-            _ps.Activate();
-            _ps.SetUniform("CRT_CURVE_AMNTy", .15f);
-            _ps.SetUniform("CRT_CURVE_AMNTx", .25f);
             context.DrawTexture(_tgt, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
-            Shader.Deactivate();
         }
 
         protected override void MouseMoved(MouseMoveEventArgs e)
         {
-            _sc = new Scissor((short)(e.Position.X), (short)(e.Position.Y), 100, 100);
+            _sc = new Scissor((short)(e.Position.X - _sc.Width / 2), (short)(e.Position.Y - _sc.Height / 2), _sc.Height, _sc.Width);
+        }
+
+        protected override void WheelMoved(MouseWheelEventArgs e)
+        {
+            _sc = new Scissor(_sc.X, _sc.Y, (ushort)(_sc.Width + 10 * e.Motion.Y), (ushort)(_sc.Height + 10 * e.Motion.Y));
         }
     }
 }

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 using Chroma.Graphics;
 using Chroma.Graphics.Accelerated;
 using Chroma.Graphics.TextRendering;
-using Chroma.Input;
 using Chroma.Input.EventArgs;
 
 namespace Chroma.ExampleApp
@@ -22,7 +20,8 @@ namespace Chroma.ExampleApp
 
         public ExampleGame()
         {
-            Graphics.VSyncEnabled = true;
+            Graphics.VSyncEnabled = false;
+            Graphics.LimitFramerate = true;
 
             Window.GoWindowed(1024, 640);
         }
@@ -30,11 +29,12 @@ namespace Chroma.ExampleApp
         protected override void LoadContent()
         {
             _ttf = Content.Load<TrueTypeFont>("Fonts/TAHOMA.TTF", 16);
-            _bigpic = Content.Load<Texture>("Textures/burg.png");
+            _bigpic = Content.Load<Texture>("Textures/bigpic.jpg");
             _ps = Content.Load<PixelShader>("Shaders/sh.frag");
             _tgt = new RenderTarget((ushort)Window.Properties.Width, (ushort)Window.Properties.Height);
             _sc = new Scissor(10, 10, 100, 100);
             _cam = new Camera();
+            _cam.FarZ = 2000;
         }
 
         protected override void Update(float delta)
@@ -47,26 +47,34 @@ namespace Chroma.ExampleApp
             context.RenderTo(_tgt, () =>
             {
                 context.Clear(Color.Black);
+
                 context.WithCamera(_cam, () =>
                 {
-                    context.Rectangle(ShapeMode.Stroke,
-                        new Vector2(0, 0),
-                        64, 64, Color.Red
-                    );
+                    context.Transform.Push();
+                    context.Transform.Translate(new Vector2(_kx, _ky));
+                    {
+                        context.LineThickness = 3;
+                        context.Rectangle(
+                            ShapeMode.Fill,
+                            new Vector2(0), 
+                            128, 
+                            128, 
+                            Color.Red
+                        );
+                    }
+                
+                    context.Transform.Pop();
                 });
-                context.Push();
-                context.Shear(_kx, _ky);
-                context.DrawString(_ttf, $"{Window.FPS} FPS", Vector2.Zero);
-                context.Pop();
+                context.DrawString(_ttf, $"{Window.FPS} FPS", new Vector2(50, 300));
             });
 
-            context.DrawTexture(_tgt, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
+            context.DrawTexture(_tgt, Vector2.Zero, Vector2.One, Vector2.Zero, 0);
         }
 
         protected override void MouseMoved(MouseMoveEventArgs e)
         {
-            _kx = Window.Properties.Width / e.Position.X;
-            _ky = Window.Properties.Height / e.Position.Y;
+            _kx = e.Position.X;
+            _ky = e.Position.Y;
         }
 
         protected override void WheelMoved(MouseWheelEventArgs e)

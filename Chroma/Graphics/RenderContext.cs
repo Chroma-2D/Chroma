@@ -20,6 +20,8 @@ namespace Chroma.Graphics
 
         internal Stack<IntPtr> TargetStack { get; }
 
+        public RenderTransform Transform { get; }
+
         public bool RenderingToWindow
             => CurrentRenderTarget == Owner.RenderTargetHandle;
 
@@ -64,13 +66,9 @@ namespace Chroma.Graphics
             LineThickness = 1;
 
             SDL_gpu.GPU_SetDefaultAnchor(0, 0);
+            
+            Transform = new RenderTransform(this);
         }
-
-        public void ResetProjection()
-            => SDL_gpu.GPU_ResetProjection(CurrentRenderTarget);
-
-        public void SetMatrixMode(MatrixMode mode)
-            => SDL_gpu.GPU_MatrixMode(CurrentRenderTarget, (SDL_gpu.GPU_MatrixModeEnum)mode);
 
         public void WithCamera(Camera camera, Action drawingLogic)
         {
@@ -308,28 +306,6 @@ namespace Chroma.Graphics
                 scale.Y
             );
         }
-
-        public void Shear(float x, float y)
-        {
-            SDL_gpu.GPU_LoadIdentity();
-            Matrix4x4 mtx;
-            
-            unsafe
-            {
-                mtx = Matrix.FromFloatPointer(SDL_gpu.GPU_GetCurrentMatrix());
-            }
-            
-            mtx.M21 = x;
-            mtx.M12 = y;
-
-            SDL_gpu.GPU_LoadMatrix(Matrix.ToFloatArray(mtx));
-        }
-
-        public void Push()
-            => SDL_gpu.GPU_PushMatrix();
-
-        public void Pop()
-            => SDL_gpu.GPU_PopMatrix();
 
         public void RenderTo(RenderTarget target, Action drawingLogic)
         {

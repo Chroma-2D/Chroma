@@ -28,6 +28,11 @@ namespace Chroma.Natives.Boot
 
             try
             {
+                Console.WriteLine("Please wait. I'm trying to boot...");
+                
+                if (BootConfig.SkipChecksumVerification)
+                    Console.WriteLine("Checksum verification disabled. Living on the edge, huh?");
+                
                 LoadNatives();
             }
             catch (NativeExtractorException nee)

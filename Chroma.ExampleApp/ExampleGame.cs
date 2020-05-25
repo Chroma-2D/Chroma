@@ -2,7 +2,6 @@
 using Chroma.Graphics;
 using Chroma.Graphics.Accelerated;
 using Chroma.Graphics.TextRendering;
-using Chroma.Input;
 using Chroma.Input.EventArgs;
 
 namespace Chroma.ExampleApp
@@ -51,7 +50,7 @@ namespace Chroma.ExampleApp
                 });
 
             _ps.Activate();
-            _ps.SetUniform("CRT_CURVE_AMNTy", .25f);
+            _ps.SetUniform("CRT_CURVE_AMNTy", .15f);
             _ps.SetUniform("CRT_CURVE_AMNTx", .25f);
             context.DrawTexture(_tgt, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
             Shader.Deactivate();

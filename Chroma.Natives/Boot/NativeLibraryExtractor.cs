@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Chroma.Natives.Boot.Config;
+using Chroma.Natives.Compression;
 
 namespace Chroma.Natives.Boot
 {
@@ -23,7 +25,7 @@ namespace Chroma.Natives.Boot
         private static string CreateLibraryDirectory()
         {
             string libraryRoot;
-            
+
             if (ModuleInitializer.BootConfig.NativesInApplicationDirectory)
             {
                 var appDirPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -44,8 +46,8 @@ namespace Chroma.Natives.Boot
             {
                 throw new NativeExtractorException("Failed to extract natives to the requested directory.", e);
             }
-            
-            return libraryRoot; 
+
+            return libraryRoot;
         }
 
         private static List<string> ExtractLibraries(IEnumerable<string> resourceNames, string targetDir)
@@ -54,25 +56,42 @@ namespace Chroma.Natives.Boot
 
             foreach (var resourceName in resourceNames)
             {
-                var embeddedLibraryBytes = EmbeddedResources.GetResourceBytes(resourceName);
-                
-                var fileName = EmbeddedResources.ResourceNameToFileName(resourceName);
-                var libraryPath = Path.Combine(targetDir, fileName);
+                var fileName = Path.GetFileNameWithoutExtension(
+                    EmbeddedResources.ResourceNameToFileName(resourceName)
+                ) + EmbeddedResources.GetNativeExtensionForCurrentPlatform();
 
+                var libraryPath = Path.Combine(targetDir, fileName);
                 filePaths.Add(libraryPath);
+
+                var embeddedPackageStream = EmbeddedResources.GetResourceStream(resourceName);
+                var bzipStream = new BZip2InputStream(embeddedPackageStream);
 
                 if (File.Exists(libraryPath))
                 {
-                    var existingBytes = File.ReadAllBytes(libraryPath);
+                    if (ModuleInitializer.BootConfig.SkipChecksumVerification)
+                        continue;
 
+                    var memoryBuffer = new byte[1024 * 1024 * 4];
+                    var memoryStream = new MemoryStream(memoryBuffer);
+                    bzipStream.CopyTo(memoryStream, 1024);
+
+                    var embeddedLibraryBytes = memoryBuffer[0..(int)memoryStream.Position];
+
+                    var existingBytes = File.ReadAllBytes(libraryPath);
                     if (NativeIntegrity.ChecksumsMatch(existingBytes, embeddedLibraryBytes))
                         continue;
 
                     File.Delete(libraryPath);
+                    File.WriteAllBytes(libraryPath, embeddedLibraryBytes);
+                }
+                else
+                {
+                    using (var fs = new FileStream(libraryPath, FileMode.CreateNew, FileAccess.Write))
+                        bzipStream.CopyTo(fs);
                 }
 
-                File.WriteAllBytes(libraryPath, embeddedLibraryBytes);
                 Console.WriteLine($"Extracting: {libraryPath}");
+                bzipStream.Close();
             }
 
             return filePaths;

@@ -7,6 +7,8 @@ namespace Chroma.Input
 {
     public static class Controller
     {
+        public static int DeviceCount => ControllerRegistry.Instance.DeviceCount;
+        
         public static bool CanIgnoreAxisMotion(int playerIndex, ControllerAxis axis, short axisValue)
         {
             var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);

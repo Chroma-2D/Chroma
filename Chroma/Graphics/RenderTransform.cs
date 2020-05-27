@@ -35,7 +35,7 @@ namespace Chroma.Graphics
             SDL_gpu.GPU_MatrixFrustum(mtx, left, right, bottom, top, z_near, z_far);
 
             LoadMatrixByFloatPointer(mtx);
-        }    
+        }
 
         public void Shear(Vector2 vec)
         {

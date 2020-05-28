@@ -16,7 +16,7 @@ namespace Chroma.Graphics.TextRendering
 
         public int Height => Texture.Height;
 
-        public int CharSpacing { get; set; } = 4;
+        public int CharSpacing { get; set; } = 2;
         public int LineMargin { get; set; } = 2;
 
         public ImageFont(string filePath, string alphabet)
@@ -47,7 +47,7 @@ namespace Chroma.Graphics.TextRendering
                 {
                     x = nextStartingX,
                     y = 0,
-                    w = x - nextStartingX - 1,
+                    w = x - nextStartingX,
                     h = Texture.Height
                 };
                 GlyphRectangles.Add(c, rect);

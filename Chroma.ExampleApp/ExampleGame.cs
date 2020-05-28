@@ -1,16 +1,16 @@
 ﻿using System.Drawing;
 using System.Numerics;
 using Chroma.Graphics;
-using Chroma.Graphics.Accelerated;
 using Chroma.Graphics.TextRendering;
 using Chroma.Input.EventArgs;
-using Color = Chroma.Graphics.Color;
 
 namespace Chroma.ExampleApp
 {
     public class ExampleGame : Game
     {
         private TrueTypeFont _ttf;
+        private ImageFont _imf;
+        
         private Texture _bigpic;
         private RenderTarget _tgt;
         private Rectangle _rect;
@@ -29,6 +29,7 @@ namespace Chroma.ExampleApp
         protected override void LoadContent()
         {
             _ttf = Content.Load<TrueTypeFont>("Fonts/TAHOMA.TTF", 16);
+            _imf = Content.Load<ImageFont>("ImageFonts/DialogFont.png", "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 ");
             _bigpic = Content.Load<Texture>("Textures/bigpic.jpg");
             _rect = new Rectangle(256, 256, 256, 128);
             _tgt = new RenderTarget((ushort)Window.Properties.Width, (ushort)Window.Properties.Height);
@@ -50,7 +51,7 @@ namespace Chroma.ExampleApp
             });
 
             context.DrawTexture(_tgt, Vector2.Zero, Vector2.One, Vector2.Zero, 0);
-            context.DrawString(_ttf, $"{Window.FPS} FPS", new Vector2(24));
+            context.DrawString(_imf, $"{Window.FPS} FPS", new Vector2(24));
         }
 
         protected override void MouseMoved(MouseMoveEventArgs e)

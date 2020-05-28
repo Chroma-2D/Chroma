@@ -142,6 +142,10 @@
         <None Update="Content\Textures\bigpic.jpg">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
+
+        <None Update="Content\ImageFonts\DialogFont.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>

@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Chroma.Shine\Chroma.Shine.csproj" />
         <ProjectReference Include="..\Chroma\Chroma.csproj" />
     </ItemGroup>
 
@@ -144,6 +145,10 @@
         </None>
 
         <None Update="Content\ImageFonts\DialogFont.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+
+        <None Update="Content\Animations\skelly.png">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>

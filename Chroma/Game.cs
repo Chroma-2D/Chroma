@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Numerics;
 using System.Reflection;
 using System.Threading;
@@ -22,6 +23,10 @@ namespace Chroma
         public GraphicsManager Graphics { get; }
         public AudioManager Audio { get; }
         public IContentProvider Content { get; }
+
+        public static string LocationOnDisk => Path.GetDirectoryName(
+            Assembly.GetExecutingAssembly().Location
+        );
 
         public int FixedUpdateFrequency { get; protected set; } = 75;
 

@@ -1,63 +1,79 @@
-﻿using System.Drawing;
+﻿using System.IO;
 using System.Numerics;
 using Chroma.Graphics;
+using Chroma.Graphics.Particles;
 using Chroma.Graphics.TextRendering;
+using Chroma.Input;
 using Chroma.Input.EventArgs;
 
 namespace Chroma.ExampleApp
 {
     public class ExampleGame : Game
     {
-        private TrueTypeFont _ttf;
+        private SpriteSheet _ss;
+        private SpriteSheetAnimation _walkRight;
+        private Texture _burg;
+        private ParticleEmitter _emitter;
         private ImageFont _imf;
         
-        private Texture _bigpic;
-        private RenderTarget _tgt;
-        private Rectangle _rect;
-
-        private float _kx;
-        private float _ky;
-
         public ExampleGame()
         {
             Graphics.VSyncEnabled = false;
-            Graphics.LimitFramerate = true;
+            Graphics.LimitFramerate = false;
 
             Window.GoWindowed(1024, 640);
         }
 
         protected override void LoadContent()
         {
-            _ttf = Content.Load<TrueTypeFont>("Fonts/TAHOMA.TTF", 16);
+            _burg = Content.Load<Texture>("Textures/burg.png");
+            
+            _emitter = new ParticleEmitter(_burg);
+            _emitter.MaxParticleTTL = 2000;
+            _emitter.Density = 1200;
+            
+            _ss = new SpriteSheet(
+                Path.Combine(LocationOnDisk, "Content/Animations/skelly.png"),
+                64, 64
+            );
+
+            _walkRight = new SpriteSheetAnimation(_ss, 27, 35, 120);
+            _walkRight.Repeat = true;
+            _ss.Position = new Vector2(30f);
+
             _imf = Content.Load<ImageFont>("ImageFonts/DialogFont.png", "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 ");
-            _bigpic = Content.Load<Texture>("Textures/bigpic.jpg");
-            _rect = new Rectangle(256, 256, 256, 128);
-            _tgt = new RenderTarget((ushort)Window.Properties.Width, (ushort)Window.Properties.Height);
         }
 
         protected override void Update(float delta)
         {
+            _emitter.Update(delta);
+            
             Window.Properties.Title = delta.ToString();
-
-            _rect.X = (int)_kx;
-            _rect.Y = (int)_ky;
+            _walkRight.Update(delta);
         }
 
         protected override void Draw(RenderContext context)
         {
-            context.RenderTo(_tgt, () =>
-            {
-                context.DrawTexture(_bigpic, Vector2.Zero, Vector2.One, Vector2.Zero, 0);
-            });
+            _emitter.Draw(context);
+            _walkRight.Draw(context);
+            context.DrawString(_imf, $"FPS: {Window.FPS}\nPARTICLES: {_emitter.Particles.Count}", new Vector2(8));
+        }
 
-            context.DrawTexture(_tgt, Vector2.Zero, Vector2.One, Vector2.Zero, 0);
-            context.DrawString(_imf, $"{Window.FPS} FPS", new Vector2(24));
+        protected override void KeyPressed(KeyEventArgs e)
+        {
+            if (e.KeyCode == KeyCode.Space)
+            {
+                _walkRight.Play();
+            }
+            else if (e.KeyCode == KeyCode.Return)
+            {
+                _emitter.IsActive = !_emitter.IsActive;
+            }
         }
 
         protected override void MouseMoved(MouseMoveEventArgs e)
         {
-            _kx = e.Position.X;
-            _ky = e.Position.Y;
+            _emitter.SpawnPosition = e.Position;
         }
     }
 }

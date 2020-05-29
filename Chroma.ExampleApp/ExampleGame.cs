@@ -19,18 +19,18 @@ namespace Chroma.ExampleApp
         public ExampleGame()
         {
             Graphics.VSyncEnabled = false;
-            Graphics.LimitFramerate = false;
 
             Window.GoWindowed(1024, 640);
+            Graphics.AutoClearColor = Color.CornflowerBlue;
         }
 
         protected override void LoadContent()
         {
-            _burg = Content.Load<Texture>("Textures/burg.png");
+            _burg = Content.Load<Texture>("Textures/cate.png");
             
             _emitter = new ParticleEmitter(_burg);
             _emitter.MaxParticleTTL = 2000;
-            _emitter.Density = 1200;
+            _emitter.Density = 200;
             
             _ss = new SpriteSheet(
                 Path.Combine(LocationOnDisk, "Content/Animations/skelly.png"),
@@ -47,7 +47,6 @@ namespace Chroma.ExampleApp
         protected override void Update(float delta)
         {
             _emitter.Update(delta);
-            
             Window.Properties.Title = delta.ToString();
             _walkRight.Update(delta);
         }

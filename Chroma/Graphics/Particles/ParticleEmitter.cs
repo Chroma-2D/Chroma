@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Numerics;
 
 namespace Chroma.Graphics.Particles
@@ -8,7 +7,7 @@ namespace Chroma.Graphics.Particles
     public class ParticleEmitter
     {
         protected Random Random { get; set; }
-        
+
         public int EmissionRate { get; set; } = 1;
         public List<Particle> Particles { get; }
 
@@ -16,69 +15,81 @@ namespace Chroma.Graphics.Particles
         public int MaxParticleTTL { get; set; } = 120;
 
         public Vector2 VelocityLimits { get; set; } = new Vector2(200, 400);
-        
         public Vector2 SpawnPosition { get; set; }
-        public Rectangle SpawnAreaLimits { get; set; }
-        
+
         public bool IsActive { get; set; }
         public Texture Texture { get; set; }
+
+        public virtual Vector2 InitialVelocity => new Vector2(
+            Random.Next((int)VelocityLimits.X) * (Random.Next(-1, 1) == -1 ? -1 : 1),
+            Random.Next((int)VelocityLimits.Y) * (Random.Next(-1, 1) == -1 ? -1 : 1)
+        );
+
+        public virtual Vector2 InitialPosition => SpawnPosition;
+        public virtual Vector2 InitialOrigin => new Vector2(Texture.Width / 2, Texture.Height / 2);
+        public virtual Vector2 InitialScale => Vector2.One / 8;
+
+        public virtual Color InitialColor => Color.White;
+        public virtual float InitialRotation => (float)(Random.NextDouble() * 360);
+        public virtual int InitialTTL => Random.Next(MaxParticleTTL);
 
         public ParticleEmitter(Texture texture)
         {
             if (texture.Disposed)
                 throw new ArgumentException("Texture provided was already disposed.", nameof(texture));
 
-            Particles = new List<Particle>();
-            
-            Random = new Random();
-            
             Texture = texture;
             Texture.UseBlending = true;
             Texture.SetBlendingMode(BlendingPreset.NormalAddAlpha);
+            
+            Particles = new List<Particle>();
+            Random = new Random();
         }
 
-        public virtual void Update(float delta)
+        public void Update(float delta)
         {
-            if (!IsActive)
-                return;
-            
             for (var i = 0; i < Particles.Count; i++)
             {
                 var part = Particles[i];
 
-                part.Opacity = part.TTL / (float)MaxParticleTTL;
-                part.Position += part.Velocity * delta * part.Direction;
+                part.Velocity = ProvideVelocity(part);
+                part.Position = ProvidePosition(part, delta);
+                part.Color = ProvideColor(part);
+                part.Scale = ProvideScale(part);
+                part.Rotation = ProvideRotation(part);
+                part.Origin = ProvideOrigin(part);
 
                 part.TTL--;
 
                 if (part.TTL <= 0)
                     Particles.RemoveAt(i);
             }
-            
-            if (Particles.Count < Density)
+
+            if (IsActive)
             {
-                for (var limit = 0; limit < EmissionRate; limit++)
-                    CreateParticle();
+                if (Particles.Count < Density)
+                {
+                    for (var limit = 0; limit < EmissionRate; limit++)
+                        CreateParticle();
+                }
             }
         }
 
         public void Draw(RenderContext context)
         {
-            if (!IsActive)
-                return;
-            
             for (var i = 0; i < Particles.Count; i++)
             {
                 var part = Particles[i];
 
-                Texture.ColorMask = new Color(
-                    255,
-                    255,
-                    255,
-                    (byte)(255 * part.Opacity)
-                );
+                Texture.ColorMask = part.Color;
 
-                context.DrawTexture(Texture, part.Position, part.Scale / 2, new Vector2(Texture.Width / 2, Texture.Height / 2), part.Rotation);
+                context.DrawTexture(
+                    Texture,
+                    part.Position,
+                    part.Scale,
+                    part.Origin,
+                    part.Rotation
+                );
 
                 Texture.ColorMask = Color.White;
             }
@@ -86,44 +97,38 @@ namespace Chroma.Graphics.Particles
 
         protected void CreateParticle()
         {
-            var part = new Particle
-            {
-                Position = ProvidePosition(),
-                Direction = ProvideDirection(),
-                Opacity = 1.0f,
-                Rotation = ProvideRotation(),
-                Scale = Vector2.One,
-                TTL = Random.Next(MaxParticleTTL),
-                Velocity = ProvideVelocity()
-            };
-
-            Particles.Add(part);
+            Particles.Add(new Particle(
+                InitialTTL,
+                InitialRotation,
+                InitialColor,
+                InitialScale,
+                InitialOrigin,
+                InitialPosition,
+                InitialVelocity
+            ));
         }
 
-        protected virtual Vector2 ProvideVelocity()
-            => new Vector2(
-                Random.Next((int)VelocityLimits.X),
-                Random.Next((int)VelocityLimits.Y)
-            );
-
-        protected virtual Vector2 ProvidePosition()
+        protected virtual Color ProvideColor(Particle particle)
         {
-            return SpawnPosition +
-                   new Vector2(
-                       Random.Next(SpawnAreaLimits.X, SpawnAreaLimits.Width),
-                       Random.Next(SpawnAreaLimits.Y, SpawnAreaLimits.Height)
-                   );
+            var color = new Color(particle.Color);
+            color.A = (byte)(255 * ((float)particle.TTL / particle.InitialTTL));
+
+            return color;
         }
 
-        protected virtual Vector2 ProvideDirection()
-        {
-            return new Vector2(
-                Random.Next(-1, 1) == -1 ? -1 : 1,
-                Random.Next(-1, 1) == -1 ? -1 : 1
-            );
-        }
+        protected virtual float ProvideRotation(Particle particle)
+            => particle.Rotation;
+        
+        protected virtual Vector2 ProvideOrigin(Particle particle)
+            => particle.Origin;
 
-        protected virtual float ProvideRotation()
-            => (float)(Random.NextDouble() * 360);
+        protected virtual Vector2 ProvideVelocity(Particle particle)
+            => particle.Velocity;
+
+        protected virtual Vector2 ProvideScale(Particle particle)
+            => particle.InitialScale * ((float)particle.TTL / particle.InitialTTL);
+
+        protected virtual Vector2 ProvidePosition(Particle particle, float deltaTime)
+            => particle.Position + (particle.Velocity * deltaTime);
     }
 }

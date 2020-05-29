@@ -151,6 +151,14 @@
         <None Update="Content\Animations\skelly.png">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
+
+        <None Update="Content\Textures\cate.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+
+        <None Update="Content\Textures\unicorn.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>

@@ -29,17 +29,17 @@ namespace Chroma.Natives.Boot
             try
             {
                 Console.WriteLine("Please wait. I'm trying to boot...");
-                
+
                 if (BootConfig.SkipChecksumVerification)
                     Console.WriteLine("Checksum verification disabled. Living on the edge, huh?");
-                
+
                 LoadNatives();
             }
             catch (NativeExtractorException nee)
             {
                 Console.WriteLine($"{nee.Message}. Inner exception: {nee.InnerException}");
                 Console.WriteLine("Press any key to terminate...");
-                
+
                 Environment.Exit(1);
             }
 
@@ -49,7 +49,7 @@ namespace Chroma.Natives.Boot
         private static void SetupConsoleMode()
         {
             var stdHandle = Windows.GetStdHandle(Windows.STD_OUTPUT_HANDLE);
-            
+
             Windows.GetConsoleMode(stdHandle, out var consoleMode);
             consoleMode |= Windows.ENABLE_PROCESSED_OUTPUT;
             consoleMode |= Windows.ENABLE_VIRTUAL_TERMINAL_PROCESSING;
@@ -72,7 +72,7 @@ namespace Chroma.Natives.Boot
             catch (Exception e)
             {
                 Console.WriteLine($"No boot.json or it was invalid ({e.Message}) defaults created.");
-                
+
                 BootConfig = new BootConfig();
 
                 using var sw = new StreamWriter(bootConfigPath);
@@ -100,9 +100,9 @@ namespace Chroma.Natives.Boot
             {
                 Platform = new LinuxPlatform();
             }
-            else //if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            else if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                throw new PlatformNotSupportedException("Your current platform is not supported by Chroma Natives just yet.");
+                Platform = new MacPlatform();
             }
 
             foreach (var libraryFileName in libraryFileNames)

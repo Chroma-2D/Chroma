@@ -10,6 +10,11 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+      <None Include="Properties\PublishProfiles\FolderProfile 1.pubxml" />
+      <None Include="Properties\PublishProfiles\FolderProfile 2.pubxml" />
+    </ItemGroup>
+    <ItemGroup>
         <None Update="Content\Fonts\8514OEM.FON">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>

@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Drawing;
+using System.Numerics;
 
 namespace Chroma.Graphics.Particles
 {
@@ -24,8 +25,10 @@ namespace Chroma.Graphics.Particles
         public Vector2 Position;
         public Vector2 Velocity;
 
+        public Rectangle TextureSourceRectangle;
+
         public Particle(ParticleEmitter owner, int ttl, float rotation, Color color, Vector2 scale, Vector2 origin, Vector2 position,
-            Vector2 velocity)
+            Vector2 velocity, Rectangle textureSourceRectangle)
         {
             Owner = owner;
             TTL = InitialTTL = ttl;
@@ -35,6 +38,7 @@ namespace Chroma.Graphics.Particles
             Origin = InitialOrigin = origin;
             Position = InitialPosition = position;
             Velocity = InitialVelocity = velocity;
+            TextureSourceRectangle = textureSourceRectangle;
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.Numerics;
 
 namespace Chroma.Graphics.Particles.StateInitializers
@@ -38,7 +39,8 @@ namespace Chroma.Graphics.Particles.StateInitializers
                 InitialScale,
                 InitialOrigin,
                 InitialPosition,
-                InitialVelocity
+                InitialVelocity,
+                Rectangle.Empty
             );
         }
     }

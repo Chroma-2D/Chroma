@@ -96,13 +96,27 @@ namespace Chroma.Graphics.Particles
 
                 Texture.ColorMask = part.Color;
 
-                context.DrawTexture(
-                    Texture,
-                    part.Position,
-                    part.Scale,
-                    part.Origin,
-                    part.Rotation
-                );
+                if (part.TextureSourceRectangle.IsEmpty)
+                {
+                    context.DrawTexture(
+                        Texture,
+                        part.Position,
+                        part.Scale,
+                        part.Origin,
+                        part.Rotation
+                    );
+                }
+                else
+                {
+                    context.DrawTexture(
+                        Texture,
+                        part.Position,
+                        part.Scale,
+                        part.Origin,
+                        part.Rotation,
+                        part.TextureSourceRectangle
+                    );
+                }
 
                 Texture.ColorMask = Color.White;
             }

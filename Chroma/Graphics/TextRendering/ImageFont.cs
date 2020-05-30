@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
 using Chroma.Natives.SDL;
@@ -11,7 +12,7 @@ namespace Chroma.Graphics.TextRendering
         private Log Log => LogManager.GetForCurrentAssembly();
 
         internal Dictionary<char, SDL_gpu.GPU_Rect> GlyphRectangles { get; }
-        
+
         public Texture Texture { get; }
 
         public int Height => Texture.Height;
@@ -56,12 +57,38 @@ namespace Chroma.Graphics.TextRendering
             }
         }
 
+        public Vector2 Measure(string str)
+        {
+            var vec = new Vector2(0, Height);
+
+            for (var i = 0; i < str.Length; i++)
+            {
+                var c = str[i];
+                
+                if (c == '\n')
+                {
+                    vec.Y += Height + LineMargin;
+                    vec.X = 0;
+                    
+                    continue;
+                }
+
+                if (!HasGlyph(c))
+                    continue;
+
+                vec.X += GlyphRectangles[c].w;
+
+                if (i + 1 < str.Length)
+                    vec.X += CharSpacing;
+            }
+
+            return vec;
+        }
+
         public bool HasGlyph(char c)
             => GlyphRectangles.ContainsKey(c);
 
         protected override void FreeManagedResources()
-        {
-            Texture.Dispose();
-        }
+            => Texture.Dispose();
     }
 }

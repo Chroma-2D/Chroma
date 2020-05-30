@@ -1,37 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Chroma.Graphics.Particles.StateInitializers;
 
 namespace Chroma.Graphics.Particles
 {
     public class ParticleEmitter
     {
-        protected Random Random { get; set; }
+        public delegate void ParticleStateIntegrator(Particle particle, float deltaTime);
 
         public int EmissionRate { get; set; } = 1;
-        public List<Particle> Particles { get; }
+
+        private List<Particle> _particles;
+        private List<ParticleStateIntegrator> _stateIntegrators;
+
+        public IReadOnlyList<Particle> Particles => _particles;
+        public IReadOnlyList<ParticleStateIntegrator> StateIntegrators => _stateIntegrators;
+        public ParticleStateInitializer ParticleStateInitializer { get; set; }
 
         public int Density { get; set; } = 60;
         public int MaxParticleTTL { get; set; } = 120;
 
-        public Vector2 VelocityLimits { get; set; } = new Vector2(200, 400);
         public Vector2 SpawnPosition { get; set; }
 
         public bool IsActive { get; set; }
         public Texture Texture { get; set; }
-
-        public virtual Vector2 InitialVelocity => new Vector2(
-            Random.Next((int)VelocityLimits.X) * (Random.Next(-1, 1) == -1 ? -1 : 1),
-            Random.Next((int)VelocityLimits.Y) * (Random.Next(-1, 1) == -1 ? -1 : 1)
-        );
-
-        public virtual Vector2 InitialPosition => SpawnPosition;
-        public virtual Vector2 InitialOrigin => new Vector2(Texture.Width / 2, Texture.Height / 2);
-        public virtual Vector2 InitialScale => Vector2.One / 8;
-
-        public virtual Color InitialColor => Color.White;
-        public virtual float InitialRotation => (float)(Random.NextDouble() * 360);
-        public virtual int InitialTTL => Random.Next(MaxParticleTTL);
 
         public ParticleEmitter(Texture texture)
         {
@@ -41,28 +34,48 @@ namespace Chroma.Graphics.Particles
             Texture = texture;
             Texture.UseBlending = true;
             Texture.SetBlendingMode(BlendingPreset.NormalAddAlpha);
+
+            _stateIntegrators = new List<ParticleStateIntegrator>();
+            _particles = new List<Particle>();
             
-            Particles = new List<Particle>();
-            Random = new Random();
+            ParticleStateInitializer = new RandomizedStateInitializer(this);
+            RegisterIntegrator(BuiltInParticleStateIntegrators.LinearStateIntegrator);
         }
 
-        public void Update(float delta)
+        public void RegisterIntegrator(ParticleStateIntegrator integrator)
+        {
+            if (integrator == null)
+                throw new ArgumentNullException(nameof(integrator), "Cannot register a null integrator.");
+
+            if (!_stateIntegrators.Contains(integrator))
+                _stateIntegrators.Add(integrator);
+        }
+
+        public void UnregisterIntegrator(ParticleStateIntegrator integrator)
+        {
+            if (integrator == null)
+                throw new ArgumentNullException(nameof(integrator), "Cannot unregister a null intergrator.");
+
+            if (_stateIntegrators.Contains(integrator))
+                _stateIntegrators.Remove(integrator);
+        }
+
+        public void UnregisterAllIntegrators()
+            => _stateIntegrators.Clear();
+
+        public virtual void Update(float delta)
         {
             for (var i = 0; i < Particles.Count; i++)
             {
                 var part = Particles[i];
 
-                part.Velocity = ProvideVelocity(part);
-                part.Position = ProvidePosition(part, delta);
-                part.Color = ProvideColor(part);
-                part.Scale = ProvideScale(part);
-                part.Rotation = ProvideRotation(part);
-                part.Origin = ProvideOrigin(part);
+                foreach (var integrator in StateIntegrators)
+                    integrator(part, delta);
 
                 part.TTL--;
 
                 if (part.TTL <= 0)
-                    Particles.RemoveAt(i);
+                    _particles.RemoveAt(i);
             }
 
             if (IsActive)
@@ -75,7 +88,7 @@ namespace Chroma.Graphics.Particles
             }
         }
 
-        public void Draw(RenderContext context)
+        public virtual void Draw(RenderContext context)
         {
             for (var i = 0; i < Particles.Count; i++)
             {
@@ -95,40 +108,9 @@ namespace Chroma.Graphics.Particles
             }
         }
 
-        protected void CreateParticle()
+        protected virtual void CreateParticle()
         {
-            Particles.Add(new Particle(
-                InitialTTL,
-                InitialRotation,
-                InitialColor,
-                InitialScale,
-                InitialOrigin,
-                InitialPosition,
-                InitialVelocity
-            ));
+            _particles.Add(ParticleStateInitializer.Provide());
         }
-
-        protected virtual Color ProvideColor(Particle particle)
-        {
-            var color = new Color(particle.Color);
-            color.A = (byte)(255 * ((float)particle.TTL / particle.InitialTTL));
-
-            return color;
-        }
-
-        protected virtual float ProvideRotation(Particle particle)
-            => particle.Rotation;
-        
-        protected virtual Vector2 ProvideOrigin(Particle particle)
-            => particle.Origin;
-
-        protected virtual Vector2 ProvideVelocity(Particle particle)
-            => particle.Velocity;
-
-        protected virtual Vector2 ProvideScale(Particle particle)
-            => particle.InitialScale * ((float)particle.TTL / particle.InitialTTL);
-
-        protected virtual Vector2 ProvidePosition(Particle particle, float deltaTime)
-            => particle.Position + (particle.Velocity * deltaTime);
     }
 }

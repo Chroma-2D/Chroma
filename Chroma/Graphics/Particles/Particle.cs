@@ -4,6 +4,8 @@ namespace Chroma.Graphics.Particles
 {
     public class Particle
     {
+        public ParticleEmitter Owner { get; }
+        
         public int InitialTTL { get; }
         public float InitialRotation { get; }
         public Color InitialColor { get; }
@@ -14,17 +16,18 @@ namespace Chroma.Graphics.Particles
 
         public int TTL { get; internal set; }
 
-        public float Rotation { get; set; }
-        public Color Color { get; set; }
+        public float Rotation;
+        public Color Color;
 
-        public Vector2 Scale { get; set; }
-        public Vector2 Origin { get; set; }
-        public Vector2 Position { get; set; }
-        public Vector2 Velocity { get; set; }
+        public Vector2 Scale;
+        public Vector2 Origin;
+        public Vector2 Position;
+        public Vector2 Velocity;
 
-        public Particle(int ttl, float rotation, Color color, Vector2 scale, Vector2 origin, Vector2 position,
+        public Particle(ParticleEmitter owner, int ttl, float rotation, Color color, Vector2 scale, Vector2 origin, Vector2 position,
             Vector2 velocity)
         {
+            Owner = owner;
             TTL = InitialTTL = ttl;
             Rotation = InitialRotation = rotation;
             Color = InitialColor = color;

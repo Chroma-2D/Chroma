@@ -159,6 +159,10 @@
         <None Update="Content\Textures\unicorn.png">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
+
+        <None Update="Content\Textures\part.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>

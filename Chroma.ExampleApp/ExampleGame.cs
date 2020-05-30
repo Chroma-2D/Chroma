@@ -26,10 +26,11 @@ namespace Chroma.ExampleApp
 
         protected override void LoadContent()
         {
-            _burg = Content.Load<Texture>("Textures/cate.png");
+            _burg = Content.Load<Texture>("Textures/part.png");
+            _burg.FilteringMode = TextureFilteringMode.NearestNeighbor;
             
             _emitter = new ParticleEmitter(_burg);
-            _emitter.MaxParticleTTL = 2000;
+            _emitter.MaxParticleTTL = 600;
             _emitter.Density = 200;
             
             _ss = new SpriteSheet(

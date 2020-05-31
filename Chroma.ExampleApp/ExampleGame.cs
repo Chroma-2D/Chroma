@@ -19,9 +19,9 @@ namespace Chroma.ExampleApp
         {
         }
 
-        public override Particle Provide()
+        public override Particle CreateParticle()
         {
-            var part = base.Provide();
+            var part = base.CreateParticle();
     
             part.Scale = Vector2.One;
             part.TextureSourceRectangle = SourceRectangle;
@@ -54,7 +54,9 @@ namespace Chroma.ExampleApp
             
             _emitter = new ParticleEmitter(_tgt);
             _emitter.RegisterIntegrator(BuiltInParticleStateIntegrators.FadeOut);
-            _emitter.RegisterIntegrator(BuiltInParticleStateIntegrators.SineCurvePosition);
+            _emitter.RegisterIntegrator(BuiltInParticleStateIntegrators.LinearPositionY);
+            _emitter.RegisterIntegrator(BuiltInParticleStateIntegrators.LinearPositionX);
+            
             _rsi = new RectangleSourceInitializer(_emitter);
             
             _emitter.MaxParticleTTL = 1800;

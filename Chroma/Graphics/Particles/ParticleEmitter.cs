@@ -123,7 +123,7 @@ namespace Chroma.Graphics.Particles
 
         protected virtual void CreateParticle()
         {
-            _particles.Add(ParticleStateInitializer.Provide());
+            _particles.Add(ParticleStateInitializer.CreateParticle());
         }
     }
 }

@@ -6,7 +6,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Chroma.Shine\Chroma.Shine.csproj" />
         <ProjectReference Include="..\Chroma\Chroma.csproj" />
     </ItemGroup>
 

@@ -9,6 +9,6 @@ namespace Chroma.Graphics.Particles
             Emitter = emitter;
         }
 
-        public abstract Particle Provide();
+        public abstract Particle CreateParticle();
     }
 }

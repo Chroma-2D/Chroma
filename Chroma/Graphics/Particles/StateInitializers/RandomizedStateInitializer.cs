@@ -29,7 +29,7 @@ namespace Chroma.Graphics.Particles.StateInitializers
             Random = new Random();
         }
 
-        public override Particle Provide()
+        public override Particle CreateParticle()
         {
             return new Particle(
                 Emitter,

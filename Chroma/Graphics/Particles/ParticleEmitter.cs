@@ -39,7 +39,6 @@ namespace Chroma.Graphics.Particles
             _particles = new List<Particle>();
             
             ParticleStateInitializer = new RandomizedStateInitializer(this);
-            RegisterIntegrator(BuiltInParticleStateIntegrators.LinearStateIntegrator);
         }
 
         public void RegisterIntegrator(ParticleStateIntegrator integrator)

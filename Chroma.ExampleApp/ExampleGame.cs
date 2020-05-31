@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using System.IO;
 using System.Numerics;
 using Chroma.Graphics;
 using Chroma.Graphics.Particles;
@@ -24,6 +23,7 @@ namespace Chroma.ExampleApp
         {
             var part = base.Provide();
     
+            part.Scale = Vector2.One;
             part.TextureSourceRectangle = SourceRectangle;
             part.Origin = new Vector2(SourceRectangle.Width / 2, SourceRectangle.Height / 2);
             
@@ -49,14 +49,16 @@ namespace Chroma.ExampleApp
 
         protected override void LoadContent()
         {
-            _tgt = new RenderTarget(512, 512);
+            _tgt = new RenderTarget(256, 256);
             _tgt.FilteringMode = TextureFilteringMode.NearestNeighbor;
             
             _emitter = new ParticleEmitter(_tgt);
+            _emitter.RegisterIntegrator(BuiltInParticleStateIntegrators.FadeOut);
+            _emitter.RegisterIntegrator(BuiltInParticleStateIntegrators.SineCurvePosition);
             _rsi = new RectangleSourceInitializer(_emitter);
             
             _emitter.MaxParticleTTL = 1800;
-            _emitter.Density = 15;
+            _emitter.Density = 120;
             _emitter.ParticleStateInitializer = _rsi;
             
             _imf = Content.Load<ImageFont>("ImageFonts/DialogFont.png", "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 ");

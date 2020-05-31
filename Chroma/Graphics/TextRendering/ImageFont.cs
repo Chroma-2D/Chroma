@@ -82,6 +82,7 @@ namespace Chroma.Graphics.TextRendering
                     vec.X += CharSpacing;
             }
 
+            vec.X++;
             return vec;
         }
 

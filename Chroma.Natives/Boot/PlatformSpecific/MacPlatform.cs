@@ -31,7 +31,7 @@ namespace Chroma.Natives.Boot.PlatformSpecific
                 $"lib{fileName}",
                 $"lib{fileName}.dylib"
             };
-            
+
             Registry.TryRegister(namesToTry);
         }
     }

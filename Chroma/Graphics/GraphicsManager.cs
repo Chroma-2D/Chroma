@@ -122,6 +122,10 @@ namespace Chroma.Graphics
             var registeredRenderers = new SDL_gpu.GPU_RendererID[renderers];
             SDL_gpu.GPU_GetRegisteredRendererList(registeredRenderers);
 
+            if(registeredRenderers.Length == 0)
+            {
+                Log.Error("Your computer does not support any rendering APIs that Chroma supports.");
+            }
             return registeredRenderers.ToList();
         }
 

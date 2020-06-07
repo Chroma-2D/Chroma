@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Numerics;
 using System.Reflection;
 using System.Threading;
@@ -41,7 +42,7 @@ namespace Chroma
             using var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Chroma.Resources.logo.png");
             LogoTexture = new Texture(resourceStream);
 
-            Content = new FileSystemContentProvider(this, "Content");
+            Content = new FileSystemContentProvider(this);
         }
 
         public void Run()

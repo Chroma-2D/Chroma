@@ -6,7 +6,7 @@ namespace Chroma.Natives.FreeType.Native
 {
     internal static unsafe partial class FT
     {
-        private static NativeLibrary FTL = ModuleInitializer.Platform.Registry.TryRetrieve(true, "libfreetype.so", "freetype.dll");
+        private static NativeLibrary FTL = ModuleInitializer.Platform.Registry.TryRetrieve(true, "libfreetype.so", "freetype.dll", "libfreetype.dylib");
         #region Core API
 
         #region FreeType Version

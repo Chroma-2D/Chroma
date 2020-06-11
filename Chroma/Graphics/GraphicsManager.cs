@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Chroma.Diagnostics.Logging;
 using Chroma.Natives.SDL;
@@ -125,6 +126,8 @@ namespace Chroma.Graphics
             if(registeredRenderers.Length == 0)
             {
                 Log.Error("Your computer does not support any rendering APIs that Chroma supports.");
+                throw new NotSupportedException("None of Chroma's Rendering APIs are supported on this computer. " +
+                    "Make sure you have support for at least OpenGL 3.");
             }
             return registeredRenderers.ToList();
         }

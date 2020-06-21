@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Chroma.Audio;
+using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.Graphics.Accelerated;
 using Chroma.Graphics.TextRendering;
+using Chroma.Graphics.TextRendering.Bitmap;
 using Chroma.MemoryManagement;
 
 namespace Chroma.ContentManagement.FileSystem
@@ -17,6 +19,8 @@ namespace Chroma.ContentManagement.FileSystem
         private readonly HashSet<DisposableResource> _loadedResources;
         private readonly Dictionary<Type, Func<string, object[], object>> _importers;
 
+        private Log Log { get; } = LogManager.GetForCurrentAssembly();
+        
         public string ContentRoot { get; }
 
         public FileSystemContentProvider(Game game, string contentRoot = null)
@@ -33,6 +37,8 @@ namespace Chroma.ContentManagement.FileSystem
 
             if (!Directory.Exists(ContentRoot))
                 Directory.CreateDirectory(ContentRoot);
+            
+            Log.Debug($"ContentRoot seems to be at '{ContentRoot}'.");
 
             _loadedResources = new HashSet<DisposableResource>();
             _importers = new Dictionary<Type, Func<string, object[], object>>();
@@ -124,9 +130,9 @@ namespace Chroma.ContentManagement.FileSystem
                 return ttf;
             });
             
-            _importers.Add(typeof(ImageFont), (path, args) =>
+            _importers.Add(typeof(BitmapFont), (path, args) =>
             {
-                var imFont = new ImageFont(path, (string)args[0]);
+                var imFont = new BitmapFont(path);
                 imFont.Disposing += OnResourceDisposing;
 
                 return imFont;

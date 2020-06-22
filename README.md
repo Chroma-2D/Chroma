@@ -23,6 +23,9 @@ Oh I'm glad you asked! Features include, but are not limited to:
 &nbsp; ▐ Robust Xbox Controller support.  
 &nbsp; ▐ Flexible audio system.  
 
+**Mobile platform support?**  
+Not even considered at the moment. You're free to use [Love2D](https://love2d.org/) though. I really dig its robustness and ease-of-use.
+
 **You got a roadmap or something?**  
 Where we're going we don't need a roadmap.  
 Just watch the Issues page. Whenever I get an idea for a feature or someone suggests one I either throw it away or add it to project taskboards.

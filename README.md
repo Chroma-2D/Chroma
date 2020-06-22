@@ -13,13 +13,13 @@ Oh I'm glad you asked! Features include, but are not limited to:
 &nbsp; ▐ Supports GLSL shaders on any platform. No shader pre-compilation - plain old .frag and .vert.  
 &nbsp; ▐ MIT licensed! Do whatever you want to/with it, I want my name on Chroma, though.  
 &nbsp; ▐ Early feedback sessions suggest no documentation needed to understand the API.  
+&nbsp; ▐ Allows you to draw primitive shapes out-of-box. I'm looking at you, MonoGame.  
 &nbsp; ▐ Err... Is actively developed? At least until I deem it feature-complete.  
 &nbsp; ▐ Generally tries to make the gamedev's life easier rather than harder.  
 &nbsp; ▐ Drawing inspiration from some of the best frameworks out there.  
 &nbsp; ▐ <egoboost\>Very clever native bootloading system.</egoboost\>  
 &nbsp; ▐ FreeType-based TTF and BMFont bitmap font format support.  
 &nbsp; ▐ Easy-to-understand rendering controls.  
-&nbsp; ▐ BMFont bitmap font format support.  
 &nbsp; ▐ Robust Xbox Controller support.  
 &nbsp; ▐ Flexible audio system.  
 

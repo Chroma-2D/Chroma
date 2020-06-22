@@ -30,12 +30,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\logo.png" />
-    <None Remove="Resources\shader\default.frag" />
-    <None Remove="Resources\shader\default.vert" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Chroma.Natives\Chroma.Natives.csproj">
       <IncludeAssets>Chroma.Natives.dll</IncludeAssets>
     </ProjectReference>

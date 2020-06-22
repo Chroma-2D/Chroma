@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -50,6 +51,34 @@ namespace Chroma.Graphics.TextRendering.Bitmap
         public bool HasGlyph(char c)
             => Glyphs.ContainsKey(c);
 
+        public Size Measure(string s)
+        {
+            var maxW = 0;
+            var w = 0;
+            var h = Common.LineHeight;
+
+            foreach (var c in s)
+            {
+                if (c == '\n')
+                {
+                    h += Common.LineHeight;
+                    maxW = w;
+                    w = 0;
+                    continue;
+                }
+
+                if (!HasGlyph(c))
+                    continue;
+
+                w += Glyphs[c].Width + Glyphs[c].HorizontalAdvance + Glyphs[c].OffsetX;
+            }
+
+            if (w > maxW)
+                maxW = w;
+            
+            return new Size(maxW, h);
+        }
+
         protected override void FreeManagedResources()
         {
             Log.Debug($"Disposing {Info.FaceName}.");
@@ -64,7 +93,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
             {
                 if (string.IsNullOrWhiteSpace(line))
                     continue;
-                
+
                 var words = line.Trim().Split(' ').ToList();
                 words.RemoveAll(x => string.IsNullOrWhiteSpace(x));
 
@@ -240,7 +269,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
                 if (_lexer.IsEOL) break;
                 else _lexer.Next();
             }
-            
+
             if (id >= 0)
             {
                 Pages.Add(new BitmapFontPage(id, fileName));
@@ -278,7 +307,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
             Log.Debug("Parsing glyph definition.");
 
             var glyph = new BitmapGlyph();
-            
+
             while (true)
             {
                 switch (_lexer.CurrentKey)
@@ -318,7 +347,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
                     case "chnl":
                         glyph.Channel = GetInteger(_lexer.CurrentValue);
                         break;
-                    
+
                     case "xadvance":
                         glyph.HorizontalAdvance = GetInteger(_lexer.CurrentValue);
                         break;

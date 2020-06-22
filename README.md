@@ -39,7 +39,7 @@ Alternatively, you can check commit history for some API usage examples as well 
 ```
 dotnet new console -n MyGameLongName
 cd MyGameLongName
-dotnet add MyGameLongName.csproj package Chroma -v 0.10.0-alpha
+dotnet add MyGameLongName.csproj package Chroma -v 0.11.0-alpha
 dotnet build
 ```
 For sources [see here](https://vddcore.eu/chroma-docs/chroma-creating-an-empty-project).

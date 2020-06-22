@@ -6,7 +6,9 @@ using System.Threading;
 using Chroma.Audio;
 using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
+using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
+using Chroma.Graphics.TextRendering;
 using Chroma.Input.EventArgs;
 using Chroma.Natives.SDL;
 using Chroma.Windowing;
@@ -16,6 +18,13 @@ namespace Chroma
     public class Game
     {
         private readonly Thread _fixedUpdateThread;
+
+        private Log Log { get; } = LogManager.GetForCurrentAssembly();
+
+        // doesn't make sense to store it here
+        // but i don't give enough fucks to figure out
+        // where it belongs right now
+        internal static TrueTypeFont DefaultFont { get; private set; }
 
         public Texture LogoTexture { get; }
 
@@ -34,6 +43,14 @@ namespace Chroma
         {
             _fixedUpdateThread = new Thread(FixedUpdateThread);
 
+            using var fontResourceStream = Assembly.GetExecutingAssembly()
+                .GetManifestResourceStream("Chroma.Resources.default.ttf");
+
+            using var ms = new MemoryStream();
+            fontResourceStream.CopyTo(ms);
+            
+            DefaultFont = new TrueTypeFont(ms, 24);
+
             Graphics = new GraphicsManager(this);
             Audio = new AudioManager();
 
@@ -43,16 +60,19 @@ namespace Chroma
                 Update = Update
             };
 
-            using var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Chroma.Resources.logo.png");
-            LogoTexture = new Texture(resourceStream);
+            using var logoResourceStream = Assembly.GetExecutingAssembly()
+                .GetManifestResourceStream("Chroma.Resources.logo.png");
+            LogoTexture = new Texture(logoResourceStream);
 
             Content = new FileSystemContentProvider(this);
+
+            AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
         }
 
         public void Run()
         {
             LoadContent();
-            
+
             Window.Run(() => _fixedUpdateThread.Start());
         }
 
@@ -60,11 +80,11 @@ namespace Chroma
         {
             Audio.Dispose();
             Content.Dispose();
-            
+
             SDL_mixer.Mix_Quit();
             SDL_gpu.GPU_Quit();
             SDL2.SDL_Quit();
-            
+
             Environment.Exit(0);
         }
 
@@ -84,6 +104,8 @@ namespace Chroma
                 Vector2.Zero,
                 0f
             );
+            
+            context.DrawTexture(DefaultFont.Atlas, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
         }
 
         protected virtual void LoadContent()
@@ -131,7 +153,7 @@ namespace Chroma
         }
 
         protected virtual void ControllerDisconnected(ControllerEventArgs e)
-        { 
+        {
         }
 
         protected virtual void ControllerButtonPressed(ControllerButtonEventArgs e)
@@ -195,8 +217,14 @@ namespace Chroma
                 {
                     FixedUpdate(waitTime);
                 }
+
                 Thread.Sleep((int)(waitTime * 1000));
             }
+        }
+
+        private void OnDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Log.Error($"Unhandled exception. There are two people who could've fucked this up. You or me.\n\n{e.ExceptionObject}");
         }
     }
 }

@@ -377,6 +377,12 @@ namespace Chroma.Graphics
             }
         }
 
+        public void DrawString(string text, Vector2 position,
+            Func<char, int, Vector2, TrueTypeGlyph, GlyphTransformData> perCharTransform = null)
+        {
+            DrawString(Game.DefaultFont, text, position, perCharTransform);
+        }
+
         public void DrawString(TrueTypeFont font, string text, Vector2 position,
             Func<char, int, Vector2, TrueTypeGlyph, GlyphTransformData> perCharTransform = null)
         {

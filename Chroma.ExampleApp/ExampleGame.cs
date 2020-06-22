@@ -15,12 +15,6 @@ namespace Chroma.ExampleApp
             Graphics.AutoClearColor = Color.CornflowerBlue;
         }
 
-        protected override void Draw(RenderContext context)
-        {
-            context.DrawString("Yay!", new Vector2(16),
-                (c, i, p, g) => { return new GlyphTransformData(p) {Color = Color.Aqua}; });
-        }
-
         protected override void LoadContent()
         {
         }

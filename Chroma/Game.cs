@@ -21,12 +21,13 @@ namespace Chroma
 
         private Log Log { get; } = LogManager.GetForCurrentAssembly();
 
-        // doesn't make sense to store it here
-        // but i don't give enough fucks to figure out
-        // where it belongs right now
-        internal static TrueTypeFont DefaultFont { get; private set; }
+        private static readonly string _welcomeMessage =
+            "Welcome to Chroma Framework.\nTo get started, override Draw and Update methods.";
 
-        public Texture LogoTexture { get; }
+        private static readonly string _versionString = $"v{Assembly.GetExecutingAssembly().GetName().Version}";
+
+        internal static TrueTypeFont DefaultFont { get; private set; }
+        internal static Texture LogoTexture { get; private set; }
 
         public Window Window { get; }
         public GraphicsManager Graphics { get; }
@@ -42,7 +43,6 @@ namespace Chroma
         public Game()
         {
             _fixedUpdateThread = new Thread(FixedUpdateThread);
-            
 
             Graphics = new GraphicsManager(this);
             Audio = new AudioManager();
@@ -52,25 +52,16 @@ namespace Chroma
                 Draw = Draw,
                 Update = Update
             };
-            
-            using var fontResourceStream = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream("Chroma.Resources.default.ttf");
 
-            DefaultFont = new TrueTypeFont(fontResourceStream, 16);
-
-            using var logoResourceStream = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream("Chroma.Resources.logo.png");
-            LogoTexture = new Texture(logoResourceStream);
+            LoadBuiltInResources();
 
             Content = new FileSystemContentProvider(this);
-
             AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
         }
 
         public void Run()
         {
             LoadContent();
-
             Window.Run(() => _fixedUpdateThread.Start());
         }
 
@@ -101,6 +92,34 @@ namespace Chroma
                 Vector2.One,
                 Vector2.Zero,
                 0f
+            );
+
+            context.DrawString(
+                _welcomeMessage,
+                new Vector2(8), (c, i, p, g) =>
+                {
+                    var drawIndex = _welcomeMessage.IndexOf("Draw", StringComparison.Ordinal);
+                    var updateIndex = _welcomeMessage.IndexOf("Update", StringComparison.Ordinal);
+
+                    var color = Color.White;
+
+                    if (i >= drawIndex && i < drawIndex + 4 ||
+                        i >= updateIndex && i < updateIndex + 6)
+                    {
+                        color = Color.Cyan;
+                    }
+
+                    return new GlyphTransformData(p) {Color = color};
+                }
+            );
+
+            var measure = DefaultFont.Measure(_versionString);
+            context.DrawString(
+                _versionString,
+                new Vector2(
+                    Window.Properties.Width - measure.X - 8,
+                    Window.Properties.Height - measure.Y - 8
+                )
             );
         }
 
@@ -218,9 +237,22 @@ namespace Chroma
             }
         }
 
+        private static void LoadBuiltInResources()
+        {
+            using var fontResourceStream = Assembly.GetExecutingAssembly()
+                .GetManifestResourceStream("Chroma.Resources.default.ttf");
+
+            using var logoResourceStream = Assembly.GetExecutingAssembly()
+                .GetManifestResourceStream("Chroma.Resources.logo.png");
+
+            DefaultFont = new TrueTypeFont(fontResourceStream, 16);
+            LogoTexture = new Texture(logoResourceStream);
+        }
+
         private void OnDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            Log.Error($"Unhandled exception. There are two people who could've fucked this up. You or me.\n\n{e.ExceptionObject}");
+            Log.Error(
+                $"Unhandled exception. There are two people who could've fucked this up. You or me.\n\n{e.ExceptionObject}");
         }
     }
 }

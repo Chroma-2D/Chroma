@@ -42,14 +42,7 @@ namespace Chroma
         public Game()
         {
             _fixedUpdateThread = new Thread(FixedUpdateThread);
-
-            using var fontResourceStream = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream("Chroma.Resources.default.ttf");
-
-            using var ms = new MemoryStream();
-            fontResourceStream.CopyTo(ms);
             
-            DefaultFont = new TrueTypeFont(ms, 24);
 
             Graphics = new GraphicsManager(this);
             Audio = new AudioManager();
@@ -59,6 +52,11 @@ namespace Chroma
                 Draw = Draw,
                 Update = Update
             };
+            
+            using var fontResourceStream = Assembly.GetExecutingAssembly()
+                .GetManifestResourceStream("Chroma.Resources.default.ttf");
+
+            DefaultFont = new TrueTypeFont(fontResourceStream, 16);
 
             using var logoResourceStream = Assembly.GetExecutingAssembly()
                 .GetManifestResourceStream("Chroma.Resources.logo.png");
@@ -104,8 +102,6 @@ namespace Chroma
                 Vector2.Zero,
                 0f
             );
-            
-            context.DrawTexture(DefaultFont.Atlas, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
         }
 
         protected virtual void LoadContent()

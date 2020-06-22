@@ -103,15 +103,21 @@ namespace Chroma.Graphics.TextRendering
             InitializeFontData();
         }
 
-        public TrueTypeFont(MemoryStream memoryStream, int size, string alphabet = null)
+        public TrueTypeFont(Stream stream, int size, string alphabet = null)
         {
             Alphabet = alphabet;
             _size = size; // do not use property here to avoid premature atlas building
 
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream), "Stream cannot be null.");
+            
+            using var ms = new MemoryStream();
+            stream.CopyTo(ms);
+            
             // needs to be class-scope property or field
             // because it gets rekt by GC when ran without
             // debugger
-            FaceData = memoryStream.ToArray();
+            FaceData = ms.ToArray();
             fixed (byte* fontPtr = &FaceData[0])
             {
                 FT.FT_New_Memory_Face(

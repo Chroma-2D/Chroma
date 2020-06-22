@@ -28,7 +28,7 @@ Where we're going we don't need a roadmap.
 Just watch the Issues page. Whenever I get an idea for a feature or someone suggests one I either throw it away or add it to project taskboards.
 
 **Are there any examples?**  
-Might surprise you, there are some! For example [this guy](https://github.com/Hacktix) made a PICO-8 emulator called [CHROMA-8](https://github.com/Hacktix/CHROMA-8). That madlad also made an [audio synthesis library](https://github.com/Hacktix/ChromaSynth) and even a [gameboy emulator](https://github.com/Hacktix/ChromaBoy) - all utilizing Chroma! Such dedication. Wow. 
+Might surprise you, there are some! For example [this guy](https://github.com/Hacktix) made a CHIP-8 emulator called [CHROMA-8](https://github.com/Hacktix/CHROMA-8). That madlad also made an [audio synthesis library](https://github.com/Hacktix/ChromaSynth) and even a [GameBoy emulator](https://github.com/Hacktix/ChromaBoy) - all utilizing Chroma! Such dedication. Wow. 
 
 Alternatively, you can check commit history for some API usage examples as well as a ghetto examples I create on my [personal blog](https://vddcore.eu/chroma-docs).
 

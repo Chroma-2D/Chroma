@@ -98,10 +98,20 @@ namespace Chroma.Natives.Boot
 
         private IntPtr RegisterPlatformSpecific(string absoluteFilePath, out NativeLibrary.SymbolLookupDelegate symbolLookup)
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ||
-                RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
                 var handle = Posix.dlopen(absoluteFilePath, Posix.RTLD_NOW | Posix.RTLD_GLOBAL);
+
+                if (handle == IntPtr.Zero)
+                    throw new NativeLoaderException($"Failed to load '{absoluteFilePath}'. dlerror: {Marshal.PtrToStringAnsi(Posix.dlerror())}");
+
+                symbolLookup = Posix.dlsym;
+                return handle;
+            }
+
+            if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                var handle = Posix.dlopen(absoluteFilePath, Posix.RTLD_LAZY | Posix.RTLD_GLOBAL);
 
                 if (handle == IntPtr.Zero)
                     throw new NativeLoaderException($"Failed to load '{absoluteFilePath}'. dlerror: {Marshal.PtrToStringAnsi(Posix.dlerror())}");

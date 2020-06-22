@@ -37,7 +37,7 @@ Alternatively, you can check commit history for some API usage examples as well 
 
 **How about a quick-start guide?**  
 ```
-dotnet new console MyGameLongName
+dotnet new console -n MyGameLongName
 cd MyGameLongName
 dotnet add MyGameLongName.csproj package Chroma -v 0.10.0-alpha
 dotnet build

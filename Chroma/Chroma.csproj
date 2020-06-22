@@ -45,6 +45,8 @@
     <EmbeddedResource Include="Resources\logo.png" />
     <EmbeddedResource Include="Resources\shader\default.frag" />
     <EmbeddedResource Include="Resources\shader\default.vert" />
+    <None Remove="Resources\Avancement2020-Light.ttf" />
+    <None Remove="Resources\OpenSans-Regular.ttf" />
   </ItemGroup>
 
   <ItemGroup>

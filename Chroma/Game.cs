@@ -106,7 +106,7 @@ namespace Chroma
                     if (i >= drawIndex && i < drawIndex + 4 ||
                         i >= updateIndex && i < updateIndex + 6)
                     {
-                        color = Color.Cyan;
+                        color = Color.DodgerBlue;
                     }
 
                     return new GlyphTransformData(p) {Color = color};

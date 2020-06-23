@@ -11,7 +11,7 @@ namespace Chroma.Graphics
         public Camera CurrentCamera { get; private set; }
         public Rectangle? CurrentViewport { get; private set; }
 
-        public RenderTarget(ushort width, ushort height)
+        public RenderTarget(int width, int height)
             : base(width, height)
         {
             TargetHandle = SDL_gpu.GPU_LoadTarget(ImageHandle);

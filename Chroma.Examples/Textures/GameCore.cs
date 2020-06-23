@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.IO;
 using System.Numerics;
 using Chroma;
 using Chroma.ContentManagement.FileSystem;
@@ -20,7 +21,7 @@ namespace Textures
 
         public GameCore()
         {
-            Content = new FileSystemContentProvider(this, "../../../../_common");
+            Content = new FileSystemContentProvider(this, Path.Combine(LocationOnDisk, "../../../../_common"));
         }
 
         protected override void LoadContent()

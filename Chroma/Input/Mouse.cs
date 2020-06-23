@@ -5,6 +5,12 @@ namespace Chroma.Input
 {
     public static class Mouse
     {
+        public static bool IsRelativeModeEnabled
+        {
+            get => SDL2.SDL_GetRelativeMouseMode() == SDL2.SDL_bool.SDL_TRUE;
+            set => SDL2.SDL_SetRelativeMouseMode(value ? SDL2.SDL_bool.SDL_TRUE : SDL2.SDL_bool.SDL_FALSE);
+        }
+        
         public static Vector2 GetPosition()
         {
             _ = SDL2.SDL_GetMouseState(out var x, out var y);

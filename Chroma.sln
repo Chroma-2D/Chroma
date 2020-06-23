@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cameras", "Chroma.Examples\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlyphTransforms", "Chroma.Examples\GlyphTransforms\GlyphTransforms.csproj", "{ABE8F112-5A86-464A-BCE9-439D7BCC5435}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XboxController", "Chroma.Examples\XboxController\XboxController.csproj", "{7BC5ECAF-9CAE-470F-99CD-696FC52FC98D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{ABE8F112-5A86-464A-BCE9-439D7BCC5435}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABE8F112-5A86-464A-BCE9-439D7BCC5435}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABE8F112-5A86-464A-BCE9-439D7BCC5435}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BC5ECAF-9CAE-470F-99CD-696FC52FC98D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BC5ECAF-9CAE-470F-99CD-696FC52FC98D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BC5ECAF-9CAE-470F-99CD-696FC52FC98D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BC5ECAF-9CAE-470F-99CD-696FC52FC98D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,5 +79,6 @@ Global
 		{32DA7E87-0213-44BC-963F-A03D3898BEF1} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
 		{FC00BBBD-42FE-4FD0-8D87-F42917C0CA39} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
 		{ABE8F112-5A86-464A-BCE9-439D7BCC5435} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
+		{7BC5ECAF-9CAE-470F-99CD-696FC52FC98D} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
 	EndGlobalSection
 EndGlobal

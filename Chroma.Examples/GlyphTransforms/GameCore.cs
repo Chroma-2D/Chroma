@@ -64,6 +64,10 @@ namespace GlyphTransforms
                 {
                     // this example uses Bezier nuget library
                     // it's excellent for geometry calculations.
+                    //
+                    // also thanks to using .NET's System.Numerics
+                    // types, interop between different libraries
+                    // and Chroma is easy af. 
                     var circle = new Circle(160);
                     var pointOnCircle = circle.Position((i * 2 + _angle) / 100);
                     var offsetY = 3 * MathF.Sin(_angle + (i * 4));

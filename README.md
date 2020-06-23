@@ -8,7 +8,7 @@ Because MonoGame is so slow to add hassle-free shader compilation on Linux that 
 
 **Alright. What are its features?**  
 Oh I'm glad you asked! Features include, but are not limited to:  
-&nbsp; ▐ Cross-platform support - Windows, Linux *and maybe macOS if someone makes it work*.  
+&nbsp; ▐ Cross-platform support - Windows, Linux and macOS!  
 &nbsp; ▐ Hassle-free framework bring-up allowing you to prototype fast and without bullshit boilerplate.  
 &nbsp; ▐ Supports GLSL shaders on any platform. No shader pre-compilation - plain old .frag and .vert.  
 &nbsp; ▐ MIT licensed! Do whatever you want to/with it, I want my name on Chroma, though.  
@@ -39,7 +39,7 @@ Alternatively, you can check commit history for some API usage examples as well 
 ```
 dotnet new console -n MyGameLongName
 cd MyGameLongName
-dotnet add MyGameLongName.csproj package Chroma -v 0.10.0-alpha
+dotnet add MyGameLongName.csproj package Chroma -v 0.11.0-alpha
 dotnet build
 ```
 For sources [see here](https://vddcore.eu/chroma-docs/chroma-creating-an-empty-project).

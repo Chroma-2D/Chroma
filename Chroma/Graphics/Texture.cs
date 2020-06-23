@@ -42,6 +42,16 @@ namespace Chroma.Graphics
             }
         }
 
+        public Vector2 Center
+        {
+            get
+            {
+                EnsureNotDisposed();
+
+                return new Vector2(Width / 2, Height / 2);
+            }
+        }
+
         public Vector2 Anchor
         {
             get
@@ -400,8 +410,14 @@ namespace Chroma.Graphics
             SnappingMode = TextureSnappingMode.None;
         }
 
-        public Texture(ushort width, ushort height)
+        public Texture(int width, int height)
         {
+            if (width < 0)
+                throw new ArgumentOutOfRangeException(nameof(width), "Width cannot be negative.");
+
+            if (height < 0)
+                throw new ArgumentOutOfRangeException(nameof(height), "Height cannot be negative.");
+
             unsafe
             {
                 var handle = SDL2.SDL_CreateRGBSurface(

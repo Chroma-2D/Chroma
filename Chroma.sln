@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimitiveShapes", "Chroma.E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Textures", "Chroma.Examples\Textures\Textures.csproj", "{62D6549C-D9F2-4EEA-8639-A79333E92417}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RenderTargets", "Chroma.Examples\RenderTargets\RenderTargets.csproj", "{32DA7E87-0213-44BC-963F-A03D3898BEF1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,10 @@ Global
 		{62D6549C-D9F2-4EEA-8639-A79333E92417}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62D6549C-D9F2-4EEA-8639-A79333E92417}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62D6549C-D9F2-4EEA-8639-A79333E92417}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32DA7E87-0213-44BC-963F-A03D3898BEF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32DA7E87-0213-44BC-963F-A03D3898BEF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32DA7E87-0213-44BC-963F-A03D3898BEF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32DA7E87-0213-44BC-963F-A03D3898BEF1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -52,5 +58,6 @@ Global
 		{BA07D909-77BA-4566-825F-AF392530ADFD} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
 		{F45F1CDE-7E2B-4757-8422-AB91231CE1B0} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
 		{62D6549C-D9F2-4EEA-8639-A79333E92417} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
+		{32DA7E87-0213-44BC-963F-A03D3898BEF1} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
 	EndGlobalSection
 EndGlobal

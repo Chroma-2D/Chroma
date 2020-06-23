@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.IO;
+using System.Numerics;
 using Chroma;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Graphics;
@@ -17,7 +18,7 @@ namespace CustomCursor
             // but there is more than one example project
             // so sharing between them is necessary to keep the
             // source tree clean
-            Content = new FileSystemContentProvider(this, "../../../../_common");
+            Content = new FileSystemContentProvider(this, Path.Combine(LocationOnDisk, "../../../../_common"));
         }
 
         protected override void LoadContent()

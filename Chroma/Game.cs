@@ -32,7 +32,7 @@ namespace Chroma
         public Window Window { get; }
         public GraphicsManager Graphics { get; }
         public AudioManager Audio { get; }
-        public IContentProvider Content { get; }
+        public IContentProvider Content { get; protected set; }
 
         public static string LocationOnDisk => Path.GetDirectoryName(
             Assembly.GetExecutingAssembly().Location
@@ -54,8 +54,8 @@ namespace Chroma
             };
 
             LoadBuiltInResources();
-
             Content = new FileSystemContentProvider(this);
+
             AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
         }
 

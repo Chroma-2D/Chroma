@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 using System.Reflection;
 using Chroma.Audio;
-using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.Graphics.Accelerated;
 using Chroma.Graphics.TextRendering;
 using Chroma.Graphics.TextRendering.Bitmap;
+using Chroma.Input;
 using Chroma.MemoryManagement;
 
 namespace Chroma.ContentManagement.FileSystem
@@ -19,9 +20,7 @@ namespace Chroma.ContentManagement.FileSystem
         private readonly HashSet<DisposableResource> _loadedResources;
         private readonly Dictionary<Type, Func<string, object[], object>> _importers;
 
-        private Log Log { get; } = LogManager.GetForCurrentAssembly();
-        
-        public string ContentRoot { get; }
+        public string ContentRoot { get; private set; }
 
         public FileSystemContentProvider(Game game, string contentRoot = null)
         {
@@ -34,11 +33,6 @@ namespace Chroma.ContentManagement.FileSystem
                 var appDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 ContentRoot = Path.Combine(appDirectory, "Content");
             }
-
-            if (!Directory.Exists(ContentRoot))
-                Directory.CreateDirectory(ContentRoot);
-            
-            Log.Debug($"ContentRoot seems to be at '{ContentRoot}'.");
 
             _loadedResources = new HashSet<DisposableResource>();
             _importers = new Dictionary<Type, Func<string, object[], object>>();
@@ -152,6 +146,19 @@ namespace Chroma.ContentManagement.FileSystem
                 music.Disposing += OnResourceDisposing;
 
                 return music;
+            });
+            
+            _importers.Add(typeof(Cursor), (path, args) =>
+            {
+                var hotSpot = new Vector2();
+                
+                if (args.Length >= 1)
+                    hotSpot = (Vector2)args[0];
+                
+                var cursor = new Cursor(path, hotSpot);
+                cursor.Disposing += OnResourceDisposing;
+
+                return cursor;
             });
         }
 

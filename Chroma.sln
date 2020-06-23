@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chroma", "Chroma\Chroma.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chroma.Natives", "Chroma.Natives\Chroma.Natives.csproj", "{A1A33968-8944-4FD7-AF2F-99A712B5F3B1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chroma.ExampleApp", "Chroma.ExampleApp\Chroma.ExampleApp.csproj", "{91BB628A-0AED-4D14-BA78-69967BF3DC47}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Chroma.Examples", "Chroma.Examples", "{8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomCursor", "Chroma.Examples\CustomCursor\CustomCursor.csproj", "{BA07D909-77BA-4566-825F-AF392530ADFD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,15 +25,18 @@ Global
 		{A1A33968-8944-4FD7-AF2F-99A712B5F3B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1A33968-8944-4FD7-AF2F-99A712B5F3B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1A33968-8944-4FD7-AF2F-99A712B5F3B1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{91BB628A-0AED-4D14-BA78-69967BF3DC47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{91BB628A-0AED-4D14-BA78-69967BF3DC47}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{91BB628A-0AED-4D14-BA78-69967BF3DC47}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{91BB628A-0AED-4D14-BA78-69967BF3DC47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA07D909-77BA-4566-825F-AF392530ADFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA07D909-77BA-4566-825F-AF392530ADFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA07D909-77BA-4566-825F-AF392530ADFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA07D909-77BA-4566-825F-AF392530ADFD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BD41D1A7-4878-4659-ADD4-D387313A77CA}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BA07D909-77BA-4566-825F-AF392530ADFD} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
 	EndGlobalSection
 EndGlobal

@@ -22,7 +22,7 @@ namespace CustomCursor
 
         protected override void LoadContent()
         {
-            _cursor = Content.Load<Cursor>("cursor.png");
+            _cursor = Content.Load<Cursor>("Cursors/cursor.png");
         }
 
         protected override void Draw(RenderContext context)

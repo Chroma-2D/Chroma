@@ -56,6 +56,12 @@ namespace Chroma.Windowing
 
         public float FPS => FpsCounter.FPS;
 
+        public bool IsCursorGrabbed
+        {
+            get => SDL2.SDL_GetWindowGrab(Handle) == SDL2.SDL_bool.SDL_TRUE;
+            set => SDL2.SDL_SetWindowGrab(Handle, value ? SDL2.SDL_bool.SDL_TRUE : SDL2.SDL_bool.SDL_FALSE);
+        }
+
         internal Window(Game game)
         {
             Game = game;
@@ -126,7 +132,7 @@ namespace Chroma.Windowing
 
         public void Hide()
             => SDL2.SDL_HideWindow(Handle);
-
+        
         public void CenterScreen()
             => Properties.Position = new Vector2(SDL2.SDL_WINDOWPOS_CENTERED, SDL2.SDL_WINDOWPOS_CENTERED);
 

@@ -382,6 +382,9 @@ namespace Chroma.Graphics
         {
             DrawString(Game.DefaultFont, text, position, perCharTransform);
         }
+        
+        public void DrawString(string text, Vector2 position, Color color)
+            => DrawString(Game.DefaultFont, text, position, (c, i, p, g) => new GlyphTransformData(p) { Color = color });
 
         public void DrawString(TrueTypeFont font, string text, Vector2 position,
             Func<char, int, Vector2, TrueTypeGlyph, GlyphTransformData> perCharTransform = null)

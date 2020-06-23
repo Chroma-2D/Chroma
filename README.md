@@ -1,4 +1,4 @@
-<p align="center"><img src="https://img.vddcore.eu/AnSrjXY.png"></img><br>Chroma Framework</p>
+<p align="center"><img src="https://img.vddcore.eu/AnSrjXY.png"><br>Chroma Framework</p>
 
 **What? Another one?**  
 *Yeah!* ***Another one!*** Chroma is a 2D-focused game development framework. Works just as well for other kinds of 2D applications too. Might as well call it a glorified SDL wrapper for .NET Core 3.1+ if you like.
@@ -33,7 +33,7 @@ Just watch the Issues page. Whenever I get an idea for a feature or someone sugg
 **Are there any examples?**  
 Might surprise you, there are some! For example [this guy](https://github.com/Hacktix) made a CHIP-8 emulator called [CHROMA-8](https://github.com/Hacktix/CHROMA-8). That madlad also made an [audio synthesis library](https://github.com/Hacktix/ChromaSynth) and even a [GameBoy emulator](https://github.com/Hacktix/ChromaBoy) - all utilizing Chroma! Such dedication. Wow. 
 
-Alternatively, you can check commit history for some API usage examples as well as a ghetto examples I create on my [personal blog](https://vddcore.eu/chroma-docs).
+Alternatively, you can check commit history for some API usage examples as well as ghetto examples I create on my [personal website](https://vddcore.eu/chroma-docs). There are [some actual demos here as well](https://github.com/Ciastex/Chroma/tree/master/Chroma.Examples)
 
 **How about a quick-start guide?**  
 ```

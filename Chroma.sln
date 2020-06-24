@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PixelShaders", "Chroma.Exam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParticleSystems", "Chroma.Examples\ParticleSystems\ParticleSystems.csproj", "{6CA88CD9-37B1-42E1-910A-47F2CA764133}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fonts", "Chroma.Examples\Fonts\Fonts.csproj", "{A4B3CF31-1B7A-4984-BA03-F88B1E9D0341}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,10 @@ Global
 		{6CA88CD9-37B1-42E1-910A-47F2CA764133}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6CA88CD9-37B1-42E1-910A-47F2CA764133}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6CA88CD9-37B1-42E1-910A-47F2CA764133}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4B3CF31-1B7A-4984-BA03-F88B1E9D0341}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4B3CF31-1B7A-4984-BA03-F88B1E9D0341}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4B3CF31-1B7A-4984-BA03-F88B1E9D0341}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4B3CF31-1B7A-4984-BA03-F88B1E9D0341}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -94,5 +100,6 @@ Global
 		{7BC5ECAF-9CAE-470F-99CD-696FC52FC98D} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
 		{C95F18C9-09E3-444B-8AF6-F94060F03BDE} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
 		{6CA88CD9-37B1-42E1-910A-47F2CA764133} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
+		{A4B3CF31-1B7A-4984-BA03-F88B1E9D0341} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
 	EndGlobalSection
 EndGlobal

@@ -5,6 +5,8 @@ using Chroma.ContentManagement.FileSystem;
 using Chroma.Graphics;
 using Chroma.Graphics.TextRendering;
 using Chroma.Graphics.TextRendering.Bitmap;
+using Chroma.Input;
+using Chroma.Input.EventArgs;
 
 namespace Fonts
 {
@@ -53,6 +55,14 @@ namespace Fonts
                 new Vector2(8, 164),
                 Color.Lime
             );
+        }
+
+        protected override void KeyPressed(KeyEventArgs e)
+        {
+            if (e.KeyCode == KeyCode.Space)
+            {
+                _plasticBag.UseKerning = !_plasticBag.UseKerning;
+            }
         }
     }
 }

@@ -23,7 +23,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlyphTransforms", "Chroma.E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XboxController", "Chroma.Examples\XboxController\XboxController.csproj", "{7BC5ECAF-9CAE-470F-99CD-696FC52FC98D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shaders", "Chroma.Examples\Shaders\Shaders.csproj", "{C95F18C9-09E3-444B-8AF6-F94060F03BDE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PixelShaders", "Chroma.Examples\PixelShaders\PixelShaders.csproj", "{C95F18C9-09E3-444B-8AF6-F94060F03BDE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

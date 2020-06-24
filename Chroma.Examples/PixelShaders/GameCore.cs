@@ -8,7 +8,7 @@ using Chroma.Graphics.Accelerated;
 using Chroma.Input;
 using Chroma.Input.EventArgs;
 
-namespace Shaders
+namespace PixelShaders
 {
     public class GameCore : Game
     {

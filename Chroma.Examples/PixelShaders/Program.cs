@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Shaders
+namespace PixelShaders
 {
     internal class Program
     {

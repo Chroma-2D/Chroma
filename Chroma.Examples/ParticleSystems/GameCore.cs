@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Numerics;
 using Chroma;
@@ -18,23 +19,25 @@ namespace ParticleSystems
         public GameCore()
         {
             Content = new FileSystemContentProvider(this, Path.Combine(LocationOnDisk, "../../../../_common"));
-
-            Graphics.LimitFramerate = false;
-            Graphics.VSyncEnabled = false;
         }
         
+        // Please see Chroma/Graphics/Particles/StateInitializers/RandomizedStateInitializer
+        // for how to implement a working particle state initializer.
+        //
+        // You can assign a new particle state initializer while instantiating
+        // the particle emitter.
+        //
         protected override void LoadContent()
         {
             _particle = Content.Load<Texture>("Textures/part.png");
             _particle.FilteringMode = TextureFilteringMode.NearestNeighbor;
             _emitter = new ParticleEmitter(_particle);
-            _emitter.Density = 20000;
-            _emitter.EmissionRate = 500;
+            _emitter.Density = 500;
+            _emitter.EmissionRate = 10;
             
-            _emitter.RegisterIntegrator(BuiltInParticleStateIntegrators.LinearPositionX);
-            _emitter.RegisterIntegrator(BuiltInParticleStateIntegrators.LinearPositionY);
             _emitter.RegisterIntegrator(BuiltInParticleStateIntegrators.ScaleDown);
             _emitter.RegisterIntegrator(BuiltInParticleStateIntegrators.FadeOut);
+            _emitter.RegisterIntegrator(CustomStateIntegrator);
         }
 
         protected override void Draw(RenderContext context)
@@ -55,6 +58,14 @@ namespace ParticleSystems
             _emitter.SpawnPosition = Mouse.GetPosition();
 
             _emitter.Update(delta);
+        }
+
+        private void CustomStateIntegrator(Particle part, float delta)
+        {
+            part.Position.X += part.Velocity.X * 5 * delta;
+            part.Position.Y += part.Velocity.Y * MathF.Sin(Window.Properties.Width / part.Position.X) * delta;
+
+            part.Velocity.X *=  (float)part.TTL / part.InitialTTL;
         }
     }
 }

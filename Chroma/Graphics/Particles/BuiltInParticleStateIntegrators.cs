@@ -1,5 +1,3 @@
-using System;
-
 namespace Chroma.Graphics.Particles
 {
     public static class BuiltInParticleStateIntegrators

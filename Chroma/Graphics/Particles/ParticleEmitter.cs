@@ -26,7 +26,7 @@ namespace Chroma.Graphics.Particles
         public bool IsActive { get; set; }
         public Texture Texture { get; set; }
 
-        public ParticleEmitter(Texture texture)
+        public ParticleEmitter(Texture texture, ParticleStateInitializer initializer = null)
         {
             if (texture.Disposed)
                 throw new ArgumentException("Texture provided was already disposed.", nameof(texture));
@@ -36,9 +36,9 @@ namespace Chroma.Graphics.Particles
             Texture.SetBlendingMode(BlendingPreset.NormalAddAlpha);
 
             _stateIntegrators = new List<ParticleStateIntegrator>();
-            _particles = new List<Particle>();
+            _particles = new List<Particle>(1200);
             
-            ParticleStateInitializer = new RandomizedStateInitializer(this);
+            ParticleStateInitializer = initializer ?? new RandomizedStateInitializer(this);
         }
 
         public void RegisterIntegrator(ParticleStateIntegrator integrator)

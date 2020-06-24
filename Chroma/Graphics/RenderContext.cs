@@ -358,12 +358,21 @@ namespace Chroma.Graphics
                 if (perCharTransform != null)
                     transform = perCharTransform(c, i, pos, glyph);
 
+                var kerningAmount = 0f;
+                if (i != 0 && font.UseKerning)
+                {
+                    var kerning = font.GetKerning(text[i - 1], text[i]);
+
+                    if (kerning != null)
+                        kerningAmount = kerning.Value.Amount;
+                }
+
                 SDL_gpu.GPU_SetColor(pageTexture.ImageHandle, Color.ToSdlColor(transform.Color));
                 SDL_gpu.GPU_BlitTransformX(
                     pageTexture.ImageHandle,
                     ref rect,
                     CurrentRenderTarget,
-                    transform.Position.X + glyph.OffsetX,
+                    transform.Position.X + glyph.OffsetX + kerningAmount,
                     transform.Position.Y + glyph.OffsetY,
                     transform.Origin.X,
                     transform.Origin.Y,
@@ -382,9 +391,7 @@ namespace Chroma.Graphics
 
         public void DrawString(string text, Vector2 position,
             Func<char, int, Vector2, TrueTypeGlyph, GlyphTransformData> perCharTransform = null)
-        {
-            DrawString(Game.DefaultFont, text, position, perCharTransform);
-        }
+            => DrawString(Game.DefaultFont, text, position, perCharTransform);
 
         public void DrawString(string text, Vector2 position, Color color)
             => DrawString(Game.DefaultFont, text, position, (c, i, p, g) => new GlyphTransformData(p) {Color = color});

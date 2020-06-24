@@ -21,10 +21,15 @@ namespace Chroma.Graphics.TextRendering.Bitmap
 
         public BitmapFontInfo Info { get; private set; }
         public BitmapFontCommon Common { get; private set; }
+
         public int DeclaredCharCount { get; private set; }
+        public int DeclaredKerningCount { get; private set; }
+
+        public bool UseKerning { get; set; }
 
         public List<BitmapFontPage> Pages { get; }
         public Dictionary<char, BitmapGlyph> Glyphs { get; }
+        public List<BitmapFontKerningPair> Kernings { get; }
 
         public BitmapFont(string fileName)
         {
@@ -32,6 +37,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
 
             Pages = new List<BitmapFontPage>();
             Glyphs = new Dictionary<char, BitmapGlyph>();
+            Kernings = new List<BitmapFontKerningPair>();
 
             using (var sr = new StreamReader(FileName))
                 _lines = sr.ReadToEnd().Split('\n').ToList();
@@ -42,7 +48,9 @@ namespace Chroma.Graphics.TextRendering.Bitmap
                 {"common", ParseFontCommons},
                 {"page", ParsePage},
                 {"chars", ParseCharCount},
-                {"char", ParseChar}
+                {"char", ParseChar},
+                {"kernings", ParseKerningCount},
+                {"kerning", ParseKerningInfo}
             };
 
             ParseFontDefinition();
@@ -50,6 +58,9 @@ namespace Chroma.Graphics.TextRendering.Bitmap
 
         public bool HasGlyph(char c)
             => Glyphs.ContainsKey(c);
+
+        public BitmapFontKerningPair? GetKerning(char first, char second)
+            => Kernings.FirstOrDefault(x => x.First == first && x.Second == second);
 
         public Size Measure(string s)
         {
@@ -75,7 +86,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
 
             if (w > maxW)
                 maxW = w;
-            
+
             return new Size(maxW, h);
         }
 
@@ -117,7 +128,6 @@ namespace Chroma.Graphics.TextRendering.Bitmap
         private void ParseFontInformation()
         {
             Info = new BitmapFontInfo();
-            Log.Debug("Parsing font information block.");
 
             while (true)
             {
@@ -184,7 +194,6 @@ namespace Chroma.Graphics.TextRendering.Bitmap
         private void ParseFontCommons()
         {
             Common = new BitmapFontCommon();
-            Log.Debug("Parsing font commons block.");
 
             while (true)
             {
@@ -244,7 +253,6 @@ namespace Chroma.Graphics.TextRendering.Bitmap
         {
             var id = -1;
             var fileName = string.Empty;
-            Log.Debug("Parsing font page definition.");
 
             while (true)
             {
@@ -282,8 +290,6 @@ namespace Chroma.Graphics.TextRendering.Bitmap
 
         private void ParseCharCount()
         {
-            Log.Debug("Parsing char count declaration.");
-
             while (true)
             {
                 switch (_lexer.CurrentKey)
@@ -304,8 +310,6 @@ namespace Chroma.Graphics.TextRendering.Bitmap
 
         private void ParseChar()
         {
-            Log.Debug("Parsing glyph definition.");
-
             var glyph = new BitmapGlyph();
 
             while (true)
@@ -362,6 +366,58 @@ namespace Chroma.Graphics.TextRendering.Bitmap
             }
 
             Glyphs.Add(glyph.CodePoint, glyph);
+        }
+
+        private void ParseKerningCount()
+        {
+            while (true)
+            {
+                switch (_lexer.CurrentKey)
+                {
+                    case "count":
+                        DeclaredKerningCount = GetInteger(_lexer.CurrentValue);
+                        break;
+
+                    default:
+                        Log.Warning($"Unexpected kerning count parameter '{_lexer.CurrentKey}'.");
+                        break;
+                }
+
+                if (_lexer.IsEOL) break;
+                else _lexer.Next();
+            }
+        }
+
+        private void ParseKerningInfo()
+        {
+            var kerning = new BitmapFontKerningPair();
+
+            while (true)
+            {
+                switch (_lexer.CurrentKey)
+                {
+                    case "first":
+                        kerning.First = (char)GetInteger(_lexer.CurrentValue);
+                        break;
+
+                    case "second":
+                        kerning.Second = (char)GetInteger(_lexer.CurrentValue);
+                        break;
+
+                    case "amount":
+                        kerning.Amount = GetInteger(_lexer.CurrentValue);
+                        break;
+
+                    default:
+                        Log.Warning($"Unexpected kerning info parameter '{_lexer.CurrentKey}'.");
+                        break;
+                }
+
+                if (_lexer.IsEOL) break;
+                else _lexer.Next();
+            }
+
+            Kernings.Add(kerning);
         }
 
         private bool GetBoolean(string value)

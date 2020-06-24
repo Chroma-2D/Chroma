@@ -13,21 +13,26 @@ namespace Shaders
     public class GameCore : Game
     {
         private RenderTarget _target;
-        private PixelShader _screenShader;
+        private PixelShader _crtShader;
+        private PixelShader _tintShader;
         private Texture _burger;
         
         private float _rotation;
-        private bool _shaderEnabled;
+        private bool _crtShaderEnabled;
 
         public GameCore()
         {
             Content = new FileSystemContentProvider(this, Path.Combine(LocationOnDisk, "../../../../_common"));
+
+            Graphics.LimitFramerate = false;
+            Graphics.VSyncEnabled = false;
         }
         
         protected override void LoadContent()
         {
             _target = new RenderTarget(Window.Properties.Width, Window.Properties.Height);
-            _screenShader = Content.Load<PixelShader>("Shaders/scanline.frag");
+            _crtShader = Content.Load<PixelShader>("Shaders/scanline.frag");
+            _tintShader = Content.Load<PixelShader>("Shaders/tint.frag");
             _burger = Content.Load<Texture>("Textures/burg.png");
         }
         
@@ -43,21 +48,37 @@ namespace Shaders
         {
             context.RenderTo(_target, () =>
             {
-                context.Clear(Color.DodgerBlue);
-                context.DrawTexture(_burger, new Vector2(64) + _burger.Center, Vector2.One, _burger.Center, _rotation);
-                context.DrawString("Use F1 to toggle the pixel shader on and off.", new Vector2(8));
+                context.Clear(new Color(20, 20, 20));
+                
+                _tintShader.Activate();
+                _tintShader.SetUniform("mouseLoc", Mouse.GetPosition() / Window.Properties.Width);
+                    context.DrawTexture(
+                        _burger, 
+                        Window.Properties.Center - (_burger.Center / 2),
+                        Vector2.One,
+                        _burger.Center,
+                        _rotation
+                    );
+                Shader.Deactivate();
+                
+                context.DrawString(
+                    "Use <F1> to toggle the CRT shader on and off.\n" +
+                    "Move mouse horizontally to tweak the burger's green channel.\n" +
+                    "Move mouse vertically to tweak the burger's red channel.", 
+                    new Vector2(8)
+                );
             });
 
-            if (_shaderEnabled)
+            if (_crtShaderEnabled)
             {
-                _screenShader.Activate();
-                _screenShader.SetUniform("CRT_CURVE_AMNTx", 0.3f);
-                _screenShader.SetUniform("CRT_CURVE_AMNTy", 0.2f);
+                _crtShader.Activate();
+                _crtShader.SetUniform("CRT_CURVE_AMNTx", 0.3f);
+                _crtShader.SetUniform("CRT_CURVE_AMNTy", 0.2f);
             }
 
             context.DrawTexture(_target, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
 
-            if (_shaderEnabled)
+            if (_crtShaderEnabled)
             {
                 Shader.Deactivate();
             }
@@ -67,7 +88,7 @@ namespace Shaders
         {
             if (e.KeyCode == KeyCode.F1)
             {
-                _shaderEnabled = !_shaderEnabled;
+                _crtShaderEnabled = !_crtShaderEnabled;
             }
         }
     }

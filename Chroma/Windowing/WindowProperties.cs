@@ -152,6 +152,8 @@ namespace Chroma.Windowing
                     || flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP);
             }
         }
+        
+        public Vector2 Center => new Vector2(Width / 2, Height / 2);
 
         internal WindowProperties(Window owner)
         {

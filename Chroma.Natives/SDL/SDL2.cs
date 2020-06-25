@@ -63,42 +63,15 @@ namespace Chroma.Natives.SDL
 			}
 
 			/* We get to do strlen ourselves! */
-			byte* ptr = (byte*)s;
+			var ptr = (byte*)s;
 			while (*ptr != 0)
-			{
 				ptr++;
-			}
 
-			/* TODO: This #ifdef is only here because the equivalent
-			 * .NET 2.0 constructor appears to be less efficient?
-			 * Here's the pretty version, maybe steal this instead:
-			 *
-			string result = new string(
-				(sbyte*) s, // Also, why sbyte???
-				0,
-				(int) (ptr - (byte*) s),
-				System.Text.Encoding.UTF8
-			);
-			 * See the CoreCLR source for more info.
-			 * -flibit
-			 */
-#if NETSTANDARD2_0
 			/* Modern C# lets you just send the byte*, nice! */
-			string result = System.Text.Encoding.UTF8.GetString(
+			var result = System.Text.Encoding.UTF8.GetString(
 				(byte*)s,
 				(int)(ptr - (byte*)s)
 			);
-#else
-			/* Old C# requires an extra memcpy, bleh! */
-			int len = (int) (ptr - (byte*) s);
-			if (len == 0)
-			{
-				return string.Empty;
-			}
-			char* chars = stackalloc char[len];
-			int strLen = System.Text.Encoding.UTF8.GetChars((byte*) s, len, chars, len);
-			string result = new string(chars, 0, strLen);
-#endif
 
 			/* Some SDL functions will malloc, we have to free! */
 			if (freePtr)

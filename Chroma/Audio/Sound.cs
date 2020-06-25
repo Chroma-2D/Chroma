@@ -6,19 +6,21 @@ namespace Chroma.Audio
 {
     public class Sound : AudioSource
     {
-        private byte _volume;
-
         private Log Log => LogManager.GetForCurrentAssembly();
 
         public override byte Volume
         {
-            get => _volume;
+            get => (byte)SDL_mixer.Mix_VolumeChunk(Handle, -1);
             set
             {
                 EnsureNotDisposed();
 
-                _volume = value;
-                SDL_mixer.Mix_VolumeChunk(Handle, AudioManager.NormalizeByteToMixerVolume(_volume));
+                var volume = value;
+                
+                if (volume > 128)
+                    volume = 128;
+                
+                SDL_mixer.Mix_VolumeChunk(Handle, volume);
             }
         }
 

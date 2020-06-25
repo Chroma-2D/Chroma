@@ -44,7 +44,14 @@ namespace Chroma.Audio
         public byte MusicVolume
         {
             get => (byte)SDL_mixer.Mix_VolumeMusic(-1);
-            set => SDL_mixer.Mix_VolumeMusic(NormalizeByteToMixerVolume(value));
+            set
+            {
+                var volume = value;
+                if (volume > 128)
+                    volume = 128;
+
+                SDL_mixer.Mix_VolumeMusic(volume);
+            }
         }
 
         public Music CurrentlyPlayedMusic { get; private set; }
@@ -336,9 +343,6 @@ namespace Chroma.Audio
             else if (sender is Music music)
                 _musicBank.Remove(music.Handle);
         }
-
-        internal static byte NormalizeByteToMixerVolume(byte volume)
-            => (byte)(volume / 255f * 128);
 
         protected override void FreeManagedResources()
         {

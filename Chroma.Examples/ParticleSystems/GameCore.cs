@@ -5,7 +5,9 @@ using System.Numerics;
 using Chroma;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Graphics;
+using Chroma.Graphics.Accelerated;
 using Chroma.Graphics.Particles;
+using Chroma.Graphics.Particles.StateInitializers;
 using Chroma.Input;
 using Chroma.Input.EventArgs;
 
@@ -14,6 +16,8 @@ namespace ParticleSystems
     public class GameCore : Game
     {
         private Texture _particle;
+        private RenderTarget _target;
+        private PixelShader _shader;
         private ParticleEmitter _emitter;
 
         public GameCore()
@@ -29,11 +33,14 @@ namespace ParticleSystems
         //
         protected override void LoadContent()
         {
-            _particle = Content.Load<Texture>("Textures/part.png");
+            _target = new RenderTarget(Window.Properties.Width, Window.Properties.Height);
+            _shader = Content.Load<PixelShader>("Shaders/glow.glsl");
+            
+            _particle = Content.Load<Texture>("Textures/pentagram.png");
             _particle.FilteringMode = TextureFilteringMode.NearestNeighbor;
             _emitter = new ParticleEmitter(_particle);
-            _emitter.Density = 500;
-            _emitter.EmissionRate = 10;
+            _emitter.Density = 5000;
+            _emitter.EmissionRate = 100;
             
             _emitter.RegisterIntegrator(BuiltInParticleStateIntegrators.ScaleDown);
             _emitter.RegisterIntegrator(BuiltInParticleStateIntegrators.FadeOut);
@@ -42,7 +49,17 @@ namespace ParticleSystems
 
         protected override void Draw(RenderContext context)
         {
-            _emitter.Draw(context);
+            context.RenderTo(_target, () =>
+            {
+                context.Clear(Color.Black);
+                
+                _shader.Activate();
+                _emitter.Draw(context);
+                Shader.Deactivate();
+            });
+            
+            context.DrawTexture(_target, Vector2.Zero, Vector2.One, Vector2.Zero, 0);
+            
             context.DrawString(
                 "Move mouse around the window to change particle spawn position.\n" +
                 "Press <LMB> to activate the particle emitter.",
@@ -62,10 +79,16 @@ namespace ParticleSystems
 
         private void CustomStateIntegrator(Particle part, float delta)
         {
+            part.Origin = part.Owner.Texture.Center;
+            
             part.Position.X += part.Velocity.X * 5 * delta;
-            part.Position.Y += part.Velocity.Y * MathF.Sin(Window.Properties.Width / part.Position.X) * delta;
+            part.Position.Y += part.Velocity.Y * delta;
+
+            part.Rotation += part.Velocity.X - part.Velocity.Y * delta;
 
             part.Velocity.X *=  (float)part.TTL / part.InitialTTL;
+            if (part.Velocity.Y < 0)
+                part.Velocity.Y *= -1;
         }
     }
 }

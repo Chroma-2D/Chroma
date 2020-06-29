@@ -160,6 +160,17 @@ namespace Chroma.Windowing
             CenterScreen();
         }
 
+        public void SetIcon(Texture texture)
+        {
+            if (texture.Disposed)
+                throw new InvalidOperationException("The texture provided was already disposed.");
+
+            unsafe
+            {
+                SDL2.SDL_SetWindowIcon(Handle, new IntPtr(texture.Surface));
+            }
+        }
+
         internal void OnClosed()
             => Closed?.Invoke(this, System.EventArgs.Empty);
 

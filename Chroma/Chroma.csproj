@@ -40,6 +40,8 @@
     <EmbeddedResource Include="Resources\shader\default.frag" />
     <EmbeddedResource Include="Resources\shader\default.vert" />
     <EmbeddedResource Include="Resources\default.ttf" />
+    <None Remove="Resources\deficon.png" />
+    <EmbeddedResource Include="Resources\deficon.png" />
   </ItemGroup>
 
   <ItemGroup>

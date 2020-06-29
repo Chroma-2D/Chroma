@@ -28,6 +28,7 @@ namespace Chroma
 
         internal static TrueTypeFont DefaultFont { get; private set; }
         internal static Texture LogoTexture { get; private set; }
+        internal static Texture DefaultIconTexture { get; private set; }
 
         public Window Window { get; }
         public GraphicsManager Graphics { get; }
@@ -54,6 +55,8 @@ namespace Chroma
             };
 
             LoadBuiltInResources();
+            Window.SetIcon(DefaultIconTexture);
+            
             Content = new FileSystemContentProvider(this);
 
             AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
@@ -245,8 +248,13 @@ namespace Chroma
             using var logoResourceStream = Assembly.GetExecutingAssembly()
                 .GetManifestResourceStream("Chroma.Resources.logo.png");
 
+            using var defaultIconStream = Assembly.GetExecutingAssembly()
+                .GetManifestResourceStream("Chroma.Resources.deficon.png");
+            
             DefaultFont = new TrueTypeFont(fontResourceStream, 16);
             LogoTexture = new Texture(logoResourceStream);
+            DefaultIconTexture = new Texture(defaultIconStream);
+            DefaultIconTexture.FilteringMode = TextureFilteringMode.NearestNeighbor;
         }
 
         private void OnDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)

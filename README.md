@@ -19,6 +19,7 @@ Oh I'm glad you asked! Features include, but are not limited to:
 &nbsp; ▐ Drawing inspiration from some of the best frameworks out there.  
 &nbsp; ▐ <egoboost\>Very clever native bootloading system.</egoboost\>  
 &nbsp; ▐ FreeType-based TTF and BMFont bitmap font format support.  
+&nbsp; ▐ Integrates well with .NET ecosystem more often than not.  
 &nbsp; ▐ Easy-to-understand rendering controls.  
 &nbsp; ▐ Robust Xbox Controller support.  
 &nbsp; ▐ Flexible audio system.  
@@ -36,11 +37,27 @@ Might surprise you, there are some! For example [this guy](https://github.com/Ha
 Alternatively, you can check commit history for some API usage examples as well as ghetto examples I create on my [personal website](https://vddcore.eu/chroma-docs). There are [some actual demos here as well](https://github.com/Ciastex/Chroma/tree/master/Chroma.Examples)
 
 **How about a quick-start guide?**  
+Since 30.06.2020 there's a possibility of using the official project template.  
+
+It can be installed using the following command.
+```
+dotnet new -i Chroma.GameTemplate
+```
+
+Afterwards you can create new Chroma projects using the `dotnet new` template.
+```
+dotnet new chromagame -n MyGameLongName
+dotnet build
+dotnet run
+```
+
+Alternatively:  
 ```
 dotnet new console -n MyGameLongName
 cd MyGameLongName
-dotnet add MyGameLongName.csproj package Chroma -v 0.11.0-alpha
+dotnet add MyGameLongName.csproj package Chroma -v 0.14.0-alpha
 dotnet build
 ```
+
 For sources [see here](https://vddcore.eu/chroma-docs/chroma-creating-an-empty-project).
 

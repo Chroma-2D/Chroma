@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <PackageType>Template</PackageType>
-        <PackageVersion>1.0.1</PackageVersion>
+        <PackageVersion>1.0.2</PackageVersion>
         <PackageId>Chroma.GameTemplate</PackageId>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
 
         <TargetFramework>netstandard2.1</TargetFramework>
 

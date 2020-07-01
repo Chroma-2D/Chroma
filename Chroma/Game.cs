@@ -26,9 +26,12 @@ namespace Chroma
 
         private static readonly string _versionString = $"v{Assembly.GetExecutingAssembly().GetName().Version}";
 
+        private float _betaEmblemHue;
+
         internal static TrueTypeFont DefaultFont { get; private set; }
         internal static Texture LogoTexture { get; private set; }
         internal static Texture DefaultIconTexture { get; private set; }
+        internal static Texture BetaEmblemTexture { get; private set; }
 
         public Window Window { get; }
         public GraphicsManager Graphics { get; }
@@ -96,6 +99,17 @@ namespace Chroma
                 Vector2.Zero,
                 0f
             );
+            
+            context.DrawTexture(
+                BetaEmblemTexture,
+                new Vector2(
+                    (Window.Properties.Width / 2) - (LogoTexture.Width / 2),
+                    (Window.Properties.Height / 2) - (LogoTexture.Height / 2)
+                ) + new Vector2(8),
+                Vector2.One, 
+                Vector2.Zero, 
+                0f
+            );
 
             context.DrawString(
                 _welcomeMessage,
@@ -132,6 +146,10 @@ namespace Chroma
 
         protected virtual void Update(float delta)
         {
+            _betaEmblemHue += 45 * delta;
+            _betaEmblemHue %= 360;
+
+            BetaEmblemTexture.ColorMask = Color.FromHSV(_betaEmblemHue, 1f, 0.85f);
         }
 
         protected virtual void FixedUpdate(float fixedDelta)
@@ -250,11 +268,16 @@ namespace Chroma
 
             using var defaultIconStream = Assembly.GetExecutingAssembly()
                 .GetManifestResourceStream("Chroma.Resources.deficon.png");
+
+            using var betaEmblemStream = Assembly.GetExecutingAssembly()
+                .GetManifestResourceStream("Chroma.Resources.beta.png");
             
             DefaultFont = new TrueTypeFont(fontResourceStream, 16);
             LogoTexture = new Texture(logoResourceStream);
             DefaultIconTexture = new Texture(defaultIconStream);
             DefaultIconTexture.FilteringMode = TextureFilteringMode.NearestNeighbor;
+            
+            BetaEmblemTexture = new Texture(betaEmblemStream);
         }
 
         private void OnDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)

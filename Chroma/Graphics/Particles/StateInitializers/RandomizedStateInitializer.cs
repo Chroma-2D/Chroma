@@ -17,7 +17,7 @@ namespace Chroma.Graphics.Particles.StateInitializers
         
         public virtual Vector2 InitialPosition => Emitter.SpawnPosition;
         public virtual Vector2 InitialOrigin => new Vector2(Emitter.Texture.Width / 2, Emitter.Texture.Height / 2);
-        public virtual Vector2 InitialScale => Vector2.One * Random.Next(1, 8);
+        public virtual Vector2 InitialScale => Vector2.One * Random.Next(1, 2);
         
         public virtual Color InitialColor => Color.White;
         public virtual float InitialRotation => 0;

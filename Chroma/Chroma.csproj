@@ -42,6 +42,8 @@
     <EmbeddedResource Include="Resources\default.ttf" />
     <None Remove="Resources\deficon.png" />
     <EmbeddedResource Include="Resources\deficon.png" />
+    <None Remove="Resources\beta.png" />
+    <EmbeddedResource Include="Resources\beta.png" />
   </ItemGroup>
 
   <ItemGroup>

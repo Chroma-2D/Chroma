@@ -39,8 +39,8 @@ namespace ParticleSystems
             _particle = Content.Load<Texture>("Textures/pentagram.png");
             _particle.FilteringMode = TextureFilteringMode.NearestNeighbor;
             _emitter = new ParticleEmitter(_particle);
-            _emitter.Density = 5000;
-            _emitter.EmissionRate = 100;
+            _emitter.Density = 300;
+            _emitter.EmissionRate = 10;
             
             _emitter.RegisterIntegrator(BuiltInParticleStateIntegrators.ScaleDown);
             _emitter.RegisterIntegrator(BuiltInParticleStateIntegrators.FadeOut);
@@ -55,7 +55,6 @@ namespace ParticleSystems
                 
                 _shader.Activate();
                 _emitter.Draw(context);
-                Shader.Deactivate();
             });
             
             context.DrawTexture(_target, Vector2.Zero, Vector2.One, Vector2.Zero, 0);

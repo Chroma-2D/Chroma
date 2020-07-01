@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fonts", "Chroma.Examples\Fo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicAndSounds", "Chroma.Examples\MusicAndSounds\MusicAndSounds.csproj", "{119BCE63-FA75-4603-9EFA-111CCAFF2293}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmptyProject", "Chroma.Examples\EmptyProject\EmptyProject.csproj", "{0CCE0CB6-C51A-4F05-9482-572CBCDFECA5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -89,6 +91,10 @@ Global
 		{119BCE63-FA75-4603-9EFA-111CCAFF2293}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{119BCE63-FA75-4603-9EFA-111CCAFF2293}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{119BCE63-FA75-4603-9EFA-111CCAFF2293}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CCE0CB6-C51A-4F05-9482-572CBCDFECA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CCE0CB6-C51A-4F05-9482-572CBCDFECA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CCE0CB6-C51A-4F05-9482-572CBCDFECA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CCE0CB6-C51A-4F05-9482-572CBCDFECA5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -108,5 +114,6 @@ Global
 		{6CA88CD9-37B1-42E1-910A-47F2CA764133} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
 		{A4B3CF31-1B7A-4984-BA03-F88B1E9D0341} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
 		{119BCE63-FA75-4603-9EFA-111CCAFF2293} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
+		{0CCE0CB6-C51A-4F05-9482-572CBCDFECA5} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
 	EndGlobalSection
 EndGlobal

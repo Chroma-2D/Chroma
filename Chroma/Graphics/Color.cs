@@ -36,6 +36,14 @@ namespace Chroma.Graphics
             A = a;
         }
 
+        public Color(float r, float g, float b, float a) : this(
+                (byte)(255 * r),
+                (byte)(255 * g),
+                (byte)(255 * b),
+                (byte)(255 * a)) { }
+        
+        public Color(float r, float g, float b) : this(r, g, b, 1.0f) {}
+        
         public Color(uint packedValue)
         {
             R = (byte)((packedValue & 0xFF000000) >> 24);
@@ -194,10 +202,41 @@ namespace Chroma.Graphics
         public static readonly Color YellowGreen = new Color(154, 205, 50);
 
         public float[] AsOrderedArray()
-            => new float[] { R / 255f, G / 255f, B / 255f, A / 255f };
+            => new[] { R / 255f, G / 255f, B / 255f, A / 255f };
 
         public override bool Equals(object obj)
             => obj is Color color && Equals(color);
+
+        public static Color Lerp(Color a, Color b, float t)
+        {
+            return new Color(
+                255 * (a.R + (b.R - a.R) * t),
+                255 * (a.G + (b.G - a.G) * t),
+                255 * (a.B + (b.B - a.B) * t),
+                255 * (a.A + (b.A - a.A) * t)
+            );
+        }
+
+        public static Color FromHSV(float hue, float sat = 1f, float val = 1f)
+        {
+            var i = (int)(Math.Floor(hue / 60) % 6);
+            var f = (hue / 60) - Math.Floor(hue / 60);
+
+            var v = (byte)(255 * val);
+            var p = (byte)(v * (1 - sat));
+            var q = (byte)(v * (1 - f * sat));
+            var t = (byte)(v * (1 - (1 - f) * sat));
+
+            return i switch
+            {
+                0 => new Color(v, t, p),
+                1 => new Color(q, v, p),
+                2 => new Color(p, v, t),
+                3 => new Color(p, q, v),
+                4 => new Color(t, p, v),
+                _ => new Color(v, p, q)
+            };
+        }
 
         public override int GetHashCode()
             => PackedValue.GetHashCode();

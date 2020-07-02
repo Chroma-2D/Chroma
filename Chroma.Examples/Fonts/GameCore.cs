@@ -14,6 +14,7 @@ namespace Fonts
     {
         private TrueTypeFont _republika;
         private TrueTypeFont _alienlines;
+        private TrueTypeFont _renegade;
 
         private BitmapFont _plasticBag;
 
@@ -26,6 +27,7 @@ namespace Fonts
         {
             _republika = Content.Load<TrueTypeFont>("Fonts/republika.ttf", 32);
             _alienlines = Content.Load<TrueTypeFont>("Fonts/alienlines.ttf", 24);
+            _renegade = Content.Load<TrueTypeFont>("Fonts/renegade.otf", 48);
 
             _plasticBag = Content.Load<BitmapFont>("BitmapFonts/plasticbag.fnt");
         }
@@ -54,6 +56,14 @@ namespace Fonts
                 "And here's its line break.",
                 new Vector2(8, 164),
                 Color.Lime
+            );
+            
+            context.DrawString(
+                _renegade,
+                "This is a test of 48px high\n" +
+                "Renegade bitmap font. And here's its line break.",
+                new Vector2(8, 196),
+                Color.HotPink
             );
         }
 

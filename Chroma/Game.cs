@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using System.Threading;
@@ -7,7 +9,9 @@ using Chroma.Audio;
 using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Diagnostics.Logging;
+using Chroma.Extensions;
 using Chroma.Graphics;
+using Chroma.Graphics.Batching;
 using Chroma.Graphics.TextRendering;
 using Chroma.Input.EventArgs;
 using Chroma.Natives.SDL;
@@ -59,7 +63,7 @@ namespace Chroma
 
             LoadBuiltInResources();
             Window.SetIcon(DefaultIconTexture);
-            
+
             Content = new FileSystemContentProvider(this);
 
             AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
@@ -99,15 +103,15 @@ namespace Chroma
                 Vector2.Zero,
                 0f
             );
-            
+
             context.DrawTexture(
                 BetaEmblemTexture,
                 new Vector2(
                     (Window.Properties.Width / 2) - (LogoTexture.Width / 2),
                     (Window.Properties.Height / 2) - (LogoTexture.Height / 2)
                 ) + new Vector2(8),
-                Vector2.One, 
-                Vector2.Zero, 
+                Vector2.One,
+                Vector2.Zero,
                 0f
             );
 
@@ -115,15 +119,16 @@ namespace Chroma
                 _welcomeMessage,
                 new Vector2(8), (c, i, p, g) =>
                 {
-                    var drawIndex = _welcomeMessage.IndexOf("Draw", StringComparison.Ordinal);
-                    var updateIndex = _welcomeMessage.IndexOf("Update", StringComparison.Ordinal);
-
+                    var ranges = _welcomeMessage.FindWordRanges("Draw", "Update");
                     var color = Color.White;
 
-                    if (i >= drawIndex && i < drawIndex + 4 ||
-                        i >= updateIndex && i < updateIndex + 6)
+                    foreach (var range in ranges)
                     {
-                        color = Color.DodgerBlue;
+                        if (range.Includes(i))
+                        {
+                            color = Color.DodgerBlue;
+                            p.Y += 2 * MathF.Sin(0.25f * (_betaEmblemHue + (i * 1.25f)));
+                        }
                     }
 
                     return new GlyphTransformData(p) {Color = color};
@@ -139,17 +144,17 @@ namespace Chroma
                 )
             );
         }
-
+        
         protected virtual void LoadContent()
         {
         }
 
         protected virtual void Update(float delta)
         {
-            _betaEmblemHue += 45 * delta;
-            _betaEmblemHue %= 360;
-
+            _betaEmblemHue += 40 * delta;
             BetaEmblemTexture.ColorMask = Color.FromHSV(_betaEmblemHue, 1f, 0.85f);
+
+            Window.Properties.Title = $"Chroma Framework: {Window.FPS} FPS";
         }
 
         protected virtual void FixedUpdate(float fixedDelta)
@@ -271,12 +276,12 @@ namespace Chroma
 
             using var betaEmblemStream = Assembly.GetExecutingAssembly()
                 .GetManifestResourceStream("Chroma.Resources.beta.png");
-            
+
             DefaultFont = new TrueTypeFont(fontResourceStream, 16);
             LogoTexture = new Texture(logoResourceStream);
             DefaultIconTexture = new Texture(defaultIconStream);
             DefaultIconTexture.FilteringMode = TextureFilteringMode.NearestNeighbor;
-            
+
             BetaEmblemTexture = new Texture(betaEmblemStream);
         }
 

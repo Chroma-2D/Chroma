@@ -7,11 +7,11 @@ namespace Chroma.Windowing
 {
     public class WindowProperties
     {
-        private WindowState _state;
-        private int _width;
         private int _height;
+        private int _width;
         private Vector2 _position;
         private string _title;
+        private WindowState _state;
 
         internal Window Owner { get; }
         private Log Log { get; } = LogManager.GetForCurrentAssembly();
@@ -140,6 +140,22 @@ namespace Chroma.Windowing
                     }
                 }
             }
+        }
+
+        public bool CanResize
+        {
+            get
+            {
+                var flags = (SDL2.SDL_WindowFlags)SDL2.SDL_GetWindowFlags(Owner.Handle);
+                return flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_RESIZABLE);
+            }
+
+            set => SDL2.SDL_SetWindowResizable(
+                Owner.Handle,
+                value
+                    ? SDL2.SDL_bool.SDL_TRUE
+                    : SDL2.SDL_bool.SDL_FALSE
+            );
         }
 
         public bool IsFullScreen

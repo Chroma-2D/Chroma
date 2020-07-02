@@ -17,7 +17,7 @@ namespace Chroma.Windowing
         private ulong _nowFrameTime = SDL2.SDL_GetPerformanceCounter();
         private ulong _lastFrameTime;
 
-        private Log Log => LogManager.GetForCurrentAssembly();
+        private Log Log { get; } = LogManager.GetForCurrentAssembly();
 
         private float Delta { get; set; }
         private FpsCounter FpsCounter { get; }
@@ -34,6 +34,18 @@ namespace Chroma.Windowing
 
         internal IntPtr RenderTargetHandle { get; }
 
+        public float FPS => FpsCounter.FPS;
+        public bool Running { get; private set; }
+
+        public IntPtr Handle { get; }
+        public WindowProperties Properties { get; }
+
+        public bool IsCursorGrabbed
+        {
+            get => SDL2.SDL_GetWindowGrab(Handle) == SDL2.SDL_bool.SDL_TRUE;
+            set => SDL2.SDL_SetWindowGrab(Handle, value ? SDL2.SDL_bool.SDL_TRUE : SDL2.SDL_bool.SDL_FALSE);
+        }
+
         public event EventHandler Closed;
         public event EventHandler Hidden;
         public event EventHandler Shown;
@@ -47,20 +59,6 @@ namespace Chroma.Windowing
         public event EventHandler<WindowSizeEventArgs> SizeChanged;
         public event EventHandler<WindowSizeEventArgs> Resized;
         public event EventHandler<CancelEventArgs> QuitRequested;
-
-        public bool Running { get; private set; }
-
-        public IntPtr Handle { get; }
-
-        public WindowProperties Properties { get; }
-
-        public float FPS => FpsCounter.FPS;
-
-        public bool IsCursorGrabbed
-        {
-            get => SDL2.SDL_GetWindowGrab(Handle) == SDL2.SDL_bool.SDL_TRUE;
-            set => SDL2.SDL_SetWindowGrab(Handle, value ? SDL2.SDL_bool.SDL_TRUE : SDL2.SDL_bool.SDL_FALSE);
-        }
 
         internal Window(Game game)
         {
@@ -213,16 +211,24 @@ namespace Chroma.Windowing
             => SizeChanged?.Invoke(this, e);
 
         internal void OnResized(WindowSizeEventArgs e)
-            => Resized?.Invoke(this, e);
+        {
+            if (Properties.ViewportAutoResize)
+            {
+                SDL_gpu.GPU_SetWindowResolution(
+                    (ushort)e.Width,
+                    (ushort)e.Height
+                );
+            }
+
+            Resized?.Invoke(this, e);
+        }
 
         internal void OnQuitRequested(CancelEventArgs e)
         {
             QuitRequested?.Invoke(this, e);
 
             if (!e.Cancel)
-            {
                 Running = false;
-            }
         }
 
         private void DetermineNativeResolution()
@@ -240,6 +246,7 @@ namespace Chroma.Windowing
             };
 
             SDL_gpu.GPU_SetWindowResolution((ushort)mode.w, (ushort)mode.h);
+            
             Properties.Width = mode.w;
             Properties.Height = mode.h;
         }

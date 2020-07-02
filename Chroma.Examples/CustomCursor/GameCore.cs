@@ -28,9 +28,13 @@ namespace CustomCursor
 
         protected override void Draw(RenderContext context)
         {
+            context.Clear(Color.CornflowerBlue);
+            
             context.DrawString(
                 "Press <space> to toggle between default and custom cursor.\n" +
-                "Click <LMB> to toggle the cursor's visibility.",
+                "Click <LMB> to toggle the cursor's visibility.\n" +
+                "Press <F1> to toggle window resizable/non-resizable.\n\n" +
+                $"Window Size: {Window.Properties.Width}x{Window.Properties.Height}",
                 new Vector2(8, 8)
             );
         }
@@ -42,6 +46,10 @@ namespace CustomCursor
                 if (!_cursor.IsCurrent)
                     _cursor.SetCurrent();
                 else Cursor.Reset();
+            }
+            else if (e.KeyCode == KeyCode.F1)
+            {
+                Window.Properties.CanResize = !Window.Properties.CanResize;
             }
         }
 

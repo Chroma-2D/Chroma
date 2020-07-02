@@ -1,5 +1,5 @@
-﻿using Chroma.Diagnostics.Logging.Base;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using Chroma.Diagnostics.Logging.Base;
 
 namespace Chroma.Diagnostics.Logging.Decorators
 {
@@ -7,7 +7,11 @@ namespace Chroma.Diagnostics.Logging.Decorators
     {
         public override string Decorate(LogLevel logLevel, string input, string originalMessage, Sink sink)
         {
-            return new StackTrace().GetFrame(5).GetMethod().DeclaringType.Name;
+            return new StackTrace()
+                .GetFrame(5)
+                ?.GetMethod()
+                ?.DeclaringType
+                ?.Name;
         }
     }
 }

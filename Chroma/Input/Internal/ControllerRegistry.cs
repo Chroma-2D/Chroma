@@ -15,7 +15,7 @@ namespace Chroma.Input.Internal
         private readonly Dictionary<int, IntPtr> _playerMappings;
 
         internal int DeviceCount => _controllers.Count;
-        
+
         public static ControllerRegistry Instance => _lazyInitializer.Value;
 
         private ControllerRegistry()
@@ -53,7 +53,8 @@ namespace Chroma.Input.Internal
         public int GetFirstFreePlayerSlot()
         {
             for (var i = 0; i < _playerMappings.Count; i++)
-                if (_playerMappings[i] == IntPtr.Zero) return i;
+                if (_playerMappings[i] == IntPtr.Zero)
+                    return i;
 
             return -1;
         }

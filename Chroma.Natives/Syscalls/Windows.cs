@@ -20,7 +20,7 @@ namespace Chroma.Natives.Syscalls
         internal static extern IntPtr GetProcAddress(IntPtr hModule, string procname);
 
         [DllImport("kernel32")]
-        internal static extern IntPtr GetLastError();
+        internal static extern int GetLastError();
         
         [DllImport("kernel32")]
         internal static extern IntPtr GetStdHandle(int nStdHandle);

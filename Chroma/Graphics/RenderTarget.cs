@@ -7,7 +7,7 @@ namespace Chroma.Graphics
     public class RenderTarget : Texture
     {
         internal IntPtr TargetHandle { get; }
-        
+
         public Camera CurrentCamera { get; private set; }
         public Rectangle? CurrentViewport { get; private set; }
 
@@ -34,7 +34,7 @@ namespace Chroma.Graphics
         public void ResetViewport()
         {
             EnsureNotDisposed();
-            
+
             SDL_gpu.GPU_UnsetViewport(TargetHandle);
             CurrentViewport = null;
         }
@@ -42,7 +42,7 @@ namespace Chroma.Graphics
         public void SetCamera(Camera camera)
         {
             EnsureNotDisposed();
-            
+
             SDL_gpu.GPU_SetCamera(TargetHandle, ref camera.GpuCamera);
             CurrentCamera = camera;
         }
@@ -54,7 +54,7 @@ namespace Chroma.Graphics
             SDL_gpu.GPU_SetCamera(TargetHandle, IntPtr.Zero);
             CurrentCamera = null;
         }
-        
+
         protected override void FreeNativeResources()
         {
             SDL_gpu.GPU_FreeTarget(TargetHandle);

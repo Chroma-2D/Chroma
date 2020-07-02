@@ -6,5 +6,4 @@
 
         public abstract void Write(LogLevel logLevel, string message, params object[] args);
     }
-
 }

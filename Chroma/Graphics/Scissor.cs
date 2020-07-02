@@ -33,7 +33,7 @@ namespace Chroma.Graphics
         public override int GetHashCode()
             => HashCode.Combine(X, Y, Width, Height);
 
-        public static bool operator==(Scissor a, Scissor b)
+        public static bool operator ==(Scissor a, Scissor b)
             => a.X == b.X &&
                a.Y == b.Y &&
                a.Width == b.Width &&

@@ -6,7 +6,7 @@ namespace Chroma.Graphics.Particles
     public class Particle
     {
         public ParticleEmitter Owner { get; }
-        
+
         public int InitialTTL { get; }
         public float InitialRotation { get; }
         public Color InitialColor { get; }
@@ -27,7 +27,8 @@ namespace Chroma.Graphics.Particles
 
         public Rectangle TextureSourceRectangle;
 
-        public Particle(ParticleEmitter owner, int ttl, float rotation, Color color, Vector2 scale, Vector2 origin, Vector2 position,
+        public Particle(ParticleEmitter owner, int ttl, float rotation, Color color, Vector2 scale, Vector2 origin,
+            Vector2 position,
             Vector2 velocity, Rectangle textureSourceRectangle)
         {
             Owner = owner;

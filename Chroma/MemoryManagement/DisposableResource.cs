@@ -5,7 +5,7 @@ namespace Chroma.MemoryManagement
     public class DisposableResource : IDisposable
     {
         public bool Disposed { get; private set; }
-        
+
         public event EventHandler Disposing;
 
         ~DisposableResource()
@@ -15,12 +15,10 @@ namespace Chroma.MemoryManagement
 
         protected virtual void FreeManagedResources()
         {
-
         }
 
         protected virtual void FreeNativeResources()
         {
-
         }
 
         private void Dispose(bool disposing)

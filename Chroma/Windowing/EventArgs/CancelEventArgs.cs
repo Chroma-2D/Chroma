@@ -4,6 +4,8 @@
     {
         public bool Cancel { get; set; }
 
-        internal CancelEventArgs() { }
+        internal CancelEventArgs()
+        {
+        }
     }
 }

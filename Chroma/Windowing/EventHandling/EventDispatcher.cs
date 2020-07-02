@@ -19,7 +19,7 @@ namespace Chroma.Windowing.EventHandling
         internal EventDispatcher(Window owner)
         {
             Owner = owner;
-            
+
             SdlEventHandlers = new Dictionary<SDL2.SDL_EventType, SdlEventHandler>();
             WindowEventHandlers = new Dictionary<SDL2.SDL_WindowEventID, WindowEventHandler>();
             DiscardedEventTypes = new Dictionary<SDL2.SDL_EventType, bool>();

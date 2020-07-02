@@ -34,7 +34,8 @@ namespace Chroma.Graphics.Accelerated
         private void TryCompilePixelShader()
         {
             PixelShaderSourceCode = File.ReadAllText(PixelShaderFilePath);
-            PixelShaderObjectHandle = SDL_gpu.GPU_CompileShader(SDL_gpu.GPU_ShaderEnum.GPU_PIXEL_SHADER, PixelShaderSourceCode);
+            PixelShaderObjectHandle =
+                SDL_gpu.GPU_CompileShader(SDL_gpu.GPU_ShaderEnum.GPU_PIXEL_SHADER, PixelShaderSourceCode);
 
             if (PixelShaderObjectHandle == 0)
                 throw new ShaderException("Pixel shader compilation failed.", SDL_gpu.GPU_GetShaderMessage());
@@ -43,7 +44,8 @@ namespace Chroma.Graphics.Accelerated
         private void TryCompileVertexShader()
         {
             VertexShaderSourceCode = File.ReadAllText(VertexShaderFilePath);
-            VertexShaderObjectHandle = SDL_gpu.GPU_CompileShader(SDL_gpu.GPU_ShaderEnum.GPU_VERTEX_SHADER, VertexShaderSourceCode);
+            VertexShaderObjectHandle =
+                SDL_gpu.GPU_CompileShader(SDL_gpu.GPU_ShaderEnum.GPU_VERTEX_SHADER, VertexShaderSourceCode);
 
             if (VertexShaderObjectHandle == 0)
                 throw new ShaderException("Vertex shader compilation failed.", SDL_gpu.GPU_GetShaderMessage());

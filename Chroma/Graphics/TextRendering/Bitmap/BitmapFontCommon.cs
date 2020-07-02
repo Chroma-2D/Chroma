@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace Chroma.Graphics.TextRendering.Bitmap
+﻿namespace Chroma.Graphics.TextRendering.Bitmap
 {
     public class BitmapFontCommon
     {
@@ -13,7 +11,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
 
         public BitmapFontChannelMode AlphaMode { get; internal set; }
         public BitmapFontChannelMode RedMode { get; internal set; }
-        public BitmapFontChannelMode GreenMode { get; internal set;  }
+        public BitmapFontChannelMode GreenMode { get; internal set; }
         public BitmapFontChannelMode BlueMode { get; internal set; }
     }
 }

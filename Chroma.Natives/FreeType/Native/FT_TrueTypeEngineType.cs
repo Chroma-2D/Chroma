@@ -7,4 +7,3 @@ namespace Chroma.Natives.FreeType.Native
         FT_TRUETYPE_ENGINE_TYPE_PATENTED
     }
 }
-

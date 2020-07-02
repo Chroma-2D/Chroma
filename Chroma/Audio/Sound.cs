@@ -16,10 +16,10 @@ namespace Chroma.Audio
                 EnsureNotDisposed();
 
                 var volume = value;
-                
+
                 if (volume > 128)
                     volume = 128;
-                
+
                 SDL_mixer.Mix_VolumeChunk(Handle, volume);
             }
         }
@@ -29,7 +29,8 @@ namespace Chroma.Audio
         public int ActualChannel { get; private set; }
 
         internal Sound(IntPtr handle, AudioManager audioManager) : base(handle, audioManager)
-        { }
+        {
+        }
 
         public override void Play()
         {

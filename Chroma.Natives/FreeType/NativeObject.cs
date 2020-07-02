@@ -7,9 +7,7 @@ namespace Chroma.Natives.FreeType
         private IntPtr _reference;
 
         protected NativeObject(IntPtr reference)
-        {
-            _reference = reference;
-        }
+            => _reference = reference;
 
         public virtual IntPtr Reference
         {

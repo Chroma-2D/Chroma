@@ -64,7 +64,7 @@ namespace Chroma.Natives.Compression
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
-            
+
             for (int i = 0; i < BZip2Constants.GroupCount; ++i)
             {
                 limit[i] = new int[BZip2Constants.MaximumAlphaSize];
@@ -75,7 +75,7 @@ namespace Chroma.Natives.Compression
             baseStream = stream;
             bsLive = 0;
             bsBuff = 0;
-            
+
             Initialize();
             InitBlock();
             SetupBlock();
@@ -112,7 +112,7 @@ namespace Chroma.Natives.Compression
         public override void CopyTo(Stream destination, int bufferSize)
         {
             var buffer = new byte[bufferSize];
-            
+
             if (destination == null)
             {
                 throw new ArgumentNullException(nameof(destination));

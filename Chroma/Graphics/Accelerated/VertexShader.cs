@@ -27,7 +27,8 @@ namespace Chroma.Graphics.Accelerated
             {
                 throw new ShaderException(
                     "Default Chroma pixel shader compilation failed. " +
-                    "Report an issue - be sure to include GLSL errors or I'll fuck you up just like I did with this framework.", SDL_gpu.GPU_GetShaderMessage());
+                    "Report an issue - be sure to include GLSL errors or I'll fuck you up just like I did with this framework.",
+                    SDL_gpu.GPU_GetShaderMessage());
             }
 
             ProgramHandle = SDL_gpu.GPU_LinkShaders(PixelShaderObjectHandle, VertexShaderObjectHandle);
@@ -95,7 +96,7 @@ namespace Chroma.Graphics.Accelerated
                 return;
             }
 
-            SDL_gpu.GPU_SetAttributefv(loc, 2, new float[] { value.X, value.Y });
+            SDL_gpu.GPU_SetAttributefv(loc, 2, new float[] {value.X, value.Y});
         }
 
         public void SetAttribute(string name, Vector3 value)
@@ -110,7 +111,7 @@ namespace Chroma.Graphics.Accelerated
                 return;
             }
 
-            SDL_gpu.GPU_SetAttributefv(loc, 3, new float[] { value.X, value.Y, value.Z });
+            SDL_gpu.GPU_SetAttributefv(loc, 3, new float[] {value.X, value.Y, value.Z});
         }
 
         public void SetAttribute(string name, Vector4 value)
@@ -125,7 +126,7 @@ namespace Chroma.Graphics.Accelerated
                 return;
             }
 
-            SDL_gpu.GPU_SetAttributefv(loc, 4, new float[] { value.X, value.Y, value.Z, value.W });
+            SDL_gpu.GPU_SetAttributefv(loc, 4, new float[] {value.X, value.Y, value.Z, value.W});
         }
 
         public void SetAttribute(string name, Color value)

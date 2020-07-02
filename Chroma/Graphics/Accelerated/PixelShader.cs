@@ -27,7 +27,8 @@ namespace Chroma.Graphics.Accelerated
             {
                 throw new ShaderException(
                     "Default Chroma vertex shader compilation failed. " +
-                    "Report an issue - be sure to include GLSL errors or I'll fuck you up just like I did with this framework.", SDL_gpu.GPU_GetShaderMessage());
+                    "Report an issue - be sure to include GLSL errors or I'll fuck you up just like I did with this framework.",
+                    SDL_gpu.GPU_GetShaderMessage());
             }
 
             ProgramHandle = SDL_gpu.GPU_LinkShaders(PixelShaderObjectHandle, VertexShaderObjectHandle);

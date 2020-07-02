@@ -56,7 +56,9 @@
         public const uint FT_VALIDATE_GSUB = 0x0800;
         public const uint FT_VALIDATE_JSTF = 0x1000;
         public const uint FT_VALIDATE_MATH = 0x2000;
-        public const uint FT_VALIDATE_OT = (FT_VALIDATE_BASE | FT_VALIDATE_GDEF | FT_VALIDATE_GPOS | FT_VALIDATE_GSUB | FT_VALIDATE_JSTF | FT_VALIDATE_MATH);
+
+        public const uint FT_VALIDATE_OT = (FT_VALIDATE_BASE | FT_VALIDATE_GDEF | FT_VALIDATE_GPOS | FT_VALIDATE_GSUB |
+                                            FT_VALIDATE_JSTF | FT_VALIDATE_MATH);
 
         // truetype validation flags
         public const uint FT_VALIDATE_feat = 0x4000 << 0;
@@ -69,7 +71,10 @@
         public const uint FT_VALIDATE_trak = 0x4000 << 7;
         public const uint FT_VALIDATE_prop = 0x4000 << 8;
         public const uint FT_VALIDATE_lcar = 0x4000 << 9;
-        public const uint FT_VALIDATE_GX = (FT_VALIDATE_feat | FT_VALIDATE_mort | FT_VALIDATE_morx | FT_VALIDATE_bsln | FT_VALIDATE_just | FT_VALIDATE_kern | FT_VALIDATE_opbd | FT_VALIDATE_trak | FT_VALIDATE_prop | FT_VALIDATE_lcar);
+
+        public const uint FT_VALIDATE_GX = (FT_VALIDATE_feat | FT_VALIDATE_mort | FT_VALIDATE_morx | FT_VALIDATE_bsln |
+                                            FT_VALIDATE_just | FT_VALIDATE_kern | FT_VALIDATE_opbd | FT_VALIDATE_trak |
+                                            FT_VALIDATE_prop | FT_VALIDATE_lcar);
 
         // classic kern validation flags
         public const uint FT_VALIDATE_MS = 0x4000 << 0;

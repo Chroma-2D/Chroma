@@ -3,7 +3,7 @@ using Chroma.Natives.FreeType.Native;
 
 namespace Chroma.Natives.FreeType
 {
-    internal sealed unsafe class FreeTypeLibrary : IDisposable
+    internal sealed class FreeTypeLibrary : IDisposable
     {
         public bool Disposed { get; private set; }
 

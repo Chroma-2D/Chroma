@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using FT_Pos = System.IntPtr;
 
 namespace Chroma.Natives.FreeType.Native

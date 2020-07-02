@@ -8,7 +8,7 @@ namespace Chroma.ContentManagement
     {
         string ContentRoot { get; }
 
-        T Load<T>(string relativePath, params object[] args) where T: DisposableResource;
+        T Load<T>(string relativePath, params object[] args) where T : DisposableResource;
         void Unload<T>(T resource) where T : DisposableResource;
 
         byte[] Read(string relativePath);

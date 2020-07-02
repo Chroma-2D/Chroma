@@ -1,16 +1,12 @@
-﻿using System;
-
-namespace Chroma.Natives.FreeType.Native
+﻿namespace Chroma.Natives.FreeType.Native
 {
-#pragma warning disable 1591
     internal enum FT_Glyph_Format : uint
     {
         FT_GLYPH_FORMAT_NONE = 0,
 
-        FT_GLYPH_FORMAT_COMPOSITE = ((UInt32)'c' << 24) | ((UInt32)'o' << 16) | ((UInt32)'m' << 8) | 'p',
-        FT_GLYPH_FORMAT_BITMAP = ((UInt32)'b' << 24) | ((UInt32)'i' << 16) | ((UInt32)'t' << 8) | 's',
-        FT_GLYPH_FORMAT_OUTLINE = ((UInt32)'o' << 24) | ((UInt32)'u' << 16) | ((UInt32)'t' << 8) | 'l',
-        FT_GLYPH_FORMAT_PLOTTER = ((UInt32)'p' << 24) | ((UInt32)'l' << 16) | ((UInt32)'o' << 8) | 't',
+        FT_GLYPH_FORMAT_COMPOSITE = ((uint)'c' << 24) | ((uint)'o' << 16) | ((uint)'m' << 8) | 'p',
+        FT_GLYPH_FORMAT_BITMAP = ((uint)'b' << 24) | ((uint)'i' << 16) | ((uint)'t' << 8) | 's',
+        FT_GLYPH_FORMAT_OUTLINE = ((uint)'o' << 24) | ((uint)'u' << 16) | ((uint)'t' << 8) | 'l',
+        FT_GLYPH_FORMAT_PLOTTER = ((uint)'p' << 24) | ((uint)'l' << 16) | ((uint)'o' << 8) | 't',
     }
-#pragma warning restore 1591
 }

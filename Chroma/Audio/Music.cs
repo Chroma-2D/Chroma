@@ -12,9 +12,10 @@ namespace Chroma.Audio
             get => AudioManager.MusicVolume;
             set => AudioManager.MusicVolume = value;
         }
-        
+
         internal Music(IntPtr handle, AudioManager audioManager) : base(handle, audioManager)
-        { }
+        {
+        }
 
         public override void Play()
         {

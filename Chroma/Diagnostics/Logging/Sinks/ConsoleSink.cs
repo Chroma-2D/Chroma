@@ -1,6 +1,5 @@
-﻿using Chroma.Diagnostics.Logging.Base;
-using System;
-using System.Reflection;
+﻿using System;
+using Chroma.Diagnostics.Logging.Base;
 
 namespace Chroma.Diagnostics.Logging.Sinks
 {
@@ -12,13 +11,7 @@ namespace Chroma.Diagnostics.Logging.Sinks
 
             if (args.Length == 1)
             {
-                if (args[0] is ReflectionTypeLoadException rtle)
-                {
-                    Console.WriteLine(
-                        Formatting.ReflectionTypeLoadExceptionForLogging(rtle)
-                    );
-                }
-                else if (args[0] is Exception e)
+                if (args[0] is Exception e)
                 {
                     Console.WriteLine(
                         Formatting.ExceptionForLogging(e, true)

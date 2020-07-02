@@ -16,7 +16,7 @@ namespace Chroma.Diagnostics.Logging
         static LogManager()
         {
             LogRoot = Path.Combine(
-                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!,
                 "Logs"
             );
 
@@ -40,10 +40,8 @@ namespace Chroma.Diagnostics.Logging
         {
             var asm = Assembly.GetCallingAssembly();
 
-            return GetForAssembly(asm, initializeDefaults, (log) =>
-            {
-                log.SinkTo(new FileSink(GetAssemblyLogPath(asm)));
-            });
+            return GetForAssembly(asm, initializeDefaults,
+                (log) => { log.SinkTo(new FileSink(GetAssemblyLogPath(asm))); });
         }
 
         private static Log GetForAssembly(Assembly assembly, bool initializeDefaults, Action<Log> postInit = null)
@@ -57,11 +55,11 @@ namespace Chroma.Diagnostics.Logging
                 if (initializeDefaults)
                 {
                     log.WithOutputTemplate("[{DateTime} {LogLevel}] [{ClassName}] {Message}")
-                       .DecorateWith<LogLevelDecorator>("LogLevel")
-                       .DecorateWith<DateTimeDecorator>("DateTime")
-                       .DecorateWith<ClassNameDecorator>("ClassName")
-                       .DecorateWith<MessageOutputDecorator>("Message")
-                       .SinkTo<ConsoleSink>();
+                        .DecorateWith<LogLevelDecorator>("LogLevel")
+                        .DecorateWith<DateTimeDecorator>("DateTime")
+                        .DecorateWith<ClassNameDecorator>("ClassName")
+                        .DecorateWith<MessageOutputDecorator>("Message")
+                        .SinkTo<ConsoleSink>();
 
                     postInit?.Invoke(log);
                 }

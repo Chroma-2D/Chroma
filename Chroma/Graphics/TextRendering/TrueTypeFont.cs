@@ -21,7 +21,6 @@ namespace Chroma.Graphics.TextRendering
         private bool _forceAutoHinting;
         private HintingMode _hintingMode;
 
-        
         internal static FreeTypeLibrary Library { get; }
         internal IntPtr Face { get; }
         internal FT_FaceRec FaceRec { get; private set; }
@@ -96,7 +95,7 @@ namespace Chroma.Graphics.TextRendering
 
             if (!File.Exists(fileName))
                 throw new FileNotFoundException("Couldn't find the font at the provided path.", fileName);
-            
+
             FT.FT_New_Face(Library.Native, fileName, 0, out var facePtr);
             Face = facePtr;
 
@@ -110,10 +109,10 @@ namespace Chroma.Graphics.TextRendering
 
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream), "Stream cannot be null.");
-            
+
             using var ms = new MemoryStream();
             stream.CopyTo(ms);
-            
+
             // needs to be class-scope property or field
             // because it gets rekt by GC when ran without
             // debugger
@@ -130,7 +129,7 @@ namespace Chroma.Graphics.TextRendering
 
                 Face = facePtr;
             }
-            
+
             InitializeFontData();
         }
 

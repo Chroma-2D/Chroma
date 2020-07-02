@@ -8,14 +8,16 @@ namespace Chroma.Graphics
 {
     public class GraphicsManager
     {
+        private bool _vSyncEnabled;
+
         private Game Game { get; }
-        private Log Log => LogManager.GetForCurrentAssembly();
-        
+
+        private Log Log { get; } = LogManager.GetForCurrentAssembly();
+
         public bool LimitFramerate { get; set; } = true;
         public bool AutoClear { get; set; } = true;
         public Color AutoClearColor { get; set; } = Color.Transparent;
-        
-        private bool _vSyncEnabled;
+
         public bool VSyncEnabled
         {
             get => _vSyncEnabled;
@@ -31,7 +33,7 @@ namespace Chroma.Graphics
             get => SDL2.SDL_GetWindowBrightness(Game.Window.Handle);
             set => SDL2.SDL_SetWindowBrightness(Game.Window.Handle, value);
         }
-        
+
         public bool IsDefaultShaderActive
             => SDL_gpu.GPU_IsDefaultShaderProgram(SDL_gpu.GPU_GetCurrentShaderProgram());
 
@@ -123,12 +125,13 @@ namespace Chroma.Graphics
             var registeredRenderers = new SDL_gpu.GPU_RendererID[renderers];
             SDL_gpu.GPU_GetRegisteredRendererList(registeredRenderers);
 
-            if(registeredRenderers.Length == 0)
+            if (registeredRenderers.Length == 0)
             {
                 Log.Error("Your computer does not support any rendering APIs that Chroma supports.");
                 throw new NotSupportedException("None of Chroma's Rendering APIs are supported on this computer. " +
-                    "Make sure you have support for at least OpenGL 3.");
+                                                "Make sure you have support for at least OpenGL 3.");
             }
+
             return registeredRenderers.ToList();
         }
 

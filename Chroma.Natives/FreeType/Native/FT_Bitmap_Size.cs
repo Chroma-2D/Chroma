@@ -1,11 +1,10 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using FT_Pos = System.IntPtr;
 
 namespace Chroma.Natives.FreeType.Native
 {
     [StructLayout(LayoutKind.Sequential)]
-    internal unsafe struct FT_Bitmap_Size
+    internal struct FT_Bitmap_Size
     {
         public short height;
         public short width;

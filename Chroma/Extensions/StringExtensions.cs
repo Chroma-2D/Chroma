@@ -15,7 +15,7 @@ namespace Chroma.Extensions
             foreach (var highlight in highlights)
             {
                 var index = str.IndexOf(highlight, StringComparison.Ordinal);
-                
+
                 if (index >= 0)
                     ranges.Add(index..(index + highlight.Length));
             }

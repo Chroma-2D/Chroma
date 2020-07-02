@@ -47,8 +47,7 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
-
-                return new Vector2(Width / 2, Height / 2);
+                return new Vector2(Width / 2f, Height / 2f);
             }
         }
 

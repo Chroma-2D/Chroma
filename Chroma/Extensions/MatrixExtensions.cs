@@ -17,17 +17,17 @@ namespace Chroma.Extensions
             m[5] = mtx.M22;
             m[6] = mtx.M23;
             m[7] = mtx.M24;
-            
+
             m[8] = mtx.M31;
             m[9] = mtx.M32;
             m[10] = mtx.M33;
             m[11] = mtx.M34;
-            
+
             m[12] = mtx.M41;
             m[13] = mtx.M42;
             m[14] = mtx.M43;
             m[15] = mtx.M44;
-            
+
             return m;
         }
     }

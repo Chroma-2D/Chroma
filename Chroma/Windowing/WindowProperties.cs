@@ -14,7 +14,7 @@ namespace Chroma.Windowing
         private string _title;
 
         internal Window Owner { get; }
-        private Log Log => LogManager.GetForCurrentAssembly();
+        private Log Log { get; } = LogManager.GetForCurrentAssembly();
 
         public bool ViewportAutoResize { get; set; } = true;
 
@@ -149,10 +149,10 @@ namespace Chroma.Windowing
                 var flags = (SDL2.SDL_WindowFlags)SDL2.SDL_GetWindowFlags(Owner.Handle);
 
                 return flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN)
-                    || flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP);
+                       || flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP);
             }
         }
-        
+
         public Vector2 Center => new Vector2(Width / 2, Height / 2);
 
         internal WindowProperties(Window owner)

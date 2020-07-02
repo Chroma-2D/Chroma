@@ -10,7 +10,6 @@ namespace Chroma.Input
     public class Cursor : DisposableResource
     {
         private static bool _isVisible = true;
-        
         private IntPtr _cursorHandle;
 
         private Log Log { get; } = LogManager.GetForCurrentAssembly();
@@ -21,16 +20,16 @@ namespace Chroma.Input
             set
             {
                 _isVisible = value;
-                
-                if(_isVisible)
+
+                if (_isVisible)
                     SDL2.SDL_ShowCursor(1);
                 else SDL2.SDL_ShowCursor(0);
             }
         }
-        
+
         public Texture Texture { get; }
         public Vector2 HotSpot { get; }
-        
+
         public bool IsCurrent => SDL2.SDL_GetCursor() == _cursorHandle;
 
         public Cursor(string imageFilePath, Vector2 hotSpot)

@@ -132,7 +132,7 @@ namespace Chroma.Windowing
 
         public void Hide()
             => SDL2.SDL_HideWindow(Handle);
-        
+
         public void CenterScreen()
             => Properties.Position = new Vector2(SDL2.SDL_WINDOWPOS_CENTERED, SDL2.SDL_WINDOWPOS_CENTERED);
 

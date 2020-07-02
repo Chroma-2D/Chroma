@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using System.Text;
 
 namespace Chroma.Diagnostics.Logging
@@ -15,7 +14,7 @@ namespace Chroma.Diagnostics.Logging
 
             if (e.TargetSite != null)
             {
-                sb.AppendLine($"   What threw: {e.TargetSite.Name} in {e.TargetSite.DeclaringType.Name}");
+                sb.AppendLine($"   What threw: {e.TargetSite.Name} in {e.TargetSite?.DeclaringType?.Name ?? "<unknown>"}");
             }
 
             if (!string.IsNullOrEmpty(e.StackTrace))
@@ -31,26 +30,6 @@ namespace Chroma.Diagnostics.Logging
                 sb.AppendLine("--- Inner exception below ---");
                 sb.AppendLine(
                     ExceptionForLogging(e.InnerException, false)
-                );
-            }
-
-            return sb.ToString();
-        }
-
-        internal static string ReflectionTypeLoadExceptionForLogging(ReflectionTypeLoadException rtle)
-        {
-            var sb = new StringBuilder();
-
-            sb.AppendLine(
-                ExceptionForLogging(rtle, true)
-            );
-
-            sb.AppendLine("--- LOADER EXCEPTIONS BELOW ---");
-
-            foreach (var le in rtle.LoaderExceptions)
-            {
-                sb.AppendLine(
-                    ExceptionForLogging(le, false)
                 );
             }
 

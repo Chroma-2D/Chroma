@@ -53,7 +53,8 @@ namespace Chroma.Natives.Boot
                 }
             }
 
-            throw new NativeLoaderException("Failed to find any provided file name variat at the provided lookup paths!");
+            throw new NativeLoaderException(
+                "Failed to find any provided file name variat at the provided lookup paths!");
         }
 
         public NativeLibrary Retrieve(string fileName)
@@ -77,7 +78,7 @@ namespace Chroma.Natives.Boot
                     if (tryRegisterIfNotFound)
                     {
                         Console.WriteLine($"{fileName} not found. Will try to register first...");
-                        
+
                         try
                         {
                             return Register(fileName);
@@ -88,33 +89,36 @@ namespace Chroma.Natives.Boot
                             Console.WriteLine($"{fileName} is not available. Moving onto next on the list...");
                         }
                     }
-                    
+
                     /* Skip to next... */
                 }
             }
-            
+
             throw new NativeLoaderException("None of the provided file names were found.");
         }
 
-        private IntPtr RegisterPlatformSpecific(string absoluteFilePath, out NativeLibrary.SymbolLookupDelegate symbolLookup)
+        private IntPtr RegisterPlatformSpecific(string absoluteFilePath,
+            out NativeLibrary.SymbolLookupDelegate symbolLookup)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
                 var handle = Posix.dlopen(absoluteFilePath, Posix.RTLD_NOW | Posix.RTLD_GLOBAL);
 
                 if (handle == IntPtr.Zero)
-                    throw new NativeLoaderException($"Failed to load '{absoluteFilePath}'. dlerror: {Marshal.PtrToStringAnsi(Posix.dlerror())}");
+                    throw new NativeLoaderException(
+                        $"Failed to load '{absoluteFilePath}'. dlerror: {Marshal.PtrToStringAnsi(Posix.dlerror())}");
 
                 symbolLookup = Posix.dlsym;
                 return handle;
             }
 
-            if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 var handle = Posix.dlopen(absoluteFilePath, Posix.RTLD_LAZY | Posix.RTLD_GLOBAL);
 
                 if (handle == IntPtr.Zero)
-                    throw new NativeLoaderException($"Failed to load '{absoluteFilePath}'. dlerror: {Marshal.PtrToStringAnsi(Posix.dlerror())}");
+                    throw new NativeLoaderException(
+                        $"Failed to load '{absoluteFilePath}'. dlerror: {Marshal.PtrToStringAnsi(Posix.dlerror())}");
 
                 symbolLookup = Posix.dlsym;
                 return handle;
@@ -129,7 +133,8 @@ namespace Chroma.Natives.Boot
                 var handle = Windows.LoadLibrary(fileName);
 
                 if (handle == IntPtr.Zero)
-                    throw new NativeLoaderException($"Failed to load '{absoluteFilePath}'. LoadLibrary: {Windows.GetLastError():X8}");
+                    throw new NativeLoaderException(
+                        $"Failed to load '{absoluteFilePath}'. LoadLibrary: {Windows.GetLastError():X8}");
 
                 symbolLookup = Windows.GetProcAddress;
                 return handle;

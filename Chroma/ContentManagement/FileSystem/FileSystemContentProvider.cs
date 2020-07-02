@@ -31,7 +31,7 @@ namespace Chroma.ContentManagement.FileSystem
             if (string.IsNullOrEmpty(ContentRoot))
             {
                 var appDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                ContentRoot = Path.Combine(appDirectory, "Content");
+                ContentRoot = Path.Combine(appDirectory!, "Content");
             }
 
             _loadedResources = new HashSet<DisposableResource>();
@@ -61,7 +61,8 @@ namespace Chroma.ContentManagement.FileSystem
         public void Unload<T>(T loadedResource) where T : DisposableResource
         {
             if (!_loadedResources.Contains(loadedResource))
-                throw new ContentNotLoadedException("The content you want to unload was never loaded in the first place.");
+                throw new ContentNotLoadedException(
+                    "The content you want to unload was never loaded in the first place.");
 
             loadedResource.Dispose();
         }
@@ -84,18 +85,18 @@ namespace Chroma.ContentManagement.FileSystem
             {
                 var texture = new Texture(path);
                 texture.Disposing += OnResourceDisposing;
-                
+
                 return texture;
             });
-            
+
             _importers.Add(typeof(PixelShader), (path, args) =>
             {
                 var ps = new PixelShader(path);
                 ps.Disposing += OnResourceDisposing;
-                
+
                 return ps;
             });
-            
+
             _importers.Add(typeof(VertexShader), (path, args) =>
             {
                 var vs = new VertexShader(path);
@@ -103,7 +104,7 @@ namespace Chroma.ContentManagement.FileSystem
 
                 return vs;
             });
-            
+
             _importers.Add(typeof(TrueTypeFont), (path, args) =>
             {
                 TrueTypeFont ttf;
@@ -119,11 +120,12 @@ namespace Chroma.ContentManagement.FileSystem
                 {
                     ttf = new TrueTypeFont(path, 12);
                 }
+
                 ttf.Disposing += OnResourceDisposing;
-                
+
                 return ttf;
             });
-            
+
             _importers.Add(typeof(BitmapFont), (path, args) =>
             {
                 var imFont = new BitmapFont(path);
@@ -131,7 +133,7 @@ namespace Chroma.ContentManagement.FileSystem
 
                 return imFont;
             });
-            
+
             _importers.Add(typeof(Sound), (path, args) =>
             {
                 var sound = _game.Audio.CreateSound(path);
@@ -139,7 +141,7 @@ namespace Chroma.ContentManagement.FileSystem
 
                 return sound;
             });
-            
+
             _importers.Add(typeof(Music), (path, args) =>
             {
                 var music = _game.Audio.CreateMusic(path);
@@ -147,14 +149,14 @@ namespace Chroma.ContentManagement.FileSystem
 
                 return music;
             });
-            
+
             _importers.Add(typeof(Cursor), (path, args) =>
             {
                 var hotSpot = new Vector2();
-                
+
                 if (args.Length >= 1)
                     hotSpot = (Vector2)args[0];
-                
+
                 var cursor = new Cursor(path, hotSpot);
                 cursor.Disposing += OnResourceDisposing;
 

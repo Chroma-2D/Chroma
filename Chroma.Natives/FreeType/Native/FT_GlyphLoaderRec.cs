@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Chroma.Natives.FreeType.Native
 {
     [StructLayout(LayoutKind.Sequential)]
-    internal unsafe struct FT_GlyphLoaderRec
+    internal struct FT_GlyphLoaderRec
     {
         public IntPtr memory;
         public uint max_points;

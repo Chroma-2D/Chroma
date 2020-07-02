@@ -1,5 +1,6 @@
 ﻿using Chroma.Diagnostics.Logging.Base;
 using System;
+using System.Globalization;
 
 namespace Chroma.Diagnostics.Logging.Decorators
 {
@@ -8,7 +9,9 @@ namespace Chroma.Diagnostics.Logging.Decorators
         private DisplayMode Mode { get; }
 
         public DateTimeDecorator()
-            : this(DisplayMode.TimeString24h) { }
+            : this(DisplayMode.TimeString24h)
+        {
+        }
 
         public DateTimeDecorator(DisplayMode mode)
         {
@@ -21,7 +24,7 @@ namespace Chroma.Diagnostics.Logging.Decorators
             {
                 DisplayMode.TimeString24h => DateTime.Now.ToString("HH:mm:ss"),
                 DisplayMode.TimeString12h => DateTime.Now.ToString("hh:mm:ss tt"),
-                DisplayMode.DefaultDateTimeString => DateTime.Now.ToString(),
+                DisplayMode.DefaultDateTimeString => DateTime.Now.ToString(CultureInfo.InvariantCulture),
 
                 _ => "??:??:??"
             };

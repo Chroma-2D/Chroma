@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using System.Threading;
@@ -11,7 +9,6 @@ using Chroma.ContentManagement.FileSystem;
 using Chroma.Diagnostics.Logging;
 using Chroma.Extensions;
 using Chroma.Graphics;
-using Chroma.Graphics.Batching;
 using Chroma.Graphics.TextRendering;
 using Chroma.Input.EventArgs;
 using Chroma.Natives.SDL;
@@ -144,7 +141,7 @@ namespace Chroma
                 )
             );
         }
-        
+
         protected virtual void LoadContent()
         {
         }

@@ -13,7 +13,7 @@ namespace Chroma.Graphics.Particles
 
         public static void LinearPositionY(Particle part, float delta)
             => part.Position.Y += part.Velocity.Y * delta;
-        
+
         public static void VelocityBasedRotation(Particle part, float delta)
             => part.Rotation += part.Velocity.Length() * delta;
 

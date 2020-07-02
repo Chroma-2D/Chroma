@@ -20,7 +20,7 @@ namespace Chroma.Audio
         private Dictionary<IntPtr, Music> _musicBank;
         private int _mixingChannelCount;
 
-        private bool _isOpen = false;
+        private bool _isOpen;
 
         private Log Log => LogManager.GetForCurrentAssembly();
 
@@ -64,18 +64,18 @@ namespace Chroma.Audio
             InitializeAudioMixer(AudioFormat.ChromaDefault, 44100, 4096);
         }
 
-        public void InitializeAudioMixer(AudioFormat audioFormat, int samplingRate,  int chunkSize)
+        public void InitializeAudioMixer(AudioFormat audioFormat, int samplingRate, int chunkSize)
         {
             if (_isOpen)
             {
                 Log.Warning("The audio system was already open. Closing it beforehand for you...");
                 ShutdownAudioMixer();
             }
-            
+
             SamplingRate = samplingRate;
             AudioFormat = audioFormat;
             ChunkSize = chunkSize;
-            
+
             var result = SDL_mixer.Mix_OpenAudio(
                 SamplingRate,
                 AudioFormat.SdlMixerFormat,
@@ -101,7 +101,7 @@ namespace Chroma.Audio
                 SDL_mixer.Mix_ChannelFinished(_channelFinished);
                 SDL_mixer.Mix_HookMusicFinished(_musicFinished);
                 SDL_mixer.Mix_SetPostMix(_postMixFunc, IntPtr.Zero);
-                
+
                 _isOpen = true;
             }
         }
@@ -117,6 +117,7 @@ namespace Chroma.Audio
                 sound.Disposing -= AudioResourceDisposing;
                 sound.Dispose();
             }
+
             _soundBank.Clear();
 
             foreach (var track in _musicBank.Values)
@@ -124,6 +125,7 @@ namespace Chroma.Audio
                 track.Disposing -= AudioResourceDisposing;
                 track.Dispose();
             }
+
             _musicBank.Clear();
 
             SDL_mixer.Mix_CloseAudio();
@@ -336,7 +338,15 @@ namespace Chroma.Audio
 
         internal void AudioResourceDisposing(object sender, EventArgs e)
         {
-            (sender as AudioSource).Disposing -= AudioResourceDisposing;
+            var audioSource = (sender as AudioSource);
+
+            if (audioSource == null)
+            {
+                Log.Warning($"Tried to dispose {sender.GetType()}, which is definitely not an AudioSource.");
+                return;
+            }
+
+            audioSource.Disposing -= AudioResourceDisposing;
 
             if (sender is Sound sound)
                 _soundBank.Remove(sound.Handle);
@@ -348,6 +358,9 @@ namespace Chroma.Audio
         {
             foreach (var sound in _soundBank.Values)
                 sound.Dispose();
+
+            foreach (var music in _musicBank.Values)
+                music.Dispose();
         }
     }
 }

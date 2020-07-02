@@ -1,5 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using FT_Long = System.IntPtr;
 
 namespace Chroma.Natives.FreeType.Native
@@ -15,8 +14,8 @@ namespace Chroma.Natives.FreeType.Native
 
         public FT_Long num_glyphs;
 
-        public IntPtr family_name;
-        public IntPtr style_name;
+        public FT_Long family_name;
+        public FT_Long style_name;
 
         public int num_fixed_sizes;
         public FT_Bitmap_Size* available_sizes;
@@ -43,15 +42,15 @@ namespace Chroma.Natives.FreeType.Native
         public FT_SizeRec* size;
         public FT_CharMapRec* charmap;
 
-        public IntPtr driver;
-        public IntPtr memory;
-        public IntPtr stream;
+        public FT_Long driver;
+        public FT_Long memory;
+        public FT_Long stream;
 
         public FT_ListRec sizes_list;
 
         public FT_Generic autohint;
-        public IntPtr extensions;
+        public FT_Long extensions;
 
-        public IntPtr @internal;
+        public FT_Long @internal;
     }
 }

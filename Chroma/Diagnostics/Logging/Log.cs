@@ -19,7 +19,7 @@ namespace Chroma.Diagnostics.Logging
         {
             Sinks = new List<Sink>();
             Decorators = new Dictionary<string, Decorator>();
-            
+
             LogLevel = LogLevel.Everything;
             Template = "{Message}";
         }
@@ -30,10 +30,7 @@ namespace Chroma.Diagnostics.Logging
             {
                 EnsureNotClosed();
 
-                EnsureMinimalLogLevel(LogLevel.Info, (level) =>
-                {
-                    DecorateAndPushToAllActiveSinks(level, message);
-                });
+                EnsureMinimalLogLevel(LogLevel.Info, (level) => { DecorateAndPushToAllActiveSinks(level, message); });
             }
         }
 
@@ -43,10 +40,8 @@ namespace Chroma.Diagnostics.Logging
             {
                 EnsureNotClosed();
 
-                EnsureMinimalLogLevel(LogLevel.Warning, (level) =>
-                {
-                    DecorateAndPushToAllActiveSinks(level, message);
-                });
+                EnsureMinimalLogLevel(LogLevel.Warning,
+                    (level) => { DecorateAndPushToAllActiveSinks(level, message); });
             }
         }
 
@@ -56,10 +51,7 @@ namespace Chroma.Diagnostics.Logging
             {
                 EnsureNotClosed();
 
-                EnsureMinimalLogLevel(LogLevel.Error, (level) =>
-                {
-                    DecorateAndPushToAllActiveSinks(level, message);
-                });
+                EnsureMinimalLogLevel(LogLevel.Error, (level) => { DecorateAndPushToAllActiveSinks(level, message); });
             }
         }
 
@@ -69,10 +61,7 @@ namespace Chroma.Diagnostics.Logging
             {
                 EnsureNotClosed();
 
-                EnsureMinimalLogLevel(LogLevel.Debug, (level) =>
-                {
-                    DecorateAndPushToAllActiveSinks(level, message);
-                });
+                EnsureMinimalLogLevel(LogLevel.Debug, (level) => { DecorateAndPushToAllActiveSinks(level, message); });
             }
         }
 
@@ -82,10 +71,8 @@ namespace Chroma.Diagnostics.Logging
             {
                 EnsureNotClosed();
 
-                EnsureMinimalLogLevel(LogLevel.Exception, (level) =>
-                {
-                    DecorateAndPushToAllActiveSinks(level, e.Message, e);
-                });
+                EnsureMinimalLogLevel(LogLevel.Exception,
+                    (level) => { DecorateAndPushToAllActiveSinks(level, e.Message, e); });
             }
         }
 

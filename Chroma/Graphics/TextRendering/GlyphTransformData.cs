@@ -15,7 +15,7 @@ namespace Chroma.Graphics.TextRendering
             Position = position;
             Scale = Vector2.One;
             Origin = Vector2.Zero;
-            
+
             Color = Color.White;
             Rotation = 0f;
         }

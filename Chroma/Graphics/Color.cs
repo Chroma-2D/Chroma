@@ -26,7 +26,9 @@ namespace Chroma.Graphics
         }
 
         public Color(byte r, byte g, byte b)
-            : this(r, g, b, 255) { }
+            : this(r, g, b, 255)
+        {
+        }
 
         public Color(byte r, byte g, byte b, byte a)
         {
@@ -37,13 +39,17 @@ namespace Chroma.Graphics
         }
 
         public Color(float r, float g, float b, float a) : this(
-                (byte)(255 * r),
-                (byte)(255 * g),
-                (byte)(255 * b),
-                (byte)(255 * a)) { }
-        
-        public Color(float r, float g, float b) : this(r, g, b, 1.0f) {}
-        
+            (byte)(255 * r),
+            (byte)(255 * g),
+            (byte)(255 * b),
+            (byte)(255 * a))
+        {
+        }
+
+        public Color(float r, float g, float b) : this(r, g, b, 1.0f)
+        {
+        }
+
         public Color(uint packedValue)
         {
             R = (byte)((packedValue & 0xFF000000) >> 24);
@@ -202,7 +208,7 @@ namespace Chroma.Graphics
         public static readonly Color YellowGreen = new Color(154, 205, 50);
 
         public float[] AsOrderedArray()
-            => new[] { R / 255f, G / 255f, B / 255f, A / 255f };
+            => new[] {R / 255f, G / 255f, B / 255f, A / 255f};
 
         public override bool Equals(object obj)
             => obj is Color color && Equals(color);

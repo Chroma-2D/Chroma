@@ -6,7 +6,7 @@ using Chroma.Graphics;
 using Chroma.Input;
 using Chroma.Input.EventArgs;
 
-namespace CustomCursor
+namespace CustomHardwareCursor
 {
     public class GameCore : Game
     {
@@ -28,35 +28,25 @@ namespace CustomCursor
 
         protected override void Draw(RenderContext context)
         {
-            context.Clear(Color.CornflowerBlue);
-            
             context.DrawString(
-                "Press <space> to toggle between default and custom cursor.\n" +
-                "Click <LMB> to toggle the cursor's visibility.\n" +
-                "Press <F1> to toggle window resizable/non-resizable.\n\n" +
-                $"Window Size: {Window.Properties.Width}x{Window.Properties.Height}",
+                "Press <F1> to toggle between default and custom cursor.\n" +
+                "Click <F2> to toggle the cursor's visibility.\n",
                 new Vector2(8, 8)
             );
         }
 
         protected override void KeyPressed(KeyEventArgs e)
         {
-            if (e.KeyCode == KeyCode.Space)
+            if (e.KeyCode == KeyCode.F1)
             {
                 if (!_cursor.IsCurrent)
                     _cursor.SetCurrent();
                 else Cursor.Reset();
             }
-            else if (e.KeyCode == KeyCode.F1)
+            else if (e.KeyCode == KeyCode.F2)
             {
-                Window.Properties.CanResize = !Window.Properties.CanResize;
-            }
-        }
-
-        protected override void MousePressed(MouseButtonEventArgs e)
-        {
-            if (e.Button == MouseButton.Left)
                 Cursor.IsVisible = !Cursor.IsVisible;
+            }
         }
     }
 }

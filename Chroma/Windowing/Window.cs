@@ -24,6 +24,7 @@ namespace Chroma.Windowing
         private RenderContext RenderContext { get; }
 
         internal delegate void StateUpdateDelegate(float delta);
+
         internal delegate void DrawDelegate(RenderContext context);
 
         internal StateUpdateDelegate Update;
@@ -147,7 +148,7 @@ namespace Chroma.Windowing
                 DetermineNativeResolution();
         }
 
-        public void GoWindowed(ushort width, ushort height)
+        public void GoWindowed(ushort width, ushort height, bool centerOnScreen = false)
         {
             SDL2.SDL_SetWindowFullscreen(Handle, 0);
             SDL_gpu.GPU_SetWindowResolution(width, height);
@@ -155,7 +156,8 @@ namespace Chroma.Windowing
             Properties.Width = width;
             Properties.Height = height;
 
-            CenterScreen();
+            if (centerOnScreen)
+                CenterScreen();
         }
 
         public void SetIcon(Texture texture)
@@ -246,7 +248,7 @@ namespace Chroma.Windowing
             };
 
             SDL_gpu.GPU_SetWindowResolution((ushort)mode.w, (ushort)mode.h);
-            
+
             Properties.Width = mode.w;
             Properties.Height = mode.h;
         }

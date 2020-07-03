@@ -4,11 +4,11 @@ namespace Chroma.Graphics
 {
     public struct Scissor : IEquatable<Scissor>
     {
-        public short X { get; set; }
-        public short Y { get; set; }
+        public short X { get; }
+        public short Y { get; }
 
-        public ushort Width { get; set; }
-        public ushort Height { get; set; }
+        public ushort Width { get; }
+        public ushort Height { get; }
 
         public static readonly Scissor None = new Scissor(0, 0, 0, 0);
 

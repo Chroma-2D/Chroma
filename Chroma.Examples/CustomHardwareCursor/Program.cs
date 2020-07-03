@@ -1,4 +1,4 @@
-﻿namespace CustomCursor
+﻿namespace CustomHardwareCursor
 {
     internal class Program
     {

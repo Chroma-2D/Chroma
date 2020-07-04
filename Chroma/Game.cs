@@ -1,15 +1,12 @@
 ﻿using System;
 using System.IO;
-using System.Numerics;
 using System.Reflection;
 using System.Threading;
 using Chroma.Audio;
 using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Diagnostics.Logging;
-using Chroma.Extensions;
 using Chroma.Graphics;
-using Chroma.Graphics.TextRendering;
 using Chroma.Input.EventArgs;
 using Chroma.Natives.SDL;
 using Chroma.Windowing;
@@ -19,20 +16,9 @@ namespace Chroma
     public class Game
     {
         private readonly Thread _fixedUpdateThread;
+        private static bool _wasConstructedAlready;
 
         private Log Log { get; } = LogManager.GetForCurrentAssembly();
-
-        private static readonly string _welcomeMessage =
-            "Welcome to Chroma Framework.\nTo get started, override Draw and Update methods.";
-
-        private static readonly string _versionString = $"v{Assembly.GetExecutingAssembly().GetName().Version}";
-
-        private float _betaEmblemHue;
-
-        internal static TrueTypeFont DefaultFont { get; private set; }
-        internal static Texture LogoTexture { get; private set; }
-        internal static Texture DefaultIconTexture { get; private set; }
-        internal static Texture BetaEmblemTexture { get; private set; }
 
         public Window Window { get; }
         public GraphicsManager Graphics { get; }
@@ -47,6 +33,15 @@ namespace Chroma
 
         public Game()
         {
+            if (_wasConstructedAlready)
+            {
+                throw new InvalidOperationException(
+                    "An instance of the Game class can only be constructed " +
+                    "once in the entire application's lifetime."
+                );
+            }
+
+            _wasConstructedAlready = true;
             _fixedUpdateThread = new Thread(FixedUpdateThread);
 
             Graphics = new GraphicsManager(this);
@@ -58,16 +53,17 @@ namespace Chroma
                 Update = Update
             };
 
-            LoadBuiltInResources();
-            Window.SetIcon(DefaultIconTexture);
-
+            Window.SetIcon(EmbeddedAssets.DefaultIconTexture);
             Content = new FileSystemContentProvider(this);
-
+            
             AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
         }
 
         public void Run()
         {
+            if (Window.Exists)
+                throw new InvalidOperationException("The game is already running.");
+            
             LoadContent();
             Window.Run(() => _fixedUpdateThread.Start());
         }
@@ -86,60 +82,6 @@ namespace Chroma
 
         protected virtual void Draw(RenderContext context)
         {
-            if (LogoTexture == null || LogoTexture.Disposed)
-                return;
-
-            context.Clear(Color.Black);
-            context.DrawTexture(
-                LogoTexture,
-                new Vector2(
-                    (Window.Properties.Width / 2) - (LogoTexture.Width / 2),
-                    (Window.Properties.Height / 2) - (LogoTexture.Height / 2)
-                ),
-                Vector2.One,
-                Vector2.Zero,
-                0f
-            );
-
-            context.DrawTexture(
-                BetaEmblemTexture,
-                new Vector2(
-                    (Window.Properties.Width / 2) - (LogoTexture.Width / 2),
-                    (Window.Properties.Height / 2) - (LogoTexture.Height / 2)
-                ) + new Vector2(8),
-                Vector2.One,
-                Vector2.Zero,
-                0f
-            );
-
-            context.DrawString(
-                _welcomeMessage,
-                new Vector2(8), (c, i, p, g) =>
-                {
-                    var ranges = _welcomeMessage.FindWordRanges("Draw", "Update");
-                    var color = Color.White;
-
-                    foreach (var range in ranges)
-                    {
-                        if (range.Includes(i))
-                        {
-                            color = Color.DodgerBlue;
-                            p.Y += 2 * MathF.Sin(0.25f * (_betaEmblemHue + (i * 1.25f)));
-                        }
-                    }
-
-                    return new GlyphTransformData(p) {Color = color};
-                }
-            );
-
-            var measure = DefaultFont.Measure(_versionString);
-            context.DrawString(
-                _versionString,
-                new Vector2(
-                    Window.Properties.Width - measure.X - 8,
-                    Window.Properties.Height - measure.Y - 8
-                )
-            );
         }
 
         protected virtual void LoadContent()
@@ -148,10 +90,6 @@ namespace Chroma
 
         protected virtual void Update(float delta)
         {
-            _betaEmblemHue += 40 * delta;
-            BetaEmblemTexture.ColorMask = Color.FromHSV(_betaEmblemHue, 1f, 0.85f);
-
-            Window.Properties.Title = $"Chroma Framework: {Window.FPS} FPS";
         }
 
         protected virtual void FixedUpdate(float fixedDelta)
@@ -246,7 +184,7 @@ namespace Chroma
         {
             while (true)
             {
-                if (!Window.Running)
+                if (!Window.Exists)
                     break;
 
                 var waitTime = 1f / FixedUpdateFrequency;
@@ -258,28 +196,6 @@ namespace Chroma
 
                 Thread.Sleep((int)(waitTime * 1000));
             }
-        }
-
-        private static void LoadBuiltInResources()
-        {
-            using var fontResourceStream = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream("Chroma.Resources.default.ttf");
-
-            using var logoResourceStream = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream("Chroma.Resources.logo.png");
-
-            using var defaultIconStream = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream("Chroma.Resources.deficon.png");
-
-            using var betaEmblemStream = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream("Chroma.Resources.beta.png");
-
-            DefaultFont = new TrueTypeFont(fontResourceStream, 16);
-            LogoTexture = new Texture(logoResourceStream);
-            DefaultIconTexture = new Texture(defaultIconStream);
-            DefaultIconTexture.FilteringMode = TextureFilteringMode.NearestNeighbor;
-
-            BetaEmblemTexture = new Texture(betaEmblemStream);
         }
 
         private void OnDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)

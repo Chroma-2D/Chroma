@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Drawing;
+using System.Numerics;
 using Chroma.Natives.SDL;
 using Chroma.Windowing.EventArgs;
 
@@ -69,9 +70,9 @@ namespace Chroma.Windowing.EventHandling.Specialized
             => owner.OnMoved(new WindowMoveEventArgs(new Vector2(ev.data1, ev.data2)));
 
         private void SizeChanged(Window owner, SDL2.SDL_WindowEvent ev)
-            => owner.OnSizeChanged(new WindowSizeEventArgs(ev.data1, ev.data2));
+            => owner.OnSizeChanged(new WindowSizeEventArgs(new Size(ev.data1, ev.data2)));
 
         private void Resized(Window owner, SDL2.SDL_WindowEvent ev)
-            => owner.OnResized(new WindowSizeEventArgs(ev.data1, ev.data2));
+            => owner.OnResized(new WindowSizeEventArgs(new Size(ev.data1, ev.data2)));
     }
 }

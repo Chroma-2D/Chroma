@@ -1,15 +1,11 @@
-﻿using System;
-using System.Globalization;
-using System.IO;
+﻿using System.IO;
 using System.Numerics;
 using Chroma;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Graphics;
 using Chroma.Graphics.Accelerated;
 using Chroma.Graphics.Particles;
-using Chroma.Graphics.Particles.StateInitializers;
 using Chroma.Input;
-using Chroma.Input.EventArgs;
 
 namespace ParticleSystems
 {
@@ -33,7 +29,7 @@ namespace ParticleSystems
         //
         protected override void LoadContent()
         {
-            _target = new RenderTarget(Window.Properties.Width, Window.Properties.Height);
+            _target = new RenderTarget(Window.Size.Width, Window.Size.Height);
             _shader = Content.Load<PixelShader>("Shaders/glow.glsl");
             
             _particle = Content.Load<Texture>("Textures/pentagram.png");
@@ -53,7 +49,7 @@ namespace ParticleSystems
             {
                 context.Clear(Color.Black);
                 
-                _shader.Activate();
+                // _shader.Activate();
                 _emitter.Draw(context);
             });
             
@@ -68,7 +64,7 @@ namespace ParticleSystems
 
         protected override void Update(float delta)
         {
-            Window.Properties.Title = $"{Window.FPS} | {_emitter.Particles.Count} particles shown";
+            Window.Title = $"{Window.FPS} | {_emitter.Particles.Count} particles shown";
             
             _emitter.IsActive = Mouse.IsButtonDown(MouseButton.Left);
             _emitter.SpawnPosition = Mouse.GetPosition();

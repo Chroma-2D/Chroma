@@ -12,13 +12,10 @@ namespace RenderTargets
 
         private float _rotation;
         private Vector2 _position = new Vector2(32);
-        
+
         protected override void LoadContent()
         {
-            _tgt = new RenderTarget(
-                Window.Properties.Width / 2,
-                Window.Properties.Height / 2
-            );
+            _tgt = new RenderTarget(Window.Size);
         }
 
         protected override void Update(float delta)
@@ -31,7 +28,7 @@ namespace RenderTargets
             {
                 _position.Y += 50 * delta;
             }
-            
+
             if (Keyboard.IsKeyDown(KeyCode.A))
             {
                 _position.X -= 50 * delta;
@@ -39,9 +36,9 @@ namespace RenderTargets
             else if (Keyboard.IsKeyDown(KeyCode.D))
             {
                 _position.X += 50 * delta;
-            }    
+            }
         }
-        
+
         protected override void Draw(RenderContext context)
         {
             context.RenderTo(_tgt, () =>
@@ -54,13 +51,16 @@ namespace RenderTargets
             context.Clear(Color.Crimson);
 
             context.DrawTexture(
-                _tgt, 
-                _tgt.Center + new Vector2(Window.Properties.Width / 2 - _tgt.Width / 2, Window.Properties.Height / 2 - _tgt.Width /2),
-                Vector2.One, 
-                _tgt.Center, 
+                _tgt,
+                _tgt.Center + new Vector2(
+                    Window.Size.Width / 2 - _tgt.Width / 2,
+                    Window.Size.Height / 2 - _tgt.Width / 2
+                ),
+                Vector2.One,
+                _tgt.Center,
                 _rotation
             );
-            
+
             context.DrawString(
                 "Use left and right cursor keys to rotate the render target around its center.\n" +
                 "Use <W> <A> <S> <D> to move the cyan rectangle around the render target.",

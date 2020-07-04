@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Numerics;
 using System.Threading;
 using Chroma.Diagnostics;
@@ -16,6 +17,11 @@ namespace Chroma.Windowing
     {
         private ulong _nowFrameTime = SDL2.SDL_GetPerformanceCounter();
         private ulong _lastFrameTime;
+
+        private string _title = "Chroma Framework";
+        private Size _size = new Size(800, 600);
+        private Vector2 _position = new Vector2(SDL2.SDL_WINDOWPOS_CENTERED, SDL2.SDL_WINDOWPOS_CENTERED);
+        private WindowState _state = WindowState.Normal;
 
         private Log Log { get; } = LogManager.GetForCurrentAssembly();
 
@@ -36,10 +42,177 @@ namespace Chroma.Windowing
         internal IntPtr RenderTargetHandle { get; }
 
         public float FPS => FpsCounter.FPS;
-        public bool Running { get; private set; }
+        public bool Exists { get; private set; }
 
         public IntPtr Handle { get; }
-        public WindowProperties Properties { get; }
+
+        public Size Size
+        {
+            get
+            {
+                if (Handle != IntPtr.Zero)
+                {
+                    SDL2.SDL_GetWindowSize(Handle, out var w, out var h);
+                    return new Size(w, h);
+                }
+                else
+                {
+                    return _size;
+                }
+            }
+
+            set
+            {
+                _size = value;
+
+                if (Handle != IntPtr.Zero)
+                {
+                    if (GraphicsManager.ViewportAutoResize)
+                    {
+                        SDL_gpu.GPU_SetWindowResolution((ushort)_size.Width, (ushort)_size.Height);
+                    }
+                    else
+                    {
+                        SDL2.SDL_SetWindowSize(Handle, (ushort)_size.Width, (ushort)_size.Height);
+                    }
+                }
+            }
+        }
+
+        public Vector2 Position
+        {
+            get
+            {
+                if (Handle == IntPtr.Zero)
+                    return _position;
+
+                SDL2.SDL_GetWindowPosition(Handle, out var x, out var y);
+                return new Vector2(x, y);
+            }
+
+            set
+            {
+                _position = value;
+
+                if (Handle != IntPtr.Zero)
+                    SDL2.SDL_SetWindowPosition(Handle, (int)_position.X, (int)_position.Y);
+            }
+        }
+
+        public Vector2 Center => new Vector2(Size.Width, Size.Height) / 2;
+
+        public string Title
+        {
+            get
+            {
+                if (Handle == IntPtr.Zero)
+                    return _title;
+
+                return SDL2.SDL_GetWindowTitle(Handle);
+            }
+            set
+            {
+                _title = value;
+
+                if (Handle != IntPtr.Zero)
+                    SDL2.SDL_SetWindowTitle(Handle, _title);
+            }
+        }
+
+        public WindowState State
+        {
+            get => _state;
+
+            set
+            {
+                _state = value;
+
+                if (Handle != IntPtr.Zero)
+                {
+                    switch (value)
+                    {
+                        case WindowState.Maximized:
+                            var flags = (SDL2.SDL_WindowFlags)SDL2.SDL_GetWindowFlags(Handle);
+
+                            if (!flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_RESIZABLE))
+                            {
+                                Log.Warning("Refusing to maximize a non-resizable window.");
+                                return;
+                            }
+
+                            SDL2.SDL_MaximizeWindow(Handle);
+                            break;
+
+                        case WindowState.Minimized:
+                            SDL2.SDL_MinimizeWindow(Handle);
+                            break;
+
+                        case WindowState.Normal:
+                            SDL2.SDL_RestoreWindow(Handle);
+                            break;
+                    }
+                }
+            }
+        }
+
+        public bool CanResize
+        {
+            get
+            {
+                var flags = (SDL2.SDL_WindowFlags)SDL2.SDL_GetWindowFlags(Handle);
+                return flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_RESIZABLE);
+            }
+
+            set => SDL2.SDL_SetWindowResizable(
+                Handle,
+                value
+                    ? SDL2.SDL_bool.SDL_TRUE
+                    : SDL2.SDL_bool.SDL_FALSE
+            );
+        }
+
+        public Size MaximumSize
+        {
+            get
+            {
+                SDL2.SDL_GetWindowMaximumSize(Handle, out var w, out var h);
+                return new Size(w, h);
+            }
+
+            set => SDL2.SDL_SetWindowMaximumSize(Handle, value.Width, value.Height);
+        }
+
+        public Size MinimumSize
+        {
+            get
+            {
+                SDL2.SDL_GetWindowMinimumSize(Handle, out var w, out var h);
+                return new Size(w, h);
+            }
+
+            set => SDL2.SDL_SetWindowMinimumSize(Handle, value.Width, value.Height);
+        }
+
+        public bool EnableBorder
+        {
+            get
+            {
+                var flags = (SDL2.SDL_WindowFlags)SDL2.SDL_GetWindowFlags(Handle);
+                return !flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_BORDERLESS);
+            }
+            set => SDL2.SDL_SetWindowBordered(Handle, value ? SDL2.SDL_bool.SDL_TRUE : SDL2.SDL_bool.SDL_FALSE);
+        }
+
+        public bool IsFullScreen
+        {
+            get
+            {
+                var flags = (SDL2.SDL_WindowFlags)SDL2.SDL_GetWindowFlags(Handle);
+
+                return flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN)
+                       || flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP);
+            }
+        }
 
         public bool IsCursorGrabbed
         {
@@ -64,26 +237,25 @@ namespace Chroma.Windowing
         internal Window(Game game)
         {
             Game = game;
-            Properties = new WindowProperties(this);
 
             Handle = SDL2.SDL_CreateWindow(
-                string.Empty,
-                (int)Properties.Position.X,
-                (int)Properties.Position.Y,
-                Properties.Width,
-                Properties.Height,
+                Title,
+                (int)Position.X,
+                (int)Position.Y,
+                Size.Width,
+                Size.Height,
                 SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL
             );
-            Properties.Title = "Chroma Framework";
+
             SDL_gpu.GPU_SetInitWindow(SDL2.SDL_GetWindowID(Handle));
 
             var bestRenderer = Game.Graphics.GetBestRenderer();
-            Log.Info($"Selecting best renderer: {bestRenderer.name}");
+            Log.Info($"Selecting highest available renderer version: {bestRenderer.name}");
 
             RenderTargetHandle = SDL_gpu.GPU_InitRenderer(
                 bestRenderer.renderer,
-                (ushort)Properties.Width,
-                (ushort)Properties.Height,
+                (ushort)Size.Width,
+                (ushort)Size.Height,
                 0
             );
 
@@ -96,36 +268,6 @@ namespace Chroma.Windowing
             _ = new InputEventHandlers(EventDispatcher);
         }
 
-        public void Run(Action postStatusSetAction = null)
-        {
-            Running = true;
-
-            postStatusSetAction?.Invoke();
-
-            while (Running)
-            {
-                _lastFrameTime = _nowFrameTime;
-                _nowFrameTime = SDL2.SDL_GetPerformanceCounter();
-                Delta = (_nowFrameTime - _lastFrameTime) / (float)SDL2.SDL_GetPerformanceFrequency();
-
-                while (SDL2.SDL_PollEvent(out var ev) != 0)
-                    EventDispatcher.Dispatch(ev);
-
-                Update?.Invoke(Delta);
-
-                if (Game.Graphics.AutoClear)
-                    RenderContext.Clear(Game.Graphics.AutoClearColor);
-
-                Draw?.Invoke(RenderContext);
-
-                SDL_gpu.GPU_Flip(RenderTargetHandle);
-                FpsCounter.Update();
-
-                if (Game.Graphics.LimitFramerate)
-                    Thread.Sleep(1);
-            }
-        }
-
         public void Show()
             => SDL2.SDL_ShowWindow(Handle);
 
@@ -133,9 +275,9 @@ namespace Chroma.Windowing
             => SDL2.SDL_HideWindow(Handle);
 
         public void CenterScreen()
-            => Properties.Position = new Vector2(SDL2.SDL_WINDOWPOS_CENTERED, SDL2.SDL_WINDOWPOS_CENTERED);
+            => Position = new Vector2(SDL2.SDL_WINDOWPOS_CENTERED, SDL2.SDL_WINDOWPOS_CENTERED);
 
-        public void GoFullscreen(bool exclusive = false, bool autoRes = true)
+        public void GoFullscreen(bool exclusive = false)
         {
             var flag = (uint)SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP;
 
@@ -144,17 +286,16 @@ namespace Chroma.Windowing
 
             SDL2.SDL_SetWindowFullscreen(Handle, flag);
 
-            if (autoRes)
-                DetermineNativeResolution();
+            var thisDisplayIndex = SDL2.SDL_GetWindowDisplayIndex(Handle);
+            Size = Game.Graphics.GetNativeResolution(thisDisplayIndex);
         }
 
-        public void GoWindowed(ushort width, ushort height, bool centerOnScreen = false)
+        public void GoWindowed(Size size, bool centerOnScreen = false)
         {
             SDL2.SDL_SetWindowFullscreen(Handle, 0);
-            SDL_gpu.GPU_SetWindowResolution(width, height);
+            SDL_gpu.GPU_SetWindowResolution((ushort)size.Width, (ushort)size.Height);
 
-            Properties.Width = width;
-            Properties.Height = height;
+            Size = size;
 
             if (centerOnScreen)
                 CenterScreen();
@@ -168,6 +309,35 @@ namespace Chroma.Windowing
             unsafe
             {
                 SDL2.SDL_SetWindowIcon(Handle, new IntPtr(texture.Surface));
+            }
+        }
+
+        internal void Run(Action postStatusSetAction = null)
+        {
+            Exists = true;
+            postStatusSetAction?.Invoke();
+
+            while (Exists)
+            {
+                _lastFrameTime = _nowFrameTime;
+                _nowFrameTime = SDL2.SDL_GetPerformanceCounter();
+                Delta = (_nowFrameTime - _lastFrameTime) / (float)SDL2.SDL_GetPerformanceFrequency();
+
+                while (SDL2.SDL_PollEvent(out var ev) != 0)
+                    EventDispatcher.Dispatch(ev);
+
+                Update?.Invoke(Delta);
+
+                if (GraphicsManager.AutoClear)
+                    RenderContext.Clear(GraphicsManager.AutoClearColor);
+
+                Draw?.Invoke(RenderContext);
+
+                SDL_gpu.GPU_Flip(RenderTargetHandle);
+                FpsCounter.Update();
+
+                if (GraphicsManager.LimitFramerate)
+                    Thread.Sleep(1);
             }
         }
 
@@ -187,7 +357,10 @@ namespace Chroma.Windowing
         }
 
         internal void OnStateChanged(WindowStateEventArgs e)
-            => StateChanged?.Invoke(this, e);
+        {
+            _state = e.State;
+            StateChanged?.Invoke(this, e);
+        }
 
         internal void OnMouseEntered()
             => MouseEntered?.Invoke(this, System.EventArgs.Empty);
@@ -207,18 +380,26 @@ namespace Chroma.Windowing
             => Unfocused?.Invoke(this, System.EventArgs.Empty);
 
         internal void OnMoved(WindowMoveEventArgs e)
-            => Moved?.Invoke(this, e);
+        {
+            _position = e.Position;
+
+            Moved?.Invoke(this, e);
+        }
 
         internal void OnSizeChanged(WindowSizeEventArgs e)
-            => SizeChanged?.Invoke(this, e);
+        {
+            _size = e.Size;
+
+            SizeChanged?.Invoke(this, e);
+        }
 
         internal void OnResized(WindowSizeEventArgs e)
         {
-            if (Properties.ViewportAutoResize)
+            if (GraphicsManager.ViewportAutoResize)
             {
                 SDL_gpu.GPU_SetWindowResolution(
-                    (ushort)e.Width,
-                    (ushort)e.Height
+                    (ushort)e.Size.Width,
+                    (ushort)e.Size.Height
                 );
             }
 
@@ -230,27 +411,7 @@ namespace Chroma.Windowing
             QuitRequested?.Invoke(this, e);
 
             if (!e.Cancel)
-                Running = false;
-        }
-
-        private void DetermineNativeResolution()
-        {
-            var thisDisplayIndex = SDL2.SDL_GetWindowDisplayIndex(Handle);
-            var display = Game.Graphics.FetchDesktopDisplayInfo(thisDisplayIndex);
-
-            var mode = new SDL2.SDL_DisplayMode
-            {
-                driverdata = display.UnderlyingDisplayMode.driverdata,
-                format = display.UnderlyingDisplayMode.format,
-                w = display.Width,
-                h = display.Height,
-                refresh_rate = display.RefreshRate
-            };
-
-            SDL_gpu.GPU_SetWindowResolution((ushort)mode.w, (ushort)mode.h);
-
-            Properties.Width = mode.w;
-            Properties.Height = mode.h;
+                Exists = false;
         }
 
         protected override void FreeNativeResources()

@@ -1,14 +1,14 @@
-﻿namespace Chroma.Windowing.EventArgs
+﻿using System.Drawing;
+
+namespace Chroma.Windowing.EventArgs
 {
     public class WindowSizeEventArgs : System.EventArgs
     {
-        public float Width { get; }
-        public float Height { get; }
+        public Size Size { get; }
 
-        internal WindowSizeEventArgs(float width, float height)
+        internal WindowSizeEventArgs(Size size)
         {
-            Width = width;
-            Height = height;
+            Size = size;
         }
     }
 }

@@ -26,7 +26,6 @@ namespace GlyphTransforms
         protected override void Update(float delta)
         {
             _angle += 10 * delta;
-            _angle %= 360;
         }
 
         protected override void Draw(RenderContext context)

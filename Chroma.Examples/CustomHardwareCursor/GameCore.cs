@@ -30,7 +30,7 @@ namespace CustomHardwareCursor
         {
             context.DrawString(
                 "Press <F1> to toggle between default and custom cursor.\n" +
-                "Click <F2> to toggle the cursor's visibility.\n",
+                "Press <F2> to toggle the cursor's visibility.\n",
                 new Vector2(8, 8)
             );
         }

@@ -61,7 +61,8 @@ namespace Fonts
             context.DrawString(
                 _renegade,
                 "This is a test of 48px high\n" +
-                "Renegade bitmap font. And here's its line break.",
+                "Renegade OTF.\n" +
+                "And here's its line break.",
                 new Vector2(8, 196),
                 Color.HotPink
             );

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using Chroma.Diagnostics.Logging;
 using Chroma.Natives.SDL;
@@ -8,17 +9,18 @@ namespace Chroma.Graphics
 {
     public class GraphicsManager
     {
-        private bool _vSyncEnabled;
+        private static bool _vSyncEnabled;
 
         private Game Game { get; }
 
         private Log Log { get; } = LogManager.GetForCurrentAssembly();
 
-        public bool LimitFramerate { get; set; } = true;
-        public bool AutoClear { get; set; } = true;
-        public Color AutoClearColor { get; set; } = Color.Transparent;
+        public static bool ViewportAutoResize { get; set; } = true;
+        public static bool LimitFramerate { get; set; } = true;
+        public static bool AutoClear { get; set; } = true;
+        public static Color AutoClearColor { get; set; } = Color.Transparent;
 
-        public bool VSyncEnabled
+        public static bool VSyncEnabled
         {
             get => _vSyncEnabled;
             set
@@ -117,6 +119,12 @@ namespace Chroma.Graphics
 
             Log.Error($"Failed to retrieve desktop display {index} info: {SDL2.SDL_GetError()}");
             return null;
+        }
+
+        public Size GetNativeResolution(int index)
+        {
+            var display = FetchDesktopDisplayInfo(index);
+            return new Size(display.Width, display.Height);
         }
 
         internal List<SDL_gpu.GPU_RendererID> GetRegisteredRenderers()

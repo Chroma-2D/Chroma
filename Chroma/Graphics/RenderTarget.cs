@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using Chroma.Natives.SDL;
+using Chroma.Windowing;
 
 namespace Chroma.Graphics
 {
@@ -16,6 +17,9 @@ namespace Chroma.Graphics
         {
             TargetHandle = SDL_gpu.GPU_LoadTarget(ImageHandle);
         }
+
+        public RenderTarget(Size size)
+            : this(size.Width, size.Height) { }
 
         public void SetViewport(Rectangle viewportRectangle)
         {

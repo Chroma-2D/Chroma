@@ -265,6 +265,26 @@ namespace Chroma.Graphics
         public static bool operator !=(Color left, Color right)
             => !(left == right);
 
+        public static implicit operator System.Drawing.Color(Color chromaColor)
+        {
+            return System.Drawing.Color.FromArgb(
+                chromaColor.A,
+                chromaColor.R,
+                chromaColor.G,
+                chromaColor.B
+            );
+        }
+
+        public static implicit operator Color(System.Drawing.Color systemDrawingColor)
+        {
+            return new Color(
+                systemDrawingColor.R,
+                systemDrawingColor.G,
+                systemDrawingColor.B,
+                systemDrawingColor.A
+            );
+        }
+
         internal static SDL2.SDL_Color ToSdlColor(Color color)
             => new SDL2.SDL_Color
             {

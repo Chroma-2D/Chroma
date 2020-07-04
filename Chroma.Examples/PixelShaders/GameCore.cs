@@ -24,13 +24,13 @@ namespace PixelShaders
         {
             Content = new FileSystemContentProvider(this, Path.Combine(LocationOnDisk, "../../../../_common"));
 
-            Graphics.LimitFramerate = false;
-            Graphics.VSyncEnabled = false;
+            GraphicsManager.LimitFramerate = false;
+            GraphicsManager.VSyncEnabled = false;
         }
         
         protected override void LoadContent()
         {
-            _target = new RenderTarget(Window.Properties.Width, Window.Properties.Height);
+            _target = new RenderTarget(Window.Size);
             _crtShader = Content.Load<PixelShader>("Shaders/scanline.frag");
             _tintShader = Content.Load<PixelShader>("Shaders/tint.frag");
             _burger = Content.Load<Texture>("Textures/burg.png");
@@ -41,7 +41,7 @@ namespace PixelShaders
             _rotation += 50 * delta;
             _rotation %= 360;
             
-            Window.Properties.Title = Window.FPS.ToString(CultureInfo.InvariantCulture);
+            Window.Title = Window.FPS.ToString(CultureInfo.InvariantCulture);
         }
 
         protected override void Draw(RenderContext context)
@@ -51,10 +51,10 @@ namespace PixelShaders
                 context.Clear(new Color(20, 20, 20));
                 
                 _tintShader.Activate();
-                _tintShader.SetUniform("mouseLoc", Mouse.GetPosition() / Window.Properties.Width);
+                _tintShader.SetUniform("mouseLoc", Mouse.GetPosition() / Window.Size.Width);
                     context.DrawTexture(
                         _burger, 
-                        Window.Properties.Center - (_burger.Center / 2),
+                        Window.Center - (_burger.Center / 2),
                         Vector2.One,
                         _burger.Center,
                         _rotation

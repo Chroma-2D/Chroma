@@ -74,9 +74,7 @@ namespace Chroma
         internal void Update(float delta)
         {
             _betaEmblemHue += 40 * delta;
-            
             EmbeddedAssets.BetaEmblemTexture.ColorMask = Color.FromHSV(_betaEmblemHue, 1f, 0.85f);
-            Game.Window.Title = $"Chroma Framework: {Game.Window.FPS} FPS";
         }
     }
 }

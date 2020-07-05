@@ -17,6 +17,7 @@ namespace Chroma
     {
         private readonly Thread _fixedUpdateThread;
         private static bool _wasConstructedAlready;
+        private static DefaultScene _defaultScene;
 
         private Log Log { get; } = LogManager.GetForCurrentAssembly();
 
@@ -31,7 +32,7 @@ namespace Chroma
 
         public int FixedUpdateFrequency { get; protected set; } = 75;
 
-        public Game()
+        public Game(bool constructDefaultScene = true)
         {
             if (_wasConstructedAlready)
             {
@@ -42,6 +43,10 @@ namespace Chroma
             }
 
             _wasConstructedAlready = true;
+            
+            if (constructDefaultScene)
+                _defaultScene = new DefaultScene(this);
+            
             _fixedUpdateThread = new Thread(FixedUpdateThread);
 
             Graphics = new GraphicsManager(this);

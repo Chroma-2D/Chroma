@@ -179,7 +179,17 @@ namespace Chroma.Windowing
                 return new Size(w, h);
             }
 
-            set => SDL2.SDL_SetWindowMaximumSize(Handle, value.Width, value.Height);
+            set
+            {
+                if (value == Size.Empty)
+                {
+                    SDL2.SDL_SetWindowMaximumSize(Handle, 16384, 16384);
+                }
+                else
+                {
+                    SDL2.SDL_SetWindowMaximumSize(Handle, value.Width, value.Height);
+                }
+            }
         }
 
         public Size MinimumSize
@@ -190,7 +200,17 @@ namespace Chroma.Windowing
                 return new Size(w, h);
             }
 
-            set => SDL2.SDL_SetWindowMinimumSize(Handle, value.Width, value.Height);
+            set
+            {
+                if (value == Size.Empty)
+                {
+                    SDL2.SDL_SetWindowMinimumSize(Handle, 1, 1);
+                }
+                else
+                {
+                    SDL2.SDL_SetWindowMinimumSize(Handle, value.Width, value.Height);
+                }
+            }
         }
 
         public bool EnableBorder
@@ -247,6 +267,11 @@ namespace Chroma.Windowing
                 SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL
             );
 
+            if (Handle == IntPtr.Zero)
+                throw new FrameworkException("Failed to initialize the window.", true);
+
+            MaximumSize = Size.Empty;
+            MinimumSize = Size.Empty;
             SDL_gpu.GPU_SetInitWindow(SDL2.SDL_GetWindowID(Handle));
 
             var bestRenderer = Game.Graphics.GetBestRenderer();
@@ -258,6 +283,9 @@ namespace Chroma.Windowing
                 (ushort)Size.Height,
                 0
             );
+
+            if (RenderTargetHandle == IntPtr.Zero)
+                throw new FrameworkException("Failed to initialize the renderer.", true);
 
             FpsCounter = new FpsCounter();
             RenderContext = new RenderContext(this);

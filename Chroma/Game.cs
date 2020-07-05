@@ -87,6 +87,8 @@ namespace Chroma
 
         protected virtual void Draw(RenderContext context)
         {
+            if (_defaultScene != null)
+                _defaultScene.Draw(context);
         }
 
         protected virtual void LoadContent()
@@ -95,6 +97,8 @@ namespace Chroma
 
         protected virtual void Update(float delta)
         {
+            if (_defaultScene != null)
+                _defaultScene.Update(delta);
         }
 
         protected virtual void FixedUpdate(float fixedDelta)

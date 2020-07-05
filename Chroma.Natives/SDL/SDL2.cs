@@ -908,7 +908,7 @@ namespace Chroma.Natives.SDL
 			out IntPtr userdata
 		)
 		{
-			IntPtr result = IntPtr.Zero;
+			IntPtr result;
 			SDL_LogGetOutputFunction(
 				out result,
 				out userdata
@@ -1320,6 +1320,47 @@ namespace Chroma.Natives.SDL
 			public int h;
 			public int refresh_rate;
 			public IntPtr driverdata; // void*
+		}
+
+		[StructLayout(LayoutKind.Sequential)]
+		public unsafe struct SDL_Window
+		{
+			public void* magic; // const void*
+			public uint id;
+			public IntPtr title;
+			public SDL_Surface* icon; // SDL_Surface*
+			public int x, y;
+			public int w, h;
+			public int min_w, min_h;
+			public int max_w, max_h;
+			public uint flags;
+			public uint last_fullscren_flags;
+			
+			public SDL_Rect windowed;
+
+			public SDL_DisplayMode fullscreen_mode;
+
+			public float brightness;
+			public ushort* gamma; // ushort*
+			public ushort* saved_gama; // ushort*
+
+			public SDL_Surface* surface; // SDL_Surface*
+			public bool surface_valid;
+			
+			public bool is_hiding;
+			public bool is_destroying;
+
+			public IntPtr shaper; // SDL_WindowShaper*
+			
+			public void* hit_test;
+			public void* hit_test_data; // void*
+
+			public void* data; // SDL_WindowUserData*
+			
+			public void* driverdata; // void*
+
+			public SDL_Window* prev; // SDL_Window*
+			public SDL_Window* next; // SDL_Window*
 		}
 
 		/* win refers to an SDL_Window*, area to a const SDL_Point*, data to a void*.
@@ -4826,7 +4867,7 @@ namespace Chroma.Natives.SDL
 			out IntPtr userdata
 		)
 		{
-			IntPtr result = IntPtr.Zero;
+			IntPtr result;
 			SDL_bool retval = SDL_GetEventFilter(out result, out userdata);
 			if (result != IntPtr.Zero)
 			{

@@ -71,7 +71,6 @@ namespace Chroma.Natives.Boot
                     if (ModuleInitializer.BootConfig.SkipChecksumVerification)
                         continue;
 
-                    File.Delete(libraryPath);
 
                     var memoryStream = new MemoryStream();
                     bzipStream.CopyTo(memoryStream, 1024);
@@ -82,7 +81,8 @@ namespace Chroma.Natives.Boot
                     var existingBytes = File.ReadAllBytes(libraryPath);
                     if (NativeIntegrity.ChecksumsMatch(existingBytes, embeddedLibraryBytes))
                         continue;
-
+                    
+                    File.Delete(libraryPath);
                     File.WriteAllBytes(libraryPath, embeddedLibraryBytes);
                 }
                 else

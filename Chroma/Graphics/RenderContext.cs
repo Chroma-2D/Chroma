@@ -437,6 +437,12 @@ namespace Chroma.Graphics
                 // defaulting the anchor to 0.
                 var xPos = x + info.Bearing.X;
                 var yPos = y - info.Bearing.Y + font.MaxBearing;
+                
+                if (font.UseKerning && i != 0)
+                {
+                    var kerning = font.GetKerning(text[i - 1], text[i]);
+                    xPos += kerning.X;
+                }
 
                 var transform = new GlyphTransformData(new Vector2(xPos, yPos));
 
@@ -468,12 +474,9 @@ namespace Chroma.Graphics
         public void DrawBatch(DrawOrder order = DrawOrder.BackToFront, bool discardBatchAfterUse = true)
         {
             BatchBuffer.Sort(
-                (a, b) =>
-                {
-                    if (order == DrawOrder.BackToFront)
-                        return a.Depth.CompareTo(b.Depth);
-                    else return b.Depth.CompareTo(a.Depth);
-                }
+                (a, b) => order == DrawOrder.BackToFront
+                                 ? a.Depth.CompareTo(b.Depth)
+                                 : b.Depth.CompareTo(a.Depth)
             );
 
             for (var i = 0; i < BatchBuffer.Count; i++)

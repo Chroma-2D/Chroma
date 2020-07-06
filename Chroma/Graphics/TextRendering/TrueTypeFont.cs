@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -45,6 +46,8 @@ namespace Chroma.Graphics.TextRendering
             }
         }
 
+        public bool UseKerning { get; set; } = true;
+        
         public int ScaledLineSpacing { get; private set; }
         public int LineSpacing { get; private set; }
 
@@ -150,9 +153,9 @@ namespace Chroma.Graphics.TextRendering
             return false;
         }
 
-        public Vector2 Measure(string text)
+        public Size Measure(string text)
         {
-            var width = 0f;
+            var width = 0;
 
             var maxWidth = width;
             var maxHeight = (text.Count(c => c == '\n') + 1) * ScaledLineSpacing;
@@ -172,13 +175,13 @@ namespace Chroma.Graphics.TextRendering
                     continue;
 
                 var info = RenderInfo[c];
-                width += info.Advance.X;
+                width += (int)info.Advance.X;
             }
 
             if (maxWidth < width)
                 maxWidth = width;
 
-            return new Vector2(maxWidth, maxHeight);
+            return new Size(maxWidth, maxHeight);
         }
 
         private void InitializeFontData()

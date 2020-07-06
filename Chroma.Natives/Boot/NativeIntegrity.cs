@@ -9,20 +9,16 @@ namespace Chroma.Natives.Boot
 
         public static bool ChecksumsMatch(byte[] existing, byte[] embedded)
         {
-            var existingHash = HexChecksumString(MD5.ComputeHash(existing));
-            var embeddedHash = HexChecksumString(MD5.ComputeHash(embedded));
+            var existingHash = MD5.ComputeHash(existing);
+            var embeddedHash = MD5.ComputeHash(embedded);
 
-            return existingHash == embeddedHash;
-        }
+            for (var i = 0; i < existingHash.Length; i++)
+            {
+                if (existingHash[i] != embeddedHash[i])
+                    return false;
+            }
 
-        private static string HexChecksumString(byte[] data)
-        {
-            var sb = new StringBuilder();
-
-            foreach (var b in data)
-                sb.Append(b.ToString("X2"));
-
-            return sb.ToString();
+            return true;
         }
     }
 }

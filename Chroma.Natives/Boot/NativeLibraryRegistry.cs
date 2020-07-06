@@ -77,8 +77,6 @@ namespace Chroma.Natives.Boot
                 {
                     if (tryRegisterIfNotFound)
                     {
-                        Console.WriteLine($"{fileName} not found. Will try to register first...");
-
                         try
                         {
                             return Register(fileName);
@@ -86,15 +84,15 @@ namespace Chroma.Natives.Boot
                         catch (NativeLoaderException)
                         {
                             /* Skip to next... */
-                            Console.WriteLine($"{fileName} is not available. Moving onto next on the list...");
                         }
                     }
-
                     /* Skip to next... */
                 }
             }
-
-            throw new NativeLoaderException("None of the provided file names were found.");
+            
+            throw new NativeLoaderException(
+                $"None of the provided file names were found. Tried: {string.Join(",", fileNames)}"
+            );
         }
 
         private IntPtr RegisterPlatformSpecific(string absoluteFilePath,

@@ -29,7 +29,7 @@ namespace Chroma.Natives.Boot
             if (ModuleInitializer.BootConfig.NativesInApplicationDirectory)
             {
                 var appDirPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                libraryRoot = Path.Combine(appDirPath, "Natives");
+                libraryRoot = Path.Combine(appDirPath!, "Natives");
             }
             else
             {
@@ -71,17 +71,18 @@ namespace Chroma.Natives.Boot
                     if (ModuleInitializer.BootConfig.SkipChecksumVerification)
                         continue;
 
-                    var memoryBuffer = new byte[1024 * 1024 * 4];
-                    var memoryStream = new MemoryStream(memoryBuffer);
+                    File.Delete(libraryPath);
+
+                    var memoryStream = new MemoryStream();
                     bzipStream.CopyTo(memoryStream, 1024);
 
+                    var memoryBuffer = memoryStream.ToArray();
                     var embeddedLibraryBytes = memoryBuffer[0..(int)memoryStream.Position];
 
                     var existingBytes = File.ReadAllBytes(libraryPath);
                     if (NativeIntegrity.ChecksumsMatch(existingBytes, embeddedLibraryBytes))
                         continue;
 
-                    File.Delete(libraryPath);
                     File.WriteAllBytes(libraryPath, embeddedLibraryBytes);
                 }
                 else

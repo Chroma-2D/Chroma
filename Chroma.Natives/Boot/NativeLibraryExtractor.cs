@@ -71,7 +71,6 @@ namespace Chroma.Natives.Boot
                     if (ModuleInitializer.BootConfig.SkipChecksumVerification)
                         continue;
 
-
                     var memoryStream = new MemoryStream();
                     bzipStream.CopyTo(memoryStream, 1024);
 

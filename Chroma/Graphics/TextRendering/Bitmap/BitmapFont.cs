@@ -68,12 +68,17 @@ namespace Chroma.Graphics.TextRendering.Bitmap
             var w = 0;
             var h = Common.LineHeight;
 
-            foreach (var c in s)
+            for (var i = 0; i < s.Length; i++)
             {
+                var c = s[i];
+
                 if (c == '\n')
                 {
                     h += Common.LineHeight;
-                    maxW = w;
+
+                    if (w > maxW)
+                        maxW = w;
+
                     w = 0;
                     continue;
                 }
@@ -81,7 +86,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
                 if (!HasGlyph(c))
                     continue;
 
-                w += Glyphs[c].Width + Glyphs[c].HorizontalAdvance + Glyphs[c].OffsetX;
+                w += Glyphs[c].HorizontalAdvance + Glyphs[c].OffsetX;
             }
 
             if (w > maxW)

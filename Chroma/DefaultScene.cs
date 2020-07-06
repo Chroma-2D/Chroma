@@ -65,8 +65,8 @@ namespace Chroma
             context.DrawString(
                 _versionString,
                 new Vector2(
-                    Game.Window.Size.Width - measure.X - 8,
-                    Game.Window.Size.Height - measure.Y - 8
+                    Game.Window.Size.Width - measure.Width - 8,
+                    Game.Window.Size.Height - measure.Height - 8
                 )
             );
         }

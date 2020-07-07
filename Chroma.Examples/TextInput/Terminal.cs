@@ -1,3 +1,7 @@
+using System;
+using Chroma.Graphics;
+using Chroma.Input.EventArgs;
+
 namespace TextInput
 {
     public class Terminal
@@ -6,6 +10,10 @@ namespace TextInput
 
         private int _x;
         private int _y;
+
+        private string _input;
+        
+        public Action<string> InputAccepted { get; set; }
 
         public Terminal(VGA vga)
         {
@@ -16,7 +24,7 @@ namespace TextInput
         {
             _x = 0;
             _y = 0;
-            
+
             _vga.Reset();
         }
 
@@ -44,7 +52,21 @@ namespace TextInput
             }
             else if (c == '\b')
             {
-                
+                if ((_x == 0 && _y == 0) || _input.Length == 0)
+                    return;
+
+                _input = _input[0..(_input.Length - 1)];
+                _x--;
+
+                if (_x < 0)
+                {
+                    _x = 0;
+
+                    if (_y - 1 >= 0)
+                        _y--;
+                }
+
+                _vga.SetCharAt(_x, _y, ' ');
             }
             else
             {
@@ -64,9 +86,31 @@ namespace TextInput
 
                 _vga.ScrollUp();
             }
-            
+        }
+
+        public void Update(float delta)
+        {
             _vga.CursorX = _x;
             _vga.CursorY = _y;
+
+            _vga.Update(delta);
+        }
+
+        public void Draw(RenderContext context)
+        {
+            _vga.Draw(context);
+        }
+
+        public void AcceptInput()
+        {
+            InputAccepted?.Invoke(_input);
+            _input = string.Empty;
+        }
+
+        public void TextInput(TextInputEventArgs e)
+        {
+            _input += e.Text;
+            Write(e.Text);
         }
     }
 }

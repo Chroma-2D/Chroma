@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Numerics;
 using Chroma.Diagnostics.Logging;
@@ -311,9 +312,9 @@ namespace Chroma.Graphics
             }
         }
 
-        private Vector2? _virtualResolution;
+        private Size? _virtualResolution;
 
-        public Vector2? VirtualResolution
+        public Size? VirtualResolution
         {
             get
             {
@@ -321,7 +322,7 @@ namespace Chroma.Graphics
 
                 if (!_virtualResolution.HasValue)
                 {
-                    _virtualResolution = new Vector2(Width, Height);
+                    _virtualResolution = new Size(Width, Height);
                 }
 
                 return _virtualResolution;
@@ -333,19 +334,22 @@ namespace Chroma.Graphics
 
                 if (value == null)
                 {
-                    _virtualResolution = new Vector2(Width, Height);
+                    _virtualResolution = new Size(Width, Height);
                     SDL_gpu.GPU_UnsetImageVirtualResolution(ImageHandle);
                 }
                 else
                 {
                     _virtualResolution = value;
-                    SDL_gpu.GPU_SetImageVirtualResolution(ImageHandle, (ushort)_virtualResolution.Value.X,
-                        (ushort)_virtualResolution.Value.Y);
+                    SDL_gpu.GPU_SetImageVirtualResolution(
+                        ImageHandle, 
+                        (ushort)_virtualResolution.Value.Height,
+                        (ushort)_virtualResolution.Value.Width
+                    );
                 }
             }
         }
 
-        public bool IsVirtualized => VirtualResolution == new Vector2(Width, Height);
+        public bool IsVirtualized => VirtualResolution == new Size(Width, Height);
 
         public Color this[int x, int y]
         {

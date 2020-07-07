@@ -21,6 +21,7 @@ namespace Cameras
         protected override void LoadContent()
         {
             _cam = new Camera();
+            _cam.UseCenteredOrigin = true;
             _tex = Content.Load<Texture>("Textures/grid.png");
         }
 
@@ -70,8 +71,21 @@ namespace Cameras
 
         protected override void WheelMoved(MouseWheelEventArgs e)
         {
-            _cam.ZoomX += (int)e.Motion.Y;
-            _cam.ZoomY += (int)e.Motion.Y;
+            if (_cam.ZoomX <= 0.3f || _cam.ZoomY <= 0.3f)
+            {
+                _cam.ZoomX = _cam.ZoomY = 0.3f;
+            }
+            
+            if (e.Motion.Y > 0)
+            {
+                _cam.ZoomX *= 2;
+                _cam.ZoomY *= 2;
+            }
+            else
+            {
+                _cam.ZoomX *= 0.5f;
+                _cam.ZoomY *= 0.5f;
+            }
         }
 
         protected override void MouseMoved(MouseMoveEventArgs e)

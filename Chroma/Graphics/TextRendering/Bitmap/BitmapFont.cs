@@ -86,7 +86,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
                 if (!HasGlyph(c))
                     continue;
 
-                w += Glyphs[c].HorizontalAdvance + Glyphs[c].OffsetX;
+                w += Glyphs[c].Width;
             }
 
             if (w > maxW)

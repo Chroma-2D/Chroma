@@ -89,7 +89,7 @@ namespace XboxController
             }
             else if (e.Button == ControllerButton.B)
             {
-                _color = Color.LimeGreen;
+                _color = Color.OrangeRed;
             }
             else if (e.Button == ControllerButton.Y)
             {
@@ -97,7 +97,7 @@ namespace XboxController
             }
             else if (e.Button == ControllerButton.A)
             {
-                _color = Color.OrangeRed;
+                _color = Color.LimeGreen;
             }
 
             if (e.Button == ControllerButton.LeftStick)

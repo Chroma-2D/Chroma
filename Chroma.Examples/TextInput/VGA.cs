@@ -60,7 +60,7 @@ namespace TextInput
 
             TotalCols = window.Size.Width / ColSize;
             TotalRows = window.Size.Height / RowSize;
-            
+
             Reset();
         }
 
@@ -68,16 +68,24 @@ namespace TextInput
         {
             _cx = 0;
             _cy = 0;
-            
+
             _fgColorBuffer = new Color[TotalCols * TotalRows];
             _charBuffer = new char[TotalCols * TotalRows];
 
+            Clear(true, true);
+        }
+
+        public void Clear(bool chars, bool colors)
+        {
             for (var y = 0; y < TotalRows; y++)
             {
                 for (var x = 0; x < TotalCols; x++)
                 {
-                    _fgColorBuffer[y * TotalCols + x] = Color.White;
-                    _charBuffer[y * TotalCols + x] = ' ';
+                    if (chars)
+                        _charBuffer[y * TotalCols + x] = ' ';
+
+                    if (colors)
+                        _fgColorBuffer[y * TotalCols + x] = Color.White;
                 }
             }
         }
@@ -121,7 +129,19 @@ namespace TextInput
             }
 
             for (var x = 0; x < TotalCols; x++)
+            {
                 _charBuffer[(TotalRows - 1) * TotalCols + x] = ' ';
+                _fgColorBuffer[(TotalRows - 1) * TotalCols + x] = Color.White;
+            }
+        }
+
+        public void SetLineToColor(Color color, int y)
+        {
+            if (y < 0 || y >= TotalRows)
+                return;
+
+            for (var x = 0; x < TotalCols; x++)
+                _fgColorBuffer[y * TotalCols + x] = color;
         }
 
         public void Update(float delta)
@@ -148,20 +168,27 @@ namespace TextInput
                     _ttf,
                     str,
                     new Vector2(0, y * _ttf.Size),
-                    (c, i, p, g) => new GlyphTransformData(p) {Color = _fgColorBuffer[y * TotalCols + i]}
+                    (c, i, p, g) =>
+                    {
+                        return new GlyphTransformData(p)
+                        {
+                            Color = _fgColorBuffer[y * TotalCols + i]
+                        };
+                    }
                 );
             }
 
             if (CursorEnabled && _drawCursor)
             {
-                context.Rectangle(ShapeMode.Fill,
+                context.Rectangle(
+                    ShapeMode.Stroke,
                     new Vector2(
-                        _cx * ColSize,
-                        _cy * RowSize
+                        _cx * ColSize + 4,
+                        _cy * RowSize - 1
                     ),
                     ColSize,
-                    RowSize - 3, 
-                    Color.White
+                    RowSize - 2,
+                    _fgColorBuffer[_cy * TotalCols + _cx]
                 );
             }
         }

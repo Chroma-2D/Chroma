@@ -8,14 +8,48 @@ namespace TextInput
     public class VGA
     {
         private readonly TrueTypeFont _ttf;
-        private readonly Color[] _fgColorBuffer;
-        private readonly char[] _charBuffer;
+        private Color[] _fgColorBuffer;
+        private char[] _charBuffer;
 
-        public int MaxCols { get; }
-        public int MaxRows { get; }
+        private int _cx;
+        private int _cy;
+
+        private float _cursorTimer;
+        private bool _drawCursor;
+
+        public int TotalCols { get; }
+        public int TotalRows { get; }
 
         public int RowSize { get; }
         public int ColSize { get; }
+
+        public int CursorX
+        {
+            get => _cx;
+            set
+            {
+                if (value >= TotalCols)
+                    _cx = TotalCols - 1;
+                else if (value < 0)
+                    _cx = 0;
+                else _cx = value;
+            }
+        }
+
+        public int CursorY
+        {
+            get => _cy;
+            set
+            {
+                if (value >= TotalRows)
+                    _cy = TotalRows - 1;
+                else if (value < 0)
+                    _cy = 0;
+                else _cy = value;
+            }
+        }
+
+        public bool CursorEnabled { get; set; }
 
         public VGA(Window window, TrueTypeFont ttf)
         {
@@ -24,27 +58,35 @@ namespace TextInput
             ColSize = _ttf.Measure("A").Width;
             RowSize = _ttf.Size;
 
-            MaxCols = window.Size.Width / ColSize;
-            MaxRows = window.Size.Height / RowSize;
+            TotalCols = window.Size.Width / ColSize;
+            TotalRows = window.Size.Height / RowSize;
+            
+            Reset();
+        }
 
-            _fgColorBuffer = new Color[MaxCols * MaxRows];
-            _charBuffer = new char[MaxCols * MaxRows];
+        public void Reset()
+        {
+            _cx = 0;
+            _cy = 0;
+            
+            _fgColorBuffer = new Color[TotalCols * TotalRows];
+            _charBuffer = new char[TotalCols * TotalRows];
 
-            for (var y = 0; y < MaxRows; y++)
+            for (var y = 0; y < TotalRows; y++)
             {
-                for (var x = 0; x < MaxCols; x++)
+                for (var x = 0; x < TotalCols; x++)
                 {
-                    _fgColorBuffer[y * MaxCols + x] = Color.White;
-                    _charBuffer[y * MaxCols + x] = ' ';
+                    _fgColorBuffer[y * TotalCols + x] = Color.White;
+                    _charBuffer[y * TotalCols + x] = ' ';
                 }
             }
         }
 
         public void SetCharAt(int x, int y, char c)
-            => _charBuffer[y * MaxCols + x] = c;
+            => _charBuffer[y * TotalCols + x] = c;
 
         public void SetColorAt(int x, int y, Color c)
-            => _fgColorBuffer[y * MaxCols + x] = c;
+            => _fgColorBuffer[y * TotalCols + x] = c;
 
         public void WriteStringTo(int x, int y, string str)
         {
@@ -57,23 +99,48 @@ namespace TextInput
 
                 tx++;
 
-                if (tx >= MaxCols)
+                if (tx >= TotalCols)
                 {
                     tx = 0;
                     ty++;
 
-                    if (ty >= MaxRows)
+                    if (ty >= TotalRows)
                         ty = 0;
                 }
             }
         }
 
-        public void Render(RenderContext context)
+        public void ScrollUp()
         {
-            for (var y = 0; y < MaxRows; y++)
+            for (var y = 1; y < TotalRows; y++)
             {
-                var start = y * MaxCols;
-                var end = start + MaxCols;
+                for (var x = 0; x < TotalCols; x++)
+                {
+                    _charBuffer[(y - 1) * TotalCols + x] = _charBuffer[y * TotalCols + x];
+                }
+            }
+
+            for (var x = 0; x < TotalCols; x++)
+                _charBuffer[(TotalRows - 1) * TotalCols + x] = ' ';
+        }
+
+        public void Update(float delta)
+        {
+            _cursorTimer += 2000 * delta;
+
+            if (_cursorTimer > 1000)
+            {
+                _drawCursor = !_drawCursor;
+                _cursorTimer = 0;
+            }
+        }
+
+        public void Draw(RenderContext context)
+        {
+            for (var y = 0; y < TotalRows; y++)
+            {
+                var start = y * TotalCols;
+                var end = start + TotalCols;
 
                 var str = new string(_charBuffer[start..end]);
 
@@ -81,7 +148,20 @@ namespace TextInput
                     _ttf,
                     str,
                     new Vector2(0, y * _ttf.Size),
-                    (c, i, p, g) => new GlyphTransformData(p) {Color = _fgColorBuffer[y * MaxCols + i]}
+                    (c, i, p, g) => new GlyphTransformData(p) {Color = _fgColorBuffer[y * TotalCols + i]}
+                );
+            }
+
+            if (CursorEnabled && _drawCursor)
+            {
+                context.Rectangle(ShapeMode.Fill,
+                    new Vector2(
+                        _cx * ColSize,
+                        _cy * RowSize
+                    ),
+                    ColSize,
+                    RowSize - 3, 
+                    Color.White
                 );
             }
         }

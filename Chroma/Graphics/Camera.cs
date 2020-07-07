@@ -6,33 +6,33 @@ namespace Chroma.Graphics
     {
         internal SDL_gpu.GPU_Camera GpuCamera;
 
-        public int X
+        public float X
         {
-            get => (int)GpuCamera.x;
+            get => GpuCamera.x;
             set => GpuCamera.x = value;
         }
 
-        public int Y
+        public float Y
         {
-            get => (int)GpuCamera.y;
+            get => GpuCamera.y;
             set => GpuCamera.y = value;
         }
 
-        public int Z
+        public float Z
         {
-            get => (int)GpuCamera.z;
+            get => GpuCamera.z;
             set => GpuCamera.z = value;
         }
 
-        public int ZoomX
+        public float ZoomX
         {
-            get => (int)GpuCamera.zoom_x;
+            get => GpuCamera.zoom_x;
             set => GpuCamera.zoom_x = value;
         }
 
-        public int ZoomY
+        public float ZoomY
         {
-            get => (int)GpuCamera.zoom_y;
+            get => GpuCamera.zoom_y;
             set => GpuCamera.zoom_y = value;
         }
 

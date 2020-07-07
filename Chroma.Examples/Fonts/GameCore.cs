@@ -61,7 +61,7 @@ namespace Fonts
                 measure1.Height,
                 Color.Red);
 
-            var plasticBagStr = "This is a test of 16px high Plastic Bag bitmap font.\n" +
+            var plasticBagStr = "This is a test of 16px high Plastic Bag font.\n" +
                       "And here's its line break. 1234567890-=!@#$aA";
             context.DrawString(
                 _plasticBagBmf,
@@ -78,18 +78,28 @@ namespace Fonts
                 measure2.Height,
                 Color.Red
             );
-            
+
+            var measure3 = _plasticBag.Measure(plasticBagStr);
             context.DrawString(
                 _plasticBag,
-                "This is a test of 16px high Plastic Bag TTF.\n" +
-                "And here's its line break.",
+                plasticBagStr,
                 new Vector2(16 + measure2.Width, 164),
                 Color.Violet
             );
             
+            context.Rectangle(
+                ShapeMode.Stroke,
+                new Vector2(16 + measure2.Width, 164),
+                measure3.Width,
+                measure3.Height,
+                Color.Red
+            );
+            
             context.DrawString(
                 _renegade,
-                "Dicks",
+                "This is a test of 48px high\n" +
+                "Renegade OTF.\n" +
+                "And here's its line break.",
                 new Vector2(8, 196),
                 Color.HotPink
             );

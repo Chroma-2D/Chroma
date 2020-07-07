@@ -73,6 +73,26 @@ namespace Chroma.ContentManagement.FileSystem
         public byte[] Read(string relativePath)
             => File.ReadAllBytes(MakeAbsolutePath(relativePath));
 
+        public void RegisterImporter<T>(Func<string, object[], object> importer) where T: DisposableResource
+        {
+            if (_importers.ContainsKey(typeof(T)))
+                throw new InvalidOperationException($"An importer for type {typeof(T).Name} was already registered.");
+
+            _importers.Add(typeof(T), importer);
+        }
+
+        public void UnregisterImporter<T>() where T: DisposableResource
+        {
+            if (!_importers.ContainsKey(typeof(T)))
+                throw new InvalidOperationException(
+                    $"An importer for type {typeof(T).Name} was never registered, thus it cannot be unregistered.");
+
+            _importers.Remove(typeof(T));
+        }
+
+        public bool IsImporterPresent<T>() where T : DisposableResource
+            => _importers.ContainsKey(typeof(T));
+
         protected override void FreeManagedResources()
         {
             foreach (var resource in _loadedResources)
@@ -81,7 +101,7 @@ namespace Chroma.ContentManagement.FileSystem
 
         private void RegisterImporters()
         {
-            _importers.Add(typeof(Texture), (path, args) =>
+            RegisterImporter<Texture>((path, args) =>
             {
                 var texture = new Texture(path);
                 texture.Disposing += OnResourceDisposing;
@@ -89,7 +109,7 @@ namespace Chroma.ContentManagement.FileSystem
                 return texture;
             });
 
-            _importers.Add(typeof(PixelShader), (path, args) =>
+            RegisterImporter<PixelShader>((path, args) =>
             {
                 var ps = new PixelShader(path);
                 ps.Disposing += OnResourceDisposing;
@@ -97,7 +117,7 @@ namespace Chroma.ContentManagement.FileSystem
                 return ps;
             });
 
-            _importers.Add(typeof(VertexShader), (path, args) =>
+            RegisterImporter<VertexShader>((path, args) =>
             {
                 var vs = new VertexShader(path);
                 vs.Disposing += OnResourceDisposing;
@@ -105,7 +125,7 @@ namespace Chroma.ContentManagement.FileSystem
                 return vs;
             });
 
-            _importers.Add(typeof(TrueTypeFont), (path, args) =>
+            RegisterImporter<TrueTypeFont>((path, args) =>
             {
                 TrueTypeFont ttf;
                 if (args.Length == 2)
@@ -126,7 +146,7 @@ namespace Chroma.ContentManagement.FileSystem
                 return ttf;
             });
 
-            _importers.Add(typeof(BitmapFont), (path, args) =>
+            RegisterImporter<BitmapFont>((path, args) =>
             {
                 var imFont = new BitmapFont(path);
                 imFont.Disposing += OnResourceDisposing;
@@ -134,7 +154,7 @@ namespace Chroma.ContentManagement.FileSystem
                 return imFont;
             });
 
-            _importers.Add(typeof(Sound), (path, args) =>
+            RegisterImporter<Sound>((path, args) =>
             {
                 var sound = _game.Audio.CreateSound(path);
                 sound.Disposing += OnResourceDisposing;
@@ -142,7 +162,7 @@ namespace Chroma.ContentManagement.FileSystem
                 return sound;
             });
 
-            _importers.Add(typeof(Music), (path, args) =>
+            RegisterImporter<Music>((path, args) =>
             {
                 var music = _game.Audio.CreateMusic(path);
                 music.Disposing += OnResourceDisposing;
@@ -150,7 +170,7 @@ namespace Chroma.ContentManagement.FileSystem
                 return music;
             });
 
-            _importers.Add(typeof(Cursor), (path, args) =>
+            RegisterImporter<Cursor>((path, args) =>
             {
                 var hotSpot = new Vector2();
 

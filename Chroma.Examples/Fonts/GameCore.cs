@@ -45,7 +45,7 @@ namespace Fonts
             );
 
             var alienlinesStr = "This is a test of 24px high Alien Lines TTF.\n" +
-                                "And here's its line break.";
+                                "And here's its line break.1234567890!@#$%^&*()_+_-=[];'\\";
             context.DrawString(
                 _alienlines,
                 alienlinesStr,
@@ -62,7 +62,7 @@ namespace Fonts
                 Color.Red);
 
             var plasticBagStr = "This is a test of 16px high Plastic Bag bitmap font.\n" +
-                      "And here's its line break.";
+                      "And here's its line break. 1234567890-=!@#$aA";
             context.DrawString(
                 _plasticBagBmf,
                 plasticBagStr,
@@ -87,13 +87,9 @@ namespace Fonts
                 Color.Violet
             );
             
-
-            
             context.DrawString(
                 _renegade,
-                "This is a test of 48px high\n" +
-                "Renegade OTF.\n" +
-                "And here's its line break.",
+                "Dicks",
                 new Vector2(8, 196),
                 Color.HotPink
             );

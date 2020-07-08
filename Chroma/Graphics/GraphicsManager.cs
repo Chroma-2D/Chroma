@@ -9,24 +9,39 @@ namespace Chroma.Graphics
 {
     public class GraphicsManager
     {
-        private static bool _vSyncEnabled;
+        private static DisplaySynchronization _displaySynchronization;
 
         private Game Game { get; }
 
-        private Log Log { get; } = LogManager.GetForCurrentAssembly();
+        private static Log Log { get; } = LogManager.GetForCurrentAssembly();
 
         public static bool ViewportAutoResize { get; set; } = true;
         public static bool LimitFramerate { get; set; } = true;
         public static bool AutoClear { get; set; } = true;
         public static Color AutoClearColor { get; set; } = Color.Transparent;
 
-        public static bool VSyncEnabled
+        public static float LineThickness
         {
-            get => _vSyncEnabled;
+            get => SDL_gpu.GPU_GetLineThickness();
+            set => SDL_gpu.GPU_SetLineThickness(value);
+        }
+
+        public static DisplaySynchronization DisplaySynchronization
+        {
+            get => _displaySynchronization;
             set
             {
-                _vSyncEnabled = value;
-                SDL2.SDL_GL_SetSwapInterval(value ? 1 : 0);
+                _displaySynchronization = value;
+                
+                var result = SDL2.SDL_GL_SetSwapInterval((int)_displaySynchronization);
+                
+                if (result < 0)
+                {
+                    Log.Warning(
+                        $"Failed to set the requested display synchronization mode: {SDL2.SDL_GetError()}. Defaulting to vertical retrace.");
+
+                    SDL2.SDL_GL_SetSwapInterval(1);
+                }
             }
         }
 
@@ -54,8 +69,6 @@ namespace Chroma.Graphics
 
             foreach (var d in FetchDisplayInfo())
                 Log.Info($"  {d.Index}: {d.Width}x{d.Height}@{d.RefreshRate}Hz");
-
-            VSyncEnabled = true;
         }
 
         public List<string> GetRendererNames()

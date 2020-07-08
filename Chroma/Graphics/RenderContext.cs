@@ -26,12 +26,6 @@ namespace Chroma.Graphics
         public bool RenderingToWindow
             => CurrentRenderTarget == Owner.RenderTargetHandle;
 
-        public float LineThickness
-        {
-            get => SDL_gpu.GPU_GetLineThickness();
-            set => SDL_gpu.GPU_SetLineThickness(value);
-        }
-
         public Rectangle Scissor
         {
             get => _scissor;
@@ -64,7 +58,6 @@ namespace Chroma.Graphics
             TargetStack.Push(owner.RenderTargetHandle);
 
             BatchBuffer = new List<BatchInfo>();
-            LineThickness = 1;
 
             SDL_gpu.GPU_SetDefaultAnchor(0, 0);
 

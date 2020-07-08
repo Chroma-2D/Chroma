@@ -33,7 +33,7 @@ namespace WindowOperations
                 $"Use <F7> to set maximum window size to 800x600.\n" +
                 $"Use <F8> to set minimum window size to 320x240.\n" +
                 $"Use <F9> to reset minimum and maximum window sizes to 0x0.\n" +
-                $"Use <F10> to toggle vertical synchronization on/off ({GraphicsManager.VSyncEnabled}).\n" +
+                $"Use <F10> to cycle between display synchronization modes ({GraphicsManager.DisplaySynchronization}).\n" +
                 $"Use <space> to toggle the center vector on/off.\n\n" +
                 $"Current viewport resolution: {Window.Size.Width}x{Window.Size.Height}\n" +
                 $"Maximum screen dimensions: {Window.MaximumSize.Width}x{Window.MaximumSize.Height}\n" +
@@ -97,7 +97,21 @@ namespace WindowOperations
             }
             else if (e.KeyCode == KeyCode.F10)
             {
-                GraphicsManager.VSyncEnabled = !GraphicsManager.VSyncEnabled;
+                // <YandereDevMode IgnoreSassyComments="true"
+                //                 IfElseGoodGoodCodeBad="yesplease">
+                if (GraphicsManager.DisplaySynchronization == DisplaySynchronization.Adaptive)
+                {
+                    GraphicsManager.DisplaySynchronization = DisplaySynchronization.Immediate;
+                }
+                else if (GraphicsManager.DisplaySynchronization == DisplaySynchronization.Immediate)
+                {
+                    GraphicsManager.DisplaySynchronization = DisplaySynchronization.VerticalRetrace;
+                }
+                else if (GraphicsManager.DisplaySynchronization == DisplaySynchronization.VerticalRetrace)
+                {
+                    GraphicsManager.DisplaySynchronization = DisplaySynchronization.Adaptive;
+                }
+                // </YandereDevMode>
             }
             else if (e.KeyCode == KeyCode.Space)
             {

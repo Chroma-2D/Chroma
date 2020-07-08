@@ -12,7 +12,7 @@ namespace Chroma.Graphics
 {
     public class RenderContext
     {
-        private Scissor _scissor = Scissor.None;
+        private Rectangle _scissor = System.Drawing.Rectangle.Empty;
 
         internal List<BatchInfo> BatchBuffer { get; }
 
@@ -32,14 +32,14 @@ namespace Chroma.Graphics
             set => SDL_gpu.GPU_SetLineThickness(value);
         }
 
-        public Scissor Scissor
+        public Rectangle Scissor
         {
             get => _scissor;
             set
             {
                 _scissor = value;
 
-                if (_scissor == Scissor.None)
+                if (_scissor == System.Drawing.Rectangle.Empty)
                 {
                     SDL_gpu.GPU_UnsetClip(CurrentRenderTarget);
                 }
@@ -47,10 +47,10 @@ namespace Chroma.Graphics
                 {
                     SDL_gpu.GPU_SetClip(
                         CurrentRenderTarget,
-                        _scissor.X,
-                        _scissor.Y,
-                        _scissor.Width,
-                        _scissor.Height
+                        (short)_scissor.X,
+                        (short)_scissor.Y,
+                        (ushort)_scissor.Width,
+                        (ushort)_scissor.Height
                     );
                 }
             }
@@ -228,7 +228,7 @@ namespace Chroma.Graphics
                 );
             }
         }
-
+        
         public void Rectangle(ShapeMode mode, Vector2 position, float width, float height, Color color)
         {
             if (mode == ShapeMode.Stroke)
@@ -254,6 +254,18 @@ namespace Chroma.Graphics
                 );
             }
         }
+
+        public void Rectangle(ShapeMode mode, Vector2 position, Size size, Color color)
+            => Rectangle(mode, position, size.Width, size.Height, color);
+
+        public void Rectangle(ShapeMode mode, Rectangle rectangle, Color color)
+            => Rectangle(
+                mode,
+                new Vector2(rectangle.X, rectangle.Y),
+                rectangle.Width,
+                rectangle.Height,
+                color
+            );
 
         public void Triangle(ShapeMode mode, Vector2 a, Vector2 b, Vector2 c, Color color)
         {

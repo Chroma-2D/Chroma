@@ -43,12 +43,29 @@ namespace Chroma.Graphics
             }
         }
 
-        public Vector2 Center
+        public Vector2 AbsoluteCenter
         {
             get
             {
                 EnsureNotDisposed();
                 return new Vector2(Width / 2f, Height / 2f);
+            }
+        }
+
+        public Vector2 Center
+        {
+            get
+            {
+                EnsureNotDisposed();
+
+                if (VirtualResolution.HasValue && IsVirtualized)
+                {
+                    return new Vector2(
+                        VirtualResolution.Value.Width / 2f, 
+                        VirtualResolution.Value.Height / 2f
+                    );
+                }
+                else return AbsoluteCenter;
             }
         }
 

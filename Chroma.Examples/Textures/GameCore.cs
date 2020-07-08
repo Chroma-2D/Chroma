@@ -17,7 +17,7 @@ namespace Textures
 
         private int _totalTiles;
         private int _currentTileIndex;
-        private Vector2 _virtRes;
+        private Size _virtRes;
 
         public GameCore()
         {
@@ -30,7 +30,7 @@ namespace Textures
             _totalTiles = _tileMap.Width / 64;
 
             _burger = Content.Load<Texture>("Textures/burg.png");
-            _virtRes = new Vector2(_burger.Width, _burger.Height);
+            _virtRes = new Size(_burger.Width, _burger.Height);
         }
 
         protected override void Draw(RenderContext context)
@@ -84,17 +84,17 @@ namespace Textures
             }
             else if (e.KeyCode == KeyCode.NumPlus)
             {
-                _burger.VirtualResolution = _virtRes = new Vector2(_virtRes.X + 32, _virtRes.Y + 32);
+                _burger.VirtualResolution = _virtRes = new Size(_virtRes.Width + 32, _virtRes.Height + 32);
             }
             else if (e.KeyCode == KeyCode.NumMinus)
             {
-                if (_virtRes.X <= 0 || _virtRes.Y <= 0) return;
+                if (_virtRes.Width <= 0 || _virtRes.Height <= 0) return;
 
-                _burger.VirtualResolution = _virtRes = new Vector2(_virtRes.X - 32, _virtRes.Y - 32);
+                _burger.VirtualResolution = _virtRes = new Size(_virtRes.Width - 32, _virtRes.Height - 32);
             }
             else if (e.KeyCode == KeyCode.F1)
             {
-                _burger.VirtualResolution = _virtRes = new Vector2(_burger.Width, _burger.Height);
+                _burger.VirtualResolution = _virtRes = new Size(_burger.Width, _burger.Height);
             }
             else if (e.KeyCode == KeyCode.F2)
             {

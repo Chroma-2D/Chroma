@@ -20,14 +20,14 @@ namespace PrimitiveShapes
                 Color.HotPink
             );
 
-            context.LineThickness = 2;
+            GraphicsManager.LineThickness = 2;
             context.Circle(
                 ShapeMode.Stroke,
                 new Vector2(64, 32),
                 radius: 32,
                 Color.Lime
             );
-            context.LineThickness = 1;
+            GraphicsManager.LineThickness = 1;
 
             context.Ellipse(
                 ShapeMode.Fill,
@@ -37,13 +37,13 @@ namespace PrimitiveShapes
                 Color.Aqua
             );
 
-            context.LineThickness = 4;
+            GraphicsManager.LineThickness = 4;
             context.Line(
                 new Vector2(120, 120),
                 new Vector2(48, 48),
                 Color.Yellow
             );
-            context.LineThickness = 1;
+            GraphicsManager.LineThickness = 1;
             context.DrawString("<- A whole bunch\nof primitives", new Vector2(160, 64));
 
             context.DrawString("A polygon:", new Vector2(170, 170));

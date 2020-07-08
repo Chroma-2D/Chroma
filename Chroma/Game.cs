@@ -61,6 +61,10 @@ namespace Chroma
             Window.SetIcon(EmbeddedAssets.DefaultIconTexture);
             Content = new FileSystemContentProvider(this);
             
+            // Can only initialize these after Window creates OpenGL context.
+            GraphicsManager.LineThickness = 1;
+            GraphicsManager.DisplaySynchronization = DisplaySynchronization.VerticalRetrace;
+            
             AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
         }
 

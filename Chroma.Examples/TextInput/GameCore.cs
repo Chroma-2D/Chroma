@@ -1,10 +1,12 @@
-﻿using System.IO;
+﻿using System.Drawing;
+using System.IO;
 using Chroma;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Graphics;
 using Chroma.Graphics.TextRendering;
 using Chroma.Input;
 using Chroma.Input.EventArgs;
+using Color = Chroma.Graphics.Color;
 
 namespace TextInput
 {
@@ -38,9 +40,16 @@ namespace TextInput
 
         protected override void LoadContent()
         {
-            _font = Content.Load<TrueTypeFont>("Fonts/m9.ttf", 14);
+            _font = Content.Load<TrueTypeFont>("Fonts/dos8x14.ttf", 16);
             _font.ForceAutoHinting = true;
 
+            Window.SizeChanged += (sender, args) => { InitializeDisplay(); };
+
+            InitializeDisplay();
+        }
+
+        private void InitializeDisplay()
+        {
             _vga = new VGA(Window, _font)
             {
                 CursorEnabled = true
@@ -52,19 +61,21 @@ namespace TextInput
                 {
                     if (!string.IsNullOrWhiteSpace(input))
                     {
-                        _terminal.WriteLine($"    ECHO: {input}");
+                        _terminal.WriteLine($" ECHO -> {input}");
                     }
 
                     _terminal.Write("root # ");
                 }
             };
+            _terminal.WriteLine(
+                "Welcome to the faux terminal shell!\nInput text to get it echoed back. Hit <F1> for a surprise.\n");
             _terminal.Write("root # ");
         }
 
         protected override void Update(float delta)
         {
             _terminal.Update(delta);
-            
+
             if (_colorCycle)
             {
                 _cycleTimer += 25 * delta;
@@ -86,7 +97,7 @@ namespace TextInput
 
         protected override void KeyPressed(KeyEventArgs e)
         {
-            if (e.KeyCode == KeyCode.Return)
+            if (e.KeyCode == KeyCode.Return || e.KeyCode == KeyCode.NumEnter)
             {
                 _terminal.PutChar('\n');
                 _terminal.AcceptInput();
@@ -111,6 +122,26 @@ namespace TextInput
             else if (e.KeyCode == KeyCode.F3)
             {
                 _font.ForceAutoHinting = !_font.ForceAutoHinting;
+            }
+            else if (e.KeyCode == KeyCode.F4)
+            {
+                _font.HintingMode = HintingMode.Light;
+            }
+            else if (e.KeyCode == KeyCode.F5)
+            {
+                _font.HintingMode = HintingMode.Monochrome;
+            }
+            else if (e.KeyCode == KeyCode.F6)
+            {
+                Window.GoFullscreen(false);
+            }
+            else if (e.KeyCode == KeyCode.F7)
+            {
+                Window.GoWindowed(new Size(800, 600), true);
+            }
+            else if (e.KeyCode == KeyCode.F8)
+            {
+                Window.CanResize = !Window.CanResize;
             }
         }
 

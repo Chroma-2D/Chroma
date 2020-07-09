@@ -30,12 +30,7 @@ namespace Chroma.Graphics
             set
             {
                 _enableMultiSampling = value;
-                var result = SDL2.SDL_GL_SetAttribute(SDL2.SDL_GLattr.SDL_GL_MULTISAMPLEBUFFERS,
-                    _enableMultiSampling ? 1 : 0);
-
-                if (result < 0)
-                    Log.Warning(
-                        $"Failed to set SDL_GL_MULTISAMPLEBUFFERS to '{_enableMultiSampling}: {SDL2.SDL_GetError()}");
+                SDL2.SDL_GL_SetAttribute(SDL2.SDL_GLattr.SDL_GL_MULTISAMPLEBUFFERS, _enableMultiSampling ? 1 : 0);
             }
         }
 
@@ -58,12 +53,10 @@ namespace Chroma.Graphics
                     _multiSamplingPrecision = value;
                 }
 
-                var result =
-                    SDL2.SDL_GL_SetAttribute(SDL2.SDL_GLattr.SDL_GL_MULTISAMPLESAMPLES, (int)_multiSamplingPrecision);
-
-                if (result < 0)
-                    Log.Warning(
-                        $"Failed to set SDL_GL_MULTISAMPLESAMPLES to '{_multiSamplingPrecision}': {SDL2.SDL_GetError()}");
+                SDL2.SDL_GL_SetAttribute(
+                    SDL2.SDL_GLattr.SDL_GL_MULTISAMPLESAMPLES,
+                    _multiSamplingPrecision
+                );
             }
         }
 
@@ -237,20 +230,25 @@ namespace Chroma.Graphics
             MultiSamplingPrecision = 0;
 
             SDL2.SDL_CreateWindowAndRenderer(
-                0, 
-                0,
-                SDL2.SDL_WindowFlags.SDL_WINDOW_HIDDEN |
-                SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL,
+                0, 0,
+                SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL |
+                SDL2.SDL_WindowFlags.SDL_WINDOW_BORDERLESS,
                 out var window,
                 out var renderer
             );
 
+            var context = SDL2.SDL_GL_GetCurrentContext();
+            
+            if (context == IntPtr.Zero)
+                context = SDL2.SDL_GL_CreateContext(window);
+            
             Gl.GlGetIntegerV(Gl.GL_MAX_SAMPLES, out var maxSamples);
             MaximumMultiSamplingPrecision = maxSamples;
-            
+
+            SDL2.SDL_GL_DeleteContext(context);
             SDL2.SDL_DestroyRenderer(renderer);
             SDL2.SDL_DestroyWindow(window);
-            
+
             MultiSamplingPrecision = prevSamples;
         }
     }

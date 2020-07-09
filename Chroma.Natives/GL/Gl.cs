@@ -67,25 +67,5 @@ namespace Chroma.Natives.GL
             Marshal.GetDelegateForFunctionPointer<GlHintDelegate>(
                 SDL2.SDL_GL_GetProcAddress("glHint")
             );
-
-        public static void SwitchMultiSampleAA(bool enabled)
-        {
-            if (enabled) GlEnable(GL_MULTISAMPLE);
-            else GlDisable(GL_MULTISAMPLE);
-        }
-
-        public static void SetLineSmoothing(bool enabled)
-        {
-            if (enabled)
-            {
-                GlHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-                GlEnable(GL_LINE_SMOOTH);
-            }
-            else
-            {
-                GlHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
-                GlDisable(GL_LINE_SMOOTH);
-            }
-        }
     }
 }

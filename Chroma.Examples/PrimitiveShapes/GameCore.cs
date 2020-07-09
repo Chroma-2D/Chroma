@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Numerics;
 using Chroma;
 using Chroma.Graphics;
-using Chroma.Input;
 using Chroma.Input.EventArgs;
 using Color = Chroma.Graphics.Color;
 
@@ -84,14 +83,6 @@ namespace PrimitiveShapes
                 Color.Red
             );
             context.DrawString("Wonderful\nrectangle.", new Vector2(410, 410));
-        }
-
-        protected override void KeyPressed(KeyEventArgs e)
-        {
-            if (e.KeyCode == KeyCode.Space)
-            {
-                Graphics.LineSmoothingEnabled = !Graphics.LineSmoothingEnabled;
-            }
         }
     }
 }

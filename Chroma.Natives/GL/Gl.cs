@@ -15,7 +15,7 @@ namespace Chroma.Natives.GL
         public const uint GL_STACK_OVERFLOW = 0x503;
         public const uint GL_STACK_UNDERFLOW = 0x504;
         public const uint GL_OUT_OF_MEMORY = 0x505;
-        
+
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         internal delegate void GlEnableDisableDelegate(uint extension);
 
@@ -24,30 +24,26 @@ namespace Chroma.Natives.GL
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         internal delegate uint GlGetErrorDelegate();
-        
-        internal static GlEnableDisableDelegate GlEnable { get; }
-        internal static GlEnableDisableDelegate GlDisable { get; }
-        internal static GlGetIntegervDelegate GlGetIntegerV { get; }
-        internal static GlGetErrorDelegate GlGetError { get; }
 
-        static Gl()
-        {
-            GlEnable = Marshal.GetDelegateForFunctionPointer<GlEnableDisableDelegate>(
+        internal static GlEnableDisableDelegate GlEnable =>
+            Marshal.GetDelegateForFunctionPointer<GlEnableDisableDelegate>(
                 SDL2.SDL_GL_GetProcAddress("glEnable")
             );
 
-            GlDisable = Marshal.GetDelegateForFunctionPointer<GlEnableDisableDelegate>(
+        internal static GlEnableDisableDelegate GlDisable =>
+            Marshal.GetDelegateForFunctionPointer<GlEnableDisableDelegate>(
                 SDL2.SDL_GL_GetProcAddress("glDisable")
             );
-            
-            GlGetIntegerV = Marshal.GetDelegateForFunctionPointer<GlGetIntegervDelegate>(
+
+        internal static GlGetIntegervDelegate GlGetIntegerV =>
+            Marshal.GetDelegateForFunctionPointer<GlGetIntegervDelegate>(
                 SDL2.SDL_GL_GetProcAddress("glGetIntegerv")
             );
 
-            GlGetError = Marshal.GetDelegateForFunctionPointer<GlGetErrorDelegate>(
+        internal static GlGetErrorDelegate GlGetError => 
+            Marshal.GetDelegateForFunctionPointer<GlGetErrorDelegate>(
                 SDL2.SDL_GL_GetProcAddress("glGetError")
             );
-        }
 
         public static void SwitchMultiSampleAA(bool enabled)
         {

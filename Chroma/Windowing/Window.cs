@@ -288,7 +288,6 @@ namespace Chroma.Windowing
 
             MaximumSize = Size.Empty;
             MinimumSize = Size.Empty;
-            Gl.SwitchMultiSampleAA(true);
 
             FpsCounter = new FpsCounter();
             RenderContext = new RenderContext(this);

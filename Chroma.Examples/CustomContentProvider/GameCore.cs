@@ -1,10 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Numerics;
 using Chroma;
 using Chroma.Graphics;
-using Chroma.Input;
-using Chroma.Input.EventArgs;
 
 namespace CustomContentProvider
 {
@@ -27,7 +24,13 @@ namespace CustomContentProvider
 
         protected override void Draw(RenderContext context)
         {
-            context.DrawTexture(_texture, (Window.Center - _texture.Center), new Vector2(8), _texture.Center, _rotation);
+            context.DrawTexture(
+                _texture, 
+                (Window.Center - _texture.Center), 
+                new Vector2(8), 
+                _texture.Center,
+                _rotation
+            );
         }
 
         protected override void Update(float delta)

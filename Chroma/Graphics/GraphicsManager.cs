@@ -12,7 +12,6 @@ namespace Chroma.Graphics
     {
         private static VerticalSyncMode _verticalSyncMode;
 
-        private static bool _enableMultiSampling = true;
         private static int _multiSamplingPrecision;
 
         private Game Game { get; }
@@ -23,16 +22,6 @@ namespace Chroma.Graphics
         public static bool LimitFramerate { get; set; } = true;
         public static bool AutoClear { get; set; } = true;
         public static Color AutoClearColor { get; set; } = Color.Transparent;
-
-        public static bool MultiSamplingEnabled
-        {
-            get => _enableMultiSampling;
-            set
-            {
-                _enableMultiSampling = value;
-                SDL2.SDL_GL_SetAttribute(SDL2.SDL_GLattr.SDL_GL_MULTISAMPLEBUFFERS, _enableMultiSampling ? 1 : 0);
-            }
-        }
 
         public static int MaximumMultiSamplingPrecision { get; private set; }
 
@@ -61,11 +50,17 @@ namespace Chroma.Graphics
                 );
             }
         }
-        
+
         public float LineThickness
         {
             get => SDL_gpu.GPU_GetLineThickness();
             set => SDL_gpu.GPU_SetLineThickness(value);
+        }
+        
+        public bool LineSmoothingEnabled
+        {
+            get => Gl.GlIsEnabled(Gl.GL_LINE_SMOOTH); 
+            set => Gl.SetLineSmoothing(value);
         }
 
         public VerticalSyncMode VerticalSyncMode
@@ -104,18 +99,13 @@ namespace Chroma.Graphics
         static GraphicsManager()
         {
             ProbeGlLimits(
-                preProbe: () => {
-                    MultiSamplingPrecision = 0;
-                },
+                preProbe: () => { MultiSamplingPrecision = 0; },
                 probe: () =>
                 {
                     Gl.GlGetIntegerV(Gl.GL_MAX_SAMPLES, out var maxSamples);
                     MaximumMultiSamplingPrecision = maxSamples;
                 },
-                postProbe: () =>
-                {
-                    MultiSamplingPrecision = 4;
-                }
+                postProbe: () => { MultiSamplingPrecision = 4; }
             );
         }
 
@@ -240,7 +230,7 @@ namespace Chroma.Graphics
         private static void ProbeGlLimits(Action preProbe, Action probe, Action postProbe)
         {
             preProbe();
-            
+
             SDL2.SDL_CreateWindowAndRenderer(
                 0, 0,
                 SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL |
@@ -251,7 +241,8 @@ namespace Chroma.Graphics
 
             var context = SDL2.SDL_GL_GetCurrentContext();
             var destroyContextAfter = false;
-            if (context == IntPtr.Zero)
+
+            if (context == IntPtr.Zero) // can and will happen on windows
             {
                 destroyContextAfter = true;
                 context = SDL2.SDL_GL_CreateContext(window);
@@ -262,7 +253,7 @@ namespace Chroma.Graphics
 
             if (destroyContextAfter)
                 SDL2.SDL_GL_DeleteContext(context);
-            
+
             SDL2.SDL_DestroyRenderer(renderer);
             SDL2.SDL_DestroyWindow(window);
 

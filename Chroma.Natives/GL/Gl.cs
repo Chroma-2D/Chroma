@@ -5,8 +5,15 @@ namespace Chroma.Natives.GL
 {
     public static class Gl
     {
+        public const uint GL_LINE_SMOOTH = 0x0B20;
         public const uint GL_MULTISAMPLE = 0x809D;
         public const uint GL_MAX_SAMPLES = 0x8D57;
+
+        public const uint GL_DONT_CARE = 0x1100;
+        public const uint GL_FASTEST = 0x1101;
+        public const uint GL_NICEST = 0x1102;
+
+        public const uint GL_LINE_SMOOTH_HINT = 0x0C52;
 
         public const uint GL_NO_ERROR = 0;
         public const uint GL_INVALID_ENUM = 0x500;
@@ -17,7 +24,7 @@ namespace Chroma.Natives.GL
         public const uint GL_OUT_OF_MEMORY = 0x505;
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate void GlEnableDisableDelegate(uint extension);
+        internal delegate void GlEnableDisableDelegate(uint cap);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         internal delegate void GlGetIntegervDelegate(uint attr, out int result);
@@ -25,6 +32,12 @@ namespace Chroma.Natives.GL
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         internal delegate uint GlGetErrorDelegate();
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        internal delegate bool GlIsEnabledDelegate(uint cap);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        internal delegate void GlHintDelegate(uint target, uint mode);
+        
         internal static GlEnableDisableDelegate GlEnable =>
             Marshal.GetDelegateForFunctionPointer<GlEnableDisableDelegate>(
                 SDL2.SDL_GL_GetProcAddress("glEnable")
@@ -45,10 +58,34 @@ namespace Chroma.Natives.GL
                 SDL2.SDL_GL_GetProcAddress("glGetError")
             );
 
+        internal static GlIsEnabledDelegate GlIsEnabled =>
+            Marshal.GetDelegateForFunctionPointer<GlIsEnabledDelegate>(
+                SDL2.SDL_GL_GetProcAddress("glIsEnabled")
+            );
+
+        internal static GlHintDelegate GlHint =>
+            Marshal.GetDelegateForFunctionPointer<GlHintDelegate>(
+                SDL2.SDL_GL_GetProcAddress("glHint")
+            );
+
         public static void SwitchMultiSampleAA(bool enabled)
         {
             if (enabled) GlEnable(GL_MULTISAMPLE);
             else GlDisable(GL_MULTISAMPLE);
+        }
+
+        public static void SetLineSmoothing(bool enabled)
+        {
+            if (enabled)
+            {
+                GlHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+                GlEnable(GL_LINE_SMOOTH);
+            }
+            else
+            {
+                GlHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+                GlDisable(GL_LINE_SMOOTH);
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using Chroma.Diagnostics.Logging;
+using Chroma.Natives.GL;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics
@@ -29,7 +30,12 @@ namespace Chroma.Graphics
             set
             {
                 _enableMultiSampling = value;
-                SDL2.SDL_GL_SetAttribute(SDL2.SDL_GLattr.SDL_GL_MULTISAMPLEBUFFERS, _enableMultiSampling ? 1 : 0);
+                var result = SDL2.SDL_GL_SetAttribute(SDL2.SDL_GLattr.SDL_GL_MULTISAMPLEBUFFERS,
+                    _enableMultiSampling ? 1 : 0);
+
+                if (result < 0)
+                    Log.Warning(
+                        $"Failed to set SDL_GL_MULTISAMPLEBUFFERS to '{_enableMultiSampling}: {SDL2.SDL_GetError()}");
             }
         }
 
@@ -38,10 +44,30 @@ namespace Chroma.Graphics
             get => _multiSamplingPrecision;
             set
             {
-                _multiSamplingPrecision = value;
-                SDL2.SDL_GL_SetAttribute(SDL2.SDL_GLattr.SDL_GL_MULTISAMPLESAMPLES, _multiSamplingPrecision);
+                if (value > MaximumMultiSamplingPrecision)
+                {
+                    Log.Warning(
+                        $"Maximum supported multisampling precision is {MaximumMultiSamplingPrecision}. " +
+                        $"Amount of {value} was requested."
+                    );
+
+                    _multiSamplingPrecision = MaximumMultiSamplingPrecision;
+                }
+                else
+                {
+                    _multiSamplingPrecision = value;
+                }
+
+                var result =
+                    SDL2.SDL_GL_SetAttribute(SDL2.SDL_GLattr.SDL_GL_MULTISAMPLESAMPLES, (int)_multiSamplingPrecision);
+
+                if (result < 0)
+                    Log.Warning(
+                        $"Failed to set SDL_GL_MULTISAMPLESAMPLES to '{_multiSamplingPrecision}': {SDL2.SDL_GetError()}");
             }
         }
+
+        public static int MaximumMultiSamplingPrecision { get; private set; }
 
         public float LineThickness
         {
@@ -81,6 +107,11 @@ namespace Chroma.Graphics
 
         public bool IsDefaultShaderActive
             => SDL_gpu.GPU_IsDefaultShaderProgram(SDL_gpu.GPU_GetCurrentShaderProgram());
+
+        static GraphicsManager()
+        {
+            ProbeGlLimits();
+        }
 
         internal GraphicsManager(Game game)
         {
@@ -198,6 +229,29 @@ namespace Chroma.Graphics
             var wglResult = SDL2.SDL_GL_ExtensionSupported("WGL_EXT_swap_control_tear");
 
             IsAdaptiveVSyncSupported = (glxResult == SDL2.SDL_bool.SDL_TRUE || wglResult == SDL2.SDL_bool.SDL_TRUE);
+        }
+
+        private static void ProbeGlLimits()
+        {
+            var prevSamples = MultiSamplingPrecision;
+            MultiSamplingPrecision = 0;
+
+            SDL2.SDL_CreateWindowAndRenderer(
+                0, 
+                0,
+                SDL2.SDL_WindowFlags.SDL_WINDOW_HIDDEN |
+                SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL,
+                out var window,
+                out var renderer
+            );
+
+            Gl.GlGetIntegerV(Gl.GL_MAX_SAMPLES, out var maxSamples);
+            MaximumMultiSamplingPrecision = maxSamples;
+            
+            SDL2.SDL_DestroyRenderer(renderer);
+            SDL2.SDL_DestroyWindow(window);
+            
+            MultiSamplingPrecision = prevSamples;
         }
     }
 }

@@ -57,12 +57,6 @@ namespace Chroma.Graphics
             set => SDL_gpu.GPU_SetLineThickness(value);
         }
         
-        public bool LineSmoothingEnabled
-        {
-            get => Gl.GlIsEnabled(Gl.GL_LINE_SMOOTH); 
-            set => Gl.SetLineSmoothing(value);
-        }
-
         public VerticalSyncMode VerticalSyncMode
         {
             get => _verticalSyncMode;

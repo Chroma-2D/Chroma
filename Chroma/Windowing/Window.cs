@@ -6,7 +6,6 @@ using Chroma.Diagnostics;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.MemoryManagement;
-using Chroma.Natives.GL;
 using Chroma.Natives.SDL;
 using Chroma.Windowing.EventArgs;
 using Chroma.Windowing.EventHandling;
@@ -267,7 +266,7 @@ namespace Chroma.Windowing
                 Size.Height,
                 SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL
             );
-            
+
             if (Handle == IntPtr.Zero)
                 throw new FrameworkException("Failed to initialize the window.", true);
 

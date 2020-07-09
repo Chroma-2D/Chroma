@@ -28,7 +28,7 @@ namespace XboxController
         {
             context.RenderTo(_tgt, () =>
             {
-                GraphicsManager.LineThickness = _lineThickness;
+                Graphics.LineThickness = _lineThickness;
                 context.Clear(Color.Transparent);
                 context.Rectangle(
                     _mode,

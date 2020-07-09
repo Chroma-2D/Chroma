@@ -9,7 +9,10 @@ namespace Chroma.Graphics
 {
     public class GraphicsManager
     {
-        private static DisplaySynchronization _displaySynchronization;
+        private static VerticalSyncMode _verticalSyncMode;
+
+        private static bool _enableMultiSampling = true;
+        private static int _multiSamplingPrecision = 4;
 
         private Game Game { get; }
 
@@ -20,31 +23,55 @@ namespace Chroma.Graphics
         public static bool AutoClear { get; set; } = true;
         public static Color AutoClearColor { get; set; } = Color.Transparent;
 
-        public static float LineThickness
+        public static bool MultiSamplingEnabled
+        {
+            get => _enableMultiSampling;
+            set
+            {
+                _enableMultiSampling = value;
+                SDL2.SDL_GL_SetAttribute(SDL2.SDL_GLattr.SDL_GL_MULTISAMPLEBUFFERS, _enableMultiSampling ? 1 : 0);
+            }
+        }
+
+        public static int MultiSamplingPrecision
+        {
+            get => _multiSamplingPrecision;
+            set
+            {
+                _multiSamplingPrecision = value;
+                SDL2.SDL_GL_SetAttribute(SDL2.SDL_GLattr.SDL_GL_MULTISAMPLESAMPLES, _multiSamplingPrecision);
+            }
+        }
+
+        public float LineThickness
         {
             get => SDL_gpu.GPU_GetLineThickness();
             set => SDL_gpu.GPU_SetLineThickness(value);
         }
 
-        public static DisplaySynchronization DisplaySynchronization
+        public VerticalSyncMode VerticalSyncMode
         {
-            get => _displaySynchronization;
+            get => _verticalSyncMode;
             set
             {
-                _displaySynchronization = value;
-                
-                var result = SDL2.SDL_GL_SetSwapInterval((int)_displaySynchronization);
-                
+                _verticalSyncMode = value;
+
+                var result = SDL2.SDL_GL_SetSwapInterval((int)_verticalSyncMode);
+
                 if (result < 0)
                 {
-                    _displaySynchronization = DisplaySynchronization.VerticalRetrace;
+                    _verticalSyncMode = VerticalSyncMode.Retrace;
                     SDL2.SDL_GL_SetSwapInterval(1);
-                    
+
                     Log.Warning(
-                        $"Failed to set the requested display synchronization mode: {SDL2.SDL_GetError()}. Defaulting to vertical retrace.");
+                        $"Failed to set the requested display synchronization mode: {SDL2.SDL_GetError()}. " +
+                        "Defaulting to vertical retrace."
+                    );
                 }
             }
         }
+
+        public bool IsAdaptiveVSyncSupported { get; private set; }
 
         public float ScreenGamma
         {
@@ -70,6 +97,11 @@ namespace Chroma.Graphics
 
             foreach (var d in FetchDisplayInfo())
                 Log.Info($"  {d.Index}: {d.Width}x{d.Height}@{d.RefreshRate}Hz");
+
+            CheckGlExtensionAvailability();
+
+            LineThickness = 1;
+            VerticalSyncMode = VerticalSyncMode.Retrace;
         }
 
         public List<string> GetRendererNames()
@@ -141,7 +173,7 @@ namespace Chroma.Graphics
             return new Size(display.Width, display.Height);
         }
 
-        internal List<SDL_gpu.GPU_RendererID> GetRegisteredRenderers()
+        internal static List<SDL_gpu.GPU_RendererID> GetRegisteredRenderers()
         {
             var renderers = SDL_gpu.GPU_GetNumRegisteredRenderers();
             var registeredRenderers = new SDL_gpu.GPU_RendererID[renderers];
@@ -157,7 +189,15 @@ namespace Chroma.Graphics
             return registeredRenderers.ToList();
         }
 
-        internal SDL_gpu.GPU_RendererID GetBestRenderer()
+        internal static SDL_gpu.GPU_RendererID GetBestRenderer()
             => GetRegisteredRenderers().OrderByDescending(x => x.major_version).First();
+
+        private void CheckGlExtensionAvailability()
+        {
+            var glxResult = SDL2.SDL_GL_ExtensionSupported("GLX_EXT_swap_control_tear");
+            var wglResult = SDL2.SDL_GL_ExtensionSupported("WGL_EXT_swap_control_tear");
+
+            IsAdaptiveVSyncSupported = (glxResult == SDL2.SDL_bool.SDL_TRUE || wglResult == SDL2.SDL_bool.SDL_TRUE);
+        }
     }
 }

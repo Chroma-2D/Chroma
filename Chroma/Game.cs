@@ -49,21 +49,17 @@ namespace Chroma
             
             _fixedUpdateThread = new Thread(FixedUpdateThread);
 
-            Graphics = new GraphicsManager(this);
-            Audio = new AudioManager();
-
             Window = new Window(this)
             {
                 Draw = Draw,
                 Update = Update
             };
 
+            Graphics = new GraphicsManager(this);
+            Audio = new AudioManager();
+            
             Window.SetIcon(EmbeddedAssets.DefaultIconTexture);
             Content = new FileSystemContentProvider(this);
-            
-            // Can only initialize these after Window creates OpenGL context.
-            GraphicsManager.LineThickness = 1;
-            GraphicsManager.DisplaySynchronization = DisplaySynchronization.VerticalRetrace;
             
             AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
         }

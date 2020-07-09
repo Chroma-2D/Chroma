@@ -53,7 +53,12 @@ namespace Chroma.ContentManagement.FileSystem
             }
 
             var resource = _importers[type].Invoke(MakeAbsolutePath(relativePath), args) as T;
-            _loadedResources.Add(resource);
+
+            if (resource != null)
+            {
+                _loadedResources.Add(resource);
+                resource.Disposing += OnResourceDisposing;
+            }
 
             return resource;
         }
@@ -103,26 +108,17 @@ namespace Chroma.ContentManagement.FileSystem
         {
             RegisterImporter<Texture>((path, args) =>
             {
-                var texture = new Texture(path);
-                texture.Disposing += OnResourceDisposing;
-
-                return texture;
+                return new Texture(path);
             });
 
             RegisterImporter<PixelShader>((path, args) =>
             {
-                var ps = new PixelShader(path);
-                ps.Disposing += OnResourceDisposing;
-
-                return ps;
+                return new PixelShader(path);
             });
 
             RegisterImporter<VertexShader>((path, args) =>
             {
-                var vs = new VertexShader(path);
-                vs.Disposing += OnResourceDisposing;
-
-                return vs;
+                return new VertexShader(path);
             });
 
             RegisterImporter<TrueTypeFont>((path, args) =>
@@ -141,33 +137,22 @@ namespace Chroma.ContentManagement.FileSystem
                     ttf = new TrueTypeFont(path, 12);
                 }
 
-                ttf.Disposing += OnResourceDisposing;
-
                 return ttf;
             });
 
             RegisterImporter<BitmapFont>((path, args) =>
             {
-                var imFont = new BitmapFont(path);
-                imFont.Disposing += OnResourceDisposing;
-
-                return imFont;
+                return new BitmapFont(path);
             });
 
             RegisterImporter<Sound>((path, args) =>
             {
-                var sound = _game.Audio.CreateSound(path);
-                sound.Disposing += OnResourceDisposing;
-
-                return sound;
+                return _game.Audio.CreateSound(path);
             });
 
             RegisterImporter<Music>((path, args) =>
             {
-                var music = _game.Audio.CreateMusic(path);
-                music.Disposing += OnResourceDisposing;
-
-                return music;
+                return _game.Audio.CreateMusic(path);
             });
 
             RegisterImporter<Cursor>((path, args) =>
@@ -178,8 +163,6 @@ namespace Chroma.ContentManagement.FileSystem
                     hotSpot = (Vector2)args[0];
 
                 var cursor = new Cursor(path, hotSpot);
-                cursor.Disposing += OnResourceDisposing;
-
                 return cursor;
             });
         }

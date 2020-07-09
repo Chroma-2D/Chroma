@@ -13,7 +13,7 @@ namespace Chroma.Graphics
         private static VerticalSyncMode _verticalSyncMode;
 
         private static bool _enableMultiSampling = true;
-        private static int _multiSamplingPrecision = 4;
+        private static int _multiSamplingPrecision;
 
         private Game Game { get; }
 
@@ -34,6 +34,8 @@ namespace Chroma.Graphics
             }
         }
 
+        public static int MaximumMultiSamplingPrecision { get; private set; }
+
         public static int MultiSamplingPrecision
         {
             get => _multiSamplingPrecision;
@@ -43,7 +45,7 @@ namespace Chroma.Graphics
                 {
                     Log.Warning(
                         $"Maximum supported multisampling precision is {MaximumMultiSamplingPrecision}. " +
-                        $"Amount of {value} was requested."
+                        $"Amount of {value} was requested. Setting maximum instead."
                     );
 
                     _multiSamplingPrecision = MaximumMultiSamplingPrecision;
@@ -59,9 +61,7 @@ namespace Chroma.Graphics
                 );
             }
         }
-
-        public static int MaximumMultiSamplingPrecision { get; private set; }
-
+        
         public float LineThickness
         {
             get => SDL_gpu.GPU_GetLineThickness();
@@ -103,7 +103,20 @@ namespace Chroma.Graphics
 
         static GraphicsManager()
         {
-            ProbeGlLimits();
+            ProbeGlLimits(
+                preProbe: () => {
+                    MultiSamplingPrecision = 0;
+                },
+                probe: () =>
+                {
+                    Gl.GlGetIntegerV(Gl.GL_MAX_SAMPLES, out var maxSamples);
+                    MaximumMultiSamplingPrecision = maxSamples;
+                },
+                postProbe: () =>
+                {
+                    MultiSamplingPrecision = 4;
+                }
+            );
         }
 
         internal GraphicsManager(Game game)
@@ -224,11 +237,10 @@ namespace Chroma.Graphics
             IsAdaptiveVSyncSupported = (glxResult == SDL2.SDL_bool.SDL_TRUE || wglResult == SDL2.SDL_bool.SDL_TRUE);
         }
 
-        private static void ProbeGlLimits()
+        private static void ProbeGlLimits(Action preProbe, Action probe, Action postProbe)
         {
-            var prevSamples = MultiSamplingPrecision;
-            MultiSamplingPrecision = 0;
-
+            preProbe();
+            
             SDL2.SDL_CreateWindowAndRenderer(
                 0, 0,
                 SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL |
@@ -238,18 +250,23 @@ namespace Chroma.Graphics
             );
 
             var context = SDL2.SDL_GL_GetCurrentContext();
-            
+            var destroyContextAfter = false;
             if (context == IntPtr.Zero)
+            {
+                destroyContextAfter = true;
                 context = SDL2.SDL_GL_CreateContext(window);
-            
-            Gl.GlGetIntegerV(Gl.GL_MAX_SAMPLES, out var maxSamples);
-            MaximumMultiSamplingPrecision = maxSamples;
+                SDL2.SDL_GL_MakeCurrent(window, context);
+            }
 
-            SDL2.SDL_GL_DeleteContext(context);
+            probe();
+
+            if (destroyContextAfter)
+                SDL2.SDL_GL_DeleteContext(context);
+            
             SDL2.SDL_DestroyRenderer(renderer);
             SDL2.SDL_DestroyWindow(window);
 
-            MultiSamplingPrecision = prevSamples;
+            postProbe();
         }
     }
 }

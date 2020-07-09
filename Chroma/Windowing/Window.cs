@@ -267,14 +267,10 @@ namespace Chroma.Windowing
                 Size.Height,
                 SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL
             );
-
-            Gl.SwitchMultiSampleAA(true);
             
             if (Handle == IntPtr.Zero)
                 throw new FrameworkException("Failed to initialize the window.", true);
 
-            MaximumSize = Size.Empty;
-            MinimumSize = Size.Empty;
             SDL_gpu.GPU_SetInitWindow(SDL2.SDL_GetWindowID(Handle));
 
             var bestRenderer = GraphicsManager.GetBestRenderer();
@@ -289,6 +285,10 @@ namespace Chroma.Windowing
 
             if (RenderTargetHandle == IntPtr.Zero)
                 throw new FrameworkException("Failed to initialize the renderer.", true);
+
+            MaximumSize = Size.Empty;
+            MinimumSize = Size.Empty;
+            Gl.SwitchMultiSampleAA(true);
 
             FpsCounter = new FpsCounter();
             RenderContext = new RenderContext(this);

@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using Chroma.Natives.SDL;
 
 namespace Chroma
@@ -11,6 +12,20 @@ namespace Chroma
         {
             if (getSdlError)
                 SdlError = SDL2.SDL_GetError();
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine(Message);
+            
+            if(!string.IsNullOrEmpty(SdlError))
+                sb.AppendLine($"SDL: {SdlError}");
+            
+            sb.AppendLine(StackTrace);
+
+            return sb.ToString();
         }
     }
 }

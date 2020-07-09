@@ -37,10 +37,11 @@ namespace Chroma.Graphics
                 
                 if (result < 0)
                 {
+                    _displaySynchronization = DisplaySynchronization.VerticalRetrace;
+                    SDL2.SDL_GL_SetSwapInterval(1);
+                    
                     Log.Warning(
                         $"Failed to set the requested display synchronization mode: {SDL2.SDL_GetError()}. Defaulting to vertical retrace.");
-
-                    SDL2.SDL_GL_SetSwapInterval(1);
                 }
             }
         }

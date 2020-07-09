@@ -25,7 +25,7 @@ namespace PixelShaders
             Content = new FileSystemContentProvider(this, Path.Combine(LocationOnDisk, "../../../../_common"));
 
             GraphicsManager.LimitFramerate = false;
-            GraphicsManager.DisplaySynchronization = DisplaySynchronization.Immediate;
+            Graphics.VerticalSyncMode = VerticalSyncMode.None;
         }
         
         protected override void LoadContent()

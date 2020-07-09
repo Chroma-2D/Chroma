@@ -3,6 +3,8 @@ using System.IO;
 using System.Numerics;
 using Chroma;
 using Chroma.Graphics;
+using Chroma.Input;
+using Chroma.Input.EventArgs;
 
 namespace CustomContentProvider
 {

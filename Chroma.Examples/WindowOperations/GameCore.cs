@@ -33,7 +33,7 @@ namespace WindowOperations
                 $"Use <F7> to set maximum window size to 800x600.\n" +
                 $"Use <F8> to set minimum window size to 320x240.\n" +
                 $"Use <F9> to reset minimum and maximum window sizes to 0x0.\n" +
-                $"Use <F10> to cycle between display synchronization modes ({GraphicsManager.DisplaySynchronization}).\n" +
+                $"Use <F10> to cycle between display synchronization modes ({Graphics.VerticalSyncMode}).\n" +
                 $"Use <space> to toggle the center vector on/off.\n\n" +
                 $"Current viewport resolution: {Window.Size.Width}x{Window.Size.Height}\n" +
                 $"Maximum screen dimensions: {Window.MaximumSize.Width}x{Window.MaximumSize.Height}\n" +
@@ -99,17 +99,17 @@ namespace WindowOperations
             {
                 // <YandereDevMode IgnoreSassyComments="true"
                 //                 IfElseGoodGoodCodeBad="yesplease">
-                if (GraphicsManager.DisplaySynchronization == DisplaySynchronization.Adaptive)
+                if (Graphics.VerticalSyncMode == VerticalSyncMode.Adaptive)
                 {
-                    GraphicsManager.DisplaySynchronization = DisplaySynchronization.Immediate;
+                    Graphics.VerticalSyncMode = VerticalSyncMode.None;
                 }
-                else if (GraphicsManager.DisplaySynchronization == DisplaySynchronization.Immediate)
+                else if (Graphics.VerticalSyncMode == VerticalSyncMode.None)
                 {
-                    GraphicsManager.DisplaySynchronization = DisplaySynchronization.VerticalRetrace;
+                    Graphics.VerticalSyncMode = VerticalSyncMode.Retrace;
                 }
-                else if (GraphicsManager.DisplaySynchronization == DisplaySynchronization.VerticalRetrace)
+                else if (Graphics.VerticalSyncMode == VerticalSyncMode.Retrace)
                 {
-                    GraphicsManager.DisplaySynchronization = DisplaySynchronization.Adaptive;
+                    Graphics.VerticalSyncMode = VerticalSyncMode.Adaptive;
                 }
                 // </YandereDevMode>
             }

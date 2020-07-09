@@ -6,6 +6,7 @@ using Chroma.Diagnostics;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.MemoryManagement;
+using Chroma.Natives.GL;
 using Chroma.Natives.SDL;
 using Chroma.Windowing.EventArgs;
 using Chroma.Windowing.EventHandling;
@@ -267,6 +268,8 @@ namespace Chroma.Windowing
                 SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL
             );
 
+            Gl.SwitchMultiSampleAA(true);
+            
             if (Handle == IntPtr.Zero)
                 throw new FrameworkException("Failed to initialize the window.", true);
 
@@ -274,7 +277,7 @@ namespace Chroma.Windowing
             MinimumSize = Size.Empty;
             SDL_gpu.GPU_SetInitWindow(SDL2.SDL_GetWindowID(Handle));
 
-            var bestRenderer = Game.Graphics.GetBestRenderer();
+            var bestRenderer = GraphicsManager.GetBestRenderer();
             Log.Info($"Selecting highest available renderer version: {bestRenderer.name}");
 
             RenderTargetHandle = SDL_gpu.GPU_InitRenderer(

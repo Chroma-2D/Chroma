@@ -38,32 +38,32 @@ namespace Chroma.Natives.GL
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         internal delegate void GlHintDelegate(uint target, uint mode);
         
-        internal static GlEnableDisableDelegate GlEnable =>
+        internal static GlEnableDisableDelegate Enable =>
             Marshal.GetDelegateForFunctionPointer<GlEnableDisableDelegate>(
                 SDL2.SDL_GL_GetProcAddress("glEnable")
             );
 
-        internal static GlEnableDisableDelegate GlDisable =>
+        internal static GlEnableDisableDelegate Disable =>
             Marshal.GetDelegateForFunctionPointer<GlEnableDisableDelegate>(
                 SDL2.SDL_GL_GetProcAddress("glDisable")
             );
 
-        internal static GlGetIntegervDelegate GlGetIntegerV =>
+        internal static GlGetIntegervDelegate GetIntegerV =>
             Marshal.GetDelegateForFunctionPointer<GlGetIntegervDelegate>(
                 SDL2.SDL_GL_GetProcAddress("glGetIntegerv")
             );
 
-        internal static GlGetErrorDelegate GlGetError => 
+        internal static GlGetErrorDelegate GetError => 
             Marshal.GetDelegateForFunctionPointer<GlGetErrorDelegate>(
                 SDL2.SDL_GL_GetProcAddress("glGetError")
             );
 
-        internal static GlIsEnabledDelegate GlIsEnabled =>
+        internal static GlIsEnabledDelegate IsEnabled =>
             Marshal.GetDelegateForFunctionPointer<GlIsEnabledDelegate>(
                 SDL2.SDL_GL_GetProcAddress("glIsEnabled")
             );
 
-        internal static GlHintDelegate GlHint =>
+        internal static GlHintDelegate Hint =>
             Marshal.GetDelegateForFunctionPointer<GlHintDelegate>(
                 SDL2.SDL_GL_GetProcAddress("glHint")
             );

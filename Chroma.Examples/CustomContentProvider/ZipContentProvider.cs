@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using Chroma;
+using Chroma.Audio;
 using Chroma.ContentManagement;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
@@ -13,6 +15,7 @@ namespace CustomContentProvider
     {
         private Dictionary<Type, Func<string, object[], object>> _importers;
 
+        private Game _game;
         private FileStream _zipFileStream;
         private ZipArchive _zipArchive;
 
@@ -20,12 +23,13 @@ namespace CustomContentProvider
 
         public string ContentRoot { get; }
 
-        public ZipContentProvider(string zipFile)
+        public ZipContentProvider(Game game, string zipFile)
         {
             ContentRoot = zipFile;
          
             _importers = new Dictionary<Type, Func<string, object[], object>>();
             
+            _game = game;
             _zipFileStream = new FileStream(zipFile, FileMode.Open);
             _zipArchive = new ZipArchive(_zipFileStream, ZipArchiveMode.Read);
 
@@ -42,6 +46,14 @@ namespace CustomContentProvider
                 using (var stream = Open(path))
                 {
                     return new Texture(stream);
+                }
+            });
+            
+            _importers.Add(typeof(Sound), (path, args) =>
+            {
+                using (var stream = Open(path))
+                {
+                    return _game.Audio.CreateSound(stream);
                 }
             });
         }

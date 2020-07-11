@@ -214,6 +214,7 @@ namespace Chroma.Natives.SDL
         private static extern IntPtr INTERNAL_Mix_LoadMUS(
             byte[] file
         );
+        
         public static IntPtr Mix_LoadMUS(string file)
         {
             return INTERNAL_Mix_LoadMUS(SDL2.UTF8_ToNative(file));

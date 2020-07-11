@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
 using Chroma.Natives.SDL;
@@ -136,22 +137,55 @@ namespace Chroma.Audio
         {
             var handle = SDL_mixer.Mix_LoadWAV(filePath);
 
-            if (handle != IntPtr.Zero)
+            if (handle == IntPtr.Zero)
             {
-                var sound = new Sound(handle, this);
-
-                if (!_soundBank.TryAdd(handle, sound))
-                {
-                    Log.Error("Failed to add a sound effect to the internal sound bank.");
-                }
-
-                sound.Disposing += AudioResourceDisposing;
-                return sound;
+                Log.Error($"CreateSound: {SDL2.SDL_GetError()}");
+                // TODO: throw an instance of audioexception here?
+                return null;
             }
 
-            Log.Error($"CreateSound: {SDL2.SDL_GetError()}");
-            // TODO: throw an instance of audioexception here?
-            return null;
+            var sound = new Sound(handle, this);
+
+            if (!_soundBank.TryAdd(handle, sound))
+            {
+                Log.Error("Failed to add a sound effect to the internal sound bank.");
+            }
+
+            sound.Disposing += AudioResourceDisposing;
+            return sound;
+        }
+
+        public Sound CreateSound(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream), "Stream cannot be null.");
+            
+            var ms = new MemoryStream();
+            stream.CopyTo(ms);
+
+            var bytes = ms.ToArray();
+
+            unsafe
+            {
+                fixed (byte* bp = &bytes[0])
+                {
+                    var rwOps = SDL2.SDL_RWFromMem(bp, bytes.Length);
+                    var sound = LoadSoundFromRWOps(rwOps);
+
+                    if (sound == null)
+                    {
+                        return null;
+                    }
+
+                    if (!_soundBank.TryAdd(sound.Handle, sound))
+                    {
+                        Log.Error("Failed to add a sound effect to the internal sound bank.");
+                    }
+
+                    sound.Disposing += AudioResourceDisposing;
+                    return sound;
+                }
+            }
         }
 
         public Music CreateMusic(string filePath)
@@ -361,6 +395,25 @@ namespace Chroma.Audio
 
             foreach (var music in _musicBank.Values)
                 music.Dispose();
+        }
+
+        private Sound LoadSoundFromRWOps(IntPtr rwOps)
+        {
+            if (rwOps == IntPtr.Zero)
+            {
+                Log.Error($"Failed to create SDL_RWops from memory stream: {SDL2.SDL_GetError()}.");
+                return null;
+            }
+
+            var handle = SDL_mixer.Mix_LoadWAV_RW(rwOps, 1);
+
+            if (handle == IntPtr.Zero)
+            {
+                Log.Error($"Failed to create sound effect from a stream: {SDL2.SDL_GetError()}");
+                return null;
+            }
+
+            return new Sound(handle, this);
         }
     }
 }

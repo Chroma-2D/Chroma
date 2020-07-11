@@ -96,7 +96,7 @@ namespace Chroma.Graphics
                 preProbe: () => { MultiSamplingPrecision = 0; },
                 probe: () =>
                 {
-                    Gl.GlGetIntegerV(Gl.GL_MAX_SAMPLES, out var maxSamples);
+                    Gl.GetIntegerV(Gl.GL_MAX_SAMPLES, out var maxSamples);
                     MaximumMultiSamplingPrecision = maxSamples;
                 },
                 postProbe: () => { MultiSamplingPrecision = 4; }

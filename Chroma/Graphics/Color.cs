@@ -225,6 +225,9 @@ namespace Chroma.Graphics
 
         public static Color FromHSV(float hue, float sat = 1f, float val = 1f)
         {
+            if (hue < 0)
+                hue = Math.Abs(hue);
+            
             var i = (int)(Math.Floor(hue / 60) % 6);
             var f = (hue / 60) - Math.Floor(hue / 60);
 

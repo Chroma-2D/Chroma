@@ -264,7 +264,8 @@ namespace Chroma.Windowing
                 (int)Position.Y,
                 Size.Width,
                 Size.Height,
-                SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL
+                SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL | 
+                SDL2.SDL_WindowFlags.SDL_WINDOW_ALLOW_HIGHDPI
             );
 
             if (Handle == IntPtr.Zero)

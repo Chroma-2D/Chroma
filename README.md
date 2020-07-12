@@ -55,7 +55,7 @@ Alternatively:
 ```
 dotnet new console -n MyGameLongName
 cd MyGameLongName
-dotnet add MyGameLongName.csproj package Chroma -v 0.14.0-alpha
+dotnet add MyGameLongName.csproj package Chroma
 dotnet build
 ```
 

@@ -4,6 +4,7 @@ using Chroma;
 using Chroma.Graphics;
 using Chroma.Input;
 using Chroma.Input.EventArgs;
+using Chroma.Windowing;
 using Color = Chroma.Graphics.Color;
 
 namespace WindowOperations
@@ -116,6 +117,14 @@ namespace WindowOperations
             else if (e.KeyCode == KeyCode.Space)
             {
                 _drawCenterVector = !_drawCenterVector;
+            }
+            else if (e.KeyCode == KeyCode.F11)
+            {
+                MessageBox.ShowSimple(
+                    MessageBoxSeverity.Information,
+                    "Test!",
+                    "Lorem ipsum dolor sit amet."
+                );
             }
         }
     }

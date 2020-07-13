@@ -125,7 +125,7 @@ namespace WindowOperations
                 _lastResult = new MessageBox(MessageBoxSeverity.Information)
                     .Titled("Test message box")
                     .WithMessage("This is a test message. For testing!")
-                    .WithButton("Alright?", (i => ))
+                    .WithButton("Alright?", null)
                     .WithButton("Okay...", (i => _drawCenterVector = true))
                     .WithButton("/shrug", (i => _drawCenterVector = false))
                     .Show(Window);

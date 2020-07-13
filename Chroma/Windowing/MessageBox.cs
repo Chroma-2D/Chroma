@@ -10,11 +10,11 @@ namespace Chroma.Windowing
     {
         private static Log Log { get; } = LogManager.GetForCurrentAssembly();
 
-        public MessageBoxSeverity Severity { get; }
-        public List<MessageBoxButton> Buttons { get; }
+        private MessageBoxSeverity Severity { get; }
+        private List<MessageBoxButton> Buttons { get; }
 
-        public string Title { get; private set; }
-        public string Message { get; private set; }
+        private string Title { get; set; }
+        private string Message { get; set; }
 
         public MessageBox(MessageBoxSeverity severity)
         {
@@ -36,20 +36,27 @@ namespace Chroma.Windowing
             return this;
         }
 
-        public MessageBox WithButton(int id, string text)
+        public MessageBox WithButton(string text, Action<int> action)
         {
-            Buttons.Add(new MessageBoxButton {ID = id, Text = text});
+            Buttons.Add(
+                new MessageBoxButton
+                {
+                    ID = Buttons.Count, 
+                    Text = text,
+                    Action = action
+                }
+            );
             return this;
         }
 
-        public int Show()
+        public int Show(Window owner = null)
         {
             var buttonData = Buttons.Select(button => new SDL2.SDL_MessageBoxButtonData
             {
                 buttonid = button.ID,
                 text = button.Text,
                 flags = 0
-            }).ToArray();
+            }).Reverse().ToArray();
 
             var msgBoxData = new SDL2.SDL_MessageBoxData
             {
@@ -59,7 +66,7 @@ namespace Chroma.Windowing
                 buttons = buttonData,
                 colorScheme = null,
                 flags = (SDL2.SDL_MessageBoxFlags)Severity,
-                window = IntPtr.Zero
+                window = owner?.Handle ?? IntPtr.Zero
             };
 
             if (SDL2.SDL_ShowMessageBox(ref msgBoxData, out var result) < 0)
@@ -68,16 +75,19 @@ namespace Chroma.Windowing
                 return 0x00DEAD00;
             }
 
+            Buttons.First(x => x.ID == result)
+                   .Action?.Invoke(result);
+
             return result;
         }
 
-        public static void Show(MessageBoxSeverity severity, string title, string message)
+        public static void Show(MessageBoxSeverity severity, string title, string message, Window owner = null)
         {
             if (SDL2.SDL_ShowSimpleMessageBox(
                 (SDL2.SDL_MessageBoxFlags)severity,
                 title,
                 message,
-                IntPtr.Zero
+                owner?.Handle ?? IntPtr.Zero
             ) < 0)
             {
                 Log.Error($"Couldn't show message box: {SDL2.SDL_GetError()}");

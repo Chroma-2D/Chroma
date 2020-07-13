@@ -12,7 +12,8 @@ namespace WindowOperations
     public class GameCore : Game
     {
         private bool _drawCenterVector;
-        
+        private int _lastResult;
+
         protected override void Draw(RenderContext context)
         {
             if (_drawCenterVector)
@@ -23,7 +24,7 @@ namespace WindowOperations
                     Color.Lime
                 );
             }
-            
+
             context.DrawString(
                 $"Use <F1> to toggle window resizable status ({Window.CanResize}).\n" +
                 "Use <F2> to switch into exclusive fullscreen mode with native resolution\n" +
@@ -35,6 +36,7 @@ namespace WindowOperations
                 $"Use <F8> to set minimum window size to 320x240.\n" +
                 $"Use <F9> to reset minimum and maximum window sizes to 0x0.\n" +
                 $"Use <F10> to cycle between display synchronization modes ({Graphics.VerticalSyncMode}).\n" +
+                $"Use <F11> to show a cross-platform message box (last result: {_lastResult}).\n" +
                 $"Use <space> to toggle the center vector on/off.\n\n" +
                 $"Current viewport resolution: {Window.Size.Width}x{Window.Size.Height}\n" +
                 $"Maximum screen dimensions: {Window.MaximumSize.Width}x{Window.MaximumSize.Height}\n" +
@@ -60,12 +62,12 @@ namespace WindowOperations
             else if (e.KeyCode == KeyCode.F3)
             {
                 Window.GoFullscreen(false); // alternatively don't pass any parameters
-                                            // because they're optional for borderless native fullscreen
+                // because they're optional for borderless native fullscreen
             }
             else if (e.KeyCode == KeyCode.F4)
             {
                 var center = false;
-                
+
                 if (e.Modifiers.HasFlag(KeyModifiers.LeftShift))
                     center = true;
 
@@ -74,7 +76,7 @@ namespace WindowOperations
             else if (e.KeyCode == KeyCode.F5)
             {
                 var msg = "F5 key was pressed!";
-                
+
                 if (e.Modifiers.HasFlag(KeyModifiers.LeftShift))
                     msg = "Chroma Framework";
 
@@ -120,11 +122,13 @@ namespace WindowOperations
             }
             else if (e.KeyCode == KeyCode.F11)
             {
-                MessageBox.ShowSimple(
-                    MessageBoxSeverity.Information,
-                    "Test!",
-                    "Lorem ipsum dolor sit amet."
-                );
+                _lastResult = new MessageBox(MessageBoxSeverity.Information)
+                    .Titled("Test message box")
+                    .WithMessage("This is a test message. For testing!")
+                    .WithButton("Alright?", (i => ))
+                    .WithButton("Okay...", (i => _drawCenterVector = true))
+                    .WithButton("/shrug", (i => _drawCenterVector = false))
+                    .Show(Window);
             }
         }
     }

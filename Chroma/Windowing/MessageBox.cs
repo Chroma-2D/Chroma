@@ -15,6 +15,7 @@ namespace Chroma.Windowing
 
         private string Title { get; set; }
         private string Message { get; set; }
+        private Action AbnormalClosureAction { get; set; }
 
         public MessageBox(MessageBoxSeverity severity)
         {
@@ -36,7 +37,7 @@ namespace Chroma.Windowing
             return this;
         }
 
-        public MessageBox WithButton(string text, Action<int> action)
+        public MessageBox WithButton(string text, Action<int> action = null)
         {
             Buttons.Add(
                 new MessageBoxButton
@@ -46,6 +47,12 @@ namespace Chroma.Windowing
                     Action = action
                 }
             );
+            return this;
+        }
+
+        public MessageBox HandleAbnormalClosureWith(Action abnormalClosureAction)
+        {
+            AbnormalClosureAction = abnormalClosureAction;
             return this;
         }
 
@@ -75,8 +82,16 @@ namespace Chroma.Windowing
                 return 0x00DEAD00;
             }
 
-            Buttons.First(x => x.ID == result)
-                   .Action?.Invoke(result);
+            var selectedButton = Buttons.FirstOrDefault(x => x.ID == result);
+
+            if (selectedButton != null)
+            {
+                selectedButton.Action?.Invoke(result);
+            }
+            else
+            {
+                AbnormalClosureAction?.Invoke();
+            }
 
             return result;
         }

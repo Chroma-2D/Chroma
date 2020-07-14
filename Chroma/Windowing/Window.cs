@@ -274,7 +274,6 @@ namespace Chroma.Windowing
             SDL_gpu.GPU_SetInitWindow(SDL2.SDL_GetWindowID(Handle));
 
             var bestRenderer = GraphicsManager.GetBestRenderer();
-            Log.Info($"Selecting highest available renderer version: {bestRenderer.name}");
 
             RenderTargetHandle = SDL_gpu.GPU_InitRenderer(
                 bestRenderer.renderer,

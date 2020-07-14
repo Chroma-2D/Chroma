@@ -56,7 +56,7 @@ namespace Chroma.Graphics
             get => SDL_gpu.GPU_GetLineThickness();
             set => SDL_gpu.GPU_SetLineThickness(value);
         }
-        
+
         public VerticalSyncMode VerticalSyncMode
         {
             get => _verticalSyncMode;
@@ -92,6 +92,8 @@ namespace Chroma.Graphics
 
         static GraphicsManager()
         {
+            Log.Info("GraphicsManager initializing...");
+            Log.Info("Probing OpenGL limits...");
             ProbeGlLimits(
                 preProbe: () => { MultiSamplingPrecision = 0; },
                 probe: () =>
@@ -105,11 +107,10 @@ namespace Chroma.Graphics
         internal GraphicsManager(Game game)
         {
             Game = game;
+
             var renderers = GetRendererNames();
 
-            Log.Info("GraphicsManager initializing...");
             Log.Info(" Registered renderers:");
-
             foreach (var s in renderers)
                 Log.Info($"  {s}");
 
@@ -210,7 +211,12 @@ namespace Chroma.Graphics
         }
 
         internal static SDL_gpu.GPU_RendererID GetBestRenderer()
-            => GetRegisteredRenderers().OrderByDescending(x => x.major_version).First();
+        {
+            var renderer = GetRegisteredRenderers().OrderByDescending(x => x.major_version).First();
+            Log.Info($"Selecting highest available renderer version: {renderer.name}");
+
+            return renderer;
+        }
 
         private void CheckGlExtensionAvailability()
         {

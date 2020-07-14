@@ -63,7 +63,7 @@ namespace Chroma.Windowing
                 buttonid = button.ID,
                 text = button.Text,
                 flags = 0
-            }).Reverse().ToArray();
+            }).ToArray();
 
             var msgBoxData = new SDL2.SDL_MessageBoxData
             {

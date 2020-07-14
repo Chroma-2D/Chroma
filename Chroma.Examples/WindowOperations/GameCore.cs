@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Numerics;
 using Chroma;
 using Chroma.Graphics;
@@ -125,10 +126,20 @@ namespace WindowOperations
                 _lastResult = new MessageBox(MessageBoxSeverity.Information)
                     .Titled("Test message box")
                     .WithMessage("This is a test message. For testing!")
-                    .WithButton("Alright?", null)
-                    .WithButton("Okay...", (i => _drawCenterVector = true))
-                    .WithButton("/shrug", (i => _drawCenterVector = false))
+                    .WithButton("Alright?")
+                    .WithButton("Okay...", i => _drawCenterVector = true)
+                    .WithButton("/shrug", i => _drawCenterVector = false)
+                    .HandleAbnormalClosureWith(() => Console.WriteLine("Fukc. MessageBox closed abnormally."))
                     .Show(Window);
+            }
+            else if (e.KeyCode == KeyCode.F12)
+            {
+                MessageBox.Show(
+                    MessageBoxSeverity.Error,
+                    "A test error message box.",
+                    "This is a test message to let you know about the error.",
+                    Window
+                );
             }
         }
     }

@@ -62,10 +62,10 @@ namespace Chroma.Audio
 
         internal AudioManager()
         {
-            InitializeAudioMixer(AudioFormat.ChromaDefault, 44100, 4096);
+            InitializeAudioMixer(AudioFormat.ChromaDefault, ChannelMode.Stereo, 44100, 4096);
         }
 
-        public void InitializeAudioMixer(AudioFormat audioFormat, int samplingRate, int chunkSize)
+        public void InitializeAudioMixer(AudioFormat audioFormat, ChannelMode channelMode, int samplingRate, int chunkSize)
         {
             if (_isOpen)
             {
@@ -80,7 +80,7 @@ namespace Chroma.Audio
             var result = SDL_mixer.Mix_OpenAudio(
                 SamplingRate,
                 AudioFormat.SdlMixerFormat,
-                SDL_mixer.MIX_DEFAULT_CHANNELS,
+                (int)channelMode,
                 ChunkSize
             );
 

@@ -10,6 +10,7 @@ using Chroma.Natives.SDL;
 using Chroma.Windowing.EventArgs;
 using Chroma.Windowing.EventHandling;
 using Chroma.Windowing.EventHandling.Specialized;
+using Color = Chroma.Graphics.Color;
 
 namespace Chroma.Windowing
 {
@@ -361,7 +362,15 @@ namespace Chroma.Windowing
                     RenderContext.Clear(GraphicsManager.AutoClearColor);
 
                 Draw?.Invoke(RenderContext);
-
+                
+                // This fixes Discord screensharing bug.
+                // What the fuck.
+                //
+                // Why.
+                // HOW.
+                // I FAIL TO UNDERSTAND THIS.
+                RenderContext.DrawString(" ", Vector2.Zero, Color.Transparent);
+                
                 SDL_gpu.GPU_Flip(RenderTargetHandle);
                 FpsCounter.Update();
 

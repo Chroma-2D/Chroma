@@ -265,7 +265,7 @@ namespace Chroma.Windowing
                 (int)Position.Y,
                 Size.Width,
                 Size.Height,
-                SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL | 
+                SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL |
                 SDL2.SDL_WindowFlags.SDL_WINDOW_ALLOW_HIGHDPI
             );
 
@@ -342,6 +342,25 @@ namespace Chroma.Windowing
             }
         }
 
+        public void WriteFramebufferTo(byte[] buffer, ImageFileFormat format)
+        {
+            EnsureNotDisposed();
+            
+            unsafe
+            {
+                fixed (byte* ptr = &buffer[0])
+                {
+                    var rwops = SDL2.SDL_RWFromMem(new IntPtr(ptr), buffer.Length);
+                    var image = ((SDL_gpu.GPU_Target*)RenderTargetHandle.ToPointer())->image;
+                        
+                    if (!SDL_gpu.GPU_SaveImage_RW(image, rwops, true, (SDL_gpu.GPU_FileFormatEnum)format))
+                    {
+                        Log.Error($"Writing window framebuffer to stream failed: {SDL2.SDL_GetError()}");
+                    }
+                }
+            }
+        }
+
         internal void Run(Action postStatusSetAction = null)
         {
             Exists = true;
@@ -362,7 +381,7 @@ namespace Chroma.Windowing
                     RenderContext.Clear(GraphicsManager.AutoClearColor);
 
                 Draw?.Invoke(RenderContext);
-                
+
                 // This fixes Discord screensharing bug.
                 // What the fuck.
                 //
@@ -370,7 +389,7 @@ namespace Chroma.Windowing
                 // HOW.
                 // I FAIL TO UNDERSTAND THIS.
                 RenderContext.DrawString(" ", Vector2.Zero, Color.Transparent);
-                
+
                 SDL_gpu.GPU_Flip(RenderTargetHandle);
                 FpsCounter.Update();
 

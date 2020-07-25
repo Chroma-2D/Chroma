@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
+using System.Security.Cryptography.X509Certificates;
 using Chroma.Graphics.Batching;
 using Chroma.Graphics.TextRendering;
 using Chroma.Graphics.TextRendering.Bitmap;
+using Chroma.Natives.GL;
 using Chroma.Natives.SDL;
 using Chroma.Windowing;
 
@@ -12,6 +14,9 @@ namespace Chroma.Graphics
 {
     public class RenderContext
     {
+        private float _lineThickness;
+        private bool _shapeBlendingEnabled;
+
         private Rectangle _scissor = System.Drawing.Rectangle.Empty;
 
         internal List<BatchInfo> BatchBuffer { get; }
@@ -25,6 +30,34 @@ namespace Chroma.Graphics
 
         public bool RenderingToWindow
             => CurrentRenderTarget == Owner.RenderTargetHandle;
+
+        public float LineThickness
+        {
+            get => _lineThickness;
+            set
+            {
+                _lineThickness = value;
+                SDL_gpu.GPU_SetLineThickness(_lineThickness);
+            }
+        }
+
+        public bool ShapeBlendingEnabled
+        {
+            get => _shapeBlendingEnabled;
+            set
+            {
+                _shapeBlendingEnabled = value;
+                SDL_gpu.GPU_SetShapeBlending(_shapeBlendingEnabled);
+            }
+        }
+
+        public BlendingFunction ShapeSourceColorBlendingFunction { get; private set; } = BlendingFunction.One;
+        public BlendingFunction ShapeSourceAlphaBlendingFunction { get; private set; } = BlendingFunction.Zero;
+        public BlendingFunction ShapeDestinationColorBlendingFunction { get; private set; } = BlendingFunction.One;
+        public BlendingFunction ShapeDestinationAlphaBlendingFunction { get; private set; } = BlendingFunction.Zero;
+
+        public BlendingEquation ShapeColorBlendingEquation { get; private set; } = BlendingEquation.Add;
+        public BlendingEquation ShapeAlphaBlendingEquation { get; private set; } = BlendingEquation.Add;
 
         public Rectangle Scissor
         {
@@ -62,6 +95,53 @@ namespace Chroma.Graphics
             SDL_gpu.GPU_SetDefaultAnchor(0, 0);
 
             Transform = new RenderTransform(this);
+            
+            ShapeBlendingEnabled = true;
+        }
+
+        public void SetShapeBlendingEquations(BlendingEquation colorBlend, BlendingEquation alphaBlend)
+        {
+            ShapeColorBlendingEquation = colorBlend;
+            ShapeAlphaBlendingEquation = alphaBlend;
+            
+            SDL_gpu.GPU_SetShapeBlendEquation(
+                (SDL_gpu.GPU_BlendEqEnum)colorBlend,
+                (SDL_gpu.GPU_BlendEqEnum)alphaBlend
+            );
+        }
+
+        public void SetShapeBlendingFunctions(BlendingFunction sourceColorBlend, BlendingFunction sourceAlphaBlend,
+            BlendingFunction destinationColorBlend, BlendingFunction destinationAlphaBlend)
+        {
+            ShapeSourceColorBlendingFunction = sourceColorBlend;
+            ShapeSourceAlphaBlendingFunction = sourceAlphaBlend;
+
+            ShapeDestinationColorBlendingFunction = destinationColorBlend;
+            ShapeDestinationAlphaBlendingFunction = destinationAlphaBlend;
+            
+            SDL_gpu.GPU_SetShapeBlendFunction(
+                (SDL_gpu.GPU_BlendFuncEnum)sourceColorBlend,
+                (SDL_gpu.GPU_BlendFuncEnum)destinationColorBlend,
+                (SDL_gpu.GPU_BlendFuncEnum)sourceAlphaBlend,
+                (SDL_gpu.GPU_BlendFuncEnum)destinationAlphaBlend
+            );
+        }
+
+        public void SetShapeBlendingPreset(BlendingPreset preset)
+        {
+            var gpuPreset = (SDL_gpu.GPU_BlendPresetEnum)preset;
+            var blendModeInfo = SDL_gpu.GPU_GetBlendModeFromPreset(gpuPreset);
+
+            ShapeSourceColorBlendingFunction = (BlendingFunction)blendModeInfo.source_color;
+            ShapeSourceAlphaBlendingFunction = (BlendingFunction)blendModeInfo.source_alpha;
+
+            ShapeDestinationColorBlendingFunction = (BlendingFunction)blendModeInfo.dest_color;
+            ShapeDestinationAlphaBlendingFunction = (BlendingFunction)blendModeInfo.dest_alpha;
+
+            ShapeColorBlendingEquation = (BlendingEquation)blendModeInfo.color_equation;
+            ShapeAlphaBlendingEquation = (BlendingEquation)blendModeInfo.alpha_equation;
+            
+            SDL_gpu.GPU_SetShapeBlendMode(gpuPreset);
         }
 
         public void WithCamera(Camera camera, Action drawingLogic)
@@ -221,7 +301,7 @@ namespace Chroma.Graphics
                 );
             }
         }
-        
+
         public void Rectangle(ShapeMode mode, Vector2 position, float width, float height, Color color)
         {
             if (mode == ShapeMode.Stroke)
@@ -399,7 +479,8 @@ namespace Chroma.Graphics
             => DrawString(EmbeddedAssets.DefaultFont, text, position, perCharTransform);
 
         public void DrawString(string text, Vector2 position, Color color)
-            => DrawString(EmbeddedAssets.DefaultFont, text, position, (c, i, p, g) => new GlyphTransformData(p) {Color = color});
+            => DrawString(EmbeddedAssets.DefaultFont, text, position,
+                (c, i, p, g) => new GlyphTransformData(p) {Color = color});
 
         public void DrawString(TrueTypeFont font, string text, Vector2 position,
             Func<char, int, Vector2, TrueTypeGlyph, GlyphTransformData> perCharTransform = null)
@@ -442,7 +523,7 @@ namespace Chroma.Graphics
                 // defaulting the anchor to 0.
                 var xPos = x + info.Bearing.X;
                 var yPos = y - info.Bearing.Y + font.MaxBearing;
-                
+
                 if (font.UseKerning && i != 0)
                 {
                     var kerning = font.GetKerning(text[i - 1], text[i]);
@@ -480,8 +561,8 @@ namespace Chroma.Graphics
         {
             BatchBuffer.Sort(
                 (a, b) => order == DrawOrder.BackToFront
-                                 ? a.Depth.CompareTo(b.Depth)
-                                 : b.Depth.CompareTo(a.Depth)
+                    ? a.Depth.CompareTo(b.Depth)
+                    : b.Depth.CompareTo(a.Depth)
             );
 
             for (var i = 0; i < BatchBuffer.Count; i++)

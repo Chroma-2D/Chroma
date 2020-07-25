@@ -144,6 +144,21 @@ namespace Chroma.Graphics
             SDL_gpu.GPU_SetShapeBlendMode(gpuPreset);
         }
 
+        public void ResetShapeBlending()
+        {
+            SetShapeBlendingFunctions(
+                BlendingFunction.One,
+                BlendingFunction.Zero,
+                BlendingFunction.One,
+                BlendingFunction.Zero
+            );
+            
+            SetShapeBlendingEquations(
+                BlendingEquation.Add,
+                BlendingEquation.Add
+            );
+        }
+
         public void WithCamera(Camera camera, Action drawingLogic)
         {
             if (camera == null)

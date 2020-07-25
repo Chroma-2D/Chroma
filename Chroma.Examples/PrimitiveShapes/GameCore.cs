@@ -3,12 +3,21 @@ using System.Drawing;
 using System.Numerics;
 using Chroma;
 using Chroma.Graphics;
+using Chroma.Input;
+using Chroma.Input.EventArgs;
 using Color = Chroma.Graphics.Color;
 
 namespace PrimitiveShapes
 {
     public class GameCore : Game
     {
+        private Vector2 _cursorPosition;
+
+        public GameCore()
+        {
+            Cursor.IsVisible = false;
+        }
+        
         protected override void Draw(RenderContext context)
         {
             context.Arc(
@@ -82,6 +91,27 @@ namespace PrimitiveShapes
                 Color.Red
             );
             context.DrawString("Wonderful\nrectangle.", new Vector2(410, 410));
+
+            context.LineThickness = 1;
+            context.Rectangle(
+                ShapeMode.Stroke,
+                _cursorPosition - Vector2.One,
+                34, 34,
+                Color.White
+            );
+            
+            context.SetShapeBlendingPreset(BlendingPreset.Subtract);
+            context.Rectangle(
+                ShapeMode.Fill,
+                _cursorPosition,
+                32, 32, Color.Green
+            );
+            context.ResetShapeBlending();
+        }
+
+        protected override void MouseMoved(MouseMoveEventArgs e)
+        {
+            _cursorPosition = e.Position;
         }
     }
 }

@@ -1,4 +1,7 @@
-﻿#version 120
+﻿#version 100
+
+precision highp float;
+precision mediump int;
 
 uniform sampler2D tex;
 

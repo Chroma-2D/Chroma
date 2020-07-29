@@ -1,4 +1,7 @@
-﻿#version 120
+﻿#version 100
+
+precision highp float;
+precision highp int;
 
 attribute vec3 gpu_Vertex;
 attribute vec2 gpu_TexCoord;

@@ -1,4 +1,7 @@
-#version 120
+#version 100
+
+precision highp float;
+precision mediump int;
 
 varying vec4 color;
 varying vec2 texCoord;

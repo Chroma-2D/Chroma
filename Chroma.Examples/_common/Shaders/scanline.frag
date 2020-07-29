@@ -1,7 +1,10 @@
 // https://raw.githubusercontent.com/wessles/GLSL-CRT/master/shader.frag
 //
 
-#version 120
+#version 100
+
+precision highp float;
+precision mediump int;
 
 uniform float CRT_CURVE_AMNTx; // curve amount on x
 uniform float CRT_CURVE_AMNTy; // curve amount on y

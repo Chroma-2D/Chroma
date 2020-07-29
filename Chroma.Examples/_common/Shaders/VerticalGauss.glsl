@@ -1,4 +1,7 @@
-﻿#version 120
+﻿#version 100
+
+precision highp float;
+precision mediump int;
 
 uniform sampler2D texture;
 
@@ -8,11 +11,19 @@ varying vec4 color;
 uniform vec2 rt_dims;
 uniform float vx_offset;
 
-float offset[3] = float[](0.0, 1.3846153846, 3.2307692308);
-float weight[3] = float[](0.2270270270, 0.3162162162, 0.0702702703);
+float offset[3];
+float weight[3];
 
 void main()
 {
+    weight[0] = 0.2270270270;
+    weight[1] = 0.3162162162;
+    weight[2] = 0.0702702703;
+    
+    offset[0] = 0.0;
+    offset[1] = 1.3846153846;
+    offset[2] = 3.2307692308;
+    
     vec3 tc = vec3(1.0, 0.0, 0.0);
     if (texCoord.x<(vx_offset-0.01))
     {

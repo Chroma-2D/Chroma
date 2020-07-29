@@ -31,7 +31,7 @@ namespace PixelShaders
         protected override void LoadContent()
         {
             _target = new RenderTarget(Window.Size);
-            _crtShader = Content.Load<PixelShader>("Shaders/scanline.frag");
+            _crtShader = Content.Load<PixelShader>("Shaders/VerticalGauss.glsl");
             _tintShader = Content.Load<PixelShader>("Shaders/tint.frag");
             _burger = Content.Load<Texture>("Textures/burg.png");
         }
@@ -48,7 +48,7 @@ namespace PixelShaders
         {
             context.RenderTo(_target, () =>
             {
-                context.Clear(new Color(20, 20, 20));
+                context.Clear(Color.Transparent);
                 
                 _tintShader.Activate();
                 _tintShader.SetUniform("mouseLoc", Mouse.GetPosition() / Window.Size.Width);
@@ -67,15 +67,20 @@ namespace PixelShaders
                     "Move mouse vertically to tweak the burger's red channel.", 
                     new Vector2(8)
                 );
+                
+                if (_crtShaderEnabled)
+                {
+                    _crtShader.Activate();
+                    _crtShader.SetUniform("rt_dims", new Vector2(Window.Size.Width, Window.Size.Height));
+                    _crtShader.SetUniform("vx_offset", 5f);
+                }
             });
 
-            if (_crtShaderEnabled)
-            {
-                _crtShader.Activate();
-                _crtShader.SetUniform("CRT_CURVE_AMNTx", 0.3f);
-                _crtShader.SetUniform("CRT_CURVE_AMNTy", 0.2f);
-            }
 
+
+            context.Clear(Color.Transparent);
+            context.DrawTexture(_target, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
+            context.DrawTexture(_target, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
             context.DrawTexture(_target, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
 
             if (_crtShaderEnabled)

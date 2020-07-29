@@ -11,7 +11,7 @@ namespace Chroma.Natives.SDL.Interop
         private bool _leaveAllocated;
 
         private static readonly ICustomMarshaler _leaveAllocatedInstance = new LPUtf8StrMarshaler(true);
-        private static ICustomMarshaler _defaultInstance = new LPUtf8StrMarshaler(false);
+        private static ICustomMarshaler _defaultInstance = new LPUtf8StrMarshaler(true);
 
         public static ICustomMarshaler GetInstance(string cookie)
         {

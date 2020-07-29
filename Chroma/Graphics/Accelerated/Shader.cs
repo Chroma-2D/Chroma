@@ -266,6 +266,24 @@ namespace Chroma.Graphics.Accelerated
                 SDL_gpu.GPU_CompileShader(SDL_gpu.GPU_ShaderEnum.GPU_PIXEL_SHADER, sr.ReadToEnd());
         }
 
+        protected void TryLinkShaders()
+        {
+            ProgramHandle = SDL_gpu.GPU_CreateShaderProgram();
+            
+            SDL_gpu.GPU_AttachShader(ProgramHandle, VertexShaderObjectHandle);
+            SDL_gpu.GPU_AttachShader(ProgramHandle, PixelShaderObjectHandle);
+            SDL_gpu.GPU_LinkShaderProgram(ProgramHandle);
+
+            var obj = SDL_gpu.GPU_PopErrorCode();
+            if (obj.error == SDL_gpu.GPU_ErrorEnum.GPU_ERROR_BACKEND_ERROR)
+            {
+                throw new ShaderException(
+                    "Failed to link vertex and pixel shader.\nMake sure your 'in' parameters have correct fucking types.", 
+                    string.Empty
+                );
+            }
+        }
+
         protected void CreateShaderBlock()
         {
             EnsureNotDisposed();

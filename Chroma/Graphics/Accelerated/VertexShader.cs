@@ -31,11 +31,7 @@ namespace Chroma.Graphics.Accelerated
                     SDL_gpu.GPU_GetShaderMessage());
             }
 
-            ProgramHandle = SDL_gpu.GPU_LinkShaders(PixelShaderObjectHandle, VertexShaderObjectHandle);
-
-            if (ProgramHandle == 0)
-                throw new ShaderException("Linkage failed.", SDL_gpu.GPU_GetShaderMessage());
-
+            TryLinkShaders();
             CreateShaderBlock();
         }
 

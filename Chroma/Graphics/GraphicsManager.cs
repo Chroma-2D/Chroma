@@ -11,7 +11,6 @@ namespace Chroma.Graphics
     public class GraphicsManager
     {
         private static VerticalSyncMode _verticalSyncMode;
-
         private static int _multiSamplingPrecision;
 
         private Game Game { get; }
@@ -51,12 +50,6 @@ namespace Chroma.Graphics
             }
         }
 
-        public float LineThickness
-        {
-            get => SDL_gpu.GPU_GetLineThickness();
-            set => SDL_gpu.GPU_SetLineThickness(value);
-        }
-
         public VerticalSyncMode VerticalSyncMode
         {
             get => _verticalSyncMode;
@@ -94,6 +87,7 @@ namespace Chroma.Graphics
         {
             Log.Info("GraphicsManager initializing...");
             Log.Info("Probing OpenGL limits...");
+            
             ProbeGlLimits(
                 preProbe: () => { MultiSamplingPrecision = 0; },
                 probe: () =>
@@ -121,7 +115,6 @@ namespace Chroma.Graphics
 
             CheckGlExtensionAvailability();
 
-            LineThickness = 1;
             VerticalSyncMode = VerticalSyncMode.Retrace;
         }
 

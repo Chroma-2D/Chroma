@@ -1,10 +1,8 @@
-#version 100
+#version 130
 
-precision highp float;
-precision mediump int;
-
-varying vec4 color;
-varying vec2 texCoord;
+in vec4 color;
+in vec2 texCoord;
+out vec4 pixel;
 
 uniform sampler2D tex;
 
@@ -38,6 +36,6 @@ void main() {
             sum += h_sum / 9.0;
         }
 
-        gl_FragColor = vec4(glow_colour, (sum / 9.0) * glow_intensity);
+        pixel = vec4(glow_colour, (sum / 9.0) * glow_intensity);
     }
 }

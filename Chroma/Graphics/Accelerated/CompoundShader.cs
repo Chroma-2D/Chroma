@@ -19,16 +19,8 @@ namespace Chroma.Graphics.Accelerated
             TryCompilePixelShader();
             TryCompileVertexShader();
 
-            LinkShaders();
+            TryLinkShaders();
             CreateShaderBlock();
-        }
-
-        private void LinkShaders()
-        {
-            ProgramHandle = SDL_gpu.GPU_LinkShaders(PixelShaderObjectHandle, VertexShaderObjectHandle);
-
-            if (ProgramHandle == 0)
-                throw new ShaderException("Compound shader linkage failed.", SDL_gpu.GPU_GetShaderMessage());
         }
 
         private void TryCompilePixelShader()

@@ -272,6 +272,8 @@ namespace Chroma.Windowing
             if (Handle == IntPtr.Zero)
                 throw new FrameworkException("Failed to initialize the window.", true);
 
+            SDL_gpu.GPU_SetRequiredFeatures(SDL_gpu.GPU_FeatureEnum.GPU_FEATURE_BASIC_SHADERS);
+            
             SDL_gpu.GPU_SetInitWindow(SDL2.SDL_GetWindowID(Handle));
 
             var bestRenderer = GraphicsManager.GetBestRenderer();

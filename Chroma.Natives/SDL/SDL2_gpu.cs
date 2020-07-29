@@ -1501,8 +1501,9 @@ namespace Chroma.Natives.SDL
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_DeactivateShaderProgram();
 
-        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+        [DllImport(NativeLibraryName, CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        // [return: MarshalAs(UnmanagedType.LPWStr)]
+        // [return: MarshalAs(UnmanagedType.LPUTF8Str, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
         public static extern string GPU_GetShaderMessage();
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Chroma.Graphics.Accelerated
 {
@@ -12,6 +13,19 @@ namespace Chroma.Graphics.Accelerated
         {
             GlslErrors = rawGlslError.Split('\n').ToList();
             GlslErrors.RemoveAll(x => string.IsNullOrWhiteSpace(x));
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine(base.ToString());
+            sb.AppendLine("---");
+            
+            foreach(var l in GlslErrors)
+                sb.AppendLine(l);
+
+            return sb.ToString();
         }
     }
 }

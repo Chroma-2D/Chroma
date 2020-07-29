@@ -1,12 +1,10 @@
-#version 130
+#version 120
 
-in vec4 color;
-in vec2 texCoord;
+varying vec4 color;
+varying vec2 texCoord;
 
 uniform vec2 mouseLoc;
 uniform sampler2D tex;
-
-out vec4 outColor;
 
 void main(void)
 {
@@ -14,5 +12,5 @@ void main(void)
     newColor.g = mouseLoc.x;
     newColor.r = mouseLoc.y;
     
-    outColor = newColor;
+    gl_FragColor = newColor;
 }

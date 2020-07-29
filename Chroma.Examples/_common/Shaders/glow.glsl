@@ -1,8 +1,7 @@
 #version 130
 
-in vec4 color;
-in vec2 texCoord;
-out vec4 pixel;
+varying vec4 color;
+varying vec2 texCoord;
 
 uniform sampler2D tex;
 
@@ -36,6 +35,6 @@ void main() {
             sum += h_sum / 9.0;
         }
 
-        pixel = vec4(glow_colour, (sum / 9.0) * glow_intensity);
+        gl_FragColor = vec4(glow_colour, (sum / 9.0) * glow_intensity);
     }
 }

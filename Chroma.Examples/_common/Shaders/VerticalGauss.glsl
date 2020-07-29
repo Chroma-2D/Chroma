@@ -1,17 +1,15 @@
-﻿#version 130
+﻿#version 120
 
 uniform sampler2D texture;
 
-in vec2 texCoord;
-in vec4 color;
+varying vec2 texCoord;
+varying vec4 color;
 
 uniform vec2 rt_dims;
 uniform float vx_offset;
 
 float offset[3] = float[](0.0, 1.3846153846, 3.2307692308);
 float weight[3] = float[](0.2270270270, 0.3162162162, 0.0702702703);
-
-out vec4 fragColor;
 
 void main()
 {
@@ -39,5 +37,5 @@ void main()
         tc = texture2D(texture, texCoord.xy).rgb;
     }
 
-    fragColor = vec4(tc, 1.0);
+    gl_FragColor = vec4(tc, 1.0);
 }

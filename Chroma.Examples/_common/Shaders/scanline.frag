@@ -1,19 +1,17 @@
 // https://raw.githubusercontent.com/wessles/GLSL-CRT/master/shader.frag
 //
 
-#version 130
+#version 120
 
 uniform float CRT_CURVE_AMNTx; // curve amount on x
 uniform float CRT_CURVE_AMNTy; // curve amount on y
 #define CRT_CASE_BORDR 0.0125
 #define SCAN_LINE_MULT 1250.0
 
-in vec4 color;
-in vec2 texCoord;
+varying vec4 color;
+varying vec2 texCoord;
 
 uniform sampler2D tex;
-
-out vec4 outColor;
 
 void main() {
     vec2 tc = vec2(texCoord.x, texCoord.y);
@@ -44,5 +42,5 @@ void main() {
     cta = vec4(0.0);
 
     // Apply
-    outColor = cta * color;
+    gl_FragColor = cta * color;
 }

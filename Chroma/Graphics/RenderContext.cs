@@ -51,13 +51,13 @@ namespace Chroma.Graphics
             }
         }
 
-        public BlendingFunction ShapeSourceColorBlendingFunction { get; private set; } = BlendingFunction.One;
-        public BlendingFunction ShapeSourceAlphaBlendingFunction { get; private set; } = BlendingFunction.Zero;
-        public BlendingFunction ShapeDestinationColorBlendingFunction { get; private set; } = BlendingFunction.One;
-        public BlendingFunction ShapeDestinationAlphaBlendingFunction { get; private set; } = BlendingFunction.Zero;
+        public BlendingFunction ShapeSourceColorBlendingFunction { get; private set; }
+        public BlendingFunction ShapeSourceAlphaBlendingFunction { get; private set; }
+        public BlendingFunction ShapeDestinationColorBlendingFunction { get; private set; }
+        public BlendingFunction ShapeDestinationAlphaBlendingFunction { get; private set; }
 
-        public BlendingEquation ShapeColorBlendingEquation { get; private set; } = BlendingEquation.Add;
-        public BlendingEquation ShapeAlphaBlendingEquation { get; private set; } = BlendingEquation.Add;
+        public BlendingEquation ShapeColorBlendingEquation { get; private set; }
+        public BlendingEquation ShapeAlphaBlendingEquation { get; private set; }
 
         public Rectangle Scissor
         {
@@ -97,6 +97,7 @@ namespace Chroma.Graphics
             Transform = new RenderTransform(this);
             
             ShapeBlendingEnabled = true;
+            ResetShapeBlending();
         }
 
         public void SetShapeBlendingEquations(BlendingEquation colorBlend, BlendingEquation alphaBlend)

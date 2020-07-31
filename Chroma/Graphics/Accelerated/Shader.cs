@@ -105,11 +105,17 @@ namespace Chroma.Graphics.Accelerated
             if (value.Disposed)
                 throw new ArgumentException("Texture provided was already diposed.");
 
+            if (textureUnit == 0)
+            {
+                Log.Error("Cannot set texture unit 0: reserved for use by the rendering system blitting functions.");
+                return;
+            }
+
             var loc = SDL_gpu.GPU_GetUniformLocation(ProgramHandle, name);
 
             if (loc == -1)
             {
-                Log.Warning($"Float uniform '{name}' does not exist.");
+                Log.Warning($"Texture sampler '{name}' does not exist.");
                 return;
             }
 
@@ -282,6 +288,18 @@ namespace Chroma.Graphics.Accelerated
                     string.Empty
                 );
             }
+        }
+
+        protected void CleanupAfterLinking()
+        {
+            SDL_gpu.GPU_DetachShader(ProgramHandle, VertexShaderObjectHandle);
+            SDL_gpu.GPU_DetachShader(ProgramHandle, PixelShaderObjectHandle);
+            
+            SDL_gpu.GPU_FreeShader(VertexShaderObjectHandle);
+            SDL_gpu.GPU_FreeShader(PixelShaderObjectHandle);
+
+            VertexShaderObjectHandle = 0;
+            PixelShaderObjectHandle = 0;
         }
 
         protected void CreateShaderBlock()

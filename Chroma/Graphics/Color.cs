@@ -10,25 +10,7 @@ namespace Chroma.Graphics
         public byte B;
         public byte A;
 
-        public uint PackedValue
-        {
-            get
-            {
-                var value = 0u;
-
-                value |= (uint)(R << 24);
-                value |= (uint)(G << 16);
-                value |= (uint)(B << 8);
-                value |= A;
-
-                return value;
-            }
-        }
-
-        public Color(byte r, byte g, byte b)
-            : this(r, g, b, 255)
-        {
-        }
+        public readonly PackedValue Packed;
 
         public Color(byte r, byte g, byte b, byte a)
         {
@@ -36,6 +18,14 @@ namespace Chroma.Graphics
             G = g;
             B = b;
             A = a;
+
+            Packed = new PackedValue();
+            Packed.Owner = this;
+        }
+
+        public Color(byte r, byte g, byte b)
+            : this(r, g, b, 255)
+        {
         }
 
         public Color(float r, float g, float b, float a) : this(
@@ -46,24 +36,24 @@ namespace Chroma.Graphics
         {
         }
 
-        public Color(float r, float g, float b) : this(r, g, b, 1.0f)
+        public Color(float r, float g, float b) 
+            : this(r, g, b, 1.0f)
         {
         }
 
         public Color(uint packedValue)
+            : this(
+                (byte)((packedValue & 0xFF000000) >> 24),
+                (byte)((packedValue & 0x00FF0000) >> 16),
+                (byte)((packedValue & 0x0000FF00) >> 8),
+                (byte)(packedValue & 0x000000FF)
+            )
         {
-            R = (byte)((packedValue & 0xFF000000) >> 24);
-            G = (byte)((packedValue & 0x00FF0000) >> 16);
-            B = (byte)((packedValue & 0x0000FF00) >> 8);
-            A = (byte)(packedValue & 0x000000FF);
         }
 
         public Color(Color other)
+            : this(other.R, other.G, other.B, other.A)
         {
-            R = other.R;
-            G = other.G;
-            B = other.B;
-            A = other.A;
         }
 
         public static readonly Color AliceBlue = new Color(240, 248, 255);
@@ -227,7 +217,7 @@ namespace Chroma.Graphics
         {
             if (hue < 0)
                 hue = Math.Abs(hue);
-            
+
             var i = (int)(Math.Floor(hue / 60) % 6);
             var f = (hue / 60) - Math.Floor(hue / 60);
 
@@ -248,7 +238,7 @@ namespace Chroma.Graphics
         }
 
         public override int GetHashCode()
-            => PackedValue.GetHashCode();
+            => Packed.RGBA.GetHashCode();
 
         public bool Equals(Color other)
         {
@@ -256,7 +246,7 @@ namespace Chroma.Graphics
                    G == other.G &&
                    B == other.B &&
                    A == other.A &&
-                   PackedValue == other.PackedValue;
+                   Packed.RGBA == other.Packed.RGBA;
         }
 
         public static bool operator ==(Color left, Color right)
@@ -299,5 +289,74 @@ namespace Chroma.Graphics
 
         internal static Color FromSdlColor(SDL2.SDL_Color color)
             => new Color(color.r, color.g, color.b, color.a);
+
+        public class PackedValue
+        {
+            internal Color Owner { get; set; }
+
+            public uint RGBA
+            {
+                get
+                {
+                    var value = 0u;
+
+                    value |= (uint)(Owner.R << 24);
+                    value |= (uint)(Owner.G << 16);
+                    value |= (uint)(Owner.B << 8);
+                    value |= Owner.A;
+
+                    return value;
+                }
+            }
+
+            public uint ARGB
+            {
+                get
+                {
+                    var value = 0u;
+
+                    value |= (uint)(Owner.A << 24);
+                    value |= (uint)(Owner.R << 16);
+                    value |= (uint)(Owner.G << 8);
+                    value |= Owner.B;
+
+                    return value;
+                }
+            }
+            
+            public uint BGRA
+            {
+                get
+                {
+                    var value = 0u;
+
+                    value |= (uint)(Owner.B << 24);
+                    value |= (uint)(Owner.G << 16);
+                    value |= (uint)(Owner.R << 8);
+                    value |= Owner.A;
+
+                    return value;
+                }
+            }
+            
+            public uint ABGR
+            {
+                get
+                {
+                    var value = 0u;
+
+                    value |= (uint)(Owner.A << 24);
+                    value |= (uint)(Owner.B << 16);
+                    value |= (uint)(Owner.G << 8);
+                    value |= Owner.R;
+
+                    return value;
+                }
+            }
+
+            internal PackedValue()
+            {
+            }
+        }
     }
 }

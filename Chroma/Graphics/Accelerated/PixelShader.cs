@@ -5,14 +5,19 @@ namespace Chroma.Graphics.Accelerated
 {
     public sealed class PixelShader : Shader
     {
-        public string FilePath { get; }
         public string SourceCode { get; }
 
-        public PixelShader(string filePath)
+        public PixelShader(string sourceCode)
         {
-            FilePath = filePath;
-            SourceCode = File.ReadAllText(FilePath);
+            SourceCode = sourceCode;
+            Initialize();
+        }
 
+        public static PixelShader FromFile(string filePath)
+            => new PixelShader(File.ReadAllText(filePath));
+
+        private void Initialize()
+        {
             PixelShaderObjectHandle = SDL_gpu.GPU_CompileShader(SDL_gpu.GPU_ShaderEnum.GPU_PIXEL_SHADER, SourceCode);
 
             if (PixelShaderObjectHandle == 0)

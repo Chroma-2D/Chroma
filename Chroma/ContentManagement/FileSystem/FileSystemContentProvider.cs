@@ -113,12 +113,12 @@ namespace Chroma.ContentManagement.FileSystem
 
             RegisterImporter<PixelShader>((path, args) =>
             {
-                return new PixelShader(path);
+                return PixelShader.FromFile(path);
             });
 
             RegisterImporter<VertexShader>((path, args) =>
             {
-                return new VertexShader(path);
+                return VertexShader.FromFile(path);
             });
 
             RegisterImporter<TrueTypeFont>((path, args) =>

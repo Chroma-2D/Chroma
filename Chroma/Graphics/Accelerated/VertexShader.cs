@@ -9,14 +9,19 @@ namespace Chroma.Graphics.Accelerated
     {
         private Log Log => LogManager.GetForCurrentAssembly();
 
-        public string FilePath { get; }
         public string SourceCode { get; }
 
-        public VertexShader(string filePath)
+        public VertexShader(string sourceCode)
         {
-            FilePath = filePath;
-            SourceCode = File.ReadAllText(FilePath);
+            SourceCode = sourceCode;
+            Initialize();
+        }
 
+        public static VertexShader FromFile(string filePath)
+            => new VertexShader(File.ReadAllText(filePath));
+        
+        private void Initialize()
+        {
             VertexShaderObjectHandle = SDL_gpu.GPU_CompileShader(SDL_gpu.GPU_ShaderEnum.GPU_VERTEX_SHADER, SourceCode);
 
             if (VertexShaderObjectHandle == 0)

@@ -496,7 +496,7 @@ namespace Chroma.Graphics
                     var color = colors[i];
 
                     var pixel = (uint*)Surface->pixels;
-                    *(pixel + i) = color.PackedValue;
+                    *(pixel + i) = color.Packed.ARGB;
                 }
             }
         }
@@ -517,7 +517,7 @@ namespace Chroma.Graphics
                                     (y * Surface->pitch) +
                                     (x * sizeof(uint)));
 
-                *pixel = color.PackedValue;
+                *pixel = color.Packed.ARGB;
             }
         }
 

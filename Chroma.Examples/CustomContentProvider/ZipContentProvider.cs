@@ -68,6 +68,16 @@ namespace CustomContentProvider
             throw new NotImplementedException();
         }
 
+        public void Track<T>(T resource) where T : DisposableResource
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StopTracking<T>(T resource) where T : DisposableResource
+        {
+            throw new NotImplementedException();
+        }
+
         public byte[] Read(string relativePath)
         {
             using (var stream = _zipArchive.GetEntry(relativePath)?.Open())

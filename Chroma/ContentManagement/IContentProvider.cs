@@ -14,8 +14,11 @@ namespace Chroma.ContentManagement
         byte[] Read(string relativePath);
         Stream Open(string relativePath);
 
-        void RegisterImporter<T>(Func<string, object[], object> importer) where T: DisposableResource;
-        void UnregisterImporter<T>() where T: DisposableResource;
+        void Track<T>(T resource) where T : DisposableResource;
+        void StopTracking<T>(T resource) where T : DisposableResource;
+
+        void RegisterImporter<T>(Func<string, object[], object> importer) where T : DisposableResource;
+        void UnregisterImporter<T>() where T : DisposableResource;
         bool IsImporterPresent<T>() where T : DisposableResource;
     }
 }

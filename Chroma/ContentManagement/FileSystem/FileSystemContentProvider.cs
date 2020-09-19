@@ -78,7 +78,26 @@ namespace Chroma.ContentManagement.FileSystem
         public byte[] Read(string relativePath)
             => File.ReadAllBytes(MakeAbsolutePath(relativePath));
 
-        public void RegisterImporter<T>(Func<string, object[], object> importer) where T: DisposableResource
+        public void Track<T>(T resource) where T : DisposableResource
+        {
+            if (_loadedResources.Contains(resource))
+                throw new InvalidOperationException("The content you want to track is already being tracked.");
+            
+            _loadedResources.Add(resource);
+            resource.Disposing += OnResourceDisposing;
+        }
+
+        public void StopTracking<T>(T resource) where T : DisposableResource
+        {
+            if (!_loadedResources.Contains(resource))
+                throw new ContentNotLoadedException(
+                    "The content you want to stop tracking was never tracked in the first place.");
+            
+            resource.Disposing -= OnResourceDisposing;
+            _loadedResources.Remove(resource);
+        }
+
+        public void RegisterImporter<T>(Func<string, object[], object> importer) where T : DisposableResource
         {
             if (_importers.ContainsKey(typeof(T)))
                 throw new InvalidOperationException($"An importer for type {typeof(T).Name} was already registered.");
@@ -86,7 +105,7 @@ namespace Chroma.ContentManagement.FileSystem
             _importers.Add(typeof(T), importer);
         }
 
-        public void UnregisterImporter<T>() where T: DisposableResource
+        public void UnregisterImporter<T>() where T : DisposableResource
         {
             if (!_importers.ContainsKey(typeof(T)))
                 throw new InvalidOperationException(
@@ -106,20 +125,11 @@ namespace Chroma.ContentManagement.FileSystem
 
         private void RegisterImporters()
         {
-            RegisterImporter<Texture>((path, args) =>
-            {
-                return new Texture(path);
-            });
+            RegisterImporter<Texture>((path, args) => { return new Texture(path); });
 
-            RegisterImporter<PixelShader>((path, args) =>
-            {
-                return PixelShader.FromFile(path);
-            });
+            RegisterImporter<PixelShader>((path, args) => { return PixelShader.FromFile(path); });
 
-            RegisterImporter<VertexShader>((path, args) =>
-            {
-                return VertexShader.FromFile(path);
-            });
+            RegisterImporter<VertexShader>((path, args) => { return VertexShader.FromFile(path); });
 
             RegisterImporter<TrueTypeFont>((path, args) =>
             {
@@ -140,20 +150,11 @@ namespace Chroma.ContentManagement.FileSystem
                 return ttf;
             });
 
-            RegisterImporter<BitmapFont>((path, args) =>
-            {
-                return new BitmapFont(path);
-            });
+            RegisterImporter<BitmapFont>((path, args) => { return new BitmapFont(path); });
 
-            RegisterImporter<Sound>((path, args) =>
-            {
-                return _game.Audio.CreateSound(path);
-            });
+            RegisterImporter<Sound>((path, args) => { return _game.Audio.CreateSound(path); });
 
-            RegisterImporter<Music>((path, args) =>
-            {
-                return _game.Audio.CreateMusic(path);
-            });
+            RegisterImporter<Music>((path, args) => { return _game.Audio.CreateMusic(path); });
 
             RegisterImporter<Cursor>((path, args) =>
             {

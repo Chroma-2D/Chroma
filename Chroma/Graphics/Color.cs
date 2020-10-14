@@ -10,6 +10,45 @@ namespace Chroma.Graphics
         public byte B;
         public byte A;
 
+        public float Hue
+        {
+            get
+            {
+                var (min, max, d, h) = GetHsvParameters();
+
+                if (d == 0 && h == 0)
+                    return 0;
+
+                return 60f * (h - d / (max - min));
+            }
+        }
+
+        public float Saturation
+        {
+            get
+            {
+                var (min, max, _, _) = GetHsvParameters();
+
+                if (min == max)
+                    return 0;
+
+                return (max - min) / (float)max;
+            }
+        }
+
+        public float Value
+        {
+            get
+            {
+                var (min, max, _, _) = GetHsvParameters();
+
+                if (min == max)
+                    return min;
+
+                return max;
+            }
+        }
+
         public readonly PackedValue Packed;
 
         public Color(byte r, byte g, byte b, byte a)
@@ -36,7 +75,7 @@ namespace Chroma.Graphics
         {
         }
 
-        public Color(float r, float g, float b) 
+        public Color(float r, float g, float b)
             : this(r, g, b, 1.0f)
         {
         }
@@ -290,6 +329,24 @@ namespace Chroma.Graphics
         internal static Color FromSdlColor(SDL2.SDL_Color color)
             => new Color(color.r, color.g, color.b, color.a);
 
+        private (float, float, float, float) GetHsvParameters()
+        {
+            var rf = R / 255f;
+            var gf = G / 255f;
+            var bf = B / 255f;
+            
+            var minRgb = Math.Min(rf, Math.Min(gf, bf));
+            var maxRgb = Math.Max(rf, Math.Max(gf, bf));
+
+            if (minRgb == maxRgb)
+                return (minRgb, maxRgb, 0, 0);
+
+            float d = (rf == minRgb) ? gf - bf : ((bf == minRgb) ? rf - gf : bf - rf);
+            float h = (rf == minRgb) ? 3 : ((bf == minRgb) ? 1 : 5);
+
+            return (minRgb, maxRgb, d, h);
+        }
+
         public class PackedValue
         {
             internal Color Owner { get; set; }
@@ -323,7 +380,7 @@ namespace Chroma.Graphics
                     return value;
                 }
             }
-            
+
             public uint BGRA
             {
                 get
@@ -338,7 +395,7 @@ namespace Chroma.Graphics
                     return value;
                 }
             }
-            
+
             public uint ABGR
             {
                 get

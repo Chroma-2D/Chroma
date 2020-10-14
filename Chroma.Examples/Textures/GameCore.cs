@@ -39,7 +39,8 @@ namespace Textures
                 "Use left/right arrows to switch between tiles on the tile map.\n" +
                 "Use num+/num- to adjust burger's virtual resolution by 32 pixels.\n" +
                 "Use F1 to reset burger's virtual resolution.\n" +
-                "Use F2-F5 to switch between different blending modes.",
+                "Use F2-F5 to switch between different blending modes.\n" +
+                $"{Color.Brown.R}, {Color.Brown.G}, {Color.Brown.B}: {Color.Brown.Hue}, {Color.Brown.Saturation}, {Color.Brown.Value}",
                 new Vector2(8)
             );
 

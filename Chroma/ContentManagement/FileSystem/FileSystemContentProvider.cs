@@ -119,7 +119,9 @@ namespace Chroma.ContentManagement.FileSystem
 
         protected override void FreeManagedResources()
         {
-            foreach (var resource in _loadedResources)
+            var disposables = new List<IDisposable>(_loadedResources);
+            
+            foreach (var resource in disposables)
                 resource.Dispose();
         }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using Chroma.Natives.Boot.Config;
 using Chroma.Natives.Compression;
 
@@ -29,7 +30,15 @@ namespace Chroma.Natives.Boot
             if (ModuleInitializer.BootConfig.NativesInApplicationDirectory)
             {
                 var appDirPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                libraryRoot = Path.Combine(appDirPath!, "Natives");
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    libraryRoot = appDirPath;
+                }
+                else
+                {
+                    libraryRoot = Path.Combine(appDirPath!, "Natives");
+                }
             }
             else
             {

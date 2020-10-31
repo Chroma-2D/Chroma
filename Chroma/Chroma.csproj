@@ -22,11 +22,7 @@
     <Title>Chroma Framework</Title>
     <Description>2D Game Framework which *doesn't* try so hard to resemble XNA</Description>
     <PackageId>Chroma</PackageId>
-<<<<<<< HEAD
     <Version>0.22.0</Version>
-=======
-    <Version>0.21.2</Version>
->>>>>>> 222f5336e6b3520ff14cfd477fc9824dd40e071d
     <Author>Ciastex</Author>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Ciastex/Chroma</RepositoryUrl>

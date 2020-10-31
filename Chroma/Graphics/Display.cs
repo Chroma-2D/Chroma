@@ -1,4 +1,5 @@
-﻿using Chroma.Natives.SDL;
+﻿using System.Collections.Generic;
+using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics
 {
@@ -17,6 +18,20 @@ namespace Chroma.Graphics
             RefreshRate = refreshRate;
             Width = width;
             Height = height;
+        }
+
+        public List<DisplayMode> QuerySupportedDisplayModes()
+        {
+            var ret = new List<DisplayMode>();
+            var displayModeCount = SDL2.SDL_GetNumDisplayModes(Index);
+            
+            for (var i = 0; i < displayModeCount; i++)
+            {
+                SDL2.SDL_GetDisplayMode(Index, i, out var mode);
+                ret.Add(new DisplayMode(mode.w, mode.h, mode.refresh_rate));
+            }
+
+            return ret;
         }
     }
 }

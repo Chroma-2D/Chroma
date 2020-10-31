@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Drawing;
+using System.Net;
 using System.Numerics;
+using System.Text;
 using Chroma;
+using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.Input;
 using Chroma.Input.EventArgs;
@@ -14,6 +17,29 @@ namespace WindowOperations
     {
         private bool _drawCenterVector;
         private int _lastResult;
+
+        private Log _log = LogManager.GetForCurrentAssembly();
+
+        public GameCore()
+        {
+            var sb = new StringBuilder();
+
+            var displays = Graphics.FetchDisplayInfo();
+
+            for (var i = 0; i < displays.Count; i++)
+            {
+                sb.AppendLine($"Display {i} supports:");
+                var modes = displays[i].QuerySupportedDisplayModes();
+
+                for (var j = 0; j < modes.Count; j++)
+                {
+                    var m = modes[j];
+                    sb.AppendLine($"  {m.Width}x{m.Height}@{m.RefreshRate}");
+                }
+            }
+
+            _log.Info(sb.ToString());
+        }
 
         protected override void Draw(RenderContext context)
         {

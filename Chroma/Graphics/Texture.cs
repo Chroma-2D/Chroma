@@ -414,7 +414,7 @@ namespace Chroma.Graphics
             {
                 throw new Exception($"Failed to load source image: {SDL2.SDL_GetError()}");
             }
-            
+
             ConvertToStandardSurfaceFormat(surfaceHandle);
             SnappingMode = TextureSnappingMode.None;
         }
@@ -470,11 +470,10 @@ namespace Chroma.Graphics
                 {
                     throw new Exception($"Failed to create RGB surface: {SDL2.SDL_GetError()}");
                 }
-                
+
                 Surface = (SDL2.SDL_Surface*)handle.ToPointer();
                 ImageHandle = SDL_gpu.GPU_CopyImageFromSurface(handle);
             }
-
             SnappingMode = TextureSnappingMode.None;
         }
 

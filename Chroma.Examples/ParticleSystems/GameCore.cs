@@ -13,7 +13,6 @@ namespace ParticleSystems
     {
         private Texture _particle;
         private RenderTarget _target;
-        private PixelShader _shader;
         private ParticleEmitter _emitter;
 
         public GameCore()
@@ -30,7 +29,6 @@ namespace ParticleSystems
         protected override void LoadContent()
         {
             _target = new RenderTarget(Window.Size.Width, Window.Size.Height);
-            _shader = Content.Load<PixelShader>("Shaders/glow.glsl");
             
             _particle = Content.Load<Texture>("Textures/pentagram.png");
             _particle.FilteringMode = TextureFilteringMode.NearestNeighbor;
@@ -48,8 +46,6 @@ namespace ParticleSystems
             context.RenderTo(_target, () =>
             {
                 context.Clear(Color.Black);
-                
-                // _shader.Activate();
                 _emitter.Draw(context);
             });
             

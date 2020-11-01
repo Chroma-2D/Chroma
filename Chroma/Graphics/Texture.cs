@@ -410,6 +410,11 @@ namespace Chroma.Graphics
 
             var surfaceHandle = SDL_image.IMG_Load(filePath);
 
+            if (surfaceHandle == IntPtr.Zero)
+            {
+                throw new Exception($"Failed to load source image: {SDL2.SDL_GetError()}");
+            }
+            
             ConvertToStandardSurfaceFormat(surfaceHandle);
             SnappingMode = TextureSnappingMode.None;
         }
@@ -461,6 +466,11 @@ namespace Chroma.Graphics
                     0xFF000000
                 );
 
+                if (handle == IntPtr.Zero)
+                {
+                    throw new Exception($"Failed to create RGB surface: {SDL2.SDL_GetError()}");
+                }
+                
                 Surface = (SDL2.SDL_Surface*)handle.ToPointer();
                 ImageHandle = SDL_gpu.GPU_CopyImageFromSurface(handle);
             }

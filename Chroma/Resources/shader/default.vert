@@ -1,4 +1,4 @@
-﻿#version 100
+#version 100
 
 precision highp float;
 precision highp int;

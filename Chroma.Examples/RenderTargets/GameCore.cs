@@ -41,10 +41,13 @@ namespace RenderTargets
 
         protected override void Draw(RenderContext context)
         {
+            if (context.ShapeBlendingEnabled)
+                context.ShapeBlendingEnabled = false;
+
             context.RenderTo(_tgt, () =>
             {
                 context.Clear(Color.Black);
-                context.Rectangle(ShapeMode.Stroke, _position, 64, 64, Color.Cyan);
+                context.Rectangle(ShapeMode.Fill, _position, 64, 64, Color.Cyan);
                 context.DrawString("This was rendered inside a render target.", new Vector2(16));
             });
 
@@ -52,10 +55,7 @@ namespace RenderTargets
 
             context.DrawTexture(
                 _tgt,
-                _tgt.Center + new Vector2(
-                    Window.Size.Width / 2 - _tgt.Width / 2,
-                    Window.Size.Height / 2 - _tgt.Width / 2
-                ),
+                Window.Center,
                 Vector2.One,
                 _tgt.Center,
                 _rotation

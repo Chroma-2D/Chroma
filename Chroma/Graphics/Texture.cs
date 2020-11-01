@@ -625,7 +625,7 @@ namespace Chroma.Graphics
 
                 var standardPixelFormat = new SDL2.SDL_PixelFormat
                 {
-                    format = SDL2.SDL_PIXELFORMAT_RGBA8888,
+                    format = SDL2.SDL_PIXELFORMAT_ARGB8888,
                     palette = IntPtr.Zero,
                     Rmask = 0x000000FF,
                     Gmask = 0x0000FF00,
@@ -635,7 +635,7 @@ namespace Chroma.Graphics
                     BytesPerPixel = 4
                 };
 
-                if (fmt->BytesPerPixel != 4 || fmt->format != SDL2.SDL_PIXELFORMAT_RGBA8888)
+                if (fmt->BytesPerPixel != 4 || fmt->format != SDL2.SDL_PIXELFORMAT_ARGB8888)
                 {
                     var rgbaSurface = SDL2.SDL_ConvertSurface(
                         surfaceHandle,

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using Chroma.Diagnostics.Logging;
 using Chroma.Natives.GL;
@@ -85,7 +84,7 @@ namespace Chroma.Graphics
 
         static GraphicsManager()
         {
-            Log.Info("GraphicsManager initializing...");
+            Log.Info("Initializing...");
             Log.Info("Probing OpenGL limits...");
             
             ProbeGlLimits(
@@ -110,25 +109,24 @@ namespace Chroma.Graphics
 
             Log.Info(" Available displays:");
 
-            foreach (var d in FetchDisplayInfo())
-                Log.Info($"  {d.Index}: {d.Width}x{d.Height}@{d.RefreshRate}Hz");
+            foreach (var d in GetDisplayList())
+                Log.Info($"  Display {d.Index} ({d.Name}) [{d.Bounds.Width}x{d.Bounds.Height}], mode {d.DesktopMode}");
 
             CheckGlExtensionAvailability();
-
             VerticalSyncMode = VerticalSyncMode.Retrace;
         }
 
         public List<string> GetRendererNames()
             => GetRegisteredRenderers().Select(x => $"{x.name} ({x.major_version}.{x.minor_version})").ToList();
 
-        public List<Display> FetchDisplayInfo()
+        public List<Display> GetDisplayList()
         {
             var displays = new List<Display>();
             var count = SDL2.SDL_GetNumVideoDisplays();
 
             for (var i = 0; i < count; i++)
             {
-                var display = FetchDisplayInfo(i);
+                var display = FetchDisplay(i);
 
                 if (display != null)
                     displays.Add(display);
@@ -137,54 +135,15 @@ namespace Chroma.Graphics
             return displays;
         }
 
-        public List<Display> FetchDesktopDisplayInfo()
-        {
-            var displays = new List<Display>();
-            var count = SDL2.SDL_GetNumVideoDisplays();
-
-            for (var i = 0; i < count; i++)
-            {
-                var display = FetchDesktopDisplayInfo(i);
-
-                if (display != null)
-                    displays.Add(display);
-            }
-
-            return displays;
-        }
-
-        public Display FetchDisplayInfo(int index)
+        public Display FetchDisplay(int index)
         {
             if (SDL2.SDL_GetCurrentDisplayMode(index, out var mode) == 0)
             {
-                return new Display(index, mode.refresh_rate, (ushort)mode.w, (ushort)mode.h)
-                {
-                    UnderlyingDisplayMode = mode
-                };
+                return new Display(index);
             }
 
             Log.Error($"Failed to retrieve display {index} info: {SDL2.SDL_GetError()}");
             return null;
-        }
-
-        public Display FetchDesktopDisplayInfo(int index)
-        {
-            if (SDL2.SDL_GetDesktopDisplayMode(index, out var mode) == 0)
-            {
-                return new Display(index, mode.refresh_rate, (ushort)mode.w, (ushort)mode.h)
-                {
-                    UnderlyingDisplayMode = mode
-                };
-            }
-
-            Log.Error($"Failed to retrieve desktop display {index} info: {SDL2.SDL_GetError()}");
-            return null;
-        }
-
-        public Size GetNativeResolution(int index)
-        {
-            var display = FetchDesktopDisplayInfo(index);
-            return new Size(display.Width, display.Height);
         }
 
         internal static List<SDL_gpu.GPU_RendererID> GetRegisteredRenderers()

@@ -61,7 +61,7 @@ namespace Chroma.Graphics
                 if (VirtualResolution.HasValue && IsVirtualized)
                 {
                     return new Vector2(
-                        VirtualResolution.Value.Width / 2f, 
+                        VirtualResolution.Value.Width / 2f,
                         VirtualResolution.Value.Height / 2f
                     );
                 }
@@ -358,7 +358,7 @@ namespace Chroma.Graphics
                 {
                     _virtualResolution = value;
                     SDL_gpu.GPU_SetImageVirtualResolution(
-                        ImageHandle, 
+                        ImageHandle,
                         (ushort)_virtualResolution.Value.Height,
                         (ushort)_virtualResolution.Value.Width
                     );
@@ -366,7 +366,17 @@ namespace Chroma.Graphics
             }
         }
 
-        public bool IsVirtualized => VirtualResolution == new Size(Width, Height);
+        public bool IsVirtualized
+        {
+            get
+            {
+                EnsureNotDisposed();
+
+                return VirtualResolution.HasValue
+                       && (VirtualResolution.Value.Height != Height
+                           || VirtualResolution.Value.Width != Width);
+            }
+        }
 
         public Color this[int x, int y]
         {

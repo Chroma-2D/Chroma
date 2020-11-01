@@ -255,7 +255,7 @@ namespace Chroma.Graphics.Accelerated
             var shaderSourceStream = Assembly.GetExecutingAssembly()
                 .GetManifestResourceStream("Chroma.Resources.shader.default.vert");
 
-            using var sr = new StreamReader(shaderSourceStream);
+            using var sr = new StreamReader(shaderSourceStream!);
             VertexShaderObjectHandle =
                 SDL_gpu.GPU_CompileShader(SDL_gpu.GPU_ShaderEnum.GPU_VERTEX_SHADER, sr.ReadToEnd());
         }
@@ -267,7 +267,7 @@ namespace Chroma.Graphics.Accelerated
             var shaderSourceStream = Assembly.GetExecutingAssembly()
                 .GetManifestResourceStream("Chroma.Resources.shader.default.frag");
 
-            using var sr = new StreamReader(shaderSourceStream);
+            using var sr = new StreamReader(shaderSourceStream!);
             PixelShaderObjectHandle =
                 SDL_gpu.GPU_CompileShader(SDL_gpu.GPU_ShaderEnum.GPU_PIXEL_SHADER, sr.ReadToEnd());
         }

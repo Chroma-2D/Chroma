@@ -241,6 +241,22 @@ namespace Chroma.Windowing
             set => SDL2.SDL_SetWindowGrab(Handle, value ? SDL2.SDL_bool.SDL_TRUE : SDL2.SDL_bool.SDL_FALSE);
         }
 
+        public Display CurrentDisplay
+        {
+            get
+            {
+                var index = SDL2.SDL_GetWindowDisplayIndex(Handle);
+
+                if (index < 0)
+                {
+                    Log.Error($"Failed to retrieve window index: {SDL2.SDL_GetError()}");
+                    return Display.Invalid;
+                }
+
+                return Game.Graphics.GetDisplayList()[index];
+            }
+        }
+
         public event EventHandler Closed;
         public event EventHandler Hidden;
         public event EventHandler Shown;
@@ -273,7 +289,7 @@ namespace Chroma.Windowing
                 throw new FrameworkException("Failed to initialize the window.", true);
 
             SDL_gpu.GPU_SetRequiredFeatures(SDL_gpu.GPU_FeatureEnum.GPU_FEATURE_BASIC_SHADERS);
-            
+
             SDL_gpu.GPU_SetInitWindow(SDL2.SDL_GetWindowID(Handle));
 
             var bestRenderer = GraphicsManager.GetBestRenderer();
@@ -318,8 +334,10 @@ namespace Chroma.Windowing
 
             SDL2.SDL_SetWindowFullscreen(Handle, flag);
 
-            var thisDisplayIndex = SDL2.SDL_GetWindowDisplayIndex(Handle);
-            Size = Game.Graphics.GetNativeResolution(thisDisplayIndex);
+            Size = new Size(
+                CurrentDisplay.DesktopMode.Width,
+                CurrentDisplay.DesktopMode.Height
+            );
         }
 
         public void GoWindowed(Size size, bool centerOnScreen = false)
@@ -347,14 +365,14 @@ namespace Chroma.Windowing
         public void WriteFramebufferTo(byte[] buffer, ImageFileFormat format)
         {
             EnsureNotDisposed();
-            
+
             unsafe
             {
                 fixed (byte* ptr = &buffer[0])
                 {
                     var rwops = SDL2.SDL_RWFromMem(new IntPtr(ptr), buffer.Length);
                     var image = ((SDL_gpu.GPU_Target*)RenderTargetHandle.ToPointer())->image;
-                        
+
                     if (!SDL_gpu.GPU_SaveImage_RW(image, rwops, true, (SDL_gpu.GPU_FileFormatEnum)format))
                     {
                         Log.Error($"Writing window framebuffer to stream failed: {SDL2.SDL_GetError()}");

@@ -269,7 +269,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
 
                     case "file":
                         fileName = Path.Combine(
-                            Path.GetDirectoryName(FileName),
+                            Path.GetDirectoryName(FileName)!,
                             _lexer.CurrentValue
                         );
                         break;

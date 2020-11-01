@@ -43,10 +43,10 @@ namespace Chroma
             }
 
             _wasConstructedAlready = true;
-            
+
             if (constructDefaultScene)
                 _defaultScene = new DefaultScene(this);
-            
+
             _fixedUpdateThread = new Thread(FixedUpdateThread);
 
             Window = new Window(this)
@@ -57,10 +57,10 @@ namespace Chroma
 
             Graphics = new GraphicsManager(this);
             Audio = new AudioManager();
-            
+
             Window.SetIcon(EmbeddedAssets.DefaultIconTexture);
             Content = new FileSystemContentProvider(this);
-            
+
             AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
         }
 
@@ -68,7 +68,7 @@ namespace Chroma
         {
             if (Window.Exists)
                 throw new InvalidOperationException("The game is already running.");
-            
+
             LoadContent();
             Window.Run(() => _fixedUpdateThread.Start());
         }
@@ -86,19 +86,13 @@ namespace Chroma
         }
 
         protected virtual void Draw(RenderContext context)
-        {
-            if (_defaultScene != null)
-                _defaultScene.Draw(context);
-        }
-
-        protected virtual void LoadContent()
-        {
-        }
+            => _defaultScene?.Draw(context);
 
         protected virtual void Update(float delta)
+            => _defaultScene.Update(delta);
+        
+        protected virtual void LoadContent()
         {
-            if (_defaultScene != null)
-                _defaultScene.Update(delta);
         }
 
         protected virtual void FixedUpdate(float fixedDelta)

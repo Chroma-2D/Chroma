@@ -24,10 +24,14 @@ namespace WindowOperations
         {
             var sb = new StringBuilder();
 
-            var displays = Graphics.FetchDisplayInfo();
+            var displays = Graphics.GetDisplayList();
 
             for (var i = 0; i < displays.Count; i++)
             {
+                sb.AppendLine($"Display {i} DPI: {displays[i].DPI}");
+                sb.AppendLine($"Display {i} Bounds: {displays[i].Bounds}");
+                sb.AppendLine($"Display {i} Desktop Bounds: {displays[i].DesktopBounds}");
+                
                 sb.AppendLine($"Display {i} supports:");
                 var modes = displays[i].QuerySupportedDisplayModes();
 

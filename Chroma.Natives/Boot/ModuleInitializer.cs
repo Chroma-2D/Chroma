@@ -32,7 +32,7 @@ namespace Chroma.Natives.Boot
 
                 if (BootConfig.SkipChecksumVerification)
                     Console.WriteLine("Checksum verification disabled. Living on the edge, huh?");
-
+                
                 LoadNatives();
             }
             catch (NativeExtractorException nee)
@@ -42,7 +42,6 @@ namespace Chroma.Natives.Boot
 
                 Environment.Exit(1);
             }
-
             InitializeSdlSystems();
         }
 
@@ -90,7 +89,7 @@ namespace Chroma.Natives.Boot
         private static void LoadNatives()
         {
             var libraryFileNames = NativeLibraryExtractor.ExtractAll()
-                                                         .Select(Path.GetFileName);
+                .Select(Path.GetFileName);
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -100,7 +99,7 @@ namespace Chroma.Natives.Boot
             {
                 Platform = new LinuxPlatform();
             }
-            else if(RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 Platform = new MacPlatform();
             }
@@ -115,10 +114,16 @@ namespace Chroma.Natives.Boot
         private static void InitializeSdlSystems()
         {
             Console.WriteLine("---");
+            
             Console.WriteLine("Initializing SDL2 core...");
-
             SDL2.SDL_Init(BootConfig.SdlModules.SdlInitFlags);
             SDL_mixer.Mix_Init(BootConfig.MixerModules.SdlMixerFlags);
+            
+            if (BootConfig.EnableSdlGpuDebugging)
+            {
+                Console.WriteLine("Enabling SDL_gpu debugging...");
+                SDL_gpu.GPU_SetDebugLevel(SDL_gpu.GPU_DebugLevelEnum.GPU_DEBUG_LEVEL_MAX);
+            }
         }
     }
 }

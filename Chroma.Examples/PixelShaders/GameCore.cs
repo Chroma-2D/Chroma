@@ -13,7 +13,7 @@ namespace PixelShaders
     public class GameCore : Game
     {
         private RenderTarget _target;
-        private PixelShader _crtShader;
+        private PixelShader gaussShader;
         private PixelShader _tintShader;
         private Texture _burger;
         
@@ -31,7 +31,7 @@ namespace PixelShaders
         protected override void LoadContent()
         {
             _target = new RenderTarget(Window.Size);
-            _crtShader = Content.Load<PixelShader>("Shaders/VerticalGauss.glsl");
+            gaussShader = Content.Load<PixelShader>("Shaders/VerticalGauss.glsl");
             _tintShader = Content.Load<PixelShader>("Shaders/tint.frag");
             _burger = Content.Load<Texture>("Textures/burg.png");
         }
@@ -62,7 +62,7 @@ namespace PixelShaders
                 Shader.Deactivate();
                 
                 context.DrawString(
-                    "Use <F1> to toggle the CRT shader on and off.\n" +
+                    "Use <F1> to toggle the gauss blur shader on and off.\n" +
                     "Move mouse horizontally to tweak the burger's green channel.\n" +
                     "Move mouse vertically to tweak the burger's red channel.", 
                     new Vector2(8)
@@ -70,9 +70,9 @@ namespace PixelShaders
                 
                 if (_crtShaderEnabled)
                 {
-                    _crtShader.Activate();
-                    _crtShader.SetUniform("rt_dims", new Vector2(Window.Size.Width, Window.Size.Height));
-                    _crtShader.SetUniform("vx_offset", 5f);
+                    gaussShader.Activate();
+                    gaussShader.SetUniform("rt_dims", new Vector2(Window.Size.Width, Window.Size.Height));
+                    gaussShader.SetUniform("vx_offset", 5f);
                 }
             });
 

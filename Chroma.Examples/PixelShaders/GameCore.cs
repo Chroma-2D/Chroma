@@ -13,7 +13,7 @@ namespace PixelShaders
     public class GameCore : Game
     {
         private RenderTarget _target;
-        private PixelShader gaussShader;
+        private PixelShader _gaussShader;
         private PixelShader _tintShader;
         private Texture _burger;
         
@@ -31,7 +31,7 @@ namespace PixelShaders
         protected override void LoadContent()
         {
             _target = new RenderTarget(Window.Size);
-            gaussShader = Content.Load<PixelShader>("Shaders/VerticalGauss.glsl");
+            _gaussShader = Content.Load<PixelShader>("Shaders/VerticalGauss_150.glsl");
             _tintShader = Content.Load<PixelShader>("Shaders/tint.frag");
             _burger = Content.Load<Texture>("Textures/burg.png");
         }
@@ -70,9 +70,9 @@ namespace PixelShaders
                 
                 if (_crtShaderEnabled)
                 {
-                    gaussShader.Activate();
-                    gaussShader.SetUniform("rt_dims", new Vector2(Window.Size.Width, Window.Size.Height));
-                    gaussShader.SetUniform("vx_offset", 5f);
+                    _gaussShader.Activate();
+                    _gaussShader.SetUniform("rt_dims", new Vector2(Window.Size.Width, Window.Size.Height));
+                    _gaussShader.SetUniform("vx_offset", 5f);
                 }
             });
 

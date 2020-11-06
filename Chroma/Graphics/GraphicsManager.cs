@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Chroma.Diagnostics.Logging;
 using Chroma.Natives.GL;
 using Chroma.Natives.SDL;
+using Chroma.Windowing;
 
 namespace Chroma.Graphics
 {
@@ -12,9 +14,9 @@ namespace Chroma.Graphics
         private static VerticalSyncMode _verticalSyncMode;
         private static int _multiSamplingPrecision;
 
-        private Game Game { get; }
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
 
-        private static Log Log { get; } = LogManager.GetForCurrentAssembly();
+        private Game Game { get; }
 
         public static bool ViewportAutoResize { get; set; } = true;
         public static bool LimitFramerate { get; set; } = true;
@@ -30,7 +32,7 @@ namespace Chroma.Graphics
             {
                 if (value > MaximumMultiSamplingPrecision)
                 {
-                    Log.Warning(
+                    _log.Warning(
                         $"Maximum supported multisampling precision is {MaximumMultiSamplingPrecision}. " +
                         $"Amount of {value} was requested. Setting maximum instead."
                     );
@@ -63,7 +65,7 @@ namespace Chroma.Graphics
                     _verticalSyncMode = VerticalSyncMode.Retrace;
                     SDL2.SDL_GL_SetSwapInterval(1);
 
-                    Log.Warning(
+                    _log.Warning(
                         $"Failed to set the requested display synchronization mode: {SDL2.SDL_GetError()}. " +
                         "Defaulting to vertical retrace."
                     );
@@ -82,11 +84,13 @@ namespace Chroma.Graphics
         public bool IsDefaultShaderActive
             => SDL_gpu.GPU_IsDefaultShaderProgram(SDL_gpu.GPU_GetCurrentShaderProgram());
 
+        public List<string> GlExtensions { get; } = new List<string>();
+
         static GraphicsManager()
         {
-            Log.Info("Initializing...");
-            Log.Info("Probing OpenGL limits...");
-            
+            _log.Info("Initializing...");
+            _log.Info("Probing OpenGL limits...");
+
             ProbeGlLimits(
                 preProbe: () => { MultiSamplingPrecision = 0; },
                 probe: () =>
@@ -103,14 +107,14 @@ namespace Chroma.Graphics
 
             var renderers = GetRendererNames();
 
-            Log.Info(" Registered renderers:");
+            _log.Info(" Registered renderers:");
             foreach (var s in renderers)
-                Log.Info($"  {s}");
+                _log.Info($"  {s}");
 
-            Log.Info(" Available displays:");
+            _log.Info(" Available displays:");
 
             foreach (var d in GetDisplayList())
-                Log.Info($"  Display {d.Index} ({d.Name}) [{d.Bounds.Width}x{d.Bounds.Height}], mode {d.DesktopMode}");
+                _log.Info($"  Display {d.Index} ({d.Name}) [{d.Bounds.Width}x{d.Bounds.Height}], mode {d.DesktopMode}");
 
             CheckGlExtensionAvailability();
             VerticalSyncMode = VerticalSyncMode.Retrace;
@@ -137,12 +141,10 @@ namespace Chroma.Graphics
 
         public Display FetchDisplay(int index)
         {
-            if (SDL2.SDL_GetCurrentDisplayMode(index, out var mode) == 0)
-            {
+            if (SDL2.SDL_GetCurrentDisplayMode(index, out _) == 0)
                 return new Display(index);
-            }
 
-            Log.Error($"Failed to retrieve display {index} info: {SDL2.SDL_GetError()}");
+            _log.Error($"Failed to retrieve display {index} info: {SDL2.SDL_GetError()}");
             return null;
         }
 
@@ -154,7 +156,7 @@ namespace Chroma.Graphics
 
             if (registeredRenderers.Length == 0)
             {
-                Log.Error("Your computer does not support any rendering APIs that Chroma supports.");
+                _log.Error("Your computer does not support any rendering APIs that Chroma supports.");
                 throw new NotSupportedException("None of Chroma's Rendering APIs are supported on this computer. " +
                                                 "Make sure you have support for at least OpenGL 3.");
             }
@@ -165,9 +167,29 @@ namespace Chroma.Graphics
         internal static SDL_gpu.GPU_RendererID GetBestRenderer()
         {
             var renderer = GetRegisteredRenderers().OrderByDescending(x => x.major_version).First();
-            Log.Info($"Selecting highest available renderer version: {renderer.name}");
-
+            _log.Info($"Selecting highest available renderer version: {renderer.name}");
             return renderer;
+        }
+
+        internal static IntPtr InitializeRenderer(Window window, SDL_gpu.GPU_RendererID id)
+        {
+            var renderTargetHandle = SDL_gpu.GPU_InitRenderer(
+                id.renderer,
+                (ushort)window.Size.Width,
+                (ushort)window.Size.Height,
+                0
+            );
+
+            if (renderTargetHandle == IntPtr.Zero)
+                throw new FrameworkException("Failed to initialize the renderer.", true);
+
+            // unsafe
+            // {
+            //     var rptr = SDL_gpu.GPU_GetRenderer(id);
+            //     SDL_gpu.GPU_Renderer* r = (SDL_gpu.GPU_Renderer*)rptr.ToPointer();
+            // }
+
+            return renderTargetHandle;
         }
 
         private void CheckGlExtensionAvailability()
@@ -176,6 +198,23 @@ namespace Chroma.Graphics
             var wglResult = SDL2.SDL_GL_ExtensionSupported("WGL_EXT_swap_control_tear");
 
             IsAdaptiveVSyncSupported = (glxResult == SDL2.SDL_bool.SDL_TRUE || wglResult == SDL2.SDL_bool.SDL_TRUE);
+
+            Gl.GetIntegerV(Gl.GL_NUM_EXTENSIONS, out var numExtensions);
+
+            if (numExtensions > 0)
+            {
+                for (var i = 0; i < numExtensions; i++)
+                {
+                    var strPtr = Gl.GetStringI(Gl.GL_EXTENSIONS, (uint)i);
+                    var str = Marshal.PtrToStringAuto(strPtr);
+
+                    GlExtensions.Add(str);
+                }
+            }
+            else
+            {
+                _log.Info("Couldn't retrieve OpenGL extension list.");
+            }
         }
 
         private static void ProbeGlLimits(Action preProbe, Action probe, Action postProbe)

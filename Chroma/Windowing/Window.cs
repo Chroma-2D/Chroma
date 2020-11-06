@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 using System.Threading;
 using Chroma.Diagnostics;
@@ -293,17 +294,8 @@ namespace Chroma.Windowing
             SDL_gpu.GPU_SetInitWindow(SDL2.SDL_GetWindowID(Handle));
 
             var bestRenderer = GraphicsManager.GetBestRenderer();
-
-            RenderTargetHandle = SDL_gpu.GPU_InitRenderer(
-                bestRenderer.renderer,
-                (ushort)Size.Width,
-                (ushort)Size.Height,
-                0
-            );
-
-            if (RenderTargetHandle == IntPtr.Zero)
-                throw new FrameworkException("Failed to initialize the renderer.", true);
-
+            RenderTargetHandle = GraphicsManager.InitializeRenderer(this, bestRenderer);
+            
             MaximumSize = Size.Empty;
             MinimumSize = Size.Empty;
 
@@ -396,6 +388,12 @@ namespace Chroma.Windowing
                     EventDispatcher.Dispatch(ev);
 
                 Update?.Invoke(Delta);
+                
+                while (Dispatcher.ActionQueue.Any())
+                {
+                    var action = Dispatcher.ActionQueue.Dequeue();
+                    action?.Invoke();
+                }
 
                 if (GraphicsManager.AutoClear)
                     RenderContext.Clear(GraphicsManager.AutoClearColor);

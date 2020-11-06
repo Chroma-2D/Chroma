@@ -2,11 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-using System.Security.Cryptography.X509Certificates;
 using Chroma.Graphics.Batching;
 using Chroma.Graphics.TextRendering;
 using Chroma.Graphics.TextRendering.Bitmap;
-using Chroma.Natives.GL;
 using Chroma.Natives.SDL;
 using Chroma.Windowing;
 
@@ -96,7 +94,7 @@ namespace Chroma.Graphics
 
             Transform = new RenderTransform(this);
             
-            ShapeBlendingEnabled = true;
+            ShapeBlendingEnabled = false;
             ResetShapeBlending();
         }
 

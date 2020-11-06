@@ -3,6 +3,7 @@ using System.IO;
 using System.Numerics;
 using Chroma;
 using Chroma.ContentManagement.FileSystem;
+using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.Graphics.Accelerated;
 using Chroma.Input;
@@ -12,11 +13,13 @@ namespace PixelShaders
 {
     public class GameCore : Game
     {
+        private readonly Log _log = LogManager.GetForCurrentAssembly();
+
         private RenderTarget _target;
         private PixelShader _gaussShader;
         private PixelShader _tintShader;
         private Texture _burger;
-        
+
         private float _rotation;
         private bool _crtShaderEnabled;
 
@@ -26,21 +29,25 @@ namespace PixelShaders
 
             GraphicsManager.LimitFramerate = false;
             Graphics.VerticalSyncMode = VerticalSyncMode.None;
+
+            _log.Info(
+                $"GLSL {Shader.MinimumSupportedGlslVersion}-{Shader.MaximumSupportedGlslVersion} version range supported.");
+
+            _gaussShader = Content.Load<PixelShader>("Shaders/VerticalGauss_150.glsl");
         }
-        
+
         protected override void LoadContent()
         {
             _target = new RenderTarget(Window.Size);
-            _gaussShader = Content.Load<PixelShader>("Shaders/VerticalGauss_150.glsl");
             _tintShader = Content.Load<PixelShader>("Shaders/tint.frag");
             _burger = Content.Load<Texture>("Textures/burg.png");
         }
-        
+
         protected override void Update(float delta)
         {
             _rotation += 50 * delta;
             _rotation %= 360;
-            
+
             Window.Title = Window.FPS.ToString(CultureInfo.InvariantCulture);
         }
 
@@ -49,25 +56,25 @@ namespace PixelShaders
             context.RenderTo(_target, () =>
             {
                 context.Clear(Color.Transparent);
-                
+
                 _tintShader.Activate();
                 _tintShader.SetUniform("mouseLoc", Mouse.GetPosition() / Window.Size.Width);
-                    context.DrawTexture(
-                        _burger, 
-                        Window.Center - (_burger.Center / 2),
-                        Vector2.One,
-                        _burger.Center,
-                        _rotation
-                    );
+                context.DrawTexture(
+                    _burger,
+                    Window.Center - (_burger.Center / 2),
+                    Vector2.One,
+                    _burger.Center,
+                    _rotation
+                );
                 Shader.Deactivate();
-                
+
                 context.DrawString(
                     "Use <F1> to toggle the gauss blur shader on and off.\n" +
                     "Move mouse horizontally to tweak the burger's green channel.\n" +
-                    "Move mouse vertically to tweak the burger's red channel.", 
+                    "Move mouse vertically to tweak the burger's red channel.",
                     new Vector2(8)
                 );
-                
+
                 if (_crtShaderEnabled)
                 {
                     _gaussShader.Activate();
@@ -75,7 +82,6 @@ namespace PixelShaders
                     _gaussShader.SetUniform("vx_offset", 5f);
                 }
             });
-
 
 
             context.Clear(Color.Transparent);

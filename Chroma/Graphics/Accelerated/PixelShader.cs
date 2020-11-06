@@ -18,7 +18,10 @@ namespace Chroma.Graphics.Accelerated
 
         private void Initialize()
         {
-            PixelShaderObjectHandle = SDL_gpu.GPU_CompileShader(SDL_gpu.GPU_ShaderEnum.GPU_PIXEL_SHADER, SourceCode);
+            PixelShaderObjectHandle = SDL_gpu.GPU_CompileShader(
+                SDL_gpu.GPU_ShaderEnum.GPU_PIXEL_SHADER, 
+                SourceCode
+            );
 
             if (PixelShaderObjectHandle == 0)
             {

@@ -1,4 +1,4 @@
-#version 150
+#version 420
 
 uniform sampler2D texture;
 
@@ -10,10 +10,10 @@ out vec4 pixel;
 uniform vec2 rt_dims;
 uniform float vx_offset;
 
-float weht[3] = {
-    0.2270270270f,
-    0.3162162162f,
-    0.0702702703f
+float weight[3] = { 
+    0.2270270270f, 
+    0.3162162162f, 
+    0.0702702703f 
 };
 
 float offset[3] = {
@@ -28,7 +28,7 @@ void main()
     if (texCoord.x<(vx_offset-0.01))
     {
         vec2 uv = texCoord.xy;
-        tc = texture2D(texture, uvdfg).rgb * weight[0];
+        tc = texture2D(texture, uv).rgb * weight[0];
 
         for (int i=1; i<3; i++)
         {

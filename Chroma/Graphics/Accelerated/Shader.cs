@@ -18,6 +18,36 @@ namespace Chroma.Graphics.Accelerated
 
         private Log Log => LogManager.GetForCurrentAssembly();
 
+        public static int MinimumSupportedGlslVersion
+        {
+            get
+            {
+                SDL_gpu.GPU_Renderer renderer;
+
+                unsafe
+                {
+                    renderer = *((SDL_gpu.GPU_Renderer*)SDL_gpu.GPU_GetCurrentRenderer().ToPointer());
+                }
+
+                return renderer.min_shader_version;
+            }
+        }
+
+        public static int MaximumSupportedGlslVersion
+        {
+            get
+            {
+                SDL_gpu.GPU_Renderer renderer;
+
+                unsafe
+                {
+                    renderer = *((SDL_gpu.GPU_Renderer*)SDL_gpu.GPU_GetCurrentRenderer().ToPointer());
+                }
+
+                return renderer.max_shader_version;
+            }
+        }
+
         public static bool IsDefaultGpuShaderActive
             => SDL_gpu.GPU_IsDefaultShaderProgram(SDL_gpu.GPU_GetCurrentShaderProgram());
 
@@ -275,7 +305,7 @@ namespace Chroma.Graphics.Accelerated
         protected void TryLinkShaders()
         {
             ProgramHandle = SDL_gpu.GPU_CreateShaderProgram();
-            
+
             SDL_gpu.GPU_AttachShader(ProgramHandle, VertexShaderObjectHandle);
             SDL_gpu.GPU_AttachShader(ProgramHandle, PixelShaderObjectHandle);
             SDL_gpu.GPU_LinkShaderProgram(ProgramHandle);
@@ -284,7 +314,7 @@ namespace Chroma.Graphics.Accelerated
             if (obj.error == SDL_gpu.GPU_ErrorEnum.GPU_ERROR_BACKEND_ERROR)
             {
                 throw new ShaderException(
-                    "Failed to link vertex and pixel shader.\nMake sure your 'in' parameters have correct fucking types.", 
+                    "Failed to link vertex and pixel shader.\nMake sure your 'in' parameters have correct fucking types.",
                     string.Empty
                 );
             }
@@ -294,7 +324,7 @@ namespace Chroma.Graphics.Accelerated
         {
             SDL_gpu.GPU_DetachShader(ProgramHandle, VertexShaderObjectHandle);
             SDL_gpu.GPU_DetachShader(ProgramHandle, PixelShaderObjectHandle);
-            
+
             SDL_gpu.GPU_FreeShader(VertexShaderObjectHandle);
             SDL_gpu.GPU_FreeShader(PixelShaderObjectHandle);
 

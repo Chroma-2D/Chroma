@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Natives.GL
@@ -31,6 +32,9 @@ namespace Chroma.Natives.GL
         internal const uint GL_STACK_OVERFLOW = 0x503;
         internal const uint GL_STACK_UNDERFLOW = 0x504;
         internal const uint GL_OUT_OF_MEMORY = 0x505;
+        
+        internal const uint GL_NUM_EXTENSIONS = 0x821D;
+        internal const uint GL_EXTENSIONS = 0x1F03;
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         internal delegate void GlEnableDisableDelegate(uint cap);
@@ -52,6 +56,9 @@ namespace Chroma.Natives.GL
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         internal delegate void GlLineWidthDelegate(float width);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        internal delegate IntPtr GlGetStringiDelegate(uint attr, uint index);
 
         internal static GlEnableDisableDelegate Enable =>
             Marshal.GetDelegateForFunctionPointer<GlEnableDisableDelegate>(
@@ -91,6 +98,11 @@ namespace Chroma.Natives.GL
         internal static GlLineWidthDelegate LineWidth =>
             Marshal.GetDelegateForFunctionPointer<GlLineWidthDelegate>(
                 SDL2.SDL_GL_GetProcAddress("glLineWidth")
+            );
+
+        internal static GlGetStringiDelegate GetStringI =>
+            Marshal.GetDelegateForFunctionPointer<GlGetStringiDelegate>(
+                SDL2.SDL_GL_GetProcAddress("glGetStringi")
             );
     }
 }

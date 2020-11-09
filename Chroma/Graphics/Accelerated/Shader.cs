@@ -135,36 +135,9 @@ namespace Chroma.Graphics.Accelerated
             if (SDL_gpu.GPU_GetCurrentShaderProgram() == ProgramHandle)
             {
                 var timeLoc = SDL_gpu.GPU_GetAttributeLocation(ProgramHandle, "gpu_Time");
-                var widthLoc = SDL_gpu.GPU_GetAttributeLocation(ProgramHandle, "gpu_ScreenWidth");
-                var heightLoc = SDL_gpu.GPU_GetAttributeLocation(ProgramHandle, "gpu_ScreenHeight");
                 
                 if (timeLoc > 0)
                     SDL_gpu.GPU_SetAttributef(timeLoc, FpsCounter.TotalShaderTime);
-                
-                var width = 0;
-                var height = 0;
-
-                if (widthLoc > 0 || heightLoc > 0)
-                {
-                    var windowHandle = SDL2.SDL_GL_GetCurrentWindow();
-                    SDL2.SDL_GetWindowSize(windowHandle, out width, out height);
-                }
-                
-                if (widthLoc > 0)
-                {
-                    SDL_gpu.GPU_SetAttributef(
-                        widthLoc,
-                        width
-                    );
-                }
-
-                if (heightLoc > 0)
-                {
-                    SDL_gpu.GPU_SetAttributef(
-                        heightLoc,
-                        height
-                    );
-                }
             }
         }
 

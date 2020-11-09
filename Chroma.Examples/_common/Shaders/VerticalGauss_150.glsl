@@ -1,9 +1,9 @@
 #version 420
 
-uniform sampler2D texture;
+uniform sampler2D display;
 
-in vec2 texCoord;
-in vec4 color;
+in vec2 _CR_texCoord;
+in vec4 _CR_vertexColor;
 
 out vec4 pixel;
 
@@ -25,27 +25,27 @@ float offset[3] = {
 void main()
 {   
     vec3 tc = vec3(1.0, 0.0, 0.0);
-    if (texCoord.x<(vx_offset-0.01))
+    if (_CR_texCoord.x<(vx_offset-0.01))
     {
-        vec2 uv = texCoord.xy;
-        tc = texture2D(texture, uv).rgb * weight[0];
+        vec2 uv = _CR_texCoord.xy;
+        tc = texture2D(display, uv).rgb * weight[0];
 
         for (int i=1; i<3; i++)
         {
             tc += texture2D(
-                texture,
+                display,
                 uv + vec2(offset[i]) / rt_dims.x, 0.0
             ).rgb * weight[i];
             
             tc += texture2D(
-                texture, 
+                display, 
                 uv - vec2(offset[i]) / rt_dims.x, 0.0
             ).rgb * weight[i];
         }
     }
-    else if (texCoord.x>=(vx_offset+0.01))
+    else if (_CR_texCoord.x>=(vx_offset+0.01))
     {
-        tc = texture2D(texture, texCoord.xy).rgb;
+        tc = texture2D(display, _CR_texCoord.xy).rgb;
     }
 
     pixel = vec4(tc, 1.0);

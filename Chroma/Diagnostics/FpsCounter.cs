@@ -5,9 +5,12 @@ namespace Chroma.Diagnostics
     internal class FpsCounter
     {
         private uint _lastTime;
+        private ulong _totalFrames;
+
+        internal static float TotalShaderTime;
         
-        public ulong TotalFrames { get; private set; }
         public float FPS { get; private set; }
+        public ulong LifetimeFrames { get; private set; }
 
         internal FpsCounter()
         {
@@ -20,13 +23,14 @@ namespace Chroma.Diagnostics
 
             if (currentTime - _lastTime > 1000)
             {
-                FPS = TotalFrames;
+                FPS = _totalFrames;
 
                 _lastTime = currentTime;
-                TotalFrames = 0;
+                _totalFrames = 0;
             }
 
-            TotalFrames++;
+            _totalFrames++;
+            LifetimeFrames++;
         }
     }
 }

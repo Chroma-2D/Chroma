@@ -33,7 +33,6 @@ namespace Chroma.Windowing
         private RenderContext RenderContext { get; }
 
         internal delegate void StateUpdateDelegate(float delta);
-
         internal delegate void DrawDelegate(RenderContext context);
 
         internal StateUpdateDelegate Update;
@@ -291,12 +290,11 @@ namespace Chroma.Windowing
                 throw new FrameworkException("Failed to initialize the window.", true);
 
             SDL_gpu.GPU_SetRequiredFeatures(SDL_gpu.GPU_FeatureEnum.GPU_FEATURE_BASIC_SHADERS);
-
             SDL_gpu.GPU_SetInitWindow(SDL2.SDL_GetWindowID(Handle));
 
             var bestRenderer = GraphicsManager.GetBestRenderer();
             RenderTargetHandle = GraphicsManager.InitializeRenderer(this, bestRenderer);
-            
+
             MaximumSize = Size.Empty;
             MinimumSize = Size.Empty;
 
@@ -384,7 +382,8 @@ namespace Chroma.Windowing
                 _lastFrameTime = _nowFrameTime;
                 _nowFrameTime = SDL2.SDL_GetPerformanceCounter();
                 Delta = (_nowFrameTime - _lastFrameTime) / (float)SDL2.SDL_GetPerformanceFrequency();
-
+                FpsCounter.TotalShaderTime += Delta;
+                
                 while (SDL2.SDL_PollEvent(out var ev) != 0)
                     EventDispatcher.Dispatch(ev);
 
@@ -404,7 +403,7 @@ namespace Chroma.Windowing
                         _log.Exception(e);
                     }
                 }
-                
+
                 if (GraphicsManager.AutoClear)
                     RenderContext.Clear(GraphicsManager.AutoClearColor);
 
@@ -417,10 +416,10 @@ namespace Chroma.Windowing
                 // HOW.
                 // I FAIL TO UNDERSTAND THIS.
                 RenderContext.DrawString(" ", Vector2.Zero, Color.Transparent);
-                
+
                 SDL_gpu.GPU_Flip(RenderTargetHandle);
                 FpsCounter.Update();
-                
+
                 if (GraphicsManager.LimitFramerate)
                     Thread.Sleep(1);
             }

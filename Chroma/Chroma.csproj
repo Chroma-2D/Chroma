@@ -42,6 +42,8 @@
     <EmbeddedResource Include="Resources\default.ttf" />
     <EmbeddedResource Include="Resources\beta.png" />
     <EmbeddedResource Include="Resources\deficon.png" />
+    <None Remove="Resources\shader\default_effect.frag" />
+    <EmbeddedResource Include="Resources\shader\default_effect.frag" />
   </ItemGroup>
 
   <ItemGroup>

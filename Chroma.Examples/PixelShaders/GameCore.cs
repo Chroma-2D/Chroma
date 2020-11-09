@@ -18,10 +18,12 @@ namespace PixelShaders
         private RenderTarget _target;
         private PixelShader _gaussShader;
         private PixelShader _tintShader;
+        private Effect _testEffect;
         private Texture _burger;
 
         private float _rotation;
-        private bool _crtShaderEnabled;
+        private bool _gaussShaderEnabled;
+        private bool _testEffectEnabled = true;
 
         public GameCore()
         {
@@ -34,6 +36,7 @@ namespace PixelShaders
                 $"GLSL {Shader.MinimumSupportedGlslVersion}-{Shader.MaximumSupportedGlslVersion} version range supported.");
 
             _gaussShader = Content.Load<PixelShader>("Shaders/VerticalGauss_150.glsl");
+            _testEffect = Content.Load<Effect>("Shaders/effect.frag");
         }
 
         protected override void LoadContent()
@@ -57,8 +60,24 @@ namespace PixelShaders
             {
                 context.Clear(Color.Transparent);
 
+                if (_testEffectEnabled)
+                {
+                    _testEffect.Activate();
+
+                    context.DrawTexture(
+                        _burger,
+                        Window.Center + new Vector2(120, 0),
+                        Vector2.One,
+                        Vector2.Zero,
+                        0
+                    );
+                    
+                    Shader.Deactivate();
+                }
+
                 _tintShader.Activate();
                 _tintShader.SetUniform("mouseLoc", Mouse.GetPosition() / Window.Size.Width);
+
                 context.DrawTexture(
                     _burger,
                     Window.Center - (_burger.Center / 2),
@@ -75,7 +94,7 @@ namespace PixelShaders
                     new Vector2(8)
                 );
 
-                if (_crtShaderEnabled)
+                if (_gaussShaderEnabled)
                 {
                     _gaussShader.Activate();
                     _gaussShader.SetUniform("rt_dims", new Vector2(Window.Size.Width, Window.Size.Height));
@@ -89,7 +108,7 @@ namespace PixelShaders
             context.DrawTexture(_target, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
             context.DrawTexture(_target, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
 
-            if (_crtShaderEnabled)
+            if (_gaussShaderEnabled)
             {
                 Shader.Deactivate();
             }
@@ -99,7 +118,11 @@ namespace PixelShaders
         {
             if (e.KeyCode == KeyCode.F1)
             {
-                _crtShaderEnabled = !_crtShaderEnabled;
+                _gaussShaderEnabled = !_gaussShaderEnabled;
+            }
+            else if (e.KeyCode == KeyCode.F2)
+            {
+                _testEffectEnabled = !_testEffectEnabled;
             }
         }
     }

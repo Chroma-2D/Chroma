@@ -132,6 +132,8 @@ namespace Chroma.ContentManagement.FileSystem
             RegisterImporter<PixelShader>((path, args) => { return PixelShader.FromFile(path); });
 
             RegisterImporter<VertexShader>((path, args) => { return VertexShader.FromFile(path); });
+            
+            RegisterImporter<Effect>((path, args) => { return Effect.FromFile(path); });
 
             RegisterImporter<TrueTypeFont>((path, args) =>
             {

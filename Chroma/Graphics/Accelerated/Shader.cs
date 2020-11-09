@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Numerics;
 using System.Reflection;
+using Chroma.Diagnostics;
 using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
 using Chroma.Natives.SDL;
@@ -10,13 +12,13 @@ namespace Chroma.Graphics.Accelerated
 {
     public abstract class Shader : DisposableResource
     {
+        private readonly Log _log = LogManager.GetForCurrentAssembly();
+
         internal uint ProgramHandle;
         internal uint VertexShaderObjectHandle;
         internal uint PixelShaderObjectHandle;
 
         internal SDL_gpu.GPU_ShaderBlock Block;
-
-        private Log Log => LogManager.GetForCurrentAssembly();
 
         public static int MinimumSupportedGlslVersion
         {
@@ -78,8 +80,9 @@ namespace Chroma.Graphics.Accelerated
 
                 unsafe
                 {
-                    var mtxptr = SDL_gpu.GPU_GetProjection();
-                    return CreateMatrixFromPointer(mtxptr);
+                    return CreateMatrixFromPointer(
+                        SDL_gpu.GPU_GetProjection()
+                    );
                 }
             }
         }
@@ -92,8 +95,9 @@ namespace Chroma.Graphics.Accelerated
 
                 unsafe
                 {
-                    var mtxptr = SDL_gpu.GPU_GetView();
-                    return CreateMatrixFromPointer(mtxptr);
+                    return CreateMatrixFromPointer(
+                        SDL_gpu.GPU_GetView()
+                    );
                 }
             }
         }
@@ -106,8 +110,9 @@ namespace Chroma.Graphics.Accelerated
 
                 unsafe
                 {
-                    var mtxptr = SDL_gpu.GPU_GetModel();
-                    return CreateMatrixFromPointer(mtxptr);
+                    return CreateMatrixFromPointer(
+                        SDL_gpu.GPU_GetModel()
+                    );
                 }
             }
         }
@@ -121,11 +126,46 @@ namespace Chroma.Graphics.Accelerated
 
             if (ProgramHandle == 0)
             {
-                Log.Warning($"Refusing to activate invalid shader.");
+                _log.Warning($"Refusing to activate invalid shader.");
                 return;
             }
 
             SDL_gpu.GPU_ActivateShaderProgram(ProgramHandle, ref Block);
+
+            if (SDL_gpu.GPU_GetCurrentShaderProgram() == ProgramHandle)
+            {
+                var timeLoc = SDL_gpu.GPU_GetAttributeLocation(ProgramHandle, "gpu_Time");
+                var widthLoc = SDL_gpu.GPU_GetAttributeLocation(ProgramHandle, "gpu_ScreenWidth");
+                var heightLoc = SDL_gpu.GPU_GetAttributeLocation(ProgramHandle, "gpu_ScreenHeight");
+                
+                if (timeLoc > 0)
+                    SDL_gpu.GPU_SetAttributef(timeLoc, FpsCounter.TotalShaderTime);
+                
+                var width = 0;
+                var height = 0;
+
+                if (widthLoc > 0 || heightLoc > 0)
+                {
+                    var windowHandle = SDL2.SDL_GL_GetCurrentWindow();
+                    SDL2.SDL_GetWindowSize(windowHandle, out width, out height);
+                }
+                
+                if (widthLoc > 0)
+                {
+                    SDL_gpu.GPU_SetAttributef(
+                        widthLoc,
+                        width
+                    );
+                }
+
+                if (heightLoc > 0)
+                {
+                    SDL_gpu.GPU_SetAttributef(
+                        heightLoc,
+                        height
+                    );
+                }
+            }
         }
 
         public void SetUniform(string name, Texture value, int textureUnit)
@@ -137,7 +177,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (textureUnit == 0)
             {
-                Log.Error("Cannot set texture unit 0: reserved for use by the rendering system blitting functions.");
+                _log.Error("Cannot set texture unit 0: reserved for use by the rendering system blitting functions.");
                 return;
             }
 
@@ -145,7 +185,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Texture sampler '{name}' does not exist.");
+                _log.Warning($"Texture sampler '{name}' does not exist.");
                 return;
             }
 
@@ -160,7 +200,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Float uniform '{name}' does not exist.");
+                _log.Warning($"Float uniform '{name}' does not exist.");
                 return;
             }
 
@@ -175,7 +215,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Int uniform '{name}' does not exist.");
+                _log.Warning($"Int uniform '{name}' does not exist.");
                 return;
             }
 
@@ -190,7 +230,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Uint uniform '{name}' does not exist.");
+                _log.Warning($"Uint uniform '{name}' does not exist.");
                 return;
             }
 
@@ -205,7 +245,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Vec2 uniform '{name}' does not exist.");
+                _log.Warning($"Vec2 uniform '{name}' does not exist.");
                 return;
             }
 
@@ -220,7 +260,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Vec3 uniform '{name}' does not exist.");
+                _log.Warning($"Vec3 uniform '{name}' does not exist.");
                 return;
             }
 
@@ -235,7 +275,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Vec4 uniform '{name}' does not exist.");
+                _log.Warning($"Vec4 uniform '{name}' does not exist.");
                 return;
             }
 
@@ -250,7 +290,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Mat4 uniform '{name}' does not exist.");
+                _log.Warning($"Mat4 uniform '{name}' does not exist.");
                 return;
             }
 
@@ -271,11 +311,116 @@ namespace Chroma.Graphics.Accelerated
 
             if (loc == -1)
             {
-                Log.Warning($"Vec4 uniform '{name}' does not exist.");
+                _log.Warning($"Vec4 uniform '{name}' does not exist.");
                 return;
             }
 
             SDL_gpu.GPU_SetUniformfv(loc, 4, 1, value.AsOrderedArray());
+        }
+
+        public void SetAttribute(string name, float value)
+        {
+            EnsureNotDisposed();
+
+            var loc = SDL_gpu.GPU_GetAttributeLocation(ProgramHandle, name);
+
+            if (loc == -1)
+            {
+                _log.Warning($"Float attribute '{name}' does not exist.");
+                return;
+            }
+
+            SDL_gpu.GPU_SetAttributef(loc, value);
+        }
+
+        public void SetAttribute(string name, int value)
+        {
+            EnsureNotDisposed();
+
+            var loc = SDL_gpu.GPU_GetAttributeLocation(ProgramHandle, name);
+
+            if (loc == -1)
+            {
+                _log.Warning($"Int attribute '{name}' does not exist.");
+                return;
+            }
+
+            SDL_gpu.GPU_SetAttributei(loc, value);
+        }
+
+        public void SetAttribute(string name, uint value)
+        {
+            EnsureNotDisposed();
+
+            var loc = SDL_gpu.GPU_GetAttributeLocation(ProgramHandle, name);
+
+            if (loc == -1)
+            {
+                _log.Warning($"Uint attribute '{name}' does not exist.");
+                return;
+            }
+
+            SDL_gpu.GPU_SetAttributeui(loc, value);
+        }
+
+        public void SetAttribute(string name, Vector2 value)
+        {
+            EnsureNotDisposed();
+
+            var loc = SDL_gpu.GPU_GetAttributeLocation(ProgramHandle, name);
+
+            if (loc == -1)
+            {
+                _log.Warning($"Vec2 attribute '{name}' does not exist.");
+                return;
+            }
+
+            SDL_gpu.GPU_SetAttributefv(loc, 2, new[] {value.X, value.Y});
+        }
+
+        public void SetAttribute(string name, Vector3 value)
+        {
+            EnsureNotDisposed();
+
+            var loc = SDL_gpu.GPU_GetAttributeLocation(ProgramHandle, name);
+
+            if (loc == -1)
+            {
+                _log.Warning($"Vec3 attribute '{name}' does not exist.");
+                return;
+            }
+
+            SDL_gpu.GPU_SetAttributefv(loc, 3, new[] {value.X, value.Y, value.Z});
+        }
+
+        public void SetAttribute(string name, Vector4 value)
+        {
+            EnsureNotDisposed();
+
+            var loc = SDL_gpu.GPU_GetAttributeLocation(ProgramHandle, name);
+
+            if (loc == -1)
+            {
+                _log.Warning($"Vec4 attribute '{name}' does not exist.");
+                return;
+            }
+
+            SDL_gpu.GPU_SetAttributefv(loc, 4, new[] {value.X, value.Y, value.Z, value.W});
+        }
+
+        public void SetAttribute(string name, Color value)
+        {
+            EnsureNotDisposed();
+
+            var loc = SDL_gpu.GPU_GetAttributeLocation(ProgramHandle, name);
+
+            if (loc == -1)
+            {
+                _log.Warning($"Vec4 attribute '{name}' does not exist.");
+                return;
+            }
+
+            SDL_gpu.GPU_SetAttributefv(loc, 4, value.AsOrderedArray());
         }
 
         protected void CompileAndSetDefaultVertexShader()
@@ -290,7 +435,7 @@ namespace Chroma.Graphics.Accelerated
                 SDL_gpu.GPU_CompileShader(SDL_gpu.GPU_ShaderEnum.GPU_VERTEX_SHADER, sr.ReadToEnd());
         }
 
-        protected void CompileAndSetDefaultPixelShader()
+        protected virtual void CompileAndSetDefaultPixelShader()
         {
             EnsureNotDisposed();
 
@@ -302,7 +447,7 @@ namespace Chroma.Graphics.Accelerated
                 SDL_gpu.GPU_CompileShader(SDL_gpu.GPU_ShaderEnum.GPU_PIXEL_SHADER, sr.ReadToEnd());
         }
 
-        protected void TryLinkShaders()
+        protected virtual void TryLinkShaders()
         {
             ProgramHandle = SDL_gpu.GPU_CreateShaderProgram();
 
@@ -311,6 +456,7 @@ namespace Chroma.Graphics.Accelerated
             SDL_gpu.GPU_LinkShaderProgram(ProgramHandle);
 
             var obj = SDL_gpu.GPU_PopErrorCode();
+
             if (obj.error == SDL_gpu.GPU_ErrorEnum.GPU_ERROR_BACKEND_ERROR)
             {
                 throw new ShaderException(

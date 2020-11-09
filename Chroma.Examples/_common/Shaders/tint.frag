@@ -1,7 +1,4 @@
-#version 100
-
-precision highp float;
-precision mediump int;
+#version 110
 
 uniform sampler2D display;
 
@@ -13,6 +10,7 @@ uniform vec2 mouseLoc;
 void main(void)
 {
     vec4 newColor = texture2D(display, _CR_texCoord);
+    
     newColor.g = mouseLoc.x;
     newColor.r = mouseLoc.y;
     

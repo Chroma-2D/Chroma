@@ -8,6 +8,7 @@ using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.MemoryManagement;
 using Chroma.Natives.SDL;
+using Chroma.Threading;
 using Chroma.Windowing.EventArgs;
 using Chroma.Windowing.EventHandling;
 using Chroma.Windowing.EventHandling.Specialized;
@@ -17,6 +18,8 @@ namespace Chroma.Windowing
 {
     public sealed class Window : DisposableResource
     {
+        private readonly Log _log = LogManager.GetForCurrentAssembly();
+
         private ulong _nowFrameTime = SDL2.SDL_GetPerformanceCounter();
         private ulong _lastFrameTime;
 
@@ -24,8 +27,6 @@ namespace Chroma.Windowing
         private Size _size = new Size(800, 600);
         private Vector2 _position = new Vector2(SDL2.SDL_WINDOWPOS_CENTERED, SDL2.SDL_WINDOWPOS_CENTERED);
         private WindowState _state = WindowState.Normal;
-
-        private Log Log { get; } = LogManager.GetForCurrentAssembly();
 
         private float Delta { get; set; }
         private FpsCounter FpsCounter { get; }
@@ -138,7 +139,7 @@ namespace Chroma.Windowing
 
                             if (!flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_RESIZABLE))
                             {
-                                Log.Warning("Refusing to maximize a non-resizable window.");
+                                _log.Warning("Refusing to maximize a non-resizable window.");
                                 return;
                             }
 
@@ -250,7 +251,7 @@ namespace Chroma.Windowing
 
                 if (index < 0)
                 {
-                    Log.Error($"Failed to retrieve window index: {SDL2.SDL_GetError()}");
+                    _log.Error($"Failed to retrieve window index: {SDL2.SDL_GetError()}");
                     return Display.Invalid;
                 }
 
@@ -367,7 +368,7 @@ namespace Chroma.Windowing
 
                     if (!SDL_gpu.GPU_SaveImage_RW(image, rwops, true, (SDL_gpu.GPU_FileFormatEnum)format))
                     {
-                        Log.Error($"Writing window framebuffer to stream failed: {SDL2.SDL_GetError()}");
+                        _log.Error($"Writing window framebuffer to stream failed: {SDL2.SDL_GetError()}");
                     }
                 }
             }
@@ -388,13 +389,22 @@ namespace Chroma.Windowing
                     EventDispatcher.Dispatch(ev);
 
                 Update?.Invoke(Delta);
-                
+
                 while (Dispatcher.ActionQueue.Any())
                 {
-                    var action = Dispatcher.ActionQueue.Dequeue();
-                    action?.Invoke();
-                }
+                    var scheduledAction = Dispatcher.ActionQueue.Dequeue();
 
+                    try
+                    {
+                        scheduledAction.Action?.Invoke();
+                        scheduledAction.Completed = true;
+                    }
+                    catch (Exception e)
+                    {
+                        _log.Exception(e);
+                    }
+                }
+                
                 if (GraphicsManager.AutoClear)
                     RenderContext.Clear(GraphicsManager.AutoClearColor);
 
@@ -407,10 +417,10 @@ namespace Chroma.Windowing
                 // HOW.
                 // I FAIL TO UNDERSTAND THIS.
                 RenderContext.DrawString(" ", Vector2.Zero, Color.Transparent);
-
+                
                 SDL_gpu.GPU_Flip(RenderTargetHandle);
                 FpsCounter.Update();
-
+                
                 if (GraphicsManager.LimitFramerate)
                     Thread.Sleep(1);
             }

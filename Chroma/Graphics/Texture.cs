@@ -10,7 +10,7 @@ namespace Chroma.Graphics
 {
     public class Texture : DisposableResource
     {
-        private Log Log => LogManager.GetForCurrentAssembly();
+        private readonly Log _log = LogManager.GetForCurrentAssembly();
 
         internal IntPtr ImageHandle { get; private set; }
 
@@ -437,9 +437,9 @@ namespace Chroma.Graphics
                     0x00FF0000,
                     0xFF000000
                 );
-
-                other.Surface = (SDL2.SDL_Surface*)handle.ToPointer();
-                other.ImageHandle = SDL_gpu.GPU_CopyImageFromSurface(handle);
+                
+                Surface = (SDL2.SDL_Surface*)handle.ToPointer();
+                ImageHandle = SDL_gpu.GPU_CopyImageFromSurface(handle);
             }
 
             SnappingMode = TextureSnappingMode.None;
@@ -453,27 +453,29 @@ namespace Chroma.Graphics
             if (height < 0)
                 throw new ArgumentOutOfRangeException(nameof(height), "Height cannot be negative.");
 
+
+            var handle = SDL2.SDL_CreateRGBSurface(
+                0,
+                width,
+                height,
+                32,
+                0x000000FF,
+                0x0000FF00,
+                0x00FF0000,
+                0xFF000000
+            );
+
+            if (handle == IntPtr.Zero)
+            {
+                throw new Exception($"Failed to create RGB surface: {SDL2.SDL_GetError()}");
+            }
+
             unsafe
             {
-                var handle = SDL2.SDL_CreateRGBSurface(
-                    0,
-                    width,
-                    height,
-                    32,
-                    0x000000FF,
-                    0x0000FF00,
-                    0x00FF0000,
-                    0xFF000000
-                );
-
-                if (handle == IntPtr.Zero)
-                {
-                    throw new Exception($"Failed to create RGB surface: {SDL2.SDL_GetError()}");
-                }
-
                 Surface = (SDL2.SDL_Surface*)handle.ToPointer();
-                ImageHandle = SDL_gpu.GPU_CopyImageFromSurface(handle);
             }
+
+            ImageHandle = SDL_gpu.GPU_CopyImageFromSurface(handle);
             SnappingMode = TextureSnappingMode.None;
         }
 
@@ -526,7 +528,7 @@ namespace Chroma.Graphics
 
             if (x < 0 || y < 0 || x >= Width || y >= Height)
             {
-                Log.Warning($"Tried to set a texture pixel on out-of-bounds coordinates ({x},{y})");
+                _log.Warning($"Tried to set a texture pixel on out-of-bounds coordinates ({x},{y})");
                 return;
             }
 
@@ -546,7 +548,7 @@ namespace Chroma.Graphics
 
             if (x < 0 || y < 0 || x >= Width || y >= Height)
             {
-                Log.Warning($"Tried to retrieve a texture pixel on out-of-bounds coordinates ({x},{y})");
+                _log.Warning($"Tried to retrieve a texture pixel on out-of-bounds coordinates ({x},{y})");
                 return Color.Black;
             }
 
@@ -579,7 +581,7 @@ namespace Chroma.Graphics
 
             if (!SDL_gpu.GPU_SaveImage(ImageHandle, filePath, (SDL_gpu.GPU_FileFormatEnum)format))
             {
-                Log.Error($"Saving texture to file failed: {SDL2.SDL_GetError()}");
+                _log.Error($"Saving texture to file failed: {SDL2.SDL_GetError()}");
             }
         }
 
@@ -594,7 +596,7 @@ namespace Chroma.Graphics
                     var rwops = SDL2.SDL_RWFromMem(new IntPtr(ptr), buffer.Length);
                     if (!SDL_gpu.GPU_SaveImage_RW(ImageHandle, rwops, true, (SDL_gpu.GPU_FileFormatEnum)format))
                     {
-                        Log.Error($"Writing texture to memory failed: {SDL2.SDL_GetError()}");
+                        _log.Error($"Writing texture to memory failed: {SDL2.SDL_GetError()}");
                     }
                 }
             }

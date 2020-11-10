@@ -1,21 +1,23 @@
-#version 110
+#version 330 core
 
-attribute vec3 gpu_Vertex;
-attribute vec2 gpu_TexCoord;
-attribute vec4 gpu_Color;
-attribute float gpu_Time;
+layout (location = 0) in vec3 gpu_Vertex;
+layout (location = 1) in vec2 gpu_TexCoord;
+layout (location = 2) in vec4 gpu_Color;
+layout (location = 3) in float gpu_Time;
 
 uniform mat4 gpu_ModelViewProjectionMatrix;
 
-varying vec4 _CR_vertexColor;
-varying vec2 _CR_texCoord;
-varying float _CR_time;
+out vec3 cr_VertexPosition;
+out vec4 cr_VertexColor;
+out vec2 cr_TexCoord;
+out float cr_Time;
 
 void main(void)
 {
-    _CR_vertexColor = vec4(gpu_Color);
-    _CR_texCoord = vec2(gpu_TexCoord);
-    _CR_time = float(gpu_Time);
-    
+    cr_Time = float(gpu_Time);
+    cr_VertexPosition = vec3(gpu_Vertex);
+    cr_VertexColor = vec4(gpu_Color);
+    cr_TexCoord = vec2(gpu_TexCoord);
+
     gl_Position = gpu_ModelViewProjectionMatrix * vec4(gpu_Vertex, 1.0);
 }

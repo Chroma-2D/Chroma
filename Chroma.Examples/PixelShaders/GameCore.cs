@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Numerics;
 using Chroma;
@@ -27,6 +28,8 @@ namespace PixelShaders
 
         public GameCore()
         {
+            throw new NotImplementedException("Broken to shit. Will get back to it when I deal with burnout.");
+            
             Content = new FileSystemContentProvider(this, Path.Combine(LocationOnDisk, "../../../../_common"));
 
             GraphicsManager.LimitFramerate = false;

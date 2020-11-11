@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Drawing;
 using System.IO;
 using System.Numerics;
 using System.Reflection;
-using Chroma.Diagnostics;
 using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
 using Chroma.Natives.SDL;
@@ -53,7 +51,7 @@ namespace Chroma.Graphics.Accelerated
         public static bool IsDefaultGpuShaderActive
             => SDL_gpu.GPU_IsDefaultShaderProgram(SDL_gpu.GPU_GetCurrentShaderProgram());
 
-        public static Matrix4x4 ModelViewProjectionMatrix
+        public static Matrix4x4 ModelViewProjection
         {
             get
             {
@@ -120,7 +118,7 @@ namespace Chroma.Graphics.Accelerated
         public static void Deactivate()
             => SDL_gpu.GPU_ActivateShaderProgram(0, IntPtr.Zero);
 
-        public void Activate()
+        public virtual void Activate()
         {
             EnsureNotDisposed();
 
@@ -129,16 +127,8 @@ namespace Chroma.Graphics.Accelerated
                 _log.Warning($"Refusing to activate invalid shader.");
                 return;
             }
-
+            
             SDL_gpu.GPU_ActivateShaderProgram(ProgramHandle, ref Block);
-
-            if (SDL_gpu.GPU_GetCurrentShaderProgram() == ProgramHandle)
-            {
-                var timeLoc = SDL_gpu.GPU_GetAttributeLocation(ProgramHandle, "gpu_Time");
-                
-                if (timeLoc > 0)
-                    SDL_gpu.GPU_SetAttributef(timeLoc, FpsCounter.TotalShaderTime);
-            }
         }
 
         public void SetUniform(string name, Texture value, int textureUnit)
@@ -457,10 +447,10 @@ namespace Chroma.Graphics.Accelerated
 
             Block = SDL_gpu.GPU_LoadShaderBlock(
                 ProgramHandle,
-                "gpu_Vertex",
+                "gpu_VertexPosition",
                 "gpu_TexCoord",
-                "gpu_Color",
-                "gpu_ModelViewProjectionMatrix"
+                "gpu_VertexColor",
+                "gpu_ModelViewProjection"
             );
         }
 

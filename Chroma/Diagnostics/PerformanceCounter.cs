@@ -2,17 +2,17 @@
 
 namespace Chroma.Diagnostics
 {
-    internal class FpsCounter
+    public class PerformanceCounter
     {
         private uint _lastTime;
-        private ulong _totalFrames;
+        private ulong _framesThisCycle;
 
-        internal static float TotalShaderTime;
-        
-        public float FPS { get; private set; }
-        public ulong LifetimeFrames { get; private set; }
+        internal static float SumOfDeltaTimes { get; set; }
 
-        internal FpsCounter()
+        public static float FPS { get; private set; }
+        public static ulong LifetimeFrames { get; private set; }
+
+        internal PerformanceCounter()
         {
             _lastTime = SDL2.SDL_GetTicks();
         }
@@ -23,13 +23,13 @@ namespace Chroma.Diagnostics
 
             if (currentTime - _lastTime > 1000)
             {
-                FPS = _totalFrames;
+                FPS = _framesThisCycle;
 
                 _lastTime = currentTime;
-                _totalFrames = 0;
+                _framesThisCycle = 0;
             }
 
-            _totalFrames++;
+            _framesThisCycle++;
             LifetimeFrames++;
         }
     }

@@ -2,6 +2,7 @@
 using System.Numerics;
 using Chroma;
 using Chroma.ContentManagement.FileSystem;
+using Chroma.Diagnostics;
 using Chroma.Graphics;
 using Chroma.Graphics.Accelerated;
 using Chroma.Graphics.Particles;
@@ -60,7 +61,7 @@ namespace ParticleSystems
 
         protected override void Update(float delta)
         {
-            Window.Title = $"{Window.FPS} | {_emitter.Particles.Count} particles shown";
+            Window.Title = $"{PerformanceCounter.FPS} | {_emitter.Particles.Count} particles shown";
             
             _emitter.IsActive = Mouse.IsButtonDown(MouseButton.Left);
             _emitter.SpawnPosition = Mouse.GetPosition();

@@ -19,18 +19,18 @@ namespace Chroma.Windowing
     public sealed class Window : DisposableResource
     {
         private readonly Log _log = LogManager.GetForCurrentAssembly();
-
+        
         private ulong _nowFrameTime = SDL2.SDL_GetPerformanceCounter();
         private ulong _lastFrameTime;
+        private float _delta;
+        
+        private PerformanceCounter _performanceCounter;
+        private readonly RenderContext _renderContext;
 
         private string _title = "Chroma Framework";
         private Size _size = new Size(800, 600);
         private Vector2 _position = new Vector2(SDL2.SDL_WINDOWPOS_CENTERED, SDL2.SDL_WINDOWPOS_CENTERED);
         private WindowState _state = WindowState.Normal;
-
-        private float Delta { get; set; }
-        private FpsCounter FpsCounter { get; }
-        private RenderContext RenderContext { get; }
 
         internal delegate void StateUpdateDelegate(float delta);
         internal delegate void DrawDelegate(RenderContext context);
@@ -43,7 +43,6 @@ namespace Chroma.Windowing
 
         internal IntPtr RenderTargetHandle { get; }
 
-        public float FPS => FpsCounter.FPS;
         public bool Exists { get; private set; }
 
         public IntPtr Handle { get; }
@@ -298,8 +297,8 @@ namespace Chroma.Windowing
             MaximumSize = Size.Empty;
             MinimumSize = Size.Empty;
 
-            FpsCounter = new FpsCounter();
-            RenderContext = new RenderContext(this);
+            _performanceCounter = new PerformanceCounter();
+            _renderContext = new RenderContext(this);
 
             EventDispatcher = new EventDispatcher(this);
             _ = new WindowEventHandlers(EventDispatcher);
@@ -381,13 +380,13 @@ namespace Chroma.Windowing
             {
                 _lastFrameTime = _nowFrameTime;
                 _nowFrameTime = SDL2.SDL_GetPerformanceCounter();
-                Delta = (_nowFrameTime - _lastFrameTime) / (float)SDL2.SDL_GetPerformanceFrequency();
-                FpsCounter.TotalShaderTime += Delta;
+                _delta = (_nowFrameTime - _lastFrameTime) / (float)SDL2.SDL_GetPerformanceFrequency();
+                PerformanceCounter.SumOfDeltaTimes += _delta;
                 
                 while (SDL2.SDL_PollEvent(out var ev) != 0)
                     EventDispatcher.Dispatch(ev);
 
-                Update?.Invoke(Delta);
+                Update?.Invoke(_delta);
 
                 while (Dispatcher.ActionQueue.Any())
                 {
@@ -405,9 +404,9 @@ namespace Chroma.Windowing
                 }
 
                 if (GraphicsManager.AutoClear)
-                    RenderContext.Clear(GraphicsManager.AutoClearColor);
+                    _renderContext.Clear(GraphicsManager.AutoClearColor);
 
-                Draw?.Invoke(RenderContext);
+                Draw?.Invoke(_renderContext);
 
                 // This fixes Discord screensharing bug.
                 // What the fuck.
@@ -415,10 +414,10 @@ namespace Chroma.Windowing
                 // Why.
                 // HOW.
                 // I FAIL TO UNDERSTAND THIS.
-                RenderContext.DrawString(" ", Vector2.Zero, Color.Transparent);
+                _renderContext.DrawString(" ", Vector2.Zero, Color.Transparent);
 
                 SDL_gpu.GPU_Flip(RenderTargetHandle);
-                FpsCounter.Update();
+                _performanceCounter.Update();
 
                 if (GraphicsManager.LimitFramerate)
                     Thread.Sleep(1);

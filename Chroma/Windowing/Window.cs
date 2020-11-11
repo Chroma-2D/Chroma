@@ -12,18 +12,13 @@ using Chroma.Threading;
 using Chroma.Windowing.EventArgs;
 using Chroma.Windowing.EventHandling;
 using Chroma.Windowing.EventHandling.Specialized;
-using Color = Chroma.Graphics.Color;
 
 namespace Chroma.Windowing
 {
     public sealed class Window : DisposableResource
     {
         private readonly Log _log = LogManager.GetForCurrentAssembly();
-        
-        private ulong _nowFrameTime = SDL2.SDL_GetPerformanceCounter();
-        private ulong _lastFrameTime;
-        private float _delta;
-        
+
         private PerformanceCounter _performanceCounter;
         private readonly RenderContext _renderContext;
 
@@ -33,6 +28,7 @@ namespace Chroma.Windowing
         private WindowState _state = WindowState.Normal;
 
         internal delegate void StateUpdateDelegate(float delta);
+
         internal delegate void DrawDelegate(RenderContext context);
 
         internal StateUpdateDelegate Update;
@@ -359,23 +355,15 @@ namespace Chroma.Windowing
             }
         }
 
-        public void WriteFramebufferTo(byte[] buffer, ImageFileFormat format)
+        public void SaveScreenshot(string path)
         {
             EnsureNotDisposed();
 
-            unsafe
-            {
-                fixed (byte* ptr = &buffer[0])
-                {
-                    var rwops = SDL2.SDL_RWFromMem(new IntPtr(ptr), buffer.Length);
-                    var image = ((SDL_gpu.GPU_Target*)RenderTargetHandle.ToPointer())->image;
-
-                    if (!SDL_gpu.GPU_SaveImage_RW(image, rwops, true, (SDL_gpu.GPU_FileFormatEnum)format))
-                    {
-                        _log.Error($"Writing window framebuffer to stream failed: {SDL2.SDL_GetError()}");
-                    }
-                }
-            }
+            var surface = SDL_gpu.GPU_CopySurfaceFromTarget(RenderTargetHandle);
+            SDL2.SDL_LockSurface(surface);
+            SDL2.SDL_SaveBMP(surface, path);
+            SDL2.SDL_UnlockSurface(surface);
+            SDL2.SDL_FreeSurface(surface);
         }
 
         internal void Run(Action postStatusSetAction = null)
@@ -385,15 +373,12 @@ namespace Chroma.Windowing
 
             while (Exists)
             {
-                _lastFrameTime = _nowFrameTime;
-                _nowFrameTime = SDL2.SDL_GetPerformanceCounter();
-                _delta = (_nowFrameTime - _lastFrameTime) / (float)SDL2.SDL_GetPerformanceFrequency();
-                PerformanceCounter.SumOfDeltaTimes += _delta;
-                
+                _performanceCounter.Update();
+
                 while (SDL2.SDL_PollEvent(out var ev) != 0)
                     EventDispatcher.Dispatch(ev);
 
-                Update?.Invoke(_delta);
+                Update?.Invoke(_performanceCounter.Delta);
 
                 while (Dispatcher.ActionQueue.Any())
                 {
@@ -413,18 +398,22 @@ namespace Chroma.Windowing
                 if (GraphicsManager.AutoClear)
                     _renderContext.Clear(GraphicsManager.AutoClearColor);
 
-                Draw?.Invoke(_renderContext);
-
-                // This fixes Discord screensharing bug.
-                // What the fuck.
+                // This is a fix for Discord's screen sharing hooks fucking something up inside SDL_gpu.
                 //
-                // Why.
-                // HOW.
-                // I FAIL TO UNDERSTAND THIS.
-                _renderContext.DrawString(" ", Vector2.Zero, Color.Transparent);
+                // Apparently the first texture ever used in the application's
+                // lifetime becomes a render target that's scaled down and flipped upside-down.
+                //
+                // This is a workaround for it until there's a better understanding of this bug.
+                //
+                SDL_gpu.GPU_BlitTransformX(
+                    EmbeddedAssets.DummyFixTexture.ImageHandle, 
+                    IntPtr.Zero,
+                    RenderTargetHandle,
+                    -1, -1, 0, 0, 0, 1, 1
+                );
 
+                Draw?.Invoke(_renderContext);
                 SDL_gpu.GPU_Flip(RenderTargetHandle);
-                _performanceCounter.Update();
 
                 if (GraphicsManager.LimitFramerate)
                     Thread.Sleep(1);

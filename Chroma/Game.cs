@@ -32,7 +32,7 @@ namespace Chroma
 
         public int FixedUpdateFrequency { get; protected set; } = 75;
 
-        public Game(GlProfile glProfile = GlProfile.Core, bool constructDefaultScene = true)
+        public Game(bool constructDefaultScene = true)
         {
             if (_wasConstructedAlready)
             {
@@ -49,8 +49,6 @@ namespace Chroma
 
             _fixedUpdateThread = new Thread(FixedUpdateThread);
 
-            SetGlProfileAttribute(glProfile);
-            
             Window = new Window(this)
             {
                 Draw = Draw,
@@ -207,14 +205,6 @@ namespace Chroma
         {
             _log.Error(
                 $"Unhandled exception. There are two people who could've fucked this up. You or me.\n\n{e.ExceptionObject}");
-        }
-
-        private void SetGlProfileAttribute(GlProfile profile)
-        {
-            SDL2.SDL_GL_SetAttribute(
-                SDL2.SDL_GLattr.SDL_GL_CONTEXT_PROFILE_MASK,
-                (SDL2.SDL_GLprofile)profile
-            );
         }
     }
 }

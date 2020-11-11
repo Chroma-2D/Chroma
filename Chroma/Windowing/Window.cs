@@ -313,7 +313,14 @@ namespace Chroma.Windowing
             => SDL2.SDL_HideWindow(Handle);
 
         public void CenterScreen()
-            => Position = new Vector2(SDL2.SDL_WINDOWPOS_CENTERED, SDL2.SDL_WINDOWPOS_CENTERED);
+        {
+            var bounds = CurrentDisplay.Bounds;
+
+            var targetX = bounds.Width / 2 - _size.Width / 2;
+            var targetY = bounds.Height / 2 - _size.Height / 2;
+
+            Position = new Vector2(bounds.X + targetX, bounds.Y + targetY);
+        }
 
         public void GoFullscreen(bool exclusive = false)
         {

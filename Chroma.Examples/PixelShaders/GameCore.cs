@@ -1,12 +1,15 @@
-﻿using System.Globalization;
+﻿using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Numerics;
 using Chroma;
 using Chroma.ContentManagement.FileSystem;
+using Chroma.Diagnostics;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.Graphics.Accelerated;
 using Chroma.Input;
+using Color = Chroma.Graphics.Color;
 
 namespace PixelShaders
 {
@@ -29,6 +32,9 @@ namespace PixelShaders
 
             _log.Info(
                 $"GLSL {Shader.MinimumSupportedGlslVersion}-{Shader.MaximumSupportedGlslVersion} supported.");
+            
+            Window.GoWindowed(new Size(1024, 600));
+            Window.CenterScreen();
         }
 
         protected override void LoadContent()
@@ -43,14 +49,14 @@ namespace PixelShaders
             _rotation += 50 * delta;
             _rotation %= 360;
 
-            Window.Title = Window.FPS.ToString(CultureInfo.InvariantCulture);
+            Window.Title = PerformanceCounter.FPS.ToString(CultureInfo.InvariantCulture);
         }
 
         protected override void Draw(RenderContext context)
         {
             context.RenderTo(_target, () =>
             {
-                context.Clear(Color.Transparent);
+                context.Clear(Color.Black);
 
                 _tintEffect.Activate();
                 _tintEffect.SetUniform("mouseLoc", Mouse.GetPosition() / Window.Size.Width);
@@ -58,7 +64,7 @@ namespace PixelShaders
                 context.DrawTexture(
                     _burger,
                     Window.Center - (_burger.Center / 2),
-                    Vector2.One,
+                    Vector2.One * 2,
                     _burger.Center,
                     _rotation
                 );
@@ -71,9 +77,6 @@ namespace PixelShaders
                 );
             });
 
-            context.Clear(Color.Transparent);
-            context.DrawTexture(_target, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
-            context.DrawTexture(_target, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
             context.DrawTexture(_target, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
         }
     }

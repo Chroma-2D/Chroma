@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Reflection;
+using Chroma.Diagnostics;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics.Accelerated
@@ -18,7 +19,30 @@ namespace Chroma.Graphics.Accelerated
 
         public static Effect FromFile(string filePath)
             => new Effect(File.ReadAllText(filePath));
-        
+
+        public override void Activate()
+        {
+            base.Activate();
+            
+            if (SDL_gpu.GPU_GetCurrentShaderProgram() == ProgramHandle)
+            {
+                var loc = -1;
+            
+                loc = SDL_gpu.GPU_GetAttributeLocation(ProgramHandle, "gpu_Time");
+                if (loc >= 0)
+                    SDL_gpu.GPU_SetAttributef(loc, PerformanceCounter.SumOfDeltaTimes);
+
+                loc = SDL_gpu.GPU_GetAttributeLocation(ProgramHandle, "gpu_ScreenSize");
+                if (loc >= 0)
+                {
+                    var windowHandle = SDL2.SDL_GL_GetCurrentWindow();
+                    SDL2.SDL_GetWindowSize(windowHandle, out var w, out var h);
+                
+                    SDL_gpu.GPU_SetAttributefv(loc, 2, new float[] {w, h});
+                }
+            }
+        }
+
         protected override void TryLinkShaders()
         {
             ProgramHandle = SDL_gpu.GPU_CreateShaderProgram();
@@ -50,7 +74,7 @@ namespace Chroma.Graphics.Accelerated
                         if (msg.Contains("#401"))
                         {
                             throw new ShaderException(
-                                "Your effect file is missing `vec4 effect(vec4 pixel, vec2 tex_coords, float time) {...}'",
+                                "Your effect file is missing `vec4 effect(vec4 pixel, vec2 tex_coords) {...}'",
                                 string.Empty
                             );
                         }

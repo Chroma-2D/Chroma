@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Numerics;
 using System.Text;
 using Chroma;
+using Chroma.Diagnostics;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.Input;
@@ -30,7 +31,7 @@ namespace WindowOperations
                 sb.AppendLine($"Display {i} DPI: {displays[i].DPI}");
                 sb.AppendLine($"Display {i} Bounds: {displays[i].Bounds}");
                 sb.AppendLine($"Display {i} Desktop Bounds: {displays[i].DesktopBounds}");
-                
+
                 sb.AppendLine($"Display {i} supports:");
                 var modes = displays[i].QuerySupportedDisplayModes();
 
@@ -77,6 +78,8 @@ namespace WindowOperations
 
         protected override void Update(float delta)
         {
+            Window.Title =
+                $"FPS: {PerformanceCounter.FPS}, frame {PerformanceCounter.LifetimeFrames}. On display: {Window.CurrentDisplay.Index}";
         }
 
         protected override void KeyPressed(KeyEventArgs e)

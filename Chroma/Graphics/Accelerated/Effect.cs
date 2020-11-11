@@ -26,9 +26,7 @@ namespace Chroma.Graphics.Accelerated
             
             if (SDL_gpu.GPU_GetCurrentShaderProgram() == ProgramHandle)
             {
-                var loc = -1;
-            
-                loc = SDL_gpu.GPU_GetAttributeLocation(ProgramHandle, "gpu_Time");
+                var loc = SDL_gpu.GPU_GetAttributeLocation(ProgramHandle, "gpu_Time");
                 if (loc >= 0)
                     SDL_gpu.GPU_SetAttributef(loc, PerformanceCounter.SumOfDeltaTimes);
 

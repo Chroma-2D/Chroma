@@ -61,11 +61,10 @@ namespace WindowOperations
                 "Use <F2> to switch into exclusive fullscreen mode with native resolution\n" +
                 "Use <F3> to switch into borderless fullscreen mode with native resolution\n" +
                 "Use <F4> to switch into 1024x600 windowed mode - hold <Lshift> to center the window afterwards.\n" +
-                "Use <F5> to change the title - hold <Lshift> to reset it.\n" +
                 $"Use <F6> to toggle window border ({Window.EnableBorder}).\n" +
                 $"Use <F7> to set maximum window size to 800x600.\n" +
                 $"Use <F8> to set minimum window size to 320x240.\n" +
-                $"Use <F9> to reset minimum and maximum window sizes to 0x0.\n" +
+                $"Use <F9> to reset minimum and maximum window sizes.\n" +
                 $"Use <F10> to cycle between display synchronization modes ({Graphics.VerticalSyncMode}).\n" +
                 $"Use <F11> to show a cross-platform message box (last result: {_lastResult}).\n" +
                 $"Use <space> to toggle the center vector on/off.\n\n" +
@@ -99,21 +98,10 @@ namespace WindowOperations
             }
             else if (e.KeyCode == KeyCode.F4)
             {
-                var center = false;
-
-                if (e.Modifiers.HasFlag(KeyModifiers.LeftShift))
-                    center = true;
-
-                Window.GoWindowed(new Size(1024, 600), center);
-            }
-            else if (e.KeyCode == KeyCode.F5)
-            {
-                var msg = "F5 key was pressed!";
-
-                if (e.Modifiers.HasFlag(KeyModifiers.LeftShift))
-                    msg = "Chroma Framework";
-
-                Window.Title = msg;
+                Window.GoWindowed(
+                    new Size(1024, 600), 
+                    e.Modifiers.HasFlag(KeyModifiers.LeftShift)
+                );
             }
             else if (e.KeyCode == KeyCode.F6)
             {

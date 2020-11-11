@@ -312,7 +312,7 @@ namespace Chroma.Windowing
         public void Hide()
             => SDL2.SDL_HideWindow(Handle);
 
-        public void CenterScreen()
+        public void CenterOnScreen()
         {
             var bounds = CurrentDisplay.Bounds;
 
@@ -345,7 +345,7 @@ namespace Chroma.Windowing
             Size = size;
 
             if (centerOnScreen)
-                CenterScreen();
+                CenterOnScreen();
         }
 
         public void SetIcon(Texture texture)

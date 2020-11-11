@@ -1,9 +1,9 @@
 #version 330 core
 
-layout (location = 0) in vec3 gpu_Vertex;
-layout (location = 1) in vec2 gpu_TexCoord;
-layout (location = 2) in vec4 gpu_Color;
-layout (location = 3) in float gpu_Time;
+in vec3 gpu_Vertex;
+in vec2 gpu_TexCoord;
+in vec4 gpu_Color;
+in float gpu_Time;
 
 uniform mat4 gpu_ModelViewProjectionMatrix;
 

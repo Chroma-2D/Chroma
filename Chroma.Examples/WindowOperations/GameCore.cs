@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Numerics;
 using System.Text;
 using Chroma;
+using Chroma.ContentManagement.FileSystem;
 using Chroma.Diagnostics;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;

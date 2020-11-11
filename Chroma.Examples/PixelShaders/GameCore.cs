@@ -34,7 +34,7 @@ namespace PixelShaders
                 $"GLSL {Shader.MinimumSupportedGlslVersion}-{Shader.MaximumSupportedGlslVersion} supported.");
             
             Window.GoWindowed(new Size(1024, 600));
-            Window.CenterScreen();
+            Window.CenterOnScreen();
         }
 
         protected override void LoadContent()

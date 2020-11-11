@@ -12,9 +12,7 @@ namespace Chroma.Natives.Boot.PlatformSpecific
             Directory.SetCurrentDirectory(NativeLibraryExtractor.LibraryRoot);
             var paths = new List<string>
             {
-                NativeLibraryExtractor.LibraryRoot,
-                //"/usr/lib",
-                //"/usr/local/lib"
+                NativeLibraryExtractor.LibraryRoot
             };
             
             Registry = new NativeLibraryRegistry(paths);

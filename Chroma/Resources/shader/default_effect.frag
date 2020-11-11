@@ -1,6 +1,6 @@
 ﻿#version 330 core
 
-uniform sampler2D screen;
+uniform sampler2D cr_Screen;
 
 varying float cr_Time;
 varying vec3 cr_VertexPosition;
@@ -12,7 +12,7 @@ vec4 effect(in vec4 pixel, in vec2 tex_coords, in float time);
 void main(void)
 {
     gl_FragColor = effect(
-        texture2D(screen, cr_TexCoord),
+        texture2D(cr_Screen, cr_TexCoord),
         cr_TexCoord, 
         cr_Time
     );

@@ -50,7 +50,7 @@ namespace Chroma.Graphics.Accelerated
                         if (msg.Contains("#401"))
                         {
                             throw new ShaderException(
-                                "Your effect file is missing `vec4 effect(vec4 pixel, vec2 tex_coords, vec2 screen_size, float time) {...}'",
+                                "Your effect file is missing `vec4 effect(vec4 pixel, vec2 tex_coords, float time) {...}'",
                                 string.Empty
                             );
                         }

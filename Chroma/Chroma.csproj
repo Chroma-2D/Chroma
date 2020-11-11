@@ -22,7 +22,7 @@
     <Title>Chroma Framework</Title>
     <Description>2D Game Framework which *doesn't* try so hard to resemble XNA</Description>
     <PackageId>Chroma</PackageId>
-    <Version>0.23.5</Version>
+    <Version>0.24.0</Version>
     <Author>Ciastex</Author>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Ciastex/Chroma</RepositoryUrl>
@@ -42,9 +42,7 @@
     <EmbeddedResource Include="Resources\default.ttf" />
     <EmbeddedResource Include="Resources\beta.png" />
     <EmbeddedResource Include="Resources\deficon.png" />
-    <None Remove="Resources\shader\default_effect.frag" />
     <EmbeddedResource Include="Resources\shader\default_effect.frag" />
-    <None Remove="Resources\dummy.png" />
     <EmbeddedResource Include="Resources\dummy.png" />
   </ItemGroup>
 

@@ -2,7 +2,6 @@
 using System.Drawing;
 using Chroma.Diagnostics.Logging;
 using Chroma.Natives.SDL;
-using Chroma.Windowing;
 
 namespace Chroma.Graphics
 {
@@ -27,7 +26,7 @@ namespace Chroma.Graphics
             
             TargetHandle = SDL_gpu.GPU_LoadTarget(ImageHandle);
 
-            if (TargetHandle == null)
+            if (TargetHandle == IntPtr.Zero)
             {
                 var msg = $"Failed to create render target handle: {SDL2.SDL_GetError()}";
                 

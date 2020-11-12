@@ -49,13 +49,16 @@ namespace Chroma
 
             _fixedUpdateThread = new Thread(FixedUpdateThread);
 
+            Graphics = new GraphicsManager(this);
+            
             Window = new Window(this)
             {
                 Draw = Draw,
                 Update = Update
             };
 
-            Graphics = new GraphicsManager(this);
+            Graphics.VerticalSyncMode = VerticalSyncMode.Retrace;
+            
             Audio = new AudioManager();
 
             Window.SetIcon(EmbeddedAssets.DefaultIconTexture);

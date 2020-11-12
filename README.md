@@ -1,10 +1,10 @@
 <p align="center"><img src="https://img.vddcore.eu/AnSrjXY.png"><br>Chroma Framework</p>
 
 **What? Another one?**  
-*Yeah!* ***Another one!*** Chroma is a 2D-focused game development framework. Works just as well for other kinds of 2D applications too. Might as well call it a glorified SDL wrapper for .NET Core 3.1+ if you like.
+*Yeah!* ***Another one!*** Chroma is a 2D-focused game development framework. Works just as well for other kinds of 2D applications too. Might as well call it a glorified SDL wrapper for .NET 5 if you like.
 
 **Why?**  
-Because MonoGame is so slow to add hassle-free shader compilation on Linux that it seemed faster to me to write an entire goddamn game development framework. Thought to myself "might as well learn something along the way...". Besides, I've always wanted to have something like this for fast prototyping.
+Because MonoGame ~~is~~was so slow to add hassle-free shader compilation on Linux that it seemed faster to me to write an entire goddamn game development framework. Thought to myself "might as well learn something along the way...". Besides, I've always wanted to have something like this for fast prototyping.
 
 **Alright. What are its features?**  
 Oh I'm glad you asked! Features include, but are not limited to:  

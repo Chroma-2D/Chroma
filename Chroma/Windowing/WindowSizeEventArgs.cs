@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace Chroma.Windowing.EventArgs
+namespace Chroma.Windowing
 {
     public class WindowSizeEventArgs : System.EventArgs
     {

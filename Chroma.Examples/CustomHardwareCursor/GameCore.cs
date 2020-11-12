@@ -4,7 +4,6 @@ using Chroma;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Graphics;
 using Chroma.Input;
-using Chroma.Input.EventArgs;
 
 namespace CustomHardwareCursor
 {

@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Chroma.Windowing.EventArgs
+namespace Chroma.Windowing
 {
     public class WindowMoveEventArgs : System.EventArgs
     {

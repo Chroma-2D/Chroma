@@ -2,7 +2,7 @@
 using System.Numerics;
 using Chroma.Natives.SDL;
 
-namespace Chroma.Input.EventArgs
+namespace Chroma.Input
 {
     public class MouseButtonEventArgs : System.EventArgs
     {

@@ -1,6 +1,6 @@
 using System;
 using Chroma.Graphics;
-using Chroma.Input.EventArgs;
+using Chroma.Input;
 
 namespace TextInput
 {

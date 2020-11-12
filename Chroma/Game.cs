@@ -7,7 +7,7 @@ using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
-using Chroma.Input.EventArgs;
+using Chroma.Input;
 using Chroma.Natives.SDL;
 using Chroma.Windowing;
 

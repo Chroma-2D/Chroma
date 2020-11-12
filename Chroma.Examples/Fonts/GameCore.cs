@@ -6,7 +6,6 @@ using Chroma.Graphics;
 using Chroma.Graphics.TextRendering;
 using Chroma.Graphics.TextRendering.Bitmap;
 using Chroma.Input;
-using Chroma.Input.EventArgs;
 
 namespace Fonts
 {

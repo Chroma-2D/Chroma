@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Chroma.Input.EventArgs;
 
 namespace Chroma.Input
 {

@@ -6,7 +6,6 @@ using Chroma.ContentManagement.FileSystem;
 using Chroma.Graphics;
 using Chroma.Graphics.Batching;
 using Chroma.Input;
-using Chroma.Input.EventArgs;
 
 namespace DrawBatching
 {

@@ -7,7 +7,6 @@ using Chroma.Diagnostics;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.Input;
-using Chroma.Input.EventArgs;
 using Chroma.Windowing;
 using Color = Chroma.Graphics.Color;
 

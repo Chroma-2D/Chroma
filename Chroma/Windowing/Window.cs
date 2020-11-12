@@ -419,18 +419,18 @@ namespace Chroma.Windowing
         }
 
         internal void OnClosed()
-            => Closed?.Invoke(this, System.EventArgs.Empty);
+            => Closed?.Invoke(this, EventArgs.Empty);
 
         internal void OnHidden()
-            => Hidden?.Invoke(this, System.EventArgs.Empty);
+            => Hidden?.Invoke(this, EventArgs.Empty);
 
         internal void OnShown()
-            => Shown?.Invoke(this, System.EventArgs.Empty);
+            => Shown?.Invoke(this, EventArgs.Empty);
 
         internal void OnInvalidated()
         {
             SDL_gpu.GPU_Flip(RenderTargetHandle);
-            Invalidated?.Invoke(this, System.EventArgs.Empty);
+            Invalidated?.Invoke(this, EventArgs.Empty);
         }
 
         internal void OnStateChanged(WindowStateEventArgs e)
@@ -440,10 +440,10 @@ namespace Chroma.Windowing
         }
 
         internal void OnMouseEntered()
-            => MouseEntered?.Invoke(this, System.EventArgs.Empty);
+            => MouseEntered?.Invoke(this, EventArgs.Empty);
 
         internal void OnMouseLeft()
-            => MouseLeft?.Invoke(this, System.EventArgs.Empty);
+            => MouseLeft?.Invoke(this, EventArgs.Empty);
 
         internal void OnFocusOffered()
         {
@@ -451,10 +451,10 @@ namespace Chroma.Windowing
         }
 
         internal void OnFocused()
-            => Focused?.Invoke(this, System.EventArgs.Empty);
+            => Focused?.Invoke(this, EventArgs.Empty);
 
         internal void OnUnfocused()
-            => Unfocused?.Invoke(this, System.EventArgs.Empty);
+            => Unfocused?.Invoke(this, EventArgs.Empty);
 
         internal void OnMoved(WindowMoveEventArgs e)
         {

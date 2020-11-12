@@ -144,19 +144,7 @@ namespace Chroma.Graphics
         }
 
         public void ResetShapeBlending()
-        {
-            SetShapeBlendingFunctions(
-                BlendingFunction.One,
-                BlendingFunction.Zero,
-                BlendingFunction.One,
-                BlendingFunction.Zero
-            );
-            
-            SetShapeBlendingEquations(
-                BlendingEquation.Add,
-                BlendingEquation.Add
-            );
-        }
+            => SetShapeBlendingPreset(BlendingPreset.Normal);
 
         public void WithCamera(Camera camera, Action drawingLogic)
         {

@@ -104,7 +104,7 @@ namespace Textures
             {
                 _burger.SetBlendingFunctions(
                     BlendingFunction.One,
-                    BlendingFunction.InverseSourceAlpha,
+                    BlendingFunction.OneMinusSourceAlpha,
                     BlendingFunction.DestinationAlpha,
                     BlendingFunction.One
                 );

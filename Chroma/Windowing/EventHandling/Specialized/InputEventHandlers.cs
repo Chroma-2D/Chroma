@@ -3,7 +3,6 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using Chroma.Hardware;
 using Chroma.Input;
-using Chroma.Input.EventArgs;
 using Chroma.Input.Internal;
 using Chroma.Natives.SDL;
 

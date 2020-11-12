@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Chroma.Input.EventArgs
+namespace Chroma.Input
 {
     public class MouseMoveEventArgs : System.EventArgs
     {

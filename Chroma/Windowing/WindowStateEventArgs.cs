@@ -1,4 +1,4 @@
-﻿namespace Chroma.Windowing.EventArgs
+﻿namespace Chroma.Windowing
 {
     public class WindowStateEventArgs : System.EventArgs
     {

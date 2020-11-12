@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Chroma;
 using Chroma.Graphics;
 using Chroma.Input;
-using Chroma.Input.EventArgs;
 using Chroma.Threading;
 using Color = System.Drawing.Color;
 

@@ -1,4 +1,4 @@
-namespace Chroma.Input.EventArgs
+namespace Chroma.Input
 {
     public class KeyEventArgs : System.EventArgs
     {

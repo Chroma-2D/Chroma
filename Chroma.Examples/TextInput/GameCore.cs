@@ -5,7 +5,6 @@ using Chroma.ContentManagement.FileSystem;
 using Chroma.Graphics;
 using Chroma.Graphics.TextRendering;
 using Chroma.Input;
-using Chroma.Input.EventArgs;
 using Color = Chroma.Graphics.Color;
 
 namespace TextInput

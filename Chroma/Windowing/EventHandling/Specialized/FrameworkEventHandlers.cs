@@ -1,5 +1,4 @@
 ﻿using Chroma.Natives.SDL;
-using Chroma.Windowing.EventArgs;
 
 namespace Chroma.Windowing.EventHandling.Specialized
 {

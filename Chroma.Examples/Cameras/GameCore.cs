@@ -10,7 +10,9 @@ namespace Cameras
     public class GameCore : Game
     {
         private Camera _cam;
-        private Texture _tex;
+        private Vector2 _burgpos;
+        private Texture _grid;
+        private Texture _burg;
 
         public GameCore()
         {
@@ -21,7 +23,8 @@ namespace Cameras
         {
             _cam = new Camera();
             _cam.UseCenteredOrigin = true;
-            _tex = Content.Load<Texture>("Textures/grid.png");
+            _grid = Content.Load<Texture>("Textures/grid.png");
+            _burg = Content.Load<Texture>("Textures/burg.png");
         }
 
         protected override void Update(float delta)
@@ -43,6 +46,24 @@ namespace Cameras
             {
                 _cam.X += (int)(100 * delta);
             }
+
+            if (Keyboard.IsKeyDown(KeyCode.Up))
+            {
+                _burgpos.Y -= 200 * delta;
+            }
+            else if(Keyboard.IsKeyDown(KeyCode.Down))
+            {
+                _burgpos.Y += 200 * delta;
+            }
+
+            if (Keyboard.IsKeyDown(KeyCode.Left))
+            {
+                _burgpos.X -= 200 * delta;
+            }
+            else if (Keyboard.IsKeyDown(KeyCode.Right))
+            {
+                _burgpos.X += 200 * delta;
+            }
         }
 
         protected override void Draw(RenderContext context)
@@ -50,18 +71,26 @@ namespace Cameras
             context.WithCamera(_cam, () =>
             {
                 context.DrawTexture(
-                    _tex,
+                    _grid,
                     Vector2.Zero,
                     Vector2.One,
                     Vector2.Zero,
                     rotation: 0f
                 );
+                
+                context.DrawTexture(
+                    _burg,
+                    _burgpos,
+                    Vector2.One,
+                    Vector2.Zero, 
+                    0
+                );
             });
-
+            
             context.DrawString(
                 "Use <W> <A> <S> <D> to move camera around the screen.\n" +
                 "Use mouse to rotate the camera around the center.\n" +
-                "Use F1 to lock the mouse cursor into the window.\n" +
+                "Use <F1> to lock the mouse cursor into the window.\n" +
                 "Use mouse wheel to zoom the camera in/out.", 
                 new Vector2(8),
                 Color.Red

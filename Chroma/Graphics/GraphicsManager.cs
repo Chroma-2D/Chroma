@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Chroma.Diagnostics.Logging;
+using Chroma.Extensions;
 using Chroma.Natives.GL;
 using Chroma.Natives.SDL;
 using Chroma.Windowing;
@@ -73,6 +74,21 @@ namespace Chroma.Graphics
             }
         }
 
+        public string OpenGlVendorString =>
+            Marshal.PtrToStringAnsi(
+                Gl.GetString(Gl.GL_VENDOR)
+            );
+
+        public string OpenGlVersionString =>
+            Marshal.PtrToStringAnsi(
+                Gl.GetString(Gl.GL_VERSION)
+            );
+
+        public string OpenGlRendererString =>
+            Marshal.PtrToStringAnsi(
+                Gl.GetString(Gl.GL_RENDERER)
+            );
+
         public bool IsAdaptiveVSyncSupported { get; private set; }
 
         public float ScreenGamma
@@ -86,38 +102,22 @@ namespace Chroma.Graphics
 
         public List<string> GlExtensions { get; } = new List<string>();
 
-        static GraphicsManager()
+        internal GraphicsManager(Game game)
         {
-            _log.Info("Initializing...");
-            _log.Info("Probing OpenGL limits...");
+            Game = game;
 
             ProbeGlLimits(
                 preProbe: () => { MultiSamplingPrecision = 0; },
                 probe: () =>
                 {
-                    Gl.GetIntegerV(Gl.GL_MAX_SAMPLES, out var maxSamples);
+                    Gl.GetIntegerV(
+                        Gl.GL_MAX_SAMPLES,
+                        out var maxSamples
+                    );
                     MaximumMultiSamplingPrecision = maxSamples;
+                    EnumerateGlExtensions();
                 }, () => { }
             );
-        }
-
-        internal GraphicsManager(Game game)
-        {
-            Game = game;
-
-            var renderers = GetRendererNames();
-
-            _log.Info(" Registered renderers:");
-            foreach (var s in renderers)
-                _log.Info($"  {s}");
-
-            _log.Info(" Available displays:");
-
-            foreach (var d in GetDisplayList())
-                _log.Info($"  Display {d.Index} ({d.Name}) [{d.Bounds.Width}x{d.Bounds.Height}], mode {d.DesktopMode}");
-
-            CheckGlExtensionAvailability();
-            VerticalSyncMode = VerticalSyncMode.Retrace;
         }
 
         public List<string> GetRendererNames()
@@ -148,33 +148,12 @@ namespace Chroma.Graphics
             return null;
         }
 
-        internal static List<SDL_gpu.GPU_RendererID> GetRegisteredRenderers()
+        internal IntPtr InitializeRenderer(Window window)
         {
-            var renderers = SDL_gpu.GPU_GetNumRegisteredRenderers();
-            var registeredRenderers = new SDL_gpu.GPU_RendererID[renderers];
-            SDL_gpu.GPU_GetRegisteredRendererList(registeredRenderers);
+            var rendererId = FindBestRenderer();
 
-            if (registeredRenderers.Length == 0)
-            {
-                _log.Error("Your computer does not support any rendering APIs that Chroma supports.");
-                throw new NotSupportedException("None of Chroma's Rendering APIs are supported on this computer. " +
-                                                "Make sure you have support for at least OpenGL 3.");
-            }
-
-            return registeredRenderers.ToList();
-        }
-
-        internal static SDL_gpu.GPU_RendererID GetBestRenderer()
-        {
-            var renderer = GetRegisteredRenderers().OrderByDescending(x => x.major_version).First();
-            _log.Info($"Selecting highest available renderer version: {renderer.name}");
-            return renderer;
-        }
-
-        internal static IntPtr InitializeRenderer(Window window, SDL_gpu.GPU_RendererID id)
-        {
-            var renderTargetHandle = SDL_gpu.GPU_InitRenderer(
-                id.renderer,
+            var renderTargetHandle = SDL_gpu.GPU_InitRendererByID(
+                rendererId,
                 (ushort)window.Size.Width,
                 (ushort)window.Size.Height,
                 0
@@ -183,22 +162,37 @@ namespace Chroma.Graphics
             if (renderTargetHandle == IntPtr.Zero)
                 throw new FrameworkException("Failed to initialize the renderer.", true);
 
-            // unsafe
-            // {
-            //     var rptr = SDL_gpu.GPU_GetRenderer(id);
-            //     SDL_gpu.GPU_Renderer* r = (SDL_gpu.GPU_Renderer*)rptr.ToPointer();
-            // }
+            _log.Info($"{OpenGlVendorString} {OpenGlRendererString} v{OpenGlVersionString}");
+
+            _log.Info(" Available displays:");
+            foreach (var d in GetDisplayList())
+                _log.Info($"  Display {d.Index} ({d.Name}) [{d.Bounds.Width}x{d.Bounds.Height}], mode {d.DesktopMode}");
 
             return renderTargetHandle;
         }
 
-        private void CheckGlExtensionAvailability()
+        private SDL_gpu.GPU_RendererID FindBestRenderer()
+            => GetRegisteredRenderers()
+                .OrderByDescending(x => x.major_version)
+                .First();
+
+        private List<SDL_gpu.GPU_RendererID> GetRegisteredRenderers()
         {
-            var glxResult = SDL2.SDL_GL_ExtensionSupported("GLX_EXT_swap_control_tear");
-            var wglResult = SDL2.SDL_GL_ExtensionSupported("WGL_EXT_swap_control_tear");
+            var renderers = SDL_gpu.GPU_GetNumRegisteredRenderers();
+            var registeredRenderers = new SDL_gpu.GPU_RendererID[renderers];
+            SDL_gpu.GPU_GetRegisteredRendererList(registeredRenderers);
 
-            IsAdaptiveVSyncSupported = (glxResult == SDL2.SDL_bool.SDL_TRUE || wglResult == SDL2.SDL_bool.SDL_TRUE);
+            if (registeredRenderers.Length == 0)
+            {
+                throw new NotSupportedException("None of Chroma's Rendering APIs are supported on this computer. " +
+                                                "Make sure you have support for at least OpenGL 3.");
+            }
 
+            return registeredRenderers.ToList();
+        }
+
+        private void EnumerateGlExtensions()
+        {
             Gl.GetIntegerV(Gl.GL_NUM_EXTENSIONS, out var numExtensions);
 
             if (numExtensions > 0)
@@ -206,7 +200,7 @@ namespace Chroma.Graphics
                 for (var i = 0; i < numExtensions; i++)
                 {
                     var strPtr = Gl.GetStringI(Gl.GL_EXTENSIONS, (uint)i);
-                    var str = Marshal.PtrToStringAuto(strPtr);
+                    var str = Marshal.PtrToStringAnsi(strPtr);
 
                     GlExtensions.Add(str);
                 }
@@ -215,16 +209,48 @@ namespace Chroma.Graphics
             {
                 _log.Info("Couldn't retrieve OpenGL extension list.");
             }
+
+            IsAdaptiveVSyncSupported = GlExtensions.Intersect(new[]
+            {
+                "GLX_EXT_swap_control_tear",
+                "WGL_EXT_swap_control_tear"
+            }).Any();
         }
 
-        private static void ProbeGlLimits(Action preProbe, Action probe, Action postProbe)
+        private void ProbeGlLimits(Action preProbe, Action probe, Action postProbe)
         {
             preProbe();
 
+            var gpuRendererId = FindBestRenderer();
+
+            _log.WarningWhenFails(
+                $"Failed to set OpenGL major version for probe",
+                () => SDL2.SDL_GL_SetAttribute(
+                    SDL2.SDL_GLattr.SDL_GL_CONTEXT_MAJOR_VERSION,
+                    gpuRendererId.major_version
+                )
+            );
+
+            _log.WarningWhenFails(
+                $"Failed to set OpenGL minor version for probe",
+                () => SDL2.SDL_GL_SetAttribute(
+                    SDL2.SDL_GLattr.SDL_GL_CONTEXT_MINOR_VERSION,
+                    gpuRendererId.minor_version
+                )
+            );
+
+            _log.WarningWhenFails(
+                $"Failed to set OpenGL core profile for probe",
+                () => SDL2.SDL_GL_SetAttribute(
+                    SDL2.SDL_GLattr.SDL_GL_CONTEXT_PROFILE_MASK,
+                    SDL2.SDL_GLprofile.SDL_GL_CONTEXT_PROFILE_CORE
+                )
+            );
+
             SDL2.SDL_CreateWindowAndRenderer(
                 0, 0,
-                SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL |
-                SDL2.SDL_WindowFlags.SDL_WINDOW_BORDERLESS,
+                SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL
+                | SDL2.SDL_WindowFlags.SDL_WINDOW_BORDERLESS,
                 out var window,
                 out var renderer
             );

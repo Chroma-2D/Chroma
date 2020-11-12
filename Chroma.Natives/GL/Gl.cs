@@ -34,6 +34,9 @@ namespace Chroma.Natives.GL
         internal const uint GL_OUT_OF_MEMORY = 0x505;
         
         internal const uint GL_NUM_EXTENSIONS = 0x821D;
+        internal const uint GL_VENDOR = 0x1F00;
+        internal const uint GL_RENDERER = 0x1F01;
+        internal const uint GL_VERSION = 0x1F02;
         internal const uint GL_EXTENSIONS = 0x1F03;
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -59,6 +62,9 @@ namespace Chroma.Natives.GL
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         internal delegate IntPtr GlGetStringiDelegate(uint attr, uint index);
+        
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        internal delegate IntPtr GlGetStringDelegate(uint attr);
 
         internal static GlEnableDisableDelegate Enable =>
             Marshal.GetDelegateForFunctionPointer<GlEnableDisableDelegate>(
@@ -103,6 +109,11 @@ namespace Chroma.Natives.GL
         internal static GlGetStringiDelegate GetStringI =>
             Marshal.GetDelegateForFunctionPointer<GlGetStringiDelegate>(
                 SDL2.SDL_GL_GetProcAddress("glGetStringi")
+            );
+        
+        internal static GlGetStringDelegate GetString =>
+            Marshal.GetDelegateForFunctionPointer<GlGetStringDelegate>(
+                SDL2.SDL_GL_GetProcAddress("glGetString")
             );
     }
 }

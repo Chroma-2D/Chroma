@@ -287,8 +287,7 @@ namespace Chroma.Windowing
             SDL_gpu.GPU_SetRequiredFeatures(SDL_gpu.GPU_FeatureEnum.GPU_FEATURE_BASIC_SHADERS);
             SDL_gpu.GPU_SetInitWindow(SDL2.SDL_GetWindowID(Handle));
 
-            var bestRenderer = GraphicsManager.GetBestRenderer();
-            RenderTargetHandle = GraphicsManager.InitializeRenderer(this, bestRenderer);
+            RenderTargetHandle = Game.Graphics.InitializeRenderer(this);
 
             MaximumSize = Size.Empty;
             MinimumSize = Size.Empty;

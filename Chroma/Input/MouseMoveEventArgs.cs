@@ -2,7 +2,7 @@
 
 namespace Chroma.Input
 {
-    public class MouseMoveEventArgs : System.EventArgs
+    public class MouseMoveEventArgs
     {
         public Vector2 Position { get; }
         public Vector2 Delta { get; }

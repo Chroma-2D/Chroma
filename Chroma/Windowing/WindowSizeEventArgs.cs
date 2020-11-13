@@ -1,8 +1,9 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace Chroma.Windowing
 {
-    public class WindowSizeEventArgs : System.EventArgs
+    public class WindowSizeEventArgs : EventArgs
     {
         public Size Size { get; }
 

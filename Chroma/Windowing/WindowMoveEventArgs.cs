@@ -1,8 +1,9 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace Chroma.Windowing
 {
-    public class WindowMoveEventArgs : System.EventArgs
+    public class WindowMoveEventArgs : EventArgs
     {
         public Vector2 Position { get; }
 

@@ -3,7 +3,7 @@ using Chroma.Natives.SDL;
 
 namespace Chroma.Input
 {
-    public class MouseWheelEventArgs : System.EventArgs
+    public class MouseWheelEventArgs
     {
         public Vector2 Motion { get; }
         public bool DirectionFlipped { get; }

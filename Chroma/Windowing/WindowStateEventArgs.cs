@@ -1,6 +1,8 @@
-﻿namespace Chroma.Windowing
+﻿using System;
+
+namespace Chroma.Windowing
 {
-    public class WindowStateEventArgs : System.EventArgs
+    public class WindowStateEventArgs : EventArgs
     {
         public WindowState State { get; }
 

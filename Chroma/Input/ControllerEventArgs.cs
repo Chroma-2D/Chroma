@@ -1,6 +1,6 @@
 ﻿namespace Chroma.Input
 {
-    public class ControllerEventArgs : System.EventArgs
+    public class ControllerEventArgs
     {
         public ControllerInfo Controller { get; }
 

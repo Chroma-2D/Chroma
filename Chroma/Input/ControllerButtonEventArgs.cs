@@ -1,6 +1,6 @@
 ﻿namespace Chroma.Input
 {
-    public class ControllerButtonEventArgs : System.EventArgs
+    public class ControllerButtonEventArgs
     {
         public ControllerInfo Controller { get; }
         public ControllerButton Button { get; }

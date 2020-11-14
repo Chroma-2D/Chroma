@@ -37,7 +37,6 @@
         <EmbeddedResource Include="Binaries\linux_64\libSDL2.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libSDL2_gpu.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libSDL2_image.bz2" />
-        <EmbeddedResource Include="Binaries\linux_64\libSDL2_mixer.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libvorbis.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libvorbisfile.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libwebp.bz2" />
@@ -62,6 +61,8 @@
         <EmbeddedResource Include="Binaries\osx_64\libz.bz2" />
         <None Remove="Binaries\windows_64\mojoal.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\mojoal.bz2" />
+        <None Remove="Binaries\linux_64\libmojoal.bz2" />
+        <EmbeddedResource Include="Binaries\linux_64\libmojoal.bz2" />
     </ItemGroup>
 
     <ItemGroup>

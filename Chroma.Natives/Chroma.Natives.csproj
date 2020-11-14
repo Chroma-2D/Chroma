@@ -23,7 +23,6 @@
         <EmbeddedResource Include="Binaries\windows_64\SDL2.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\SDL2_gpu.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\SDL2_image.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\SDL2_mixer.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\zlib1.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libFLAC.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libfreetype.bz2" />
@@ -61,6 +60,8 @@
         <EmbeddedResource Include="Binaries\osx_64\libvorbisfile.bz2" />
         <EmbeddedResource Include="Binaries\osx_64\libwebp.bz2" />
         <EmbeddedResource Include="Binaries\osx_64\libz.bz2" />
+        <None Remove="Binaries\windows_64\mojoal.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\mojoal.bz2" />
     </ItemGroup>
 
     <ItemGroup>

@@ -4,6 +4,7 @@ using System.IO;
 using System.Numerics;
 using System.Reflection;
 using Chroma.Audio;
+// using Chroma.Audio;
 using Chroma.Graphics;
 using Chroma.Graphics.Accelerated;
 using Chroma.Graphics.TextRendering;
@@ -156,9 +157,17 @@ namespace Chroma.ContentManagement.FileSystem
 
             RegisterImporter<BitmapFont>((path, args) => { return new BitmapFont(path); });
 
-            RegisterImporter<Sound>((path, args) => { return _game.Audio.CreateSound(path); });
+            RegisterImporter<Sound>((path, args) =>
+            {
+                throw new NotImplementedException("audio system not reworked yet");
+                // return _game.Audio.CreateSound(path); 
+            });
 
-            RegisterImporter<Music>((path, args) => { return _game.Audio.CreateMusic(path); });
+            RegisterImporter<Music>((path, args) =>
+            {
+                throw new NotImplementedException("audio system not reworked yet");
+                // return _game.Audio.CreateMusic(path);
+            });
 
             RegisterImporter<Cursor>((path, args) =>
             {

@@ -117,10 +117,9 @@ namespace Chroma.Natives.Boot
         private static void InitializeSdlSystems()
         {
             Console.WriteLine("---");
-            
             Console.WriteLine("Initializing SDL2 core...");
+            
             SDL2.SDL_Init(BootConfig.SdlModules.SdlInitFlags);
-            SDL_mixer.Mix_Init(BootConfig.MixerModules.SdlMixerFlags);
             
             if (BootConfig.EnableSdlGpuDebugging)
             {

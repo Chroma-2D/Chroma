@@ -53,7 +53,8 @@ namespace CustomContentProvider
             {
                 using (var stream = Open(path))
                 {
-                    return _game.Audio.CreateSound(stream);
+                    throw new NotImplementedException("audio not reworked yet");
+                    //return _game.Audio.CreateSound(stream);
                 }
             });
         }

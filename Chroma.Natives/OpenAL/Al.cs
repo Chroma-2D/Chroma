@@ -5,7 +5,7 @@ namespace Chroma.Natives.OpenAL
 {
     internal class Al
     {
-        internal const string OpenAlLibName = "openal";
+        internal const string OpenAlLibName = "mojoal";
 
         internal const int AL_SOURCE_RELATIVE = 0x202;
         
@@ -204,9 +204,26 @@ namespace Chroma.Natives.OpenAL
 
         [DllImport(OpenAlLibName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void alGenSources(int n, uint[] sources);
+        
+        [DllImport(OpenAlLibName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void alGenSources(int n, out uint sources);
+
+        internal static uint alGenSource()
+        {
+            alGenSources(1, out var source);
+            return source;
+        }
 
         [DllImport(OpenAlLibName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void alDeleteSources(int n, uint[] sources);
+        
+        [DllImport(OpenAlLibName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void alDeleteSources(int n, ref uint source);
+
+        internal static void alDeleteSource(ref uint source)
+        {
+            alDeleteSources(1, ref source);
+        }
 
         [DllImport(OpenAlLibName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool alIsSource(uint source);
@@ -281,7 +298,22 @@ namespace Chroma.Natives.OpenAL
         internal static extern void alGenBuffers(int n, uint[] buffers);
 
         [DllImport(OpenAlLibName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void alGenBuffers(int n, out uint buffers);
+
+        internal static uint alGenBuffer()
+        {
+            alGenBuffers(1, out var buffer);
+            return buffer;
+        }
+
+        [DllImport(OpenAlLibName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void alDeleteBuffers(int n, uint[] buffers);
+        
+        [DllImport(OpenAlLibName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void alDeleteBuffers(int n, ref uint buffer);
+
+        internal static void alDeleteBuffer(ref uint buffer)
+            => alDeleteBuffers(1, ref buffer);
 
         [DllImport(OpenAlLibName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool alIsBuffer(uint buffer);

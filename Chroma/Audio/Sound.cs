@@ -30,6 +30,12 @@ namespace Chroma.Audio
 
         internal bool LoadDataFromFile(string path)
         {
+            if (!HasValidBuffer)
+            {
+                _log.Error("Cannot load data into a source without a valid buffer.");
+                return false;
+            }
+            
             if (!CRaudio.CR_LoadOgg(path, out _loadInfo))
             {
                 _log.Error($"Failed to load OGGvorbis file: 0x{CRaudio.CR_GetError():X4}");
@@ -49,12 +55,15 @@ namespace Chroma.Audio
             if (error != Al.AL_NO_ERROR)
                 return false;
 
-            ConfigureSourceDefaults();
-            return true;
+            return AttachBuffer();
         }
 
         protected override void FreeNativeResources()
         {
+            Al.alSourcei(Handle, Al.AL_BUFFER, 0);
+            Al.alDeleteBuffer(ref Buffer);
+            Al.alDeleteSource(ref Handle);
+            
             CRaudio.CR_FreeOgg(ref _loadInfo);
         }
     }

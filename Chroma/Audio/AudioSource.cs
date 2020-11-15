@@ -1,13 +1,20 @@
-﻿using Chroma.MemoryManagement;
+﻿using Chroma.Diagnostics.Logging;
+using Chroma.MemoryManagement;
 using Chroma.Natives.OpenAL;
 
 namespace Chroma.Audio
 {
     public abstract class AudioSource : DisposableResource
     {
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
+        
+        internal uint Handle;
+        internal uint Buffer;
+        
         internal OutputDevice Device { get; }
-        internal uint Handle { get; private set; }
-        internal uint Buffer { get; private set; }
+
+        public bool IsValid => Handle != 0;
+        public bool HasValidBuffer => Buffer != 0;
 
         public AudioSourceState State
         {
@@ -40,36 +47,39 @@ namespace Chroma.Audio
 
         private bool CreateBuffer()
         {
-            var bufs = new uint[1];
-            Al.alGenBuffers(1, bufs);
+            var buffer = Al.alGenBuffer();
             var error = Device.Manager.LogOpenAlError("Failed to create audio source: ");
 
             if (error != Al.AL_NO_ERROR)
                 return false;
 
-            Buffer = bufs[0];
+            Buffer = buffer;
             return true;
         }
 
         private void CreateSource()
         {
-            var srcs = new uint[1];
-            Al.alGenSources(1, srcs);
+            var src = Al.alGenSource();
 
             var error = Device.Manager.LogOpenAlError("Failed to create audio source: ");
             if (error != Al.AL_NO_ERROR)
                 return;
 
-            Handle = srcs[0];
+            Handle = src;
         }
 
-        protected void ConfigureSourceDefaults()
+        protected bool AttachBuffer()
         {
-            Al.alSourcei(Handle, Al.AL_BUFFER, (int)Buffer);
-            Device.Manager.LogOpenAlError("Failed to attach buffer to audio source: ");
+            if (!HasValidBuffer)
+            {
+                _log.Error("Cannot attach an invalid buffer to an audio source.");
+                return false;
+            }
             
-            Al.alSourcef(Handle, Al.AL_GAIN, 1.0f);
-            Al.alSourcef(Handle, Al.AL_SOURCE_TYPE, Al.AL_STREAMING);
+            Al.alSourcei(Handle, Al.AL_BUFFER, (int)Buffer);
+            
+            return Device.Manager
+                .LogOpenAlError("Failed to attach buffer to audio source: ") != Al.AL_NO_ERROR;
         }
     }
 }

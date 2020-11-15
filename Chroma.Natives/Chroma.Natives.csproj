@@ -48,12 +48,13 @@
         <EmbeddedResource Include="Binaries\osx_64\libwebp.bz2" />
         <EmbeddedResource Include="Binaries\osx_64\libz.bz2" />
         <None Remove="Binaries\windows_64\mojoal.bz2" />
-        <None Remove="Binaries\linux_64\libmojoal.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\craudio.bz2" />
         <None Remove="Binaries\windows_64\openal.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\openal.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\mojoal.bz2" />
         <None Remove="Binaries\linux_64\libcraudio.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libcraudio.bz2" />
+        <None Remove="Binaries\linux_64\libmojoal.bz2" />
+        <EmbeddedResource Include="Binaries\linux_64\libmojoal.bz2" />
     </ItemGroup>
 
     <ItemGroup>

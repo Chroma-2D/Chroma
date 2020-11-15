@@ -32,7 +32,7 @@ namespace Chroma.Audio
             "ALC_ENUMERATION_EXT"
         );
 
-        public Vector3 ListenerPosition
+        public Vector2 ListenerPosition
         {
             get
             {
@@ -48,7 +48,7 @@ namespace Chroma.Audio
                     LogOpenAlError("Failed to set listener position: ");
                 }
 
-                return new Vector3(values[0], values[1], values[2]);
+                return new Vector2(values[0], values[2]);
             }
 
             set
@@ -59,7 +59,7 @@ namespace Chroma.Audio
                     return;
                 }
 
-                var values = new[] {value.X, value.Y, value.Z};
+                var values = new[] {value.X, 0, value.Y};
                 Al.alListenerfv(Al.AL_POSITION, values);
                 LogOpenAlError("Failed to set listener position: ");
             }
@@ -98,12 +98,42 @@ namespace Chroma.Audio
             }
         }
 
+        public Vector3[] Orientation
+        {
+            get
+            {
+                var vec = new Vector3[2];
+                var fl = new float[6];
+
+                Al.alGetListenerfv(
+                    Al.AL_ORIENTATION,
+                    fl
+                );
+
+                vec[0] = new Vector3(fl[0], fl[1], fl[2]);
+                vec[1] = new Vector3(fl[3], fl[4], fl[5]);
+
+                return vec;
+            }
+        }
+
+        public DistanceModel DistanceModel
+        {
+            get => (DistanceModel)Al.alGetInteger(Al.AL_DISTANCE_MODEL);
+            set => Al.alDistanceModel((int)value);
+        }
+
         internal AudioManager()
         {
             var defaultDev = InitializeDevice(DefaultOutputDeviceName, true);
 
             if (defaultDev.IsValid && defaultDev.HasValidContext)
                 OpenOutputDevices.Add(defaultDev);
+            
+            Al.alListenerfv(
+                Al.AL_ORIENTATION,
+                new [] { 0, -1, 0, -1, 0.5f, -1}
+            );
         }
 
         public OutputDevice InitializeDevice(string deviceName, bool useAfterInit = false)
@@ -170,7 +200,7 @@ namespace Chroma.Audio
                 );
 
                 var next = unsafeStringList + 1;
-                var length = 0;
+                int length;
 
                 while (*unsafeStringList != 0 && *next != 0)
                 {
@@ -230,6 +260,23 @@ namespace Chroma.Audio
 
             length = len;
             return s;
+        }
+        
+        protected T ExecuteOpenAlCommand<T>(Func<T> openAlLogic, T faultValue, string msg)
+        {
+            var result = openAlLogic();
+            var error = LogOpenAlError(msg);
+
+            if (error != Al.AL_NO_ERROR)
+                return faultValue;
+
+            return result;
+        }
+
+        protected bool ExecuteOpenAlCommand(Action openAlLogic, string msg)
+        {
+            openAlLogic();
+            return LogOpenAlError(msg) != Al.AL_NO_ERROR;
         }
     }
 }

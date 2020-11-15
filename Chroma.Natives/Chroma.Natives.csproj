@@ -18,21 +18,15 @@
         <EmbeddedResource Include="Binaries\windows_64\SDL2_gpu.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\SDL2_image.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\zlib1.bz2" />
-        <EmbeddedResource Include="Binaries\linux_64\libFLAC.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libfreetype.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libjpeg.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libmodplug.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libmpg123.bz2" />
-        <EmbeddedResource Include="Binaries\linux_64\libogg.bz2" />
-        <EmbeddedResource Include="Binaries\linux_64\libopus.bz2" />
-        <EmbeddedResource Include="Binaries\linux_64\libopusfile.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libpng16.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libtiff.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libSDL2.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libSDL2_gpu.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libSDL2_image.bz2" />
-        <EmbeddedResource Include="Binaries\linux_64\libvorbis.bz2" />
-        <EmbeddedResource Include="Binaries\linux_64\libvorbisfile.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libwebp.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libz.bz2" />
         <EmbeddedResource Include="Binaries\osx_64\libFLAC.bz2" />
@@ -58,6 +52,8 @@
         <EmbeddedResource Include="Binaries\windows_64\craudio.bz2" />
         <None Remove="Binaries\windows_64\openal.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\openal.bz2" />
+        <None Remove="Binaries\linux_64\libcraudio.bz2" />
+        <EmbeddedResource Include="Binaries\linux_64\libcraudio.bz2" />
     </ItemGroup>
 
     <ItemGroup>

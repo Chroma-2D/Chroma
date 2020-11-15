@@ -69,7 +69,7 @@ namespace Chroma.Audio
             Device.Manager.LogOpenAlError("Failed to attach buffer to audio source: ");
             
             Al.alSourcef(Handle, Al.AL_GAIN, 1.0f);
-            Al.alSourcef(Handle, Al.AL_SOURCE_TYPE, Al.AL_STATIC);
+            Al.alSourcef(Handle, Al.AL_SOURCE_TYPE, Al.AL_STREAMING);
         }
     }
 }

@@ -103,8 +103,12 @@ namespace Chroma.Natives.Boot
                 var handle = Posix.dlopen(absoluteFilePath, Posix.RTLD_NOW | Posix.RTLD_GLOBAL);
 
                 if (handle == IntPtr.Zero)
+                {
+                    var err = Posix.dlerror();
+                    
                     throw new NativeLoaderException(
-                        $"Failed to load '{absoluteFilePath}'. dlerror: {Marshal.PtrToStringAnsi(Posix.dlerror())}");
+                        $"Failed to load '{absoluteFilePath}'. dlerror: {Marshal.PtrToStringAnsi(err)}");
+                }
 
                 symbolLookup = Posix.dlsym;
                 return handle;

@@ -23,8 +23,7 @@ namespace Chroma
 
         public Window Window { get; }
         public GraphicsManager Graphics { get; }
-        // TODO audio
-        // public AudioManager Audio { get; }
+        public AudioManager Audio { get; }
         public IContentProvider Content { get; protected set; }
 
         public static string LocationOnDisk => Path.GetDirectoryName(
@@ -60,9 +59,7 @@ namespace Chroma
 
             Graphics.VerticalSyncMode = VerticalSyncMode.Retrace;
             
-            // TODO audio
-            // Audio = new AudioManager();
-
+            Audio = new AudioManager();
             Window.SetIcon(EmbeddedAssets.DefaultIconTexture);
             Content = new FileSystemContentProvider(this);
 

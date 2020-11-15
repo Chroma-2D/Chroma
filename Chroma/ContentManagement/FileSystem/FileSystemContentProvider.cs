@@ -159,8 +159,7 @@ namespace Chroma.ContentManagement.FileSystem
 
             RegisterImporter<Sound>((path, args) =>
             {
-                throw new NotImplementedException("audio system not reworked yet");
-                // return _game.Audio.CreateSound(path); 
+                return _game.Audio.NewSound(path); 
             });
 
             RegisterImporter<Music>((path, args) =>

@@ -5,7 +5,7 @@ namespace Chroma.Natives.OpenAL
 {
     internal class Al
     {
-        internal const string OpenAlLibName = "mojoal";
+        internal const string OpenAlLibName = "openal";
 
         internal const int AL_SOURCE_RELATIVE = 0x202;
         
@@ -75,6 +75,20 @@ namespace Chroma.Natives.OpenAL
         internal const int AL_LINEAR_DISTANCE_CLAMPED = 0xD004;
         internal const int AL_EXPONENT_DISTANCE = 0xD005;
         internal const int AL_EXPONENT_DISTANCE_CLAMPED = 0xD006;
+        
+        internal static string GetErrorMessage(int error)
+        {
+            return error switch
+            {
+                AL_NO_ERROR => "there is not currently an error",
+                AL_INVALID_NAME => "a bad name (ID) was passed to an OpenAL function",
+                AL_INVALID_ENUM => "an unknown enum value was passed to an OpenAL function",
+                AL_INVALID_VALUE => "an invalid value was passed to an OpenAL function",
+                AL_INVALID_OPERATION => "the requested operation is not valid",
+                AL_OUT_OF_MEMORY => "the requested operation resulted in OpenAL running out of memory",
+                _ => "No message has been found for this error."
+            };
+        }
 
         [DllImport(OpenAlLibName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void alDopplerFactor(float value);

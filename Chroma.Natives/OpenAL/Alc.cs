@@ -39,84 +39,18 @@ namespace Chroma.Natives.OpenAL
         internal const int ALC_DEFAULT_ALL_DEVICES_SPECIFIER = 0x1012;
         internal const int ALC_ALL_DEVICES_SPECIFIER = 0x1013;
 
-        [StructLayout(LayoutKind.Explicit, Pack = 16)]
-        internal struct ALClistener
+        internal static string GetErrorMessage(int error)
         {
-            [FieldOffset(0)] public IntPtr position;
-            [FieldOffset(16)] public IntPtr velocity;
-            [FieldOffset(32)] public IntPtr orientation;
-            [FieldOffset(64)] public float gain;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct ALCcontext
-        {
-            public IntPtr source_blocks; // SourceBlock**
-            public int num_source_blocks;
-
-            public ALClistener listener; // SIMDALIGNEDSTRUCT
-
-            public IntPtr device; // ALCdevice*
-            public int processing; // SDL_atomic_t
-            public int error;
-            public IntPtr attributes; // ALCint*
-            public int attributes_count;
-
-            public bool recalc;
-            public int distance_model;
-
-            public float doppler_factor;
-            public float doppler_velocity;
-            public float speed_of_sound;
-
-            public IntPtr source_lock; // SDL_mutex*
-
-            public IntPtr playlist_todo; // void*
-            public IntPtr playlist; // ALsource*
-            public IntPtr playlist_tail; // ALsource*
-
-            public IntPtr prev; // ALCcontext*
-            public IntPtr next; // ALCcontext*
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct MojoALplayback
-        {
-            public IntPtr contexts; // ALCcontext*
-            public IntPtr buffer_blocks; // BufferBlock**
-            public int num_buffer_blocks;
-            public IntPtr buffer_queue_pool; // BufferQueueItem*
-            public IntPtr source_todo_pool; // void*
-        }
-
-        internal struct RingBuffer
-        {
-            public IntPtr buffer; // *ALCubyte
-            public int size;
-            public int write;
-            public int read;
-            public int used;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct MojoALcapture
-        {
-            public RingBuffer ring;
-        }
-
-        [StructLayout(LayoutKind.Explicit)]
-        internal struct ALCdevice
-        {
-            [FieldOffset(0)] public IntPtr name;
-            [FieldOffset(4)] public int error;
-            [FieldOffset(8)] public int connected;
-            [FieldOffset(12)] public bool iscapture;
-            [FieldOffset(13)] public uint sdldevice;
-            [FieldOffset(17)] public int channels;
-            [FieldOffset(21)] public int frequency;
-            [FieldOffset(25)] public int framesize;
-            [FieldOffset(29)] public MojoALplayback playback; // union
-            [FieldOffset(29)] public MojoALcapture capture; // union
+            return error switch
+            {
+                ALC_NO_ERROR => "there is not currently an error",
+                ALC_INVALID_DEVICE => "a bad device was passed to an OpenAL function",
+                ALC_INVALID_CONTEXT => "a bad context was passed to an OpenAL function",
+                ALC_INVALID_ENUM => "an unknown enum value was passed to an OpenAL function",
+                ALC_INVALID_VALUE => "an invalid value was passed to an OpenAL function",
+                ALC_OUT_OF_MEMORY => "the requested operation resulted in OpenAL running out of memory",
+                _ => "No message has been found for this error."
+            };
         }
 
         [DllImport(Al.OpenAlLibName, CallingConvention = CallingConvention.Cdecl)]
@@ -172,6 +106,9 @@ namespace Chroma.Natives.OpenAL
         [DllImport(Al.OpenAlLibName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "alcGetString")]
         private static extern IntPtr alcGetString_INTERNAL(IntPtr device, int param);
 
+        [DllImport(Al.OpenAlLibName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "alcGetString")]
+        internal static extern unsafe byte* alcGetString_UNSAFE(IntPtr device, int param);
+        
         internal static string alcGetString(IntPtr device, int param)
         {
             var strPtr = alcGetString_INTERNAL(device, param);

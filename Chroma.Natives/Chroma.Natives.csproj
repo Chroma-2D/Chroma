@@ -7,18 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="Binaries\windows_64\libFLAC-8.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\freetype.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\libjpeg-9.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\libmodplug-1.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\libmpg123-0.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\libogg-0.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\libopus-0.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\libopusfile-0.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\libpng16-16.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\libtiff-5.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\libvorbis-0.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\libvorbisfile-0.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\libwebp-7.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\SDL2.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\SDL2_gpu.bz2" />
@@ -60,9 +54,10 @@
         <EmbeddedResource Include="Binaries\osx_64\libwebp.bz2" />
         <EmbeddedResource Include="Binaries\osx_64\libz.bz2" />
         <None Remove="Binaries\windows_64\mojoal.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\mojoal.bz2" />
         <None Remove="Binaries\linux_64\libmojoal.bz2" />
-        <EmbeddedResource Include="Binaries\linux_64\libmojoal.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\craudio.bz2" />
+        <None Remove="Binaries\windows_64\openal.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\openal.bz2" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,8 +1,9 @@
-﻿using Chroma.MemoryManagement;
-
-namespace Chroma.Audio
+﻿namespace Chroma.Audio
 {
-    public class Music : DisposableResource
+    public class Music : AudioSource
     {
+        internal Music(OutputDevice device) : base(device)
+        {
+        }
     }
 }

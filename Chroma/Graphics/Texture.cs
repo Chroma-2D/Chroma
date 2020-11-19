@@ -13,9 +13,11 @@ namespace Chroma.Graphics
         private readonly Log _log = LogManager.GetForCurrentAssembly();
 
         internal IntPtr ImageHandle { get; private set; }
-
         internal unsafe SDL_gpu.GPU_Image* Image => (SDL_gpu.GPU_Image*)ImageHandle.ToPointer();
-        internal unsafe SDL2.SDL_Surface* Surface { get; private set; }
+
+        private byte[] _pixelData;
+
+        public PixelFormat Format { get; private set; }
 
         public int Width
         {
@@ -25,7 +27,7 @@ namespace Chroma.Graphics
 
                 unsafe
                 {
-                    return Surface->w;
+                    return Image->texture_w;
                 }
             }
         }
@@ -35,10 +37,10 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
-
+                
                 unsafe
                 {
-                    return Surface->h;
+                    return Image->texture_h;
                 }
             }
         }
@@ -247,30 +249,7 @@ namespace Chroma.Graphics
             }
         }
 
-        public uint BytesPerPixel
-        {
-            get
-            {
-                EnsureNotDisposed();
-
-                unsafe
-                {
-                    return (uint)Image->bytes_per_pixel;
-                }
-            }
-        }
-
-        public Span<byte> PixelData
-        {
-            get
-            {
-                unsafe
-                {
-                    var ptr = Surface->pixels.ToPointer();
-                    return new Span<byte>(ptr, (int)(Surface->w * Surface->h * BytesPerPixel));
-                }
-            }
-        }
+        public int BytesPerPixel { get; private set; }
 
         public TextureFilteringMode FilteringMode
         {
@@ -378,6 +357,8 @@ namespace Chroma.Graphics
             }
         }
 
+        public int Stride => Width * BytesPerPixel;
+
         public Color this[int x, int y]
         {
             get => GetPixel(x, y);
@@ -389,34 +370,25 @@ namespace Chroma.Graphics
             var bytes = new byte[stream.Length];
             stream.Read(bytes, 0, bytes.Length);
 
-            IntPtr surfaceHandle;
             unsafe
             {
                 fixed (byte* bp = &bytes[0])
                 {
                     var rwops = SDL2.SDL_RWFromMem(new IntPtr(bp), bytes.Length);
-                    surfaceHandle = SDL_image.IMG_Load_RW(rwops, 1);
+
+                    InitializeWithSurface(
+                        SDL_image.IMG_Load_RW(rwops, 1)
+                    );
                 }
             }
 
-            ConvertToStandardSurfaceFormat(surfaceHandle);
+            Flush();
             SnappingMode = TextureSnappingMode.None;
         }
 
         public Texture(string filePath)
+            : this(new FileStream(filePath, FileMode.Open))
         {
-            if (!File.Exists(filePath))
-                throw new FileNotFoundException("The provided file path does not exist.", filePath);
-
-            var surfaceHandle = SDL_image.IMG_Load(filePath);
-
-            if (surfaceHandle == IntPtr.Zero)
-            {
-                throw new Exception($"Failed to load source image: {SDL2.SDL_GetError()}");
-            }
-
-            ConvertToStandardSurfaceFormat(surfaceHandle);
-            SnappingMode = TextureSnappingMode.None;
         }
 
         public Texture(Texture other)
@@ -424,28 +396,20 @@ namespace Chroma.Graphics
             if (other.Disposed)
                 throw new InvalidOperationException("The source texture has been disposed.");
 
-            unsafe
-            {
-                var handle = SDL2.SDL_CreateRGBSurfaceFrom(
-                    other.Surface->pixels,
-                    other.Surface->w,
-                    other.Surface->h,
-                    32,
-                    other.Surface->pitch,
-                    0x000000FF,
-                    0x0000FF00,
-                    0x00FF0000,
-                    0xFF000000
-                );
-                
-                Surface = (SDL2.SDL_Surface*)handle.ToPointer();
-                ImageHandle = SDL_gpu.GPU_CopyImageFromSurface(handle);
-            }
+            CreateEmpty(
+                other.Width,
+                other.Height,
+                other.Format,
+                true
+            );
+
+            CopyDataFrom(other);
+            Flush();
 
             SnappingMode = TextureSnappingMode.None;
         }
 
-        public Texture(int width, int height)
+        public Texture(int width, int height, PixelFormat pixelFormat = PixelFormat.RGBA)
         {
             if (width < 0)
                 throw new ArgumentOutOfRangeException(nameof(width), "Width cannot be negative.");
@@ -453,35 +417,25 @@ namespace Chroma.Graphics
             if (height < 0)
                 throw new ArgumentOutOfRangeException(nameof(height), "Height cannot be negative.");
 
-
-            var handle = SDL2.SDL_CreateRGBSurface(
-                0,
-                width,
-                height,
-                32,
-                0x000000FF,
-                0x0000FF00,
-                0x00FF0000,
-                0xFF000000
+            CreateEmpty(
+                (ushort)width,
+                (ushort)height,
+                pixelFormat,
+                true
             );
+            Flush();
 
-            if (handle == IntPtr.Zero)
-            {
-                throw new Exception($"Failed to create RGB surface: {SDL2.SDL_GetError()}");
-            }
-
-            unsafe
-            {
-                Surface = (SDL2.SDL_Surface*)handle.ToPointer();
-            }
-
-            ImageHandle = SDL_gpu.GPU_CopyImageFromSurface(handle);
             SnappingMode = TextureSnappingMode.None;
         }
 
         internal Texture(IntPtr imageHandle)
         {
             ImageHandle = imageHandle;
+
+            InitializeWithSurface(
+                SDL_gpu.GPU_CopySurfaceFromImage(imageHandle)
+            );
+
             SnappingMode = TextureSnappingMode.None;
         }
 
@@ -510,16 +464,13 @@ namespace Chroma.Graphics
         {
             EnsureNotDisposed();
 
-            unsafe
-            {
-                for (var i = 0; i < colors.Length; i++)
-                {
-                    var color = colors[i];
+            var pixelCount = Width * Height;
 
-                    var pixel = (uint*)Surface->pixels;
-                    *(pixel + i) = color.Packed.ARGB;
-                }
-            }
+            if (colors.Length != Width * Height)
+                throw new InvalidOperationException("The pixel array must be the same size as texture's.");
+
+            for (var i = 0; i < pixelCount; i++)
+                WritePixel(i * BytesPerPixel, colors[i]);
         }
 
         public void SetPixel(int x, int y, Color color)
@@ -532,16 +483,10 @@ namespace Chroma.Graphics
                 return;
             }
 
-            unsafe
-            {
-                var pixel = (uint*)((byte*)Surface->pixels +
-                                    (y * Surface->pitch) +
-                                    (x * sizeof(uint)));
-
-                *pixel = color.Packed.ARGB;
-            }
+            var i = y * Stride + (x * BytesPerPixel);
+            WritePixel(i, color);
         }
-
+        
         public Color GetPixel(int x, int y)
         {
             EnsureNotDisposed();
@@ -552,27 +497,28 @@ namespace Chroma.Graphics
                 return Color.Black;
             }
 
-            unsafe
-            {
-                var pixel = (uint*)((byte*)Surface->pixels +
-                                    (y * Surface->pitch) +
-                                    (x * sizeof(uint)));
-
-                return new Color(*pixel);
-            }
+            var i = y * Stride + (x * BytesPerPixel);
+            return ReadPixel(i);
         }
 
         public void Flush()
         {
             EnsureNotDisposed();
 
-            unsafe
+            var imgRect = new SDL_gpu.GPU_Rect
             {
-                var imgRect = new SDL_gpu.GPU_Rect {x = 0, y = 0, w = Width, h = Height};
-                var surfRect = new SDL_gpu.GPU_Rect {x = 0, y = 0, w = Surface->w, h = Surface->h};
+                x = 0,
+                y = 0,
+                w = Width,
+                h = Height
+            };
 
-                SDL_gpu.GPU_UpdateImage(ImageHandle, ref imgRect, new IntPtr(Surface), ref surfRect);
-            }
+            SDL_gpu.GPU_UpdateImageBytes(
+                ImageHandle,
+                ref imgRect,
+                _pixelData,
+                Stride
+            );
         }
 
         public void SaveToFile(string filePath, ImageFileFormat format)
@@ -618,51 +564,164 @@ namespace Chroma.Graphics
             SDL_gpu.GPU_GenerateMipmaps(ImageHandle);
         }
 
-        private void ConvertToStandardSurfaceFormat(IntPtr surfaceHandle)
+        internal IntPtr AsSdlSurface()
+            => SDL_gpu.GPU_CopySurfaceFromImage(ImageHandle);
+
+        private unsafe void InitializeWithSurface(IntPtr imageSurfaceHandle)
         {
-            unsafe
+            IntPtr rgbaSurfaceHandle;
+            SDL2.SDL_Surface* rgbaSurface;
+
+            rgbaSurfaceHandle = SDL2.SDL_ConvertSurfaceFormat(
+                imageSurfaceHandle,
+                SDL2.SDL_PIXELFORMAT_ABGR8888, // endianness? pixel order still confuses me sometimes
+                0
+            );
+
+            SDL2.SDL_FreeSurface(imageSurfaceHandle);
+            rgbaSurface = (SDL2.SDL_Surface*)rgbaSurfaceHandle.ToPointer();
+
+            CreateEmpty(
+                rgbaSurface->w,
+                rgbaSurface->h,
+                PixelFormat.RGBA,
+                ImageHandle == IntPtr.Zero
+            );
+
+            var pixels = (byte*)rgbaSurface->pixels.ToPointer();
+            var format = (SDL2.SDL_PixelFormat*)rgbaSurface->format.ToPointer();
+            var dataLength = rgbaSurface->w * rgbaSurface->h * format->BytesPerPixel;
+
+            for (var i = 0; i < dataLength; i++)
+                _pixelData[i] = pixels[i];
+
+            SDL2.SDL_FreeSurface(rgbaSurfaceHandle);
+        }
+
+        private void CreateEmpty(int width, int height, PixelFormat format, bool allocateImage)
+        {
+            var pixelCount = width * height;
+            var bytesPerPixel = 0;
+
+            switch (format)
             {
-                Surface = (SDL2.SDL_Surface*)surfaceHandle.ToPointer();
-                var fmt = ((SDL2.SDL_PixelFormat*)Surface->format.ToPointer());
+                case PixelFormat.RGB:
+                case PixelFormat.BGR:
+                    bytesPerPixel = 3;
+                    break;
 
-                var standardPixelFormat = new SDL2.SDL_PixelFormat
-                {
-                    format = SDL2.SDL_PIXELFORMAT_RGBA8888,
-                    palette = IntPtr.Zero,
-                    Amask = 0x000000FF,
-                    Rmask = 0x0000FF00,
-                    Gmask = 0x00FF0000,
-                    Bmask = 0xFF000000,
-                    BitsPerPixel = 32,
-                    BytesPerPixel = 4
-                };
-
-                if (fmt->BytesPerPixel != 4 || fmt->format != SDL2.SDL_PIXELFORMAT_RGBA8888)
-                {
-                    var rgbaSurface = SDL2.SDL_ConvertSurface(
-                        surfaceHandle,
-                        new IntPtr(&standardPixelFormat),
-                        0
-                    );
-
-                    SDL2.SDL_FreeSurface(surfaceHandle);
-                    surfaceHandle = rgbaSurface;
-
-                    Surface = (SDL2.SDL_Surface*)surfaceHandle.ToPointer();
-                }
+                case PixelFormat.RGBA:
+                case PixelFormat.BGRA:
+                case PixelFormat.ABGR:
+                    bytesPerPixel = 4;
+                    break;
             }
 
-            ImageHandle = SDL_gpu.GPU_CopyImageFromSurface(surfaceHandle);
+            Format = format;
+            BytesPerPixel = bytesPerPixel;
+
+            _pixelData = new byte[pixelCount * bytesPerPixel];
+
+            if (allocateImage)
+            {
+                ImageHandle = SDL_gpu.GPU_CreateImage(
+                    (ushort)width,
+                    (ushort)height,
+                    (SDL_gpu.GPU_FormatEnum)format
+                );
+            }
         }
+
+        private Color ReadPixel(int i)
+        {
+            var c = new Color {A = 255};
+
+            switch (Format)
+            {
+                case PixelFormat.BGR:
+                    c.B = _pixelData[i + 0];
+                    c.G = _pixelData[i + 1];
+                    c.R = _pixelData[i + 2];
+                    break;
+
+                case PixelFormat.RGB:
+                    c.R = _pixelData[i + 0];
+                    c.G = _pixelData[i + 1];
+                    c.B = _pixelData[i + 2];
+                    break;
+
+                case PixelFormat.ABGR:
+                    c.A = _pixelData[i + 0];
+                    c.B = _pixelData[i + 1];
+                    c.G = _pixelData[i + 2];
+                    c.R = _pixelData[i + 3];
+                    break;
+
+                case PixelFormat.BGRA:
+                    c.B = _pixelData[i + 0];
+                    c.G = _pixelData[i + 1];
+                    c.R = _pixelData[i + 2];
+                    c.A = _pixelData[i + 3];
+                    break;
+
+                case PixelFormat.RGBA:
+                    c.R = _pixelData[i + 3];
+                    c.G = _pixelData[i + 2];
+                    c.B = _pixelData[i + 1];
+                    c.A = _pixelData[i + 0];
+                    break;
+
+                default: throw new InvalidOperationException("Unsupported pixel format.");
+            }
+
+            return c;
+        }
+
+        private void WritePixel(int i, Color c)
+        {
+            switch (Format)
+            {
+                case PixelFormat.BGR:
+                    _pixelData[i + 0] = c.B;
+                    _pixelData[i + 1] = c.G;
+                    _pixelData[i + 2] = c.R;
+                    break;
+
+                case PixelFormat.RGB:
+                    _pixelData[i + 0] = c.R;
+                    _pixelData[i + 1] = c.G;
+                    _pixelData[i + 2] = c.B;
+                    break;
+
+                case PixelFormat.ABGR:
+                    _pixelData[i + 0] = c.A;
+                    _pixelData[i + 1] = c.B;
+                    _pixelData[i + 2] = c.G;
+                    _pixelData[i + 3] = c.R;
+                    break;
+
+                case PixelFormat.BGRA:
+                    _pixelData[i + 0] = c.B;
+                    _pixelData[i + 1] = c.G;
+                    _pixelData[i + 2] = c.R;
+                    _pixelData[i + 3] = c.A;
+                    break;
+
+                case PixelFormat.RGBA:
+                    _pixelData[i + 0] = c.R;
+                    _pixelData[i + 1] = c.G;
+                    _pixelData[i + 2] = c.B;
+                    _pixelData[i + 3] = c.A;
+                    break;
+
+                default: throw new InvalidOperationException("Unsupported pixel format.");
+            }
+        }
+
+        private void CopyDataFrom(Texture other)
+            => other._pixelData.CopyTo(_pixelData, 0);
 
         protected override void FreeNativeResources()
-        {
-            SDL_gpu.GPU_FreeImage(ImageHandle);
-
-            unsafe
-            {
-                SDL2.SDL_FreeSurface(new IntPtr(Surface));
-            }
-        }
+            => SDL_gpu.GPU_FreeImage(ImageHandle);
     }
 }

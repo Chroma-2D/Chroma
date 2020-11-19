@@ -11,6 +11,7 @@ namespace Chroma.Input
     {
         private static bool _isVisible = true;
         private IntPtr _cursorHandle;
+        private IntPtr _sdlTextureHandle;
 
         private Log Log { get; } = LogManager.GetForCurrentAssembly();
 
@@ -64,6 +65,9 @@ namespace Chroma.Input
         {
             if (_cursorHandle != IntPtr.Zero)
                 SDL2.SDL_FreeCursor(_cursorHandle);
+
+            if (_sdlTextureHandle != IntPtr.Zero)
+                SDL2.SDL_FreeSurface(_sdlTextureHandle);
         }
 
         protected override void FreeManagedResources()
@@ -71,17 +75,16 @@ namespace Chroma.Input
 
         private void Initialize()
         {
-            unsafe
-            {
-                _cursorHandle = SDL2.SDL_CreateColorCursor(
-                    new IntPtr(Texture.Surface),
-                    (int)HotSpot.X,
-                    (int)HotSpot.Y
-                );
+            _sdlTextureHandle = Texture.AsSdlSurface();
+            
+            _cursorHandle = SDL2.SDL_CreateColorCursor(
+                _sdlTextureHandle,
+                (int)HotSpot.X,
+                (int)HotSpot.Y
+            );
 
-                if (_cursorHandle == IntPtr.Zero)
-                    Log.Error($"Failed to load the cursor: {SDL2.SDL_GetError()}");
-            }
+            if (_cursorHandle == IntPtr.Zero)
+                Log.Error($"Failed to load the cursor: {SDL2.SDL_GetError()}");
         }
     }
 }

@@ -16,15 +16,15 @@ namespace Chroma
         
         private static Texture _logo;
         private static Texture _betaEmblem;
-        private static Texture _dummyFix;
         private static Texture _defaultIcon;
+        private static Texture _dummyFix;
         private static TrueTypeFont _defaultFont;
 
-        internal static Texture LogoTexture => LazyLoad(ref _logo, LogoResourceKey);
-        internal static Texture BetaEmblemTexture => LazyLoad(ref _betaEmblem, BetaEmblemResourceKey);
-        internal static Texture DefaultIconTexture => LazyLoad(ref _defaultIcon, DefaultIconResourceKey);
-        internal static Texture DummyFixTexture => LazyLoad(ref _dummyFix, DummyFixResourceKey);
-        internal static TrueTypeFont DefaultFont => LazyLoad(ref _defaultFont, DefaultFontResourceKey, 16, null);
+        internal static Texture LogoTexture => _logo ?? LazyLoad(ref _logo, LogoResourceKey);
+        internal static Texture BetaEmblemTexture => _betaEmblem ?? LazyLoad(ref _betaEmblem, BetaEmblemResourceKey);
+        internal static Texture DefaultIconTexture => _defaultIcon ?? LazyLoad(ref _defaultIcon, DefaultIconResourceKey);
+        internal static Texture DummyFixTexture => _dummyFix ?? LazyLoad(ref _dummyFix, DummyFixResourceKey);
+        internal static TrueTypeFont DefaultFont => _defaultFont ?? LazyLoad(ref _defaultFont, DefaultFontResourceKey, 16, null);
 
         private static T LazyLoad<T>(ref T field, string resourceKey, params object[] args)
         {

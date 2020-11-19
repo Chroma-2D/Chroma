@@ -26,6 +26,8 @@ namespace Chroma.Windowing
         private Vector2 _position = new Vector2(SDL2.SDL_WINDOWPOS_CENTERED, SDL2.SDL_WINDOWPOS_CENTERED);
         private WindowState _state = WindowState.Normal;
 
+        private IntPtr _currentIconPtr;
+
         internal delegate void StateUpdateDelegate(float delta);
 
         internal delegate void DrawDelegate(RenderContext context);
@@ -347,10 +349,15 @@ namespace Chroma.Windowing
             if (texture.Disposed)
                 throw new InvalidOperationException("The texture provided was already disposed.");
 
-            unsafe
-            {
-                SDL2.SDL_SetWindowIcon(Handle, new IntPtr(texture.Surface));
-            }
+            if (_currentIconPtr != IntPtr.Zero)
+                SDL2.SDL_FreeSurface(_currentIconPtr);
+
+            _currentIconPtr = texture.AsSdlSurface();
+            
+            SDL2.SDL_SetWindowIcon(
+                Handle,
+                _currentIconPtr
+            );
         }
 
         public void SaveScreenshot(string path)
@@ -404,7 +411,7 @@ namespace Chroma.Windowing
                 // This is a workaround for it until there's a better understanding of this bug.
                 //
                 SDL_gpu.GPU_BlitTransformX(
-                    EmbeddedAssets.DummyFixTexture.ImageHandle, 
+                    EmbeddedAssets.DummyFixTexture.ImageHandle,
                     IntPtr.Zero,
                     RenderTargetHandle,
                     -1, -1, 0, 0, 0, 1, 1

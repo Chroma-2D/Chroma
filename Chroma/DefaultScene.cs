@@ -47,17 +47,22 @@ namespace Chroma
                 {
                     var ranges = _welcomeMessage.FindWordRanges("Draw", "Update");
                     var color = Color.White;
-
+                    var yOff = 0f;
+                    
                     foreach (var range in ranges)
                     {
                         if (range.Includes(i))
                         {
                             color = Color.DodgerBlue;
-                            p.Y += 2 * MathF.Sin(0.25f * (_betaEmblemHue + (i * 1.25f)));
+                            yOff = 2 * MathF.Sin(0.25f * (_betaEmblemHue + (i * 1.25f)));
                         }
                     }
 
-                    return new GlyphTransformData(p) {Color = color};
+                    return new GlyphTransformData
+                    {
+                        Position = new Vector2(0, yOff),
+                        Color = color
+                    };
                 }
             );
 

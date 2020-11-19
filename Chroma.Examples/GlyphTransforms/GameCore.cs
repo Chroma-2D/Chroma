@@ -35,10 +35,10 @@ namespace GlyphTransforms
                 new Vector2(8),
                 (c, i, p, g) =>
                 {
-                    var transform = new GlyphTransformData(p);
-
-                    transform.Color = _colors[i % _colors.Count];
-                    return transform;
+                    return new GlyphTransformData
+                    {
+                        Color = _colors[i % _colors.Count]
+                    };
                 }
             );
 
@@ -48,11 +48,10 @@ namespace GlyphTransforms
                 (c, i, p, g) =>
                 {
                     var offsetY = 3 * MathF.Sin(_angle + (i * 4));
-
-                    var pos = new Vector2(p.X, p.Y);
-                    pos.Y += offsetY;
-
-                    return new GlyphTransformData(pos);
+                    return new GlyphTransformData
+                    {
+                        Position = new Vector2(0, offsetY)
+                    };
                 }
             );
 
@@ -72,8 +71,9 @@ namespace GlyphTransforms
                     var offsetY = 3 * MathF.Sin(_angle + (i * 4));
                     pointOnCircle.Y += offsetY;
 
-                    return new GlyphTransformData(pointOnCircle + new Vector2(300))
+                    return new GlyphTransformData
                     {
+                        Position = pointOnCircle + new Vector2(300) - p,
                         Rotation = _angle * 10,
                         Color = _colors[i % _colors.Count]
                     };

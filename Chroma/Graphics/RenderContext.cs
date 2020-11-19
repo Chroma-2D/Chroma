@@ -93,7 +93,7 @@ namespace Chroma.Graphics
             SDL_gpu.GPU_SetDefaultAnchor(0, 0);
 
             Transform = new RenderTransform(this);
-            
+
             ShapeBlendingEnabled = false;
             ResetShapeBlending();
         }
@@ -102,7 +102,7 @@ namespace Chroma.Graphics
         {
             ShapeColorBlendingEquation = colorBlend;
             ShapeAlphaBlendingEquation = alphaBlend;
-            
+
             SDL_gpu.GPU_SetShapeBlendEquation(
                 (SDL_gpu.GPU_BlendEqEnum)colorBlend,
                 (SDL_gpu.GPU_BlendEqEnum)alphaBlend
@@ -117,7 +117,7 @@ namespace Chroma.Graphics
 
             ShapeDestinationColorBlendingFunction = destinationColorBlend;
             ShapeDestinationAlphaBlendingFunction = destinationAlphaBlend;
-            
+
             SDL_gpu.GPU_SetShapeBlendFunction(
                 (SDL_gpu.GPU_BlendFuncEnum)sourceColorBlend,
                 (SDL_gpu.GPU_BlendFuncEnum)destinationColorBlend,
@@ -139,7 +139,7 @@ namespace Chroma.Graphics
 
             ShapeColorBlendingEquation = (BlendingEquation)blendModeInfo.color_equation;
             ShapeAlphaBlendingEquation = (BlendingEquation)blendModeInfo.alpha_equation;
-            
+
             SDL_gpu.GPU_SetShapeBlendMode(gpuPreset);
         }
 
@@ -407,7 +407,7 @@ namespace Chroma.Graphics
         }
 
         public void DrawString(BitmapFont font, string text, Vector2 position,
-            Func<char, int, Vector2, BitmapGlyph, GlyphTransformData> perCharTransform = null)
+            BitmapGlyphTransform glyphTransform = null)
         {
             var x = position.X;
             var y = position.Y;
@@ -440,10 +440,10 @@ namespace Chroma.Graphics
                 var pageTexture = font.Pages[glyph.Page].Texture;
 
                 var pos = new Vector2(x, y);
-                var transform = new GlyphTransformData(pos);
+                var transform = new GlyphTransformData();
 
-                if (perCharTransform != null)
-                    transform = perCharTransform(c, i, pos, glyph);
+                if (glyphTransform != null)
+                    transform = glyphTransform(c, i, pos, glyph);
 
                 var kerningAmount = 0f;
                 if (i != 0 && font.UseKerning)
@@ -459,8 +459,8 @@ namespace Chroma.Graphics
                     pageTexture.ImageHandle,
                     ref rect,
                     CurrentRenderTarget,
-                    transform.Position.X + glyph.OffsetX + kerningAmount,
-                    transform.Position.Y + glyph.OffsetY,
+                    pos.X + transform.Position.X + glyph.OffsetX + kerningAmount,
+                    pos.Y + transform.Position.Y + glyph.OffsetY,
                     transform.Origin.X,
                     transform.Origin.Y,
                     transform.Rotation,
@@ -474,18 +474,18 @@ namespace Chroma.Graphics
         }
 
         public void DrawString(BitmapFont font, string text, Vector2 position, Color color)
-            => DrawString(font, text, position, (c, i, p, g) => new GlyphTransformData(p) {Color = color});
+            => DrawString(font, text, position, (c, i, p, g) => new GlyphTransformData {Color = color});
 
         public void DrawString(string text, Vector2 position,
-            Func<char, int, Vector2, TrueTypeGlyph, GlyphTransformData> perCharTransform = null)
+            TrueTypeFontGlyphTransform perCharTransform = null)
             => DrawString(EmbeddedAssets.DefaultFont, text, position, perCharTransform);
 
         public void DrawString(string text, Vector2 position, Color color)
             => DrawString(EmbeddedAssets.DefaultFont, text, position,
-                (c, i, p, g) => new GlyphTransformData(p) {Color = color});
+                (c, i, p, g) => new GlyphTransformData {Color = color});
 
         public void DrawString(TrueTypeFont font, string text, Vector2 position,
-            Func<char, int, Vector2, TrueTypeGlyph, GlyphTransformData> perCharTransform = null)
+            TrueTypeFontGlyphTransform glyphTransform = null)
         {
             var x = position.X;
             var y = position.Y;
@@ -532,18 +532,19 @@ namespace Chroma.Graphics
                     xPos += kerning.X;
                 }
 
-                var transform = new GlyphTransformData(new Vector2(xPos, yPos));
+                var pos = new Vector2(xPos, yPos);
+                var transform = new GlyphTransformData();
 
-                if (perCharTransform != null)
-                    transform = perCharTransform(c, i, new Vector2(xPos, yPos), info);
+                if (glyphTransform != null)
+                    transform = glyphTransform(c, i, pos, info);
 
                 SDL_gpu.GPU_SetColor(font.Atlas.ImageHandle, Color.ToSdlColor(transform.Color));
                 SDL_gpu.GPU_BlitTransformX(
                     font.Atlas.ImageHandle,
                     ref srcRect,
                     CurrentRenderTarget,
-                    transform.Position.X,
-                    transform.Position.Y,
+                    pos.X + transform.Position.X,
+                    pos.Y + transform.Position.Y,
                     transform.Origin.X,
                     transform.Origin.Y,
                     transform.Rotation,
@@ -557,7 +558,7 @@ namespace Chroma.Graphics
         }
 
         public void DrawString(TrueTypeFont font, string text, Vector2 position, Color color)
-            => DrawString(font, text, position, (c, i, p, g) => new GlyphTransformData(p) {Color = color});
+            => DrawString(font, text, position, (c, i, p, g) => new GlyphTransformData {Color = color});
 
         public void DrawBatch(DrawOrder order = DrawOrder.BackToFront, bool discardBatchAfterUse = true)
         {

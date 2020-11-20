@@ -9,6 +9,7 @@ using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.Input;
 using Chroma.Natives.SDL;
+using Chroma.Threading;
 using Chroma.Windowing;
 
 namespace Chroma
@@ -49,6 +50,7 @@ namespace Chroma
 
             _fixedUpdateThread = new Thread(FixedUpdateThread);
 
+            Dispatcher.MainThreadId = Thread.CurrentThread.ManagedThreadId;
             Graphics = new GraphicsManager(this);
             
             Window = new Window(this)

@@ -1,7 +1,9 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Numerics;
 using System.Threading.Tasks;
 using Chroma;
+using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.Input;
 using Chroma.Threading;
@@ -11,6 +13,7 @@ namespace Asynchronicity
 {
     public class GameCore : Game
     {
+        private readonly Log _log = LogManager.GetForCurrentAssembly();
         private RenderTarget _target;
 
         protected override void LoadContent()
@@ -20,8 +23,9 @@ namespace Asynchronicity
         protected override void Draw(RenderContext context)
         {
             context.DrawString(
-                "Press F1 to asynchronously dispose and recreate the render target, causing an AccessViolationException.\n" +
-                "Press F2 to queue the render target creation for execution on the main thread.",
+                "Press F1 to asynchronously dispose and recreate the render target\n" +
+                "causing an InvalidOperationException.\n\n" +
+                "Press F2 to asynchronously queue the render target creation for execution on the main thread.",
                 new Vector2(8)
             );
 
@@ -51,8 +55,15 @@ namespace Asynchronicity
             {
                 Task.Run(() =>
                 {
-                    _target?.Dispose();
-                    _target = new RenderTarget(Window.Size);
+                    try
+                    {
+                        _target?.Dispose();
+                        _target = new RenderTarget(Window.Size);
+                    }
+                    catch (InvalidOperationException ioe)
+                    {
+                        _log.Error($"Caught exception: {ioe.Message}");
+                    }
                 });
             }
             else if (e.KeyCode == KeyCode.F2)
@@ -61,7 +72,11 @@ namespace Asynchronicity
                 {
                     await Dispatcher.RunOnMainThread(() =>
                     {
-                        _target?.Dispose();
+                        if (_target != null && !_target.Disposed)
+                        {
+                            _target.Dispose();
+                        }
+                        
                         _target = new RenderTarget(Window.Size);
                     });
                 });

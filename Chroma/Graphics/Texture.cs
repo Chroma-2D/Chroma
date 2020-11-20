@@ -519,6 +519,7 @@ namespace Chroma.Graphics
 
         public void Flush()
         {
+            EnsureOnMainThread();
             EnsureNotDisposed();
 
             if (_pixelData.Length < Width * Height * BytesPerPixel)

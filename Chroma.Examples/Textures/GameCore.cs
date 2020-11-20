@@ -54,7 +54,7 @@ namespace Textures
             _virtRes = new Size(_burger.Width, _burger.Height);
 
             _dynTex = new Texture(256, 256);
-            _dynTex.Flush();
+            _dynTex.FilteringMode = TextureFilteringMode.NearestNeighbor;
         }
 
         protected override void Draw(RenderContext context)
@@ -73,7 +73,7 @@ namespace Textures
                 _dynTex,
                 Window.Center + new Vector2(127, 0),
                 Vector2.One,
-                Vector2.Zero,
+                Vector2.Zero, 
                 0
             );
 
@@ -85,7 +85,6 @@ namespace Textures
                 rotation: 0f,
                 new Rectangle(_currentTileIndex * 64, 0, 64, 64)
             );
-
 
             context.Rectangle(
                 ShapeMode.Fill,
@@ -120,6 +119,9 @@ namespace Textures
 
                     if (x > 127)
                         mod = (x + y) / 2;
+
+                    if (x > 127 && y < 127)
+                        mod = (int)(Math.Abs(x / 2 - y / 2) + (5 * MathF.Sin(_wave)));
 
                     _dynTex[x, y] = _colors[((int)PerformanceCounter.LifetimeFrames + mod) % _colors.Length];
                 }

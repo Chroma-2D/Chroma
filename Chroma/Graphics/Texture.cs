@@ -2,9 +2,11 @@
 using System.Drawing;
 using System.IO;
 using System.Numerics;
+using System.Threading;
 using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
 using Chroma.Natives.SDL;
+using Chroma.Threading;
 
 namespace Chroma.Graphics
 {
@@ -37,7 +39,7 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
-                
+
                 unsafe
                 {
                     return Image->texture_h;
@@ -367,6 +369,8 @@ namespace Chroma.Graphics
 
         public Texture(Stream stream)
         {
+            EnsureOnMainThread();
+
             var bytes = new byte[stream.Length];
             stream.Read(bytes, 0, bytes.Length);
 
@@ -393,6 +397,8 @@ namespace Chroma.Graphics
 
         public Texture(Texture other)
         {
+            EnsureOnMainThread();
+
             if (other.Disposed)
                 throw new InvalidOperationException("The source texture has been disposed.");
 
@@ -411,6 +417,8 @@ namespace Chroma.Graphics
 
         public Texture(int width, int height, PixelFormat pixelFormat = PixelFormat.RGBA)
         {
+            EnsureOnMainThread();
+
             if (width < 0)
                 throw new ArgumentOutOfRangeException(nameof(width), "Width cannot be negative.");
 
@@ -430,6 +438,11 @@ namespace Chroma.Graphics
 
         internal Texture(IntPtr imageHandle)
         {
+            EnsureOnMainThread();
+
+            if (imageHandle == IntPtr.Zero)
+                throw new ArgumentException("Invalid image handle.");
+
             ImageHandle = imageHandle;
 
             InitializeWithSurface(
@@ -441,6 +454,8 @@ namespace Chroma.Graphics
 
         public void SetBlendingEquations(BlendingEquation colorBlend, BlendingEquation alphaBlend)
         {
+            EnsureNotDisposed();
+
             SDL_gpu.GPU_SetBlendEquation(
                 ImageHandle,
                 (SDL_gpu.GPU_BlendEqEnum)colorBlend,
@@ -451,6 +466,8 @@ namespace Chroma.Graphics
         public void SetBlendingFunctions(BlendingFunction sourceColorBlend, BlendingFunction sourceAlphaBlend,
             BlendingFunction destinationColorBlend, BlendingFunction destinationAlphaBlend)
         {
+            EnsureNotDisposed();
+
             SDL_gpu.GPU_SetBlendFunction(
                 ImageHandle,
                 (SDL_gpu.GPU_BlendFuncEnum)sourceColorBlend,
@@ -486,7 +503,7 @@ namespace Chroma.Graphics
             var i = y * Stride + (x * BytesPerPixel);
             WritePixel(i, color);
         }
-        
+
         public Color GetPixel(int x, int y)
         {
             EnsureNotDisposed();
@@ -504,6 +521,12 @@ namespace Chroma.Graphics
         public void Flush()
         {
             EnsureNotDisposed();
+
+            if (_pixelData.Length < Width * Height * BytesPerPixel)
+            {
+                _log.Error("Cannot flush. Pixel data size mismatch.");
+                return;
+            }
 
             var imgRect = new SDL_gpu.GPU_Rect
             {
@@ -634,6 +657,12 @@ namespace Chroma.Graphics
 
         private Color ReadPixel(int i)
         {
+            if (i + BytesPerPixel >= _pixelData.Length)
+            {
+                _log.Error($"ReadPixel: (pixel start index) {i}+{BytesPerPixel} (pixelsize) is out of bounds.");
+                return Color.Transparent;
+            }
+
             var c = new Color {A = 255};
 
             switch (Format)
@@ -679,6 +708,12 @@ namespace Chroma.Graphics
 
         private void WritePixel(int i, Color c)
         {
+            if (i + BytesPerPixel >= _pixelData.Length)
+            {
+                _log.Error($"WritePixel: (pixel start index) {i}+{BytesPerPixel} (pixelsize) is out of bounds.");
+                return;
+            }
+
             switch (Format)
             {
                 case PixelFormat.BGR:
@@ -720,6 +755,13 @@ namespace Chroma.Graphics
 
         private void CopyDataFrom(Texture other)
             => other._pixelData.CopyTo(_pixelData, 0);
+
+        private void EnsureOnMainThread()
+        {
+            if (!Dispatcher.IsMainThread)
+                throw new InvalidOperationException(
+                    "This operation is not thread-safe and must be scheduled to run on main thread.");
+        }
 
         protected override void FreeNativeResources()
             => SDL_gpu.GPU_FreeImage(ImageHandle);

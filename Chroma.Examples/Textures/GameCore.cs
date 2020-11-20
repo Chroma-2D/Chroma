@@ -1,8 +1,10 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Numerics;
 using Chroma;
 using Chroma.ContentManagement.FileSystem;
+using Chroma.Diagnostics;
 using Chroma.Graphics;
 using Chroma.Input;
 using Color = Chroma.Graphics.Color;
@@ -13,14 +15,34 @@ namespace Textures
     {
         private Texture _tileMap;
         private Texture _burger;
+        private Texture _dynTex;
 
         private int _totalTiles;
         private int _currentTileIndex;
         private Size _virtRes;
 
+        private Random _rnd = new Random();
+        private float _rotation;
+        private float _wave;
+
+        private Color[] _colors = new[]
+        {
+            Color.Aqua,
+            Color.Yellow,
+            Color.Green,
+            Color.CornflowerBlue,
+            Color.Violet,
+            Color.Thistle,
+            Color.Orange
+        };
+
         public GameCore()
+            : base(false)
         {
             Content = new FileSystemContentProvider(this, Path.Combine(LocationOnDisk, "../../../../_common"));
+            GraphicsManager.LimitFramerate = false;
+
+            Cursor.IsVisible = false;
         }
 
         protected override void LoadContent()
@@ -30,6 +52,9 @@ namespace Textures
 
             _burger = Content.Load<Texture>("Textures/burg.png");
             _virtRes = new Size(_burger.Width, _burger.Height);
+
+            _dynTex = new Texture(256, 256);
+            _dynTex.Flush();
         }
 
         protected override void Draw(RenderContext context)
@@ -41,6 +66,15 @@ namespace Textures
                 "Use F2-F5 to switch between different blending modes.\n" +
                 $"{Color.Brown.R}, {Color.Brown.G}, {Color.Brown.B}: {Color.Brown.Hue}, {Color.Brown.Saturation}, {Color.Brown.Value}",
                 new Vector2(8)
+            );
+
+            _dynTex.Flush();
+            context.DrawTexture(
+                _dynTex,
+                Window.Center + new Vector2(127, 0),
+                Vector2.One,
+                Vector2.Zero,
+                0
             );
 
             context.DrawTexture(
@@ -58,14 +92,38 @@ namespace Textures
                 new Vector2(256),
                 128, 128, Color.HotPink
             );
-            
+
             context.DrawTexture(
                 _burger,
-                Mouse.GetPosition(),
+                Mouse.GetPosition() + _burger.Center + new Vector2(0, 5 * MathF.Sin(_wave)),
                 Vector2.One,
-                Vector2.Zero,
-                0f
+                _burger.Center,
+                _rotation
             );
+        }
+
+        protected override void Update(float delta)
+        {
+            Window.Title = PerformanceCounter.FPS.ToString("F2");
+
+            _wave += 10 * delta;
+            _rotation += 50 * delta;
+
+            for (var y = 0; y < _dynTex.Height; y++)
+            {
+                for (var x = 0; x < _dynTex.Width; x++)
+                {
+                    var mod = x / (y + 1);
+
+                    if (y > 127)
+                        mod = x * y;
+
+                    if (x > 127)
+                        mod = (x + y) / 2;
+
+                    _dynTex[x, y] = _colors[((int)PerformanceCounter.LifetimeFrames + mod) % _colors.Length];
+                }
+            }
         }
 
         protected override void KeyPressed(KeyEventArgs e)
@@ -108,7 +166,7 @@ namespace Textures
                     BlendingFunction.DestinationAlpha,
                     BlendingFunction.One
                 );
-                
+
                 _burger.SetBlendingEquations(
                     BlendingEquation.ReverseSubtract,
                     BlendingEquation.ReverseSubtract

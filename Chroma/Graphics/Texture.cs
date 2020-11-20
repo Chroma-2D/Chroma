@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.IO;
 using System.Numerics;
-using System.Threading;
 using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
 using Chroma.Natives.SDL;
@@ -436,17 +435,17 @@ namespace Chroma.Graphics
             SnappingMode = TextureSnappingMode.None;
         }
 
-        internal Texture(IntPtr imageHandle)
+        internal Texture(IntPtr gpuImageHandle)
         {
             EnsureOnMainThread();
 
-            if (imageHandle == IntPtr.Zero)
+            if (gpuImageHandle == IntPtr.Zero)
                 throw new ArgumentException("Invalid image handle.");
 
-            ImageHandle = imageHandle;
+            ImageHandle = gpuImageHandle;
 
             InitializeWithSurface(
-                SDL_gpu.GPU_CopySurfaceFromImage(imageHandle)
+                SDL_gpu.GPU_CopySurfaceFromImage(gpuImageHandle)
             );
 
             SnappingMode = TextureSnappingMode.None;
@@ -657,12 +656,6 @@ namespace Chroma.Graphics
 
         private Color ReadPixel(int i)
         {
-            if (i + BytesPerPixel >= _pixelData.Length)
-            {
-                _log.Error($"ReadPixel: (pixel start index) {i}+{BytesPerPixel} (pixelsize) is out of bounds.");
-                return Color.Transparent;
-            }
-
             var c = new Color {A = 255};
 
             switch (Format)
@@ -708,12 +701,6 @@ namespace Chroma.Graphics
 
         private void WritePixel(int i, Color c)
         {
-            if (i + BytesPerPixel >= _pixelData.Length)
-            {
-                _log.Error($"WritePixel: (pixel start index) {i}+{BytesPerPixel} (pixelsize) is out of bounds.");
-                return;
-            }
-
             switch (Format)
             {
                 case PixelFormat.BGR:

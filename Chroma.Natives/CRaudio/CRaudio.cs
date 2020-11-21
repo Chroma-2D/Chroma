@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Chroma.Natives.CRaudio
@@ -14,6 +15,14 @@ namespace Chroma.Natives.CRaudio
         internal const int CR_ERROR_OGGVORBIS_STREAM_INVALID = 0xA010;
         internal const int CR_ERROR_OGGVORBIS_FILE_CORRUPT = 0xA011;
 
+        internal delegate bool AudioLoaderDelegate(string path, out CRaudio_LoadInfo info);
+
+        internal static List<AudioLoaderDelegate> AudioLoaders = new List<AudioLoaderDelegate>
+        {
+            CR_LoadOgg,
+            CR_LoadTrackerModule
+        };
+        
         [StructLayout(LayoutKind.Sequential)]
         internal struct CRaudio_LoadInfo
         {
@@ -30,7 +39,13 @@ namespace Chroma.Natives.CRaudio
         );
 
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern bool CR_FreeOgg([In] ref CRaudio_LoadInfo info);
+        internal static extern bool CR_LoadTrackerModule(
+            [In, MarshalAs(UnmanagedType.LPStr)] string path,
+            out CRaudio_LoadInfo info
+        );
+
+        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern bool CR_Free([In] ref CRaudio_LoadInfo info);
 
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int CR_GetError();

@@ -8,7 +8,7 @@ namespace Chroma.Audio
     {
         private readonly Log _log = LogManager.GetForCurrentAssembly();
         private CRaudio.CRaudio_LoadInfo _loadInfo;
-        
+
         internal Sound(OutputDevice device) : base(device)
         {
         }
@@ -35,13 +35,22 @@ namespace Chroma.Audio
                 _log.Error("Cannot load data into a source without a valid buffer.");
                 return false;
             }
-            
-            if (!CRaudio.CR_LoadOgg(path, out _loadInfo))
+
+            var success = false;
+            for (var i = 0; i < CRaudio.AudioLoaders.Count; i++)
             {
-                _log.Error($"Failed to load OGGvorbis file: 0x{CRaudio.CR_GetError():X4}");
+                success = CRaudio.AudioLoaders[i](path, out _loadInfo);
+
+                if (success)
+                    break;
+            }
+
+            if (!success)
+            {
+                _log.Error("Unrecognized audio file format.");
                 return false;
             }
-            
+
             Al.alBufferData(
                 Buffer, 
                 _loadInfo.format,
@@ -51,7 +60,6 @@ namespace Chroma.Audio
             );
 
             var error = Device.Manager.LogOpenAlError("Failed to buffer sound data: ");
-            
             if (error != Al.AL_NO_ERROR)
                 return false;
 
@@ -64,7 +72,7 @@ namespace Chroma.Audio
             Al.alDeleteBuffer(ref Buffer);
             Al.alDeleteSource(ref Handle);
             
-            CRaudio.CR_FreeOgg(ref _loadInfo);
+            CRaudio.CR_Free(ref _loadInfo);
         }
     }
 }

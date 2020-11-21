@@ -91,7 +91,7 @@ namespace Chroma
             => _defaultScene?.Draw(context);
 
         protected virtual void Update(float delta)
-            => _defaultScene.Update(delta);
+            => _defaultScene?.Update(delta);
         
         protected virtual void LoadContent()
         {

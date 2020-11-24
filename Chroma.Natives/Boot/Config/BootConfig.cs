@@ -17,8 +17,5 @@ namespace Chroma.Natives.Boot.Config
         
         [JsonPropertyName("sdl_modules")]
         public SdlModuleConfig SdlModules { get; private set; } = new SdlModuleConfig();
-
-        [JsonPropertyName("mixer_modules")]
-        public SdlMixerConfig MixerModules { get; private set; } = new SdlMixerConfig();
     }
 }

@@ -83,7 +83,6 @@ namespace Chroma
             Audio.Dispose();
             Content.Dispose();
 
-            SDL_mixer.Mix_Quit();
             SDL_gpu.GPU_Quit();
             SDL2.SDL_Quit();
 

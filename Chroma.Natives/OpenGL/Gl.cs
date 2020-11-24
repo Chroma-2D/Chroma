@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using Chroma.Natives.SDL;
 
-namespace Chroma.Natives.GL
+namespace Chroma.Natives.OpenGL
 {
     internal static class Gl
     {

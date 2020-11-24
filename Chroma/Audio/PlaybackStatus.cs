@@ -1,4 +1,4 @@
-namespace Chroma.Audio
+﻿namespace Chroma.Audio
 {
     public enum PlaybackStatus
     {

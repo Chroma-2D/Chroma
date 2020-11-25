@@ -11,7 +11,7 @@ namespace MusicAndSounds
 {
     public class GameCore : Game
     {
-        // private Sound _doomShotgun;
+        private Sound _doomShotgun;
         private Music _groovyMusic;
 
         public GameCore()
@@ -21,7 +21,7 @@ namespace MusicAndSounds
 
         protected override void LoadContent()
         {
-            // _doomShotgun = Content.Load<Sound>("Sounds/doomsg.wav");
+            _doomShotgun = Content.Load<Sound>("Sounds/doomsg.wav");
             _groovyMusic = Content.Load<Music>("Music/groovy.mp3");
         }
 
@@ -29,10 +29,10 @@ namespace MusicAndSounds
         {
             context.DrawString(
                 $"Use <F1> to start/stop the groovy music ({_groovyMusic.Status}) [{_groovyMusic.PositionSeconds}/{_groovyMusic.Length}].\n" +
-                "Use <F2> to pause/unpause the groovy music.\n",
-                // $"Use <space> to play the shotgun sound. ({_doomShotgun.Status})\n" +
-                // $"Use <F3>/<F4> to tweak the shotgun sound volume -/+ ({_doomShotgun.Volume}).\n" +
-                // $"Use <F5>/<F6> to tweak the groovy music volume -/+ ({Audio.MusicVolume}).",
+                "Use <F2> to pause/unpause the groovy music.\n" +
+                $"Use <space> to play the shotgun sound. ({_doomShotgun.Status})\n" +
+                $"Use <F3>/<F4> to tweak the shotgun sound volume -/+ ({_doomShotgun.Volume}).\n" +
+                $"Use <F5>/<F6> to tweak the master volume -/+ ({Audio.MasterVolume}).",
                 new Vector2(8)
             );
         }
@@ -55,17 +55,17 @@ namespace MusicAndSounds
                         _groovyMusic.Play();
                     break;
                 
-                // case KeyCode.Space:
-                //     _doomShotgun.PlayOneShot();
-                //     break;
-                //
-                // case KeyCode.F3:
-                //     _doomShotgun.Volume--;
-                //     break;
-                //
-                // case KeyCode.F4:
-                //     _doomShotgun.Volume++;
-                //     break;
+                case KeyCode.Space:
+                    _doomShotgun.ForcePlay();
+                    break;
+                
+                case KeyCode.F3:
+                    _doomShotgun.Volume--;
+                    break;
+                
+                case KeyCode.F4:
+                    _doomShotgun.Volume++;
+                    break;
                 
                 case KeyCode.F5:
                     Audio.MasterVolume--;

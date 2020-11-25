@@ -2,7 +2,8 @@
 
 namespace Chroma.Audio.Spatial
 {
-    public abstract class SpatialProperties<T> where T : AudioSource
+    // todo decide if 3d processing is really necessary
+    internal abstract class SpatialProperties<T> where T : AudioSource
     {
         protected T Owner { get; }
 

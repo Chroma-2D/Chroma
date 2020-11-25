@@ -8,27 +8,66 @@ namespace Chroma.Audio.Sources
     public abstract class AudioSource : AudioObject
     {
         private readonly Log _log = LogManager.GetForCurrentAssembly();
+        
+        private bool _tickWhenSilent;
+        private bool _killAfterGoingSilent;
+        private bool _isLooping;
+        private float _volume;
 
         protected AudioFilter[] Filters { get; } = new AudioFilter[SoLoud.SOLOUD_MAX_FILTERS];
 
         internal uint VoiceHandle { get; private set; }
 
-        internal bool VoiceHandleValid => SoLoud.Soloud_isValidVoiceHandle(
+        internal virtual bool VoiceHandleValid => SoLoud.Soloud_isValidVoiceHandle(
             AudioManager.Instance.Handle,
             VoiceHandle
         );
 
-        public abstract bool IsLooping { get; set; }
+        public virtual bool KeepTickingWhenInaudible
+        {
+            get => _tickWhenSilent;
+            set
+            {
+                _tickWhenSilent = value;
+                SetInaudibleBehavior(_tickWhenSilent, _killAfterGoingSilent);
+            }
+        }
 
-        public abstract bool KeepTickingWhenInaudible { get; set; }
-        public abstract bool KillAfterGoingInaudible { get; set; }
-
+        public virtual bool KillAfterGoingInaudible
+        {
+            get => _killAfterGoingSilent;
+            set
+            {
+                _killAfterGoingSilent = value;
+                SetInaudibleBehavior(_tickWhenSilent, _killAfterGoingSilent);
+            }
+        }
+        
+        public virtual bool IsLooping
+        {
+            get => _isLooping;
+            set
+            {
+                _isLooping = value;
+                SetLooping(_isLooping);
+            }
+        }
+        
+        public virtual float Volume
+        {
+            get => _volume;
+            set
+            {
+                _volume = value;
+                SetVolume(_volume);
+            }
+        }
+        
         public abstract double LoopingPoint { get; set; }
         
         public abstract bool SupportsLength { get; }
-        public abstract double Length { get; }
-
-        public abstract float Volume { get; set; }
+        public virtual double Length =>
+            throw new NotSupportedException("This audio source does not support length retrieval.");
 
         public PlaybackStatus Status
         {
@@ -36,7 +75,7 @@ namespace Chroma.Audio.Sources
             {
                 if (!SoLoud.Soloud_isValidVoiceHandle(AudioManager.Instance.Handle, VoiceHandle))
                     return PlaybackStatus.Stopped;
-                
+
                 if (SoLoud.Soloud_getPause(AudioManager.Instance.Handle, VoiceHandle))
                     return PlaybackStatus.Paused;
 
@@ -72,7 +111,7 @@ namespace Chroma.Audio.Sources
             Handle,
             VoiceHandle
         );
-        
+
         internal AudioSource(IntPtr handle) : base(handle)
         {
         }
@@ -91,6 +130,9 @@ namespace Chroma.Audio.Sources
 
         protected abstract void ApplyFilter(int slot, AudioFilter filter);
         protected abstract void ClearFilter(int slot);
+        protected abstract void SetInaudibleBehavior(bool tickWhenSilent, bool killAfterGoingSilent);
+        protected abstract void SetLooping(bool looping);
+        protected abstract void SetVolume(float volume);
 
         public void FadeVolume(float targetValue, double fadeSeconds)
         {
@@ -119,7 +161,7 @@ namespace Chroma.Audio.Sources
                 secondsFromNow
             );
         }
-        
+
         public void FadePan(float targetValue, double fadeSeconds)
         {
             SoLoud.Soloud_fadePan(
@@ -150,13 +192,38 @@ namespace Chroma.Audio.Sources
                     false,
                     0
                 );
-
             }
             else
             {
                 Stop();
                 Play();
             }
+        }
+
+        public void ForcePlay()
+        {
+            VoiceHandle = SoLoud.Soloud_playEx(
+                AudioManager.Instance.Handle,
+                Handle,
+                1.0f,
+                0.0f,
+                false,
+                0
+            );
+        }
+
+        public void PlayClocked(float frameTime)
+        {
+            Stop();
+
+            VoiceHandle = SoLoud.Soloud_playClockedEx(
+                AudioManager.Instance.Handle,
+                frameTime,
+                Handle,
+                1.0f,
+                0.0f,
+                0
+            );
         }
 
         public void Pause()

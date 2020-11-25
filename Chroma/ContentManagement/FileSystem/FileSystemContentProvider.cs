@@ -157,8 +157,8 @@ namespace Chroma.ContentManagement.FileSystem
 
             RegisterImporter<BitmapFont>((path, args) => { return new BitmapFont(path); });
 
-            // RegisterImporter<Sound>((path, args) => { return _game.Audio.CreateSound(path); });
-            //
+            RegisterImporter<Sound>((path, args) => { return new Sound(path); });
+            
             RegisterImporter<Music>((path, args) => { return new Music(path); });
 
             RegisterImporter<Cursor>((path, args) =>

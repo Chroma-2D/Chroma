@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.Design.Serialization;
 using System.IO;
 using Chroma.Audio.Filters;
 using Chroma.Diagnostics.Logging;
@@ -11,42 +10,6 @@ namespace Chroma.Audio.Sources
     {
         private readonly Log _log = LogManager.GetForCurrentAssembly();
 
-        private bool _isLooping;
-        private bool _tickWhenInaudible;
-        private bool _killAfterGoingInaudible;
-
-        private float _volume = 1.0f;
-
-        public override bool IsLooping
-        {
-            get => _isLooping;
-            set
-            {
-                _isLooping = value;
-                SoLoud.WavStream_setLooping(Handle, _isLooping);
-            }
-        }
-
-        public override bool KeepTickingWhenInaudible
-        {
-            get => _tickWhenInaudible;
-            set
-            {
-                _tickWhenInaudible = value;
-                SoLoud.WavStream_setInaudibleBehavior(Handle, _tickWhenInaudible, _killAfterGoingInaudible);
-            }
-        }
-
-        public override bool KillAfterGoingInaudible
-        {
-            get => _killAfterGoingInaudible;
-            set
-            {
-                _killAfterGoingInaudible = value;
-                SoLoud.WavStream_setInaudibleBehavior(Handle, _tickWhenInaudible, _killAfterGoingInaudible);
-            }
-        }
-
         public override double LoopingPoint
         {
             get => SoLoud.WavStream_getLoopPoint(Handle);
@@ -55,17 +18,7 @@ namespace Chroma.Audio.Sources
 
         public override bool SupportsLength => true;
         public override double Length => SoLoud.WavStream_getLength(Handle);
-
-        public override float Volume
-        {
-            get => _volume;
-            set
-            {
-                _volume = value;
-                SoLoud.WavStream_setVolume(Handle, _volume);
-            }
-        }
-
+        
         public Music(string filePath)
             : base(SoLoud.WavStream_create())
         {
@@ -91,7 +44,7 @@ namespace Chroma.Audio.Sources
         {
             ValidateHandle();
 
-            var error = 0;
+            int error;
             
             using (var ms = new MemoryStream())
             {
@@ -124,11 +77,20 @@ namespace Chroma.Audio.Sources
             }
         }
 
+        protected override void SetInaudibleBehavior(bool mustTick, bool killAfterGoingSilent)
+            => SoLoud.WavStream_setInaudibleBehavior(Handle, mustTick, killAfterGoingSilent);
+
+        protected override void SetLooping(bool looping)
+            => SoLoud.WavStream_setLooping(Handle, looping);
+
         protected override void ApplyFilter(int slot, AudioFilter filter)
             => SoLoud.WavStream_setFilter(Handle, (uint)slot, filter.Handle);
 
         protected override void ClearFilter(int slot)
             => SoLoud.WavStream_setFilter(Handle, (uint)slot, IntPtr.Zero);
+        
+        protected override void SetVolume(float volume)
+            => SoLoud.WavStream_setVolume(Handle, volume);
 
         protected override void FreeNativeResources()
         {

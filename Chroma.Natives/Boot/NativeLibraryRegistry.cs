@@ -100,7 +100,7 @@ namespace Chroma.Natives.Boot
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                var handle = Posix.dlopen(absoluteFilePath, Posix.RTLD_NOW | Posix.RTLD_GLOBAL);
+                var handle = Posix.dlopen(absoluteFilePath, Posix.RTLD_LAZY | Posix.RTLD_GLOBAL);
 
                 if (handle == IntPtr.Zero)
                     throw new NativeLoaderException(

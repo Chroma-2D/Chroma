@@ -28,7 +28,7 @@ namespace MusicAndSounds
         protected override void Draw(RenderContext context)
         {
             context.DrawString(
-                $"Use <F1> to start/stop the groovy music ({_groovyMusic.Status}).\n" +
+                $"Use <F1> to start/stop the groovy music ({_groovyMusic.Status}) [{_groovyMusic.PositionSeconds}/{_groovyMusic.Length}].\n" +
                 "Use <F2> to pause/unpause the groovy music.\n",
                 // $"Use <space> to play the shotgun sound. ({_doomShotgun.Status})\n" +
                 // $"Use <F3>/<F4> to tweak the shotgun sound volume -/+ ({_doomShotgun.Volume}).\n" +

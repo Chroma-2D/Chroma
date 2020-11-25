@@ -37,6 +37,14 @@ namespace Chroma.Natives.SoLoud
             NO_FPU_REGISTER_CHANGE = 8
         }
 
+        internal enum SoLoud_AttenuationModel : uint
+        {
+            NO_ATTENUATION = 0,
+            INVERSE_DISTANCE = 1,
+            LINEAR_DISTANCE = 2,
+            EXPONENTIAL_DISTANCE = 3
+        }
+
         internal const int SOLOUD_MAX_FILTERS = 4;
 
         internal const int SOLOUD_AUTO = 0;
@@ -232,7 +240,7 @@ namespace Chroma.Natives.SoLoud
         internal static extern uint Soloud_getVoiceCount(IntPtr handle);
         
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int Soloud_isValidVoiceHandle(IntPtr handle, uint voiceHandle);
+        internal static extern bool Soloud_isValidVoiceHandle(IntPtr handle, uint voiceHandle);
         
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern float Soloud_getRelativePlaySpeed(IntPtr handle, uint voiceHandle);
@@ -334,7 +342,7 @@ namespace Chroma.Natives.SoLoud
         internal static extern void Soloud_setVisualizationEnable(IntPtr handle, bool enable);
         
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "Soloud_calcFFT")]
-        internal static extern IntPtr Soloud_calcFFT_INTERNAL(IntPtr handle);
+        private static extern IntPtr Soloud_calcFFT_INTERNAL(IntPtr handle);
         internal static float[] Soloud_calcFFT(IntPtr handle)
         {
             var ret = new float[256];
@@ -356,7 +364,7 @@ namespace Chroma.Natives.SoLoud
         }
         
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "Soloud_getWave")]
-        internal static extern IntPtr Soloud_getWave_INTERNAL(IntPtr handle);
+        private static extern IntPtr Soloud_getWave_INTERNAL(IntPtr handle);
         internal static float[] Soloud_getWave(IntPtr handle)
         {
             var ret = new float[256];
@@ -437,7 +445,7 @@ namespace Chroma.Natives.SoLoud
         internal static extern void Soloud_set3dSourceMinMaxDistance(IntPtr handle, uint voiceHandle, float minDistance, float maxDistance);
         
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void Soloud_set3dSourceAttenuation(IntPtr handle, uint voiceHandle, uint attenuationModel, float attenuationRolloffFactor);
+        internal static extern void Soloud_set3dSourceAttenuation(IntPtr handle, uint voiceHandle, SoLoud_AttenuationModel attenuationModel, float attenuationRolloffFactor);
         
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void Soloud_set3dSourceDopplerFactor(IntPtr handle, uint voiceHandle, float dopplerFactor);

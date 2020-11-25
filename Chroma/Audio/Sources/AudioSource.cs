@@ -1,14 +1,22 @@
 ﻿using System;
 using Chroma.Audio.Filters;
+using Chroma.Diagnostics.Logging;
 using Chroma.Natives.SoLoud;
 
 namespace Chroma.Audio.Sources
 {
     public abstract class AudioSource : AudioObject
     {
+        private readonly Log _log = LogManager.GetForCurrentAssembly();
+
         protected AudioFilter[] Filters { get; } = new AudioFilter[SoLoud.SOLOUD_MAX_FILTERS];
 
         internal uint VoiceHandle { get; private set; }
+
+        internal bool VoiceHandleValid => SoLoud.Soloud_isValidVoiceHandle(
+            AudioManager.Instance.Handle,
+            VoiceHandle
+        );
 
         public abstract bool IsLooping { get; set; }
 
@@ -16,20 +24,61 @@ namespace Chroma.Audio.Sources
         public abstract bool KillAfterGoingInaudible { get; set; }
 
         public abstract double LoopingPoint { get; set; }
+        
+        public abstract bool SupportsLength { get; }
         public abstract double Length { get; }
 
         public abstract float Volume { get; set; }
 
-        public PlaybackStatus Status { get; private set; }
+        public PlaybackStatus Status
+        {
+            get
+            {
+                if (!SoLoud.Soloud_isValidVoiceHandle(AudioManager.Instance.Handle, VoiceHandle))
+                    return PlaybackStatus.Stopped;
+                
+                if (SoLoud.Soloud_getPause(AudioManager.Instance.Handle, VoiceHandle))
+                    return PlaybackStatus.Paused;
 
+                return PlaybackStatus.Playing;
+            }
+        }
+
+        public float Panning
+        {
+            get => SoLoud.Soloud_getPan(
+                AudioManager.Instance.Handle,
+                VoiceHandle
+            );
+
+            set => SoLoud.Soloud_setPan(
+                AudioManager.Instance.Handle,
+                VoiceHandle,
+                value
+            );
+        }
+
+        public double PositionSeconds => SoLoud.Soloud_getStreamTime(
+            AudioManager.Instance.Handle,
+            VoiceHandle
+        );
+
+        public double Position => SoLoud.Soloud_getStreamPosition(
+            AudioManager.Instance.Handle,
+            VoiceHandle
+        );
+
+        public int LoopCount => (int)SoLoud.Soloud_getLoopCount(
+            Handle,
+            VoiceHandle
+        );
+        
         internal AudioSource(IntPtr handle) : base(handle)
         {
         }
 
         protected void InitializeState()
         {
-            Status = PlaybackStatus.Paused;
-
             VoiceHandle = SoLoud.Soloud_playEx(
                 AudioManager.Instance.Handle,
                 Handle,
@@ -42,6 +91,44 @@ namespace Chroma.Audio.Sources
 
         protected abstract void ApplyFilter(int slot, AudioFilter filter);
         protected abstract void ClearFilter(int slot);
+
+        public void FadeVolume(float targetValue, double fadeSeconds)
+        {
+            SoLoud.Soloud_fadeVolume(
+                AudioManager.Instance.Handle,
+                VoiceHandle,
+                targetValue,
+                fadeSeconds
+            );
+        }
+
+        public void ScheduleStop(double secondsFromNow)
+        {
+            SoLoud.Soloud_scheduleStop(
+                AudioManager.Instance.Handle,
+                VoiceHandle,
+                secondsFromNow
+            );
+        }
+
+        public void SchedulePause(double secondsFromNow)
+        {
+            SoLoud.Soloud_schedulePause(
+                AudioManager.Instance.Handle,
+                VoiceHandle,
+                secondsFromNow
+            );
+        }
+        
+        public void FadePan(float targetValue, double fadeSeconds)
+        {
+            SoLoud.Soloud_fadePan(
+                AudioManager.Instance.Handle,
+                VoiceHandle,
+                targetValue,
+                fadeSeconds
+            );
+        }
 
         public void Play()
         {
@@ -70,8 +157,6 @@ namespace Chroma.Audio.Sources
                 Stop();
                 Play();
             }
-            
-            Status = PlaybackStatus.Playing;
         }
 
         public void Pause()
@@ -83,8 +168,6 @@ namespace Chroma.Audio.Sources
                     VoiceHandle,
                     true
                 );
-
-                Status = PlaybackStatus.Paused;
             }
         }
 
@@ -97,8 +180,6 @@ namespace Chroma.Audio.Sources
                     VoiceHandle,
                     false
                 );
-
-                Status = PlaybackStatus.Playing;
             }
         }
 
@@ -108,8 +189,23 @@ namespace Chroma.Audio.Sources
                 AudioManager.Instance.Handle,
                 VoiceHandle
             );
+        }
 
-            Status = PlaybackStatus.Stopped;
+        public void Seek(double position)
+        {
+            var error = SoLoud.Soloud_seek(
+                AudioManager.Instance.Handle,
+                VoiceHandle,
+                position
+            );
+
+            if (error > 0)
+            {
+                _log.Error(
+                    $"Failed to seek to '{position}': " +
+                    $"{SoLoud.Soloud_getErrorString(AudioManager.Instance.Handle, error)}"
+                );
+            }
         }
 
         public void SetFilter(int slot, AudioFilter filter)

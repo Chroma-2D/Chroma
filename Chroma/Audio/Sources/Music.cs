@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Design.Serialization;
+using System.IO;
 using Chroma.Audio.Filters;
 using Chroma.Diagnostics.Logging;
 using Chroma.Natives.SoLoud;
@@ -52,6 +53,7 @@ namespace Chroma.Audio.Sources
             set => SoLoud.WavStream_setLoopPoint(Handle, value);
         }
 
+        public override bool SupportsLength => true;
         public override double Length => SoLoud.WavStream_getLength(Handle);
 
         public override float Volume
@@ -73,7 +75,7 @@ namespace Chroma.Audio.Sources
             if (error > 0)
             {
                 _log.Error(
-                    $"Failed to load music stream from file: " +
+                    $"Failed to load music from file: " +
                     $"{SoLoud.Soloud_getErrorString(AudioManager.Instance.Handle, error)}"
                 );
 
@@ -82,6 +84,44 @@ namespace Chroma.Audio.Sources
             }
             
             InitializeState();
+        }
+
+        public Music(Stream stream)
+            : base(SoLoud.WavStream_create())
+        {
+            ValidateHandle();
+
+            var error = 0;
+            
+            using (var ms = new MemoryStream())
+            {
+                stream.CopyTo(ms);
+                var data = ms.ToArray();
+
+                unsafe
+                {
+                    fixed (byte* b = &data[0])
+                    {
+                        error = SoLoud.WavStream_loadMemEx(
+                            Handle,
+                            new IntPtr(b),
+                            (uint)data.Length,
+                            true,
+                            true
+                        );
+                    }
+                }
+            }
+            
+            if (error > 0)
+            {
+                _log.Error(
+                    $"Failed to load music from stream: " +
+                    $"{SoLoud.Soloud_getErrorString(AudioManager.Instance.Handle, error)}"
+                );
+
+                Dispose();
+            }
         }
 
         protected override void ApplyFilter(int slot, AudioFilter filter)

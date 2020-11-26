@@ -56,5 +56,16 @@ namespace Chroma.Audio.Sources
         
         protected override void SetVolume(float volume)
             => SoLoud.Wav_setVolume(Handle, volume);
+
+        protected override void FreeNativeResources()
+        {
+            if (Handle != IntPtr.Zero)
+            {
+                SoLoud.Wav_stop(Handle);
+                SoLoud.Wav_destroy(Handle);
+                
+                DestroyHandle();
+            }
+        }
     }
 }

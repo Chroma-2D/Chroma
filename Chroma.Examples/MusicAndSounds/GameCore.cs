@@ -14,6 +14,7 @@ namespace MusicAndSounds
         private Sound _doomShotgun;
         private Music _groovyMusic;
         private Sfxr _sfxr;
+        private Speech _speech;
 
         public GameCore()
         {
@@ -25,6 +26,13 @@ namespace MusicAndSounds
             _doomShotgun = Content.Load<Sound>("Sounds/doomsg.wav");
             _groovyMusic = Content.Load<Music>("Music/groovy.mp3");
             _sfxr = Content.Load<Sfxr>("Sounds/coin.sfx");
+            _speech = new Speech
+            {
+                Text = "soi soi soi soi soi soi soi soi soi soi",
+                BaseFrequency = 1233,
+                BaseSpeed = 5,
+                BaseWaveform = SpeechWaveform.Square
+            };
         }
 
         protected override void Draw(RenderContext context)
@@ -35,7 +43,8 @@ namespace MusicAndSounds
                 $"Use <space> to play the shotgun sound. ({_doomShotgun.Status})\n" +
                 $"Use <F3>/<F4> to tweak the shotgun sound volume -/+ ({_doomShotgun.Volume}).\n" +
                 $"Use <F5>/<F6> to tweak the master volume -/+ ({Audio.MasterVolume}).\n" + 
-                $"Use F7 to play SFXR sound loaded from parameter file.",
+                $"Use <F7> to play SFXR sound loaded from parameter file.\n" +
+                $"Use <F8> to test the speech synthesizer.",
                 new Vector2(8)
             );
         }
@@ -80,6 +89,10 @@ namespace MusicAndSounds
                 
                 case KeyCode.F7:
                     _sfxr.PlayClocked(0.0167f);
+                    break;
+                
+                case KeyCode.F8:
+                    _speech.Play();
                     break;
             }
         }

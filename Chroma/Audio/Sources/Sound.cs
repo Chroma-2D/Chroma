@@ -20,15 +20,13 @@ namespace Chroma.Audio.Sources
         public override double Length
             => SoLoud.WavStream_getLength(Handle);
         
-        public override float Volume { get; set; }
-        
         public Sound(string filePath) 
             : base(SoLoud.Wav_create())
         {
             ValidateHandle();
 
             var error = SoLoud.Wav_load(Handle, filePath);
-            if (error > 0)
+            if (error < 0)
             {
                 _log.Error(
                     $"Failed to load music from file: " +
@@ -56,5 +54,16 @@ namespace Chroma.Audio.Sources
         
         protected override void SetVolume(float volume)
             => SoLoud.Wav_setVolume(Handle, volume);
+
+        protected override void FreeNativeResources()
+        {
+            if (Handle != IntPtr.Zero)
+            {
+                SoLoud.Wav_stop(Handle);
+                SoLoud.Wav_destroy(Handle);
+                
+                DestroyHandle();
+            }
+        }
     }
 }

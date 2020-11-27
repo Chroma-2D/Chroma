@@ -266,7 +266,7 @@ namespace Chroma.Audio.Sources
                 position
             );
 
-            if (error > 0)
+            if (error < 0)
             {
                 _log.Error(
                     $"Failed to seek to '{position}': " +

@@ -25,7 +25,7 @@ namespace Chroma.Audio.Sources
             ValidateHandle();
 
             var error = SoLoud.WavStream_load(Handle, filePath);
-            if (error > 0)
+            if (error < 0)
             {
                 _log.Error(
                     $"Failed to load music from file: " +
@@ -66,7 +66,7 @@ namespace Chroma.Audio.Sources
                 }
             }
             
-            if (error > 0)
+            if (error < 0)
             {
                 _log.Error(
                     $"Failed to load music from stream: " +

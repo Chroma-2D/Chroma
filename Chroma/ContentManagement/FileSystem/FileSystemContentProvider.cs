@@ -83,7 +83,7 @@ namespace Chroma.ContentManagement.FileSystem
         {
             if (_loadedResources.Contains(resource))
                 throw new InvalidOperationException("The content you want to track is already being tracked.");
-            
+
             _loadedResources.Add(resource);
             resource.Disposing += OnResourceDisposing;
         }
@@ -93,7 +93,7 @@ namespace Chroma.ContentManagement.FileSystem
             if (!_loadedResources.Contains(resource))
                 throw new ContentNotLoadedException(
                     "The content you want to stop tracking was never tracked in the first place.");
-            
+
             resource.Disposing -= OnResourceDisposing;
             _loadedResources.Remove(resource);
         }
@@ -121,7 +121,7 @@ namespace Chroma.ContentManagement.FileSystem
         protected override void FreeManagedResources()
         {
             var disposables = new List<IDisposable>(_loadedResources);
-            
+
             foreach (var resource in disposables)
                 resource.Dispose();
         }
@@ -133,7 +133,7 @@ namespace Chroma.ContentManagement.FileSystem
             RegisterImporter<PixelShader>((path, args) => { return PixelShader.FromFile(path); });
 
             RegisterImporter<VertexShader>((path, args) => { return VertexShader.FromFile(path); });
-            
+
             RegisterImporter<Effect>((path, args) => { return Effect.FromFile(path); });
 
             RegisterImporter<TrueTypeFont>((path, args) =>
@@ -158,8 +158,12 @@ namespace Chroma.ContentManagement.FileSystem
             RegisterImporter<BitmapFont>((path, args) => { return new BitmapFont(path); });
 
             RegisterImporter<Sound>((path, args) => { return new Sound(path); });
-            
+
             RegisterImporter<Music>((path, args) => { return new Music(path); });
+
+            RegisterImporter<TrackerModule>((path, args) => { return new TrackerModule(path); });
+
+            RegisterImporter<SidTune>((path, args) => { return new SidTune(path); });
 
             RegisterImporter<Cursor>((path, args) =>
             {

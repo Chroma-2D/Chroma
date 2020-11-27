@@ -236,7 +236,7 @@ namespace Chroma.Graphics
         public static readonly Color Yellow = new Color(255, 255, 0);
         public static readonly Color YellowGreen = new Color(154, 205, 50);
 
-        public float[] AsOrderedArray()
+        public float[] AsNormalizedFloatArray()
             => new[] {R / 255f, G / 255f, B / 255f, A / 255f};
 
         public override bool Equals(object obj)

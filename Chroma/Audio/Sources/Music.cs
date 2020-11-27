@@ -18,63 +18,44 @@ namespace Chroma.Audio.Sources
 
         public override bool SupportsLength => true;
         public override double Length => SoLoud.WavStream_getLength(Handle);
-        
+
         public Music(string filePath)
             : base(SoLoud.WavStream_create())
         {
-            ValidateHandle();
-
-            var error = SoLoud.WavStream_load(Handle, filePath);
-            if (error < 0)
-            {
-                _log.Error(
-                    $"Failed to load music from file: " +
-                    $"{SoLoud.Soloud_getErrorString(AudioManager.Instance.Handle, error)}"
-                );
-
-                Dispose();
-                return;
-            }
-            
-            InitializeState();
+            TryInitialize(
+                () => SoLoud.WavStream_load(Handle, filePath),
+                "Failed to load music from file"
+            );
         }
 
         public Music(Stream stream)
             : base(SoLoud.WavStream_create())
         {
-            ValidateHandle();
-
-            int error;
-            
-            using (var ms = new MemoryStream())
-            {
-                stream.CopyTo(ms);
-                var data = ms.ToArray();
-
-                unsafe
+            TryInitialize(
+                () =>
                 {
-                    fixed (byte* b = &data[0])
+                    using (var ms = new MemoryStream())
                     {
-                        error = SoLoud.WavStream_loadMemEx(
-                            Handle,
-                            new IntPtr(b),
-                            (uint)data.Length,
-                            true,
-                            true
-                        );
-                    }
-                }
-            }
-            
-            if (error < 0)
-            {
-                _log.Error(
-                    $"Failed to load music from stream: " +
-                    $"{SoLoud.Soloud_getErrorString(AudioManager.Instance.Handle, error)}"
-                );
+                        stream.CopyTo(ms);
+                        var data = ms.ToArray();
 
-                Dispose();
-            }
+                        unsafe
+                        {
+                            fixed (byte* b = &data[0])
+                            {
+                                return SoLoud.WavStream_loadMemEx(
+                                    Handle,
+                                    new IntPtr(b),
+                                    (uint)data.Length,
+                                    true,
+                                    true
+                                );
+                            }
+                        }
+                    }
+                },
+                "Failed to load music from file"
+            );
         }
 
         protected override void SetInaudibleBehavior(bool mustTick, bool killAfterGoingSilent)
@@ -88,7 +69,7 @@ namespace Chroma.Audio.Sources
 
         protected override void ClearFilter(int slot)
             => SoLoud.WavStream_setFilter(Handle, (uint)slot, IntPtr.Zero);
-        
+
         protected override void SetVolume(float volume)
             => SoLoud.WavStream_setVolume(Handle, volume);
 

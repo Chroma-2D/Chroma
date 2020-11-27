@@ -451,7 +451,7 @@ namespace Chroma.Natives.SoLoud
         internal static extern void Soloud_set3dSourceDopplerFactor(IntPtr handle, uint voiceHandle, float dopplerFactor);
         
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void Soloud_mix(IntPtr handle, float[] buffer, uint samples);
+        internal static extern void Soloud_mix(IntPtr handle, IntPtr buffer, uint samples);
         
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void Soloud_mixSigned16(IntPtr handle, IntPtr buffer, uint samples);

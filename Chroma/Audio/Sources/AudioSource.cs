@@ -300,5 +300,21 @@ namespace Chroma.Audio.Sources
 
             return Filters[slot] as T;
         }
+
+        protected void TryInitialize(Func<int> init, string msg)
+        {
+            ValidateHandle();
+
+            var error = init();
+            if (error > 0)
+            {
+                _log.Error($"{msg}: {SoLoud.Soloud_getErrorString(AudioManager.Instance.Handle, error)}");
+                
+                Dispose();
+                return;
+            }
+
+            InitializeState();
+        }
     }
 }

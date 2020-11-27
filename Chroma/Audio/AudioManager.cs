@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using Chroma.Audio.Filters;
 using Chroma.Diagnostics.Logging;
 using Chroma.Natives.SoLoud;
@@ -66,7 +67,6 @@ namespace Chroma.Audio
             );
             
             _log.Info($"SoLoud Audio {SoLoud.Soloud_getVersion(Handle)} [{SoLoud.Soloud_getBackendString(Handle)}]");
-
             Instance = this;
         }
 
@@ -140,8 +140,13 @@ namespace Chroma.Audio
 
         protected override void FreeNativeResources()
         {
-            SoLoud.Soloud_deinit(Handle);
-            SoLoud.Soloud_destroy(Handle);
+            if (Handle != IntPtr.Zero)
+            {
+                SoLoud.Soloud_deinit(Handle);
+                SoLoud.Soloud_destroy(Handle);
+                
+                DestroyHandle();
+            }
         }
     }
 }

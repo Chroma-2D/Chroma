@@ -160,6 +160,8 @@ namespace Chroma.ContentManagement.FileSystem
             RegisterImporter<Sound>((path, args) => { return new Sound(path); });
 
             RegisterImporter<Music>((path, args) => { return new Music(path); });
+            
+            RegisterImporter<Sfxr>((path, args) => { return new Sfxr(path); });
 
             RegisterImporter<TrackerModule>((path, args) => { return new TrackerModule(path); });
 

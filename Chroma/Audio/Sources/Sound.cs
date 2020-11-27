@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Chroma.Audio.Filters;
 using Chroma.Diagnostics.Logging;
 using Chroma.Natives.SoLoud;
@@ -14,32 +15,53 @@ namespace Chroma.Audio.Sources
             get => SoLoud.WavStream_getLoopPoint(Handle);
             set => SoLoud.WavStream_setLoopPoint(Handle, value);
         }
-        
+
         public override bool SupportsLength => true;
 
         public override double Length
             => SoLoud.WavStream_getLength(Handle);
-        
-        public Sound(string filePath) 
+
+        public override float Volume { get; set; }
+
+        public Sound(string filePath)
             : base(SoLoud.Wav_create())
         {
-            ValidateHandle();
-
-            var error = SoLoud.Wav_load(Handle, filePath);
-            if (error < 0)
-            {
-                _log.Error(
-                    $"Failed to load music from file: " +
-                    $"{SoLoud.Soloud_getErrorString(AudioManager.Instance.Handle, error)}"
-                );
-
-                Dispose();
-                return;
-            }
-            
-            InitializeState();
+            TryInitialize(
+                () => SoLoud.Wav_load(Handle, filePath),
+                "Failed to load sound from file"
+            );
         }
-        
+
+        public Sound(Stream stream)
+            : base(SoLoud.Wav_create())
+        {
+            TryInitialize(
+                () =>
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        stream.CopyTo(ms);
+                        var bytes = ms.ToArray();
+
+                        unsafe
+                        {
+                            fixed (byte* data = &bytes[0])
+                            {
+                                return SoLoud.Wav_loadMemEx(
+                                    Handle,
+                                    new IntPtr(data),
+                                    (uint)bytes.Length,
+                                    true,
+                                    true
+                                );
+                            }
+                        }
+                    }
+                },
+                "Failed to load sound from file"
+            );
+        }
+
         protected override void SetInaudibleBehavior(bool mustTick, bool killAfterGoingSilent)
             => SoLoud.Wav_setInaudibleBehavior(Handle, mustTick, killAfterGoingSilent);
 
@@ -51,7 +73,7 @@ namespace Chroma.Audio.Sources
 
         protected override void ClearFilter(int slot)
             => SoLoud.Wav_setFilter(Handle, (uint)slot, IntPtr.Zero);
-        
+
         protected override void SetVolume(float volume)
             => SoLoud.Wav_setVolume(Handle, volume);
 
@@ -61,7 +83,7 @@ namespace Chroma.Audio.Sources
             {
                 SoLoud.Wav_stop(Handle);
                 SoLoud.Wav_destroy(Handle);
-                
+
                 DestroyHandle();
             }
         }

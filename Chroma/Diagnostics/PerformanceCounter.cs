@@ -10,12 +10,12 @@ namespace Chroma.Diagnostics
         private ulong _lastFrameTime;
         private ulong _nowFrameTime = SDL2.SDL_GetPerformanceCounter();
 
-        internal float Delta { get; private set; }
         internal static float SumOfDeltaTimes { get; private set; }
 
         public static float FPS { get; private set; }
         public static ulong LifetimeFrames { get; private set; }
-
+        public static float Delta { get; private set; }
+        
         internal void Update()
         {
             _lastFrameTime = _nowFrameTime;

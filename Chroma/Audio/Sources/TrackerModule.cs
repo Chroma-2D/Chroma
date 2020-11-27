@@ -16,18 +16,10 @@ namespace Chroma.Audio.Sources
         public TrackerModule(string filePath)
             : base(SoLoud.Openmpt_create())
         {
-            ValidateHandle();
-
-            var error = SoLoud.Openmpt_load(Handle, filePath);
-            if (error > 0)
-            {
-                _log.Error($"Failed to load a module file '{filePath}': '{SoLoud.Soloud_getErrorString(AudioManager.Instance.Handle, error)}'");
-                
-                Dispose();
-                return;
-            }
-            
-            InitializeState();
+            TryInitialize(
+                () => SoLoud.Openmpt_load(Handle, filePath),
+                $"Failed to load the module file '{filePath}'"
+            );
         }
 
         protected override void ApplyFilter(int slot, AudioFilter filter)

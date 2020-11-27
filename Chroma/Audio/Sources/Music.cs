@@ -24,7 +24,7 @@ namespace Chroma.Audio.Sources
         {
             TryInitialize(
                 () => SoLoud.WavStream_load(Handle, filePath),
-                "Failed to load music from file"
+                $"Failed to load music from file '{filePath}'"
             );
         }
 
@@ -54,7 +54,7 @@ namespace Chroma.Audio.Sources
                         }
                     }
                 },
-                "Failed to load music from file"
+                "Failed to load music from memory"
             );
         }
 

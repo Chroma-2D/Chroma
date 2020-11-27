@@ -23,7 +23,7 @@ namespace Chroma.Audio.Sources
         {
             TryInitialize(
                 () => SoLoud.Sfxr_loadParams(Handle, filePath),
-                "Failed to load SFXR parameter file"
+                $"Failed to load SFXR parameter file '{filePath}'"
             );
         }
         

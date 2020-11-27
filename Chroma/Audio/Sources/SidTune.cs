@@ -20,18 +20,10 @@ namespace Chroma.Audio.Sources
         public SidTune(string filePath) 
             : base(SoLoud.TedSid_create())
         {
-            ValidateHandle();
-
-            var error = SoLoud.TedSid_load(Handle, filePath);
-            if (error > 0)
-            {
-                _log.Error($"Failed to load a SID dump file '{filePath}': '{SoLoud.Soloud_getErrorString(AudioManager.Instance.Handle, error)}'");
-                
-                Dispose();
-                return;
-            }
-            
-            InitializeState();
+            TryInitialize(
+                () => SoLoud.TedSid_load(Handle, filePath),
+                $"Failed to load a SID dump file '{filePath}'"
+            );
         }
 
         protected override void ApplyFilter(int slot, AudioFilter filter)

@@ -21,8 +21,6 @@ namespace Chroma.Audio.Sources
         public override double Length
             => SoLoud.WavStream_getLength(Handle);
 
-        public override float Volume { get; set; }
-
         public Sound(string filePath)
             : base(SoLoud.Wav_create())
         {
@@ -58,7 +56,7 @@ namespace Chroma.Audio.Sources
                         }
                     }
                 },
-                "Failed to load sound from file"
+                "Failed to load sound from memory"
             );
         }
 

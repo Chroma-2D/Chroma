@@ -2,6 +2,7 @@
 using System.Numerics;
 using Chroma;
 using Chroma.Audio;
+using Chroma.Audio.Filters;
 using Chroma.Audio.Sources;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Graphics;
@@ -16,6 +17,8 @@ namespace MusicAndSounds
         private Sfxr _sfxr;
         private Speech _speech;
 
+        private BiquadResonantFilter _filter;
+
         public GameCore()
         {
             Content = new FileSystemContentProvider(this, Path.Combine(LocationOnDisk, "../../../../_common"));
@@ -25,6 +28,12 @@ namespace MusicAndSounds
         {
             _doomShotgun = Content.Load<Sound>("Sounds/doomsg.wav");
             _groovyMusic = Content.Load<Music>("Music/groovy.mp3");
+            
+            _filter = _groovyMusic.AttachFilter<BiquadResonantFilter>(0);
+            _filter.Type = BiquadResonantFilter.FilterType.LowPass;
+            _filter.CutoffFrequency = 500;
+            _filter.Resonance = 2f;
+            
             _sfxr = Content.Load<Sfxr>("Sounds/coin.sfx");
             _speech = new Speech
             {
@@ -38,7 +47,7 @@ namespace MusicAndSounds
         protected override void Draw(RenderContext context)
         {
             context.DrawString(
-                $"Use <F1> to start/stop the groovy music ({_groovyMusic.Status}) [{_groovyMusic.PositionSeconds}/{_groovyMusic.Length}].\n" +
+                $"Use <F1> to start/stop the groovy music ({_groovyMusic.Status}) [{_groovyMusic.PositionSeconds:F2}/{_groovyMusic.Length:F2}].\n" +
                 "Use <F2> to pause/unpause the groovy music.\n" +
                 $"Use <space> to play the shotgun sound. ({_doomShotgun.Status})\n" +
                 $"Use <F3>/<F4> to tweak the shotgun sound volume -/+ ({_doomShotgun.Volume}).\n" +

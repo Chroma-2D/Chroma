@@ -275,6 +275,14 @@ namespace Chroma.Audio.Sources
             }
         }
 
+        public T AttachFilter<T>(int slot) where T : AudioFilter, new()
+        {
+            var filter = new T();
+            SetFilter(slot, filter);
+
+            return filter;
+        }
+
         public void SetFilter(int slot, AudioFilter filter)
         {
             if (slot >= SoLoud.SOLOUD_MAX_FILTERS || slot < 0)
@@ -289,8 +297,12 @@ namespace Chroma.Audio.Sources
             if (filter.Disposed)
                 throw new InvalidOperationException("Filter you're trying to apply was already disposed.");
 
-            ApplyFilter(slot, filter);
-            Filters[slot] = filter;
+            filter.BeforeApply(this, slot);
+            {
+                ApplyFilter(slot, filter);
+                Filters[slot] = filter;
+            }
+            filter.OnApplied(this, slot);
         }
 
         public T GetFilter<T>(int slot) where T : AudioFilter

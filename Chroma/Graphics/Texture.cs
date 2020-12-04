@@ -435,6 +435,29 @@ namespace Chroma.Graphics
             SnappingMode = TextureSnappingMode.None;
         }
 
+        public Texture(int width, int height, byte[] data, PixelFormat pixelFormat = PixelFormat.RGBA)
+        {
+            EnsureOnMainThread();
+            
+            if (width < 0)
+                throw new ArgumentOutOfRangeException(nameof(width), "Width cannot be negative.");
+
+            if (height < 0)
+                throw new ArgumentOutOfRangeException(nameof(height), "Height cannot be negative.");
+
+            CreateEmpty(
+                (ushort)width,
+                (ushort)height,
+                pixelFormat,
+                true
+            );
+
+            data.CopyTo(_pixelData, 0);
+            Flush();
+            
+            SnappingMode = TextureSnappingMode.None;
+        }
+
         internal Texture(IntPtr gpuImageHandle)
         {
             EnsureOnMainThread();

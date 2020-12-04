@@ -354,6 +354,20 @@ namespace Chroma.Graphics
             }
         }
 
+        public void ArbitraryGeometry(Texture texture, ushort vertexCount, float[] renderData, ushort[] indices)
+        {
+            SDL_gpu.GPU_TriangleBatch(
+                texture.ImageHandle,
+                CurrentRenderTarget,
+                vertexCount,
+                renderData,
+                (ushort)indices.Length,
+                indices,
+                SDL_gpu.GPU_BatchFlagEnum.GPU_BATCH_XY_ST_RGBA
+            );
+        }
+
+
         public void DrawTexture(Texture texture, Vector2 position, Vector2 scale, Vector2 origin, float rotation)
         {
             SDL_gpu.GPU_BlitTransformX(

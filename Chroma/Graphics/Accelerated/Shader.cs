@@ -278,7 +278,7 @@ namespace Chroma.Graphics.Accelerated
                 return;
             }
 
-            SDL_gpu.GPU_SetUniformfv(loc, 4, 1, value.AsOrderedArray());
+            SDL_gpu.GPU_SetUniformfv(loc, 4, 1, value.AsNormalizedFloatArray());
         }
 
         public void SetAttribute(string name, float value)
@@ -383,7 +383,7 @@ namespace Chroma.Graphics.Accelerated
                 return;
             }
 
-            SDL_gpu.GPU_SetAttributefv(loc, 4, value.AsOrderedArray());
+            SDL_gpu.GPU_SetAttributefv(loc, 4, value.AsNormalizedFloatArray());
         }
 
         protected void CompileAndSetDefaultVertexShader()

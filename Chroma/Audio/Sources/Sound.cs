@@ -1,12 +1,13 @@
 ﻿using System;
+using System.IO;
 using Chroma.Diagnostics.Logging;
 using Chroma.Natives.SDL;
 
-namespace Chroma.Audio
+namespace Chroma.Audio.Sources
 {
     public class Sound : AudioSource
     {
-        private Log Log => LogManager.GetForCurrentAssembly();
+        private readonly Log _log = LogManager.GetForCurrentAssembly();
 
         public override byte Volume
         {
@@ -28,8 +29,50 @@ namespace Chroma.Audio
         public int PreferredChannel { get; set; } = -1;
         public int ActualChannel { get; private set; }
 
-        internal Sound(IntPtr handle, AudioManager audioManager) : base(handle, audioManager)
+        public Sound(string filePath)
         {
+            Handle = SDL_mixer.Mix_LoadWAV(filePath);
+
+            if (Handle == IntPtr.Zero)
+            {
+                _log.Error($"Failed to create audio source from '{filePath}': {SDL2.SDL_GetError()}");
+                Dispose();
+
+                return;
+            }
+
+            AudioManager.Instance.RegisterSoundSource(this);
+        }
+
+        public Sound(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream), "Stream cannot be null.");
+            
+            var ms = new MemoryStream();
+            stream.CopyTo(ms);
+
+            var bytes = ms.ToArray();
+
+            unsafe
+            {
+                fixed (byte* bp = &bytes[0])
+                {
+                    var rwOps = SDL2.SDL_RWFromMem(bp, bytes.Length);
+                    Handle = SDL_mixer.Mix_LoadWAV_RW(rwOps, true);
+
+                }
+            }
+            
+            if (Handle == IntPtr.Zero)
+            {
+                _log.Error("Failed to load a sound from memory.");
+                Dispose();
+                
+                return;
+            }
+
+            AudioManager.Instance.RegisterSoundSource(this);
         }
 
         public override void Play()
@@ -55,7 +98,7 @@ namespace Chroma.Audio
             }
             else
             {
-                Log.Error($"Failed to play the sound: {SDL2.SDL_GetError()}");
+                _log.Error($"Failed to play the sound: {SDL2.SDL_GetError()}");
             }
         }
 
@@ -74,7 +117,7 @@ namespace Chroma.Audio
             }
             else
             {
-                Log.Error($"Failed to one-shot play the sound: {SDL2.SDL_GetError()}");
+                _log.Error($"Failed to one-shot play the sound: {SDL2.SDL_GetError()}");
             }
         }
 

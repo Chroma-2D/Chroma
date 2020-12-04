@@ -28,7 +28,7 @@ namespace Chroma.Graphics.Accelerated
             {
                 var loc = SDL_gpu.GPU_GetAttributeLocation(ProgramHandle, "gpu_Time");
                 if (loc >= 0)
-                    SDL_gpu.GPU_SetAttributef(loc, PerformanceCounter.SumOfDeltaTimes);
+                    SDL_gpu.GPU_SetAttributef(loc, (float)PerformanceCounter.SumOfDeltaTimes);
 
                 loc = SDL_gpu.GPU_GetAttributeLocation(ProgramHandle, "gpu_ScreenSize");
                 if (loc >= 0)

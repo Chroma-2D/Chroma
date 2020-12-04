@@ -5,12 +5,15 @@ using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
 using Chroma.Natives.SDL;
 using System.Linq;
+using Chroma.Audio.Sources;
 using static Chroma.Audio.AudioSource;
 
 namespace Chroma.Audio
 {
     public class AudioManager : DisposableResource
     {
+        private readonly Log _log = LogManager.GetForCurrentAssembly();
+
         private SDL_mixer.ChannelFinishedDelegate _channelFinished;
         private SDL_mixer.MusicFinishedDelegate _musicFinished;
         private SDL_mixer.MixFuncDelegate _postMixFunc;
@@ -22,8 +25,6 @@ namespace Chroma.Audio
         private int _mixingChannelCount;
 
         private bool _isOpen;
-
-        private Log Log => LogManager.GetForCurrentAssembly();
 
         public AudioFormat AudioFormat { get; private set; }
         public int SamplingRate { get; private set; } // hz
@@ -55,21 +56,19 @@ namespace Chroma.Audio
             }
         }
 
-        public Music CurrentlyPlayedMusic { get; private set; }
-
         public event EventHandler<SoundEventArgs> SoundPlaybackFinished;
         public event EventHandler<MusicEventArgs> MusicPlaybackFinished;
 
-        internal AudioManager()
-        {
-            InitializeAudioMixer(AudioFormat.ChromaDefault, ChannelMode.Stereo, 44100, 4096);
-        }
+        private static AudioManager _instance;
+        internal static AudioManager Instance => _instance ?? (_instance = new AudioManager());
+
+        private AudioManager() {}
 
         public void InitializeAudioMixer(AudioFormat audioFormat, ChannelMode channelMode, int samplingRate, int chunkSize)
         {
             if (_isOpen)
             {
-                Log.Warning("The audio system was already open. Closing it beforehand for you...");
+                _log.Warning("The audio system was already open. Closing it beforehand for you...");
                 ShutdownAudioMixer();
             }
 
@@ -86,7 +85,7 @@ namespace Chroma.Audio
 
             if (result == -1)
             {
-                Log.Error($"SDL_mixer: {SDL2.SDL_GetError()}");
+                _log.Error($"SDL_mixer: {SDL2.SDL_GetError()}");
             }
             else
             {
@@ -131,83 +130,6 @@ namespace Chroma.Audio
 
             SDL_mixer.Mix_CloseAudio();
             _isOpen = false;
-        }
-
-        public Sound CreateSound(string filePath)
-        {
-            var handle = SDL_mixer.Mix_LoadWAV(filePath);
-
-            if (handle == IntPtr.Zero)
-            {
-                Log.Error($"CreateSound: {SDL2.SDL_GetError()}");
-                // TODO: throw an instance of audioexception here?
-                return null;
-            }
-
-            var sound = new Sound(handle, this);
-
-            if (!_soundBank.TryAdd(handle, sound))
-            {
-                Log.Error("Failed to add a sound effect to the internal sound bank.");
-            }
-
-            sound.Disposing += AudioResourceDisposing;
-            return sound;
-        }
-
-        public Sound CreateSound(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream), "Stream cannot be null.");
-            
-            var ms = new MemoryStream();
-            stream.CopyTo(ms);
-
-            var bytes = ms.ToArray();
-
-            unsafe
-            {
-                fixed (byte* bp = &bytes[0])
-                {
-                    var rwOps = SDL2.SDL_RWFromMem(bp, bytes.Length);
-                    var sound = LoadSoundFromRWOps(rwOps);
-
-                    if (sound == null)
-                    {
-                        return null;
-                    }
-
-                    if (!_soundBank.TryAdd(sound.Handle, sound))
-                    {
-                        Log.Error("Failed to add a sound effect to the internal sound bank.");
-                    }
-
-                    sound.Disposing += AudioResourceDisposing;
-                    return sound;
-                }
-            }
-        }
-
-        public Music CreateMusic(string filePath)
-        {
-            var handle = SDL_mixer.Mix_LoadMUS(filePath);
-
-            if (handle != IntPtr.Zero)
-            {
-                var music = new Music(handle, this);
-
-                if (!_musicBank.TryAdd(handle, music))
-                {
-                    Log.Error("Failed to add a music object to the internal music bank.");
-                }
-
-                music.Disposing += AudioResourceDisposing;
-                return music;
-            }
-
-            Log.Error($"CreateMusic: {SDL2.SDL_GetError()}");
-            // TODO: throw an instance of audioexception here?
-            return null;
         }
 
         public IEnumerable<Sound> FindSoundsByPreferredChannel(int channel)
@@ -266,47 +188,26 @@ namespace Chroma.Audio
         public void UnhookPostMixProcessor()
             => _postMixProcessor = null;
 
-        internal PlaybackStatus BeginMusicPlayback(Music music)
+        internal void RegisterMusicSource(Music music)
         {
-            if (music.Status == PlaybackStatus.Playing)
-                return music.Status;
-
-            if (music.Status == PlaybackStatus.Stopped)
+            if (!_musicBank.TryAdd(music.Handle, music))
             {
-                var loopCount = music.Loop ? -1 : 0;
-
-                SDL_mixer.Mix_PlayMusic(music.Handle, loopCount);
-                CurrentlyPlayedMusic = music;
-            }
-            else if (music.Status == PlaybackStatus.Paused)
-            {
-                SDL_mixer.Mix_ResumeMusic();
+                _log.Error("Failed to add a music object to the internal music bank.");
             }
 
-            return PlaybackStatus.Playing;
+            music.Disposing += AudioResourceDisposing;
         }
 
-        internal void PauseMusicPlayback()
+        internal void RegisterSoundSource(Sound sound)
         {
-            if (CurrentlyPlayedMusic == null)
-                return;
+            if (!_soundBank.TryAdd(sound.Handle, sound))
+            {
+                _log.Error("Failed to add a sound effect to the internal sound bank.");
+            }
 
-            if (CurrentlyPlayedMusic.Status == PlaybackStatus.Playing)
-                SDL_mixer.Mix_PauseMusic();
+            sound.Disposing += AudioResourceDisposing;
         }
-
-        internal void StopMusicPlayback()
-        {
-            if (CurrentlyPlayedMusic == null)
-                return;
-
-            if (CurrentlyPlayedMusic.Status == PlaybackStatus.Stopped)
-                return;
-
-            SDL_mixer.Mix_HaltMusic();
-            CurrentlyPlayedMusic = null;
-        }
-
+        
         internal void OnChannelFinished(int channel)
         {
             var handle = SDL_mixer.Mix_GetChunk(channel);
@@ -320,11 +221,9 @@ namespace Chroma.Audio
 
         internal void OnMusicFinished()
         {
-            CurrentlyPlayedMusic.Status = PlaybackStatus.Stopped;
-            var music = CurrentlyPlayedMusic;
-
-            CurrentlyPlayedMusic = null;
-
+            var music = Music.Current;
+            Music.Current.OnFinish();
+            
             MusicPlaybackFinished?.Invoke(this, new MusicEventArgs(music));
         }
 
@@ -376,7 +275,7 @@ namespace Chroma.Audio
 
             if (audioSource == null)
             {
-                Log.Warning($"Tried to dispose {sender.GetType()}, which is definitely not an AudioSource.");
+                _log.Warning($"Tried to dispose {sender.GetType()}, which is definitely not an AudioSource.");
                 return;
             }
 
@@ -395,25 +294,6 @@ namespace Chroma.Audio
 
             foreach (var music in _musicBank.Values)
                 music.Dispose();
-        }
-
-        private Sound LoadSoundFromRWOps(IntPtr rwOps)
-        {
-            if (rwOps == IntPtr.Zero)
-            {
-                Log.Error($"Failed to create SDL_RWops from memory stream: {SDL2.SDL_GetError()}.");
-                return null;
-            }
-
-            var handle = SDL_mixer.Mix_LoadWAV_RW(rwOps, 1);
-
-            if (handle == IntPtr.Zero)
-            {
-                Log.Error($"Failed to create sound effect from a stream: {SDL2.SDL_GetError()}");
-                return null;
-            }
-
-            return new Sound(handle, this);
         }
     }
 }

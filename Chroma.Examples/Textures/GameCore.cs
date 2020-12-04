@@ -39,7 +39,7 @@ namespace Textures
         public GameCore()
             : base(false)
         {
-            Content = new FileSystemContentProvider(this, Path.Combine(LocationOnDisk, "../../../../_common"));
+            Content = new FileSystemContentProvider(Path.Combine(LocationOnDisk, "../../../../_common"));
             GraphicsManager.LimitFramerate = false;
 
             Cursor.IsVisible = false;

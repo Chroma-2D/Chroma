@@ -2,6 +2,7 @@
 using System.Numerics;
 using Chroma;
 using Chroma.Audio;
+using Chroma.Audio.Sources;
 using Chroma.Graphics;
 using Chroma.Input;
 

@@ -20,7 +20,7 @@ namespace Fonts
 
         public GameCore()
         {
-            Content = new FileSystemContentProvider(this, Path.Combine(LocationOnDisk, "../../../../_common"));
+            Content = new FileSystemContentProvider(Path.Combine(LocationOnDisk, "../../../../_common"));
         }
         
         protected override void LoadContent()

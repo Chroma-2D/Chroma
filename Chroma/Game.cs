@@ -16,22 +16,36 @@ namespace Chroma
 {
     public class Game
     {
-        private readonly Thread _fixedUpdateThread;
         private static bool _wasConstructedAlready;
         private static DefaultScene _defaultScene;
+        private int _fixedFrameRate;
 
         private readonly Log _log = LogManager.GetForCurrentAssembly();
 
-        public Window Window { get; }
-        public GraphicsManager Graphics { get; }
-        public AudioManager Audio { get; }
-        public IContentProvider Content { get; protected set; }
+        internal float FixedTickRate { get; private set; }
 
+        public Window Window { get; private set; }
+        public GraphicsManager Graphics { get; private set; }
+        public AudioManager Audio => AudioManager.Instance;
+        
+        public IContentProvider Content { get; protected set; }
+        
         public static string LocationOnDisk => Path.GetDirectoryName(
             Assembly.GetExecutingAssembly().Location
         );
 
-        public int FixedUpdateFrequency { get; protected set; } = 75;
+        public bool UseFixedTimeStep { get; protected set; }
+        
+        public int TimeStepTarget
+        {
+            get => _fixedFrameRate;
+            
+            protected set
+            {
+                _fixedFrameRate = value;
+                FixedTickRate = 1f / value;
+            }
+        }
 
         public Game(bool constructDefaultScene = true)
         {
@@ -48,24 +62,11 @@ namespace Chroma
             if (constructDefaultScene)
                 _defaultScene = new DefaultScene(this);
 
-            _fixedUpdateThread = new Thread(FixedUpdateThread);
-
-            Dispatcher.MainThreadId = Thread.CurrentThread.ManagedThreadId;
-            Graphics = new GraphicsManager(this);
+            InitializeThreading();
+            InitializeGraphics();
+            InitializeAudio();
+            InitializeContent();
             
-            Window = new Window(this)
-            {
-                Draw = Draw,
-                Update = Update
-            };
-
-            Graphics.VerticalSyncMode = VerticalSyncMode.Retrace;
-            
-            Audio = new AudioManager();
-
-            Window.SetIcon(EmbeddedAssets.DefaultIconTexture);
-            Content = new FileSystemContentProvider(this);
-
             AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
         }
 
@@ -75,7 +76,7 @@ namespace Chroma
                 throw new InvalidOperationException("The game is already running.");
 
             LoadContent();
-            Window.Run(() => _fixedUpdateThread.Start());
+            Window.Run();
         }
 
         public void Quit()
@@ -97,10 +98,6 @@ namespace Chroma
             => _defaultScene.Update(delta);
         
         protected virtual void LoadContent()
-        {
-        }
-
-        protected virtual void FixedUpdate(float fixedDelta)
         {
         }
 
@@ -188,28 +185,45 @@ namespace Chroma
         internal void OnControllerAxisMoved(ControllerAxisEventArgs e)
             => ControllerAxisMoved(e);
 
-        private void FixedUpdateThread()
-        {
-            while (true)
-            {
-                if (!Window.Exists)
-                    break;
-
-                var waitTime = 1f / FixedUpdateFrequency;
-
-                lock (this)
-                {
-                    FixedUpdate(waitTime);
-                }
-
-                Thread.Sleep((int)(waitTime * 1000));
-            }
-        }
-
         private void OnDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             _log.Error(
                 $"Unhandled exception. There are two people who could've fucked this up. You or me.\n\n{e.ExceptionObject}");
+        }
+
+        private void InitializeThreading()
+        {
+            Dispatcher.MainThreadId = Thread.CurrentThread.ManagedThreadId;
+        }
+
+        private void InitializeGraphics()
+        {
+            TimeStepTarget = 60;
+            
+            Graphics = new GraphicsManager(this);
+            Window = new Window(this)
+            {
+                Draw = Draw,
+                Update = Update
+            };
+            
+            Graphics.VerticalSyncMode = VerticalSyncMode.Retrace;
+            Window.SetIcon(EmbeddedAssets.DefaultIconTexture);
+        }
+
+        private void InitializeAudio()
+        {
+            AudioManager.Instance.InitializeAudioMixer(
+                AudioFormat.ChromaDefault, 
+                ChannelMode.Stereo, 
+                44100, 
+                4096
+            );
+        }
+
+        private void InitializeContent()
+        {
+            Content = new FileSystemContentProvider();
         }
     }
 }

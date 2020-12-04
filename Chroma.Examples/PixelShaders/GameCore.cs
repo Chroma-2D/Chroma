@@ -26,7 +26,6 @@ namespace PixelShaders
         public GameCore()
         {
             Content = new FileSystemContentProvider(
-                this,
                 Path.Combine(LocationOnDisk, "../../../../_common")
             );
 

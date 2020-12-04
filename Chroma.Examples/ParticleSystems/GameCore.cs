@@ -18,7 +18,7 @@ namespace ParticleSystems
 
         public GameCore()
         {
-            Content = new FileSystemContentProvider(this, Path.Combine(LocationOnDisk, "../../../../_common"));
+            Content = new FileSystemContentProvider(Path.Combine(LocationOnDisk, "../../../../_common"));
         }
         
         // Please see Chroma/Graphics/Particles/StateInitializers/RandomizedStateInitializer

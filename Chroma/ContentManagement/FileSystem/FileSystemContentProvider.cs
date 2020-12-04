@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Reflection;
-using Chroma.Audio;
+using Chroma.Audio.Sources;
 using Chroma.Graphics;
 using Chroma.Graphics.Accelerated;
 using Chroma.Graphics.TextRendering;
@@ -15,17 +15,13 @@ namespace Chroma.ContentManagement.FileSystem
 {
     public class FileSystemContentProvider : DisposableResource, IContentProvider
     {
-        private readonly Game _game;
-
         private readonly HashSet<DisposableResource> _loadedResources;
         private readonly Dictionary<Type, Func<string, object[], object>> _importers;
 
         public string ContentRoot { get; private set; }
 
-        public FileSystemContentProvider(Game game, string contentRoot = null)
+        public FileSystemContentProvider(string contentRoot = null)
         {
-            _game = game;
-
             ContentRoot = contentRoot;
 
             if (string.IsNullOrEmpty(ContentRoot))
@@ -156,9 +152,9 @@ namespace Chroma.ContentManagement.FileSystem
 
             RegisterImporter<BitmapFont>((path, args) => { return new BitmapFont(path); });
 
-            RegisterImporter<Sound>((path, args) => { return _game.Audio.CreateSound(path); });
+            RegisterImporter<Sound>((path, args) => { return new Sound(path); });
 
-            RegisterImporter<Music>((path, args) => { return _game.Audio.CreateMusic(path); });
+            RegisterImporter<Music>((path, args) => { return new Music(path); });
 
             RegisterImporter<Cursor>((path, args) =>
             {

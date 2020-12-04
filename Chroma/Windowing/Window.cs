@@ -293,7 +293,7 @@ namespace Chroma.Windowing
             MaximumSize = Size.Empty;
             MinimumSize = Size.Empty;
 
-            _performanceCounter = new PerformanceCounter();
+            _performanceCounter = new PerformanceCounter(Game);
             _renderContext = new RenderContext(this);
 
             EventDispatcher = new EventDispatcher(this);
@@ -383,21 +383,17 @@ namespace Chroma.Windowing
                 while (SDL2.SDL_PollEvent(out var ev) != 0)
                     EventDispatcher.Dispatch(ev);
 
-                Update?.Invoke(_performanceCounter.Delta);
-
-                while (Dispatcher.ActionQueue.Any())
+                if (Game.UseFixedTimeStep)
                 {
-                    var scheduledAction = Dispatcher.ActionQueue.Dequeue();
-
-                    try
+                    while (PerformanceCounter.Lag >= Game.FixedTickRate)
                     {
-                        scheduledAction.Action?.Invoke();
-                        scheduledAction.Completed = true;
+                        DoTick(Game.FixedTickRate);
+                        PerformanceCounter.Lag -= Game.FixedTickRate;
                     }
-                    catch (Exception e)
-                    {
-                        _log.Exception(e);
-                    }
+                }
+                else
+                {
+                    DoTick(PerformanceCounter.Delta);
                 }
 
                 if (GraphicsManager.AutoClear)
@@ -496,6 +492,26 @@ namespace Chroma.Windowing
 
             if (!e.Cancel)
                 Exists = false;
+        }
+
+        private void DoTick(float delta)
+        {
+            Update?.Invoke(delta);
+
+            while (Dispatcher.ActionQueue.Any())
+            {
+                var scheduledAction = Dispatcher.ActionQueue.Dequeue();
+
+                try
+                {
+                    scheduledAction.Action?.Invoke();
+                    scheduledAction.Completed = true;
+                }
+                catch (Exception e)
+                {
+                    _log.Exception(e);
+                }
+            }
         }
 
         protected override void FreeNativeResources()

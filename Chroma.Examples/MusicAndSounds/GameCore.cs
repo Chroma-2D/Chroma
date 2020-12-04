@@ -2,6 +2,7 @@
 using System.Numerics;
 using Chroma;
 using Chroma.Audio;
+using Chroma.Audio.Sources;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Graphics;
 using Chroma.Input;
@@ -15,7 +16,7 @@ namespace MusicAndSounds
 
         public GameCore()
         {
-            Content = new FileSystemContentProvider(this, Path.Combine(LocationOnDisk, "../../../../_common"));
+            Content = new FileSystemContentProvider(Path.Combine(LocationOnDisk, "../../../../_common"));
         }
 
         protected override void LoadContent()

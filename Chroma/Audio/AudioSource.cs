@@ -5,8 +5,6 @@ namespace Chroma.Audio
 {
     public abstract class AudioSource : DisposableResource
     {
-        protected AudioManager AudioManager { get; }
-        
         internal IntPtr Handle { get; set; }
         
         public abstract byte Volume { get; set; }
@@ -18,11 +16,5 @@ namespace Chroma.Audio
         public abstract void Stop();
 
         public delegate void PostMixWaveformProcessor<T>(Span<T> chunk, Span<byte> bytes);
-
-        internal AudioSource(IntPtr handle, AudioManager audioManager)
-        {
-            Handle = handle;
-            AudioManager = audioManager;
-        }
     }
 }

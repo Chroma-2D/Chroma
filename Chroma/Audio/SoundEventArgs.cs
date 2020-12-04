@@ -1,4 +1,6 @@
-﻿namespace Chroma.Audio
+﻿using Chroma.Audio.Sources;
+
+namespace Chroma.Audio
 {
     public class SoundEventArgs
     {

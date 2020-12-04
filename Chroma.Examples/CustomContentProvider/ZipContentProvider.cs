@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using Chroma;
 using Chroma.Audio;
+using Chroma.Audio.Sources;
 using Chroma.ContentManagement;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
@@ -53,7 +54,7 @@ namespace CustomContentProvider
             {
                 using (var stream = Open(path))
                 {
-                    return _game.Audio.CreateSound(stream);
+                    return new Sound(stream);
                 }
             });
         }

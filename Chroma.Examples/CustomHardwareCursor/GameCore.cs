@@ -17,7 +17,7 @@ namespace CustomHardwareCursor
             // but there is more than one example project
             // so sharing between them is necessary to keep the
             // source tree clean
-            Content = new FileSystemContentProvider(this, Path.Combine(LocationOnDisk, "../../../../_common"));
+            Content = new FileSystemContentProvider(Path.Combine(LocationOnDisk, "../../../../_common"));
         }
 
         protected override void LoadContent()

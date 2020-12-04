@@ -200,6 +200,12 @@ namespace Chroma.Natives.SDL
             IntPtr src,
             int freesrc
         );
+        
+        [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr Mix_LoadWAV_RW(
+            IntPtr src,
+            bool freesrc
+        );
 
         /* IntPtr refers to a Mix_Chunk* */
         /* This is an RWops macro in the C header. */

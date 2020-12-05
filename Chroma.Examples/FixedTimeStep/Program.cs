@@ -1,4 +1,4 @@
-﻿namespace EmptyProject
+﻿namespace FixedTimeStep
 {
     internal class Program
     {

@@ -5,6 +5,7 @@ using System.Threading;
 using Chroma.Audio;
 using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
+using Chroma.Diagnostics;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.Input;
@@ -18,11 +19,20 @@ namespace Chroma
     {
         private static bool _wasConstructedAlready;
         private static DefaultScene _defaultScene;
-        private int _fixedFrameRate;
+        private int _fixedTimeStepTarget;
 
         private readonly Log _log = LogManager.GetForCurrentAssembly();
-
-        internal float FixedTickRate { get; private set; }
+        
+        public int FixedTimeStepTarget
+        {
+            get => _fixedTimeStepTarget;
+            
+            protected set
+            {
+                _fixedTimeStepTarget = value;
+                PerformanceCounter.FixedDelta = 1f / value;
+            }
+        }
 
         public Window Window { get; private set; }
         public GraphicsManager Graphics { get; private set; }
@@ -33,19 +43,6 @@ namespace Chroma
         public static string LocationOnDisk => Path.GetDirectoryName(
             Assembly.GetExecutingAssembly().Location
         );
-
-        public bool UseFixedTimeStep { get; protected set; }
-        
-        public int TimeStepTarget
-        {
-            get => _fixedFrameRate;
-            
-            protected set
-            {
-                _fixedFrameRate = value;
-                FixedTickRate = 1f / value;
-            }
-        }
 
         public Game(bool constructDefaultScene = true)
         {
@@ -96,7 +93,11 @@ namespace Chroma
 
         protected virtual void Update(float delta)
             => _defaultScene.Update(delta);
-        
+
+        protected virtual void FixedUpdate(float delta)
+        {
+        }
+
         protected virtual void LoadContent()
         {
         }
@@ -198,13 +199,14 @@ namespace Chroma
 
         private void InitializeGraphics()
         {
-            TimeStepTarget = 60;
+            FixedTimeStepTarget = 75;
             
             Graphics = new GraphicsManager(this);
             Window = new Window(this)
             {
                 Draw = Draw,
-                Update = Update
+                Update = Update,
+                FixedUpdate = FixedUpdate
             };
             
             Graphics.VerticalSyncMode = VerticalSyncMode.Retrace;

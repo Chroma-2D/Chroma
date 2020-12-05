@@ -11,9 +11,7 @@ namespace Chroma.Windowing.EventHandling.Specialized
             Dispatcher = dispatcher;
 
             Dispatcher.Discard(
-                SDL2.SDL_EventType.SDL_CLIPBOARDUPDATE,
-                SDL2.SDL_EventType.SDL_AUDIODEVICEADDED,
-                SDL2.SDL_EventType.SDL_AUDIODEVICEREMOVED
+                SDL2.SDL_EventType.SDL_CLIPBOARDUPDATE
             );
             
             Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_QUIT, QuitRequested);

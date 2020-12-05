@@ -29,9 +29,9 @@ namespace Chroma.Windowing
         private IntPtr _currentIconPtr;
 
         internal delegate void StateUpdateDelegate(float delta);
-
         internal delegate void DrawDelegate(RenderContext context);
 
+        internal StateUpdateDelegate FixedUpdate;
         internal StateUpdateDelegate Update;
         internal DrawDelegate Draw;
 
@@ -293,13 +293,14 @@ namespace Chroma.Windowing
             MaximumSize = Size.Empty;
             MinimumSize = Size.Empty;
 
-            _performanceCounter = new PerformanceCounter(Game);
+            _performanceCounter = new PerformanceCounter();
             _renderContext = new RenderContext(this);
 
             EventDispatcher = new EventDispatcher(this);
             _ = new WindowEventHandlers(EventDispatcher);
             _ = new FrameworkEventHandlers(EventDispatcher);
             _ = new InputEventHandlers(EventDispatcher);
+            _ = new AudioEventHandlers(EventDispatcher);
         }
 
         public void Show()
@@ -353,7 +354,7 @@ namespace Chroma.Windowing
                 SDL2.SDL_FreeSurface(_currentIconPtr);
 
             _currentIconPtr = texture.AsSdlSurface();
-            
+
             SDL2.SDL_SetWindowIcon(
                 Handle,
                 _currentIconPtr
@@ -379,22 +380,13 @@ namespace Chroma.Windowing
             while (Exists)
             {
                 _performanceCounter.Update();
+                _performanceCounter.FixedUpdate();
 
                 while (SDL2.SDL_PollEvent(out var ev) != 0)
                     EventDispatcher.Dispatch(ev);
 
-                if (Game.UseFixedTimeStep)
-                {
-                    while (PerformanceCounter.Lag >= Game.FixedTickRate)
-                    {
-                        DoTick(Game.FixedTickRate);
-                        PerformanceCounter.Lag -= Game.FixedTickRate;
-                    }
-                }
-                else
-                {
-                    DoTick(PerformanceCounter.Delta);
-                }
+                DoTick(PerformanceCounter.Delta);
+                DoFixedTicks(PerformanceCounter.FixedDelta);
 
                 if (GraphicsManager.AutoClear)
                     _renderContext.Clear(GraphicsManager.AutoClearColor);
@@ -511,6 +503,15 @@ namespace Chroma.Windowing
                 {
                     _log.Exception(e);
                 }
+            }
+        }
+
+        private void DoFixedTicks(float delta)
+        {
+            while (PerformanceCounter.Lag >= PerformanceCounter.FixedDelta)
+            {
+                FixedUpdate?.Invoke(delta);
+                PerformanceCounter.Lag -= PerformanceCounter.FixedDelta;
             }
         }
 

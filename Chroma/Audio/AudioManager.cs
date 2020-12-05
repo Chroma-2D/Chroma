@@ -58,13 +58,18 @@ namespace Chroma.Audio
 
         public event EventHandler<SoundEventArgs> SoundPlaybackFinished;
         public event EventHandler<MusicEventArgs> MusicPlaybackFinished;
+        public event EventHandler<AudioDeviceEventArgs> AudioDeviceConnected;
+        public event EventHandler<AudioDeviceEventArgs> AudioDeviceDisconnected;
 
         private static AudioManager _instance;
         internal static AudioManager Instance => _instance ?? (_instance = new AudioManager());
 
-        private AudioManager() {}
+        private AudioManager()
+        {
+        }
 
-        public void InitializeAudioMixer(AudioFormat audioFormat, ChannelMode channelMode, int samplingRate, int chunkSize)
+        public void InitializeAudioMixer(AudioFormat audioFormat, ChannelMode channelMode, int samplingRate,
+            int chunkSize)
         {
             if (_isOpen)
             {
@@ -82,6 +87,8 @@ namespace Chroma.Audio
                 (int)channelMode,
                 ChunkSize
             );
+
+            _log.Info($"Using '{SDL2.SDL_GetCurrentAudioDriver()}' audio subsystem.");
 
             if (result == -1)
             {
@@ -114,6 +121,8 @@ namespace Chroma.Audio
 
             foreach (var sound in _soundBank.Values)
             {
+                sound.Stop();
+
                 sound.Disposing -= AudioResourceDisposing;
                 sound.Dispose();
             }
@@ -122,6 +131,8 @@ namespace Chroma.Audio
 
             foreach (var track in _musicBank.Values)
             {
+                track.Stop();
+
                 track.Disposing -= AudioResourceDisposing;
                 track.Dispose();
             }
@@ -207,7 +218,7 @@ namespace Chroma.Audio
 
             sound.Disposing += AudioResourceDisposing;
         }
-        
+
         internal void OnChannelFinished(int channel)
         {
             var handle = SDL_mixer.Mix_GetChunk(channel);
@@ -223,7 +234,7 @@ namespace Chroma.Audio
         {
             var music = Music.Current;
             Music.Current.OnFinish();
-            
+
             MusicPlaybackFinished?.Invoke(this, new MusicEventArgs(music));
         }
 
@@ -285,6 +296,28 @@ namespace Chroma.Audio
                 _soundBank.Remove(sound.Handle);
             else if (sender is Music music)
                 _musicBank.Remove(music.Handle);
+        }
+
+        internal void OnDeviceAdded(uint index, bool isCapture)
+        {
+            AudioDeviceConnected?.Invoke(
+                this,
+                new AudioDeviceEventArgs(
+                    index,
+                    isCapture
+                )
+            );
+        }
+
+        internal void OnDeviceRemoved(uint index, bool isCapture)
+        {
+            AudioDeviceDisconnected?.Invoke(
+                this,
+                new AudioDeviceEventArgs(
+                    index,
+                    isCapture
+                )
+            );
         }
 
         protected override void FreeManagedResources()

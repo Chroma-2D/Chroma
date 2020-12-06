@@ -21,9 +21,9 @@ namespace MusicAndSounds
         private Music _groovyMusic;
         private Music _elysiumMod;
 
-        private float[] averaged = new float[512];
-        private float[] result = new float[2048];
-        private Complex[] spec2 = new Complex[4096];
+        private float[] _averaged = new float[512];
+        private float[] _result = new float[2048];
+        private Complex[] _samples = new Complex[4096];
 
         public GameCore()
         {
@@ -56,14 +56,29 @@ namespace MusicAndSounds
                 new Vector2(8)
             );
 
-            context.LineThickness = 2;
+            context.LineThickness = 4;
 
-            for (var i = 0; i < averaged.Length; i++)
+            var upBeat = 128 * ((_averaged[1] + _averaged[2]));
+            
+            context.Rectangle(
+                ShapeMode.Fill,
+                Window.Center - new Vector2(0, upBeat),
+                new Size(32, 32),
+                new Color(0, (byte)(upBeat % 255), 125)
+            );
+            
+            for (var i = 0; i < _averaged.Length / 8; i++)
             {
                 context.Line(
-                    new Vector2(2 + i * (2 + context.LineThickness - 1), Window.Size.Height),
-                    new Vector2(2 + i * (2 + context.LineThickness - 1), Window.Size.Height - 1 - averaged[i] * 1024),
-                    new Color((byte)(255f * (averaged.Length / (float)i)), 55, (255 / (averaged[i] * 1024)) % 255)
+                    new Vector2(
+                        (2 + i) * (2 + context.LineThickness - 1) + Window.Center.X / 2, 
+                        Window.Size.Height
+                    ),
+                    new Vector2(
+                        (2 + i) * (2 + context.LineThickness - 1) + Window.Center.X / 2, 
+                        Window.Size.Height - 1 - _averaged[i] * 768
+                    ),
+                    new Color((byte)(255f * (_averaged.Length / (float)i)), 55, (255 / (_averaged[i] * 1024)) % 255)
                 );
             }
         }
@@ -113,19 +128,19 @@ namespace MusicAndSounds
             var spec = 0;
             for (var i = 0; i < chunk.Length; i += 2)
             {
-                spec2[spec++] = new Complex((chunk[i] + chunk[i + 1]) / 2f, 0);
+                _samples[spec++] = new Complex((chunk[i] + chunk[i + 1]) / 2f, 0);
             }
 
-            FFT.CalculateFFT(spec2, result, false);
+            FFT.CalculateFFT(_samples, _result);
 
-            averaged = new float[256];
-            for (var i = 0; i < result.Length; i++)
+            _averaged = new float[512];
+            for (var i = 0; i < _result.Length; i++)
             {
-                averaged[i / 8] += result[i];
+                _averaged[i / 4] += _result[i];
 
-                if (i != 0 && i % 8 == 0)
+                if (i != 0 && i % 4 == 0)
                 {
-                    averaged[i / 8] /= 8;
+                    _averaged[i / 4] /= 4;
                 }
             }
         }

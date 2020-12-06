@@ -5,14 +5,20 @@ namespace MusicAndSounds
 {
     public class FFT
     {
-        public static void CalculateFFT(Complex[] samples, float[] result, bool reverse)
+        //
+        // Found somewhere on the internets.
+        // Fuck if I know where.
+        //
+        // Adapted for use with SDL_mixer and .NET 5.
+        //
+        public static void CalculateFFT(Complex[] samples, float[] result)
         {
             var power = (int)Math.Log(samples.Length, 2);
             var count = 1;
             for (var i = 0; i < power; i++)
                 count <<= 1;
 
-            var mid = count >> 1; // mid = count / 2;
+            var mid = count >> 1;
             var j = 0;
             for (var i = 0; i < count - 1; i++)
             {
@@ -30,7 +36,7 @@ namespace MusicAndSounds
                 }
                 j += k;
             }
-            
+
             var r = new Complex(-1, 0);
             var l2 = 1;
             for (var l = 0; l < power; l++)
@@ -49,31 +55,16 @@ namespace MusicAndSounds
                     }
                     r2 = r2 * r;
                 }
-
-                if (reverse)
-                {
-                    r = new Complex(Math.Sqrt((1d + r.Real) / 2d), Math.Sqrt((1d - r.Real) / 2d));
-                }
-                else
-                {
-                    r = new Complex(Math.Sqrt((1d + r.Real) / 2d), -Math.Sqrt((1d - r.Real) / 2d));
-                }
+                r = new Complex(Math.Sqrt((1d + r.Real) / 2d), -Math.Sqrt((1d - r.Real) / 2d));
             }
-            if (!reverse)
-            {
-                var scale = 1d / count;
+            
+            var scale = 1d / count;
 
-                for (var i = 0; i < count; i++)
-                    samples[i] *= scale;
+            for (var i = 0; i < count; i++)
+                samples[i] *= scale;
 
-                for (var i = 0; i < samples.Length / 2; i++)
-                    result[i] = (float)samples[i].Magnitude;
-            }
-            else
-            {
-                for (var i = 0; i < samples.Length / 2; i++)
-                    result[i] = (float)(Math.Sign(samples[i].Real) * samples[i].Magnitude);
-            }
+            for (var i = 0; i < samples.Length / 2; i++)
+                result[i] = (float)samples[i].Magnitude;
         }
     }
 }

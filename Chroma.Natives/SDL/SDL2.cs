@@ -7089,11 +7089,11 @@ namespace Chroma.Natives.SDL
 		[DllImport(nativeLibName, EntryPoint = "SDL_GetAudioDeviceName", CallingConvention = CallingConvention.Cdecl)]
 		private static extern IntPtr INTERNAL_SDL_GetAudioDeviceName(
 			int index,
-			int iscapture
+			bool iscapture
 		);
 		public static string SDL_GetAudioDeviceName(
 			int index,
-			int iscapture
+			bool iscapture
 		)
 		{
 			return UTF8_ToManaged(

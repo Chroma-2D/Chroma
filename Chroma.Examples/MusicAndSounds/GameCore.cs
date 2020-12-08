@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Numerics;
 using Chroma;
+using Chroma.Audio.Sources;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
@@ -17,7 +18,7 @@ namespace MusicAndSounds
 
         // private Sound _doomShotgun;
         // private Music _groovyMusic;
-        // private Music _elysiumMod;
+        private Music _elysiumMod;
 
         private float[] _averaged = new float[512];
         private float[] _result = new float[2048];
@@ -28,10 +29,10 @@ namespace MusicAndSounds
             Content = new FileSystemContentProvider(Path.Combine(LocationOnDisk, "../../../../_common"));
 
             Window.GoWindowed(new Size(800, 600));
-            // Audio.AudioDeviceConnected += (sender, e) =>
-            // {
-            //     _log.Info($"Connected {(e.IsCapture ? "input" : "output")} device {e.Index}: '{e.Name}'.");
-            // };
+            Audio.DeviceConnected += (sender, e) =>
+            {
+                _log.Info($"Connected {(e.Device.IsCapture ? "input" : "output")} device {e.Device.IsCapture}: '{e.Device.Name}'.");
+            };
             //
             // Audio.HookPostMixProcessor<float>(FftPostMixProcessor);
         }
@@ -40,7 +41,7 @@ namespace MusicAndSounds
         {
             // _doomShotgun = Content.Load<Sound>("Sounds/doomsg.wav");
             // _groovyMusic = Content.Load<Music>("Music/groovy.mp3");
-            // _elysiumMod = Content.Load<Music>("Music/elysium.mod");
+            _elysiumMod = Content.Load<Music>("Music/elysium.mod");
         }
 
         protected override void Draw(RenderContext context)
@@ -85,12 +86,12 @@ namespace MusicAndSounds
         {
             switch (e.KeyCode)
             {
-                // case KeyCode.F1:
-                //     if (_elysiumMod.Status == PlaybackStatus.Playing || _elysiumMod.Status == PlaybackStatus.Paused)
-                //         _elysiumMod.Stop();
-                //     else
-                //         _elysiumMod.Play();
-                //     break;
+                case KeyCode.F1:
+                    if (_elysiumMod.IsPlaying)
+                        _elysiumMod.Pause();
+                    else
+                        _elysiumMod.Play();
+                    break;
                 //
                 // case KeyCode.F2:
                 //     if (_elysiumMod.Status == PlaybackStatus.Playing)

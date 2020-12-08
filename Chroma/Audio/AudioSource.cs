@@ -16,9 +16,6 @@ namespace Chroma.Audio
         {
         }
 
-        internal abstract void Initialize();
-        internal abstract void SourceCallback(IntPtr userData, IntPtr stream, int streamSize);
-        
         public virtual void Play()
         {
             EnsureHandleValid();

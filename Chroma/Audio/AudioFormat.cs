@@ -6,7 +6,7 @@ namespace Chroma.Audio
 {
     public class AudioFormat
     {
-        private Dictionary<SampleFormat, ushort> SdlMixerFormatBE = new Dictionary<SampleFormat, ushort>
+        private Dictionary<SampleFormat, ushort> SdlFormatBE = new Dictionary<SampleFormat, ushort>
         {
             {SampleFormat.U8, SDL2.AUDIO_U8},
             {SampleFormat.S8, SDL2.AUDIO_S8},
@@ -16,7 +16,7 @@ namespace Chroma.Audio
             {SampleFormat.F32, SDL2.AUDIO_F32MSB}
         };
 
-        private Dictionary<SampleFormat, ushort> SdlMixerFormatLE = new Dictionary<SampleFormat, ushort>
+        private Dictionary<SampleFormat, ushort> SdlFormatLE = new Dictionary<SampleFormat, ushort>
         {
             {SampleFormat.U8, SDL2.AUDIO_U8},
             {SampleFormat.S8, SDL2.AUDIO_S8},
@@ -26,7 +26,7 @@ namespace Chroma.Audio
             {SampleFormat.F32, SDL2.AUDIO_F32LSB}
         };
 
-        private Dictionary<SampleFormat, ushort> SdlMixerFormatSYS = new Dictionary<SampleFormat, ushort>
+        private Dictionary<SampleFormat, ushort> SdlFormatSYS = new Dictionary<SampleFormat, ushort>
         {
             {SampleFormat.U8, SDL2.AUDIO_U8},
             {SampleFormat.S8, SDL2.AUDIO_S8},
@@ -60,15 +60,15 @@ namespace Chroma.Audio
             ByteOrder = byteOrder;
         }
 
-        internal ushort SdlMixerFormat
+        internal ushort SdlFormat
         {
             get
             {
                 return ByteOrder switch
                 {
-                    ByteOrder.Native => SdlMixerFormatSYS[SampleFormat],
-                    ByteOrder.BigEndian => SdlMixerFormatBE[SampleFormat],
-                    ByteOrder.LittleEndian => SdlMixerFormatLE[SampleFormat],
+                    ByteOrder.Native => SdlFormatSYS[SampleFormat],
+                    ByteOrder.BigEndian => SdlFormatBE[SampleFormat],
+                    ByteOrder.LittleEndian => SdlFormatLE[SampleFormat],
                     _ => throw new FormatException("Unknown byte order specified."),
                 };
             }

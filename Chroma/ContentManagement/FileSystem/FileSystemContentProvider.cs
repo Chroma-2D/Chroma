@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Reflection;
-using Chroma.Audio.Sources;
 using Chroma.Graphics;
 using Chroma.Graphics.Accelerated;
 using Chroma.Graphics.TextRendering;
@@ -152,9 +151,9 @@ namespace Chroma.ContentManagement.FileSystem
 
             RegisterImporter<BitmapFont>((path, args) => { return new BitmapFont(path); });
 
-            RegisterImporter<Sound>((path, args) => { return new Sound(path); });
-
-            RegisterImporter<Music>((path, args) => { return new Music(path); });
+            // RegisterImporter<Sound>((path, args) => { return new Sound(path); });
+            //
+            // RegisterImporter<Music>((path, args) => { return new Music(path); });
 
             RegisterImporter<Cursor>((path, args) =>
             {

@@ -7,23 +7,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="Binaries\windows_64\libFLAC-8.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\freetype.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\libjpeg-9.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\libmodplug-1.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\libmpg123-0.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\libogg-0.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\libopus-0.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\libopusfile-0.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\libpng16-16.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\libtiff-5.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\libvorbis-0.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\libvorbisfile-0.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\libwebp-7.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\SDL2.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\SDL2_gpu.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\SDL2_image.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\SDL2_mixer.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\SDL2_nmix.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\SDL2_sound.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\zlib1.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libFLAC.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libfreetype.bz2" />

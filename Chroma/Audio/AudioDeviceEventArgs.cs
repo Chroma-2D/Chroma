@@ -1,21 +1,12 @@
-﻿using Chroma.Natives.SDL;
-
-namespace Chroma.Audio
+﻿namespace Chroma.Audio
 {
     public class AudioDeviceEventArgs
     {
-        public uint Index { get; }
-        public bool IsCapture { get; }
+        public AudioDevice Device { get; }
 
-        public string Name => SDL2.SDL_GetAudioDeviceName(
-            (int)Index, 
-            IsCapture
-        );
-
-        internal AudioDeviceEventArgs(uint index, bool isCapture)
+        internal AudioDeviceEventArgs(AudioDevice device)
         {
-            Index = index;
-            IsCapture = isCapture;
+            Device = device;
         }
     }
 }

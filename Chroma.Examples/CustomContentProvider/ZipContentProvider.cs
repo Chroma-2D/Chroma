@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using Chroma;
-using Chroma.Audio;
-using Chroma.Audio.Sources;
 using Chroma.ContentManagement;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
@@ -50,13 +48,13 @@ namespace CustomContentProvider
                 }
             });
             
-            _importers.Add(typeof(Sound), (path, args) =>
-            {
-                using (var stream = Open(path))
-                {
-                    return new Sound(stream);
-                }
-            });
+            // _importers.Add(typeof(Sound), (path, args) =>
+            // {
+            //     using (var stream = Open(path))
+            //     {
+            //         return new Sound(stream);
+            //     }
+            // });
         }
 
         public T Load<T>(string relativePath, params object[] args) where T : DisposableResource

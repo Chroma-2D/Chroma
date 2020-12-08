@@ -1,6 +1,6 @@
 ﻿namespace Chroma.Audio
 {
-    public enum ChannelMode
+    public enum ChannelFormat
     {
         Mono = 1,
         Stereo = 2

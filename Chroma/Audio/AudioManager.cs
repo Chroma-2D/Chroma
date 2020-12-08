@@ -69,6 +69,7 @@ namespace Chroma.Audio
             Frequency = frequency;
             SampleCount = sampleCount;
 
+            SDL2_sound.Sound_Init();
             if (SDL2_nmix.NMIX_OpenAudio(device?.Name, Frequency, SampleCount) < 0)
             {
                 _log.Error($"Failed to initialize audio system: {SDL2.SDL_GetError()}.");

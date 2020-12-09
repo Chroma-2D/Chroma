@@ -7049,7 +7049,7 @@ namespace Chroma.Natives.SDL
 			public byte silence;
 			public ushort samples;
 			public uint size;
-			public SDL_AudioCallback callback;
+			public IntPtr callback;
 			public IntPtr userdata; // void*
 		}
 

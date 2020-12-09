@@ -73,5 +73,49 @@ namespace Chroma.Audio
                 };
             }
         }
+
+        internal static AudioFormat FromSdlFormat(ushort format)
+        {
+            var (sampleFormat, byteOrder) = DetectFormat(format);
+            return new AudioFormat(sampleFormat, byteOrder);
+        }
+        
+        private static (SampleFormat, ByteOrder) DetectFormat(ushort sdlFormat)
+        {
+            switch (sdlFormat)
+            {
+                case SDL2.AUDIO_U8:
+                    return (SampleFormat.U8, ByteOrder.LittleEndian);
+                
+                case SDL2.AUDIO_S8:
+                    return (SampleFormat.S8, ByteOrder.LittleEndian);
+                
+                case SDL2.AUDIO_U16LSB:
+                    return (SampleFormat.U16, ByteOrder.LittleEndian);
+                
+                case SDL2.AUDIO_U16MSB:
+                    return (SampleFormat.U16, ByteOrder.BigEndian);
+                
+                case SDL2.AUDIO_S16LSB:
+                    return (SampleFormat.S16, ByteOrder.LittleEndian);
+                
+                case SDL2.AUDIO_S16MSB:
+                    return (SampleFormat.S16, ByteOrder.BigEndian);
+                
+                case SDL2.AUDIO_S32LSB:
+                    return (SampleFormat.S32, ByteOrder.LittleEndian);
+                
+                case SDL2.AUDIO_S32MSB:
+                    return (SampleFormat.S32, ByteOrder.BigEndian);
+
+                case SDL2.AUDIO_F32LSB:
+                    return (SampleFormat.F32, ByteOrder.LittleEndian);
+                
+                case SDL2.AUDIO_F32MSB:
+                    return (SampleFormat.F32, ByteOrder.BigEndian);
+             
+                default: throw new NotSupportedException("Unsupported SDL audio format.");
+            }
+        }
     }
 }

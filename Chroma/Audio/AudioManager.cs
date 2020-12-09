@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Chroma.Audio.Sources;
 using Chroma.Diagnostics.Logging;
 using Chroma.Natives.SDL;
 
@@ -14,7 +15,10 @@ namespace Chroma.Audio
         internal static AudioManager Instance => _instance ?? (_instance = new AudioManager());
 
         private List<AudioDevice> _devices = new List<AudioDevice>();
-        private bool _initialized;
+
+        private bool _mixerInitialized;
+        private bool _backendInitialized;
+
         private bool _playbackPaused;
 
         public IReadOnlyList<AudioDevice> Devices => _devices;
@@ -22,10 +26,9 @@ namespace Chroma.Audio
         public int Frequency { get; private set; }
         public int SampleCount { get; private set; }
 
-        public AudioFormat Format { get; private set; }
-
         public event EventHandler<AudioDeviceEventArgs> DeviceConnected;
         public event EventHandler<AudioDeviceEventArgs> DeviceDisconnected;
+        public event EventHandler<AudioSourceEventArgs> AudioSourceFinished;
 
         public float MasterVolume
         {
@@ -53,41 +56,55 @@ namespace Chroma.Audio
             Initialize();
         }
 
-        public void StopAll()
+        public void PauseAll()
         {
             _playbackPaused = !_playbackPaused;
             SDL2_nmix.NMIX_PausePlayback(_playbackPaused);
         }
 
-        public void Open(AudioDevice device = null, int frequency = 44100, int sampleCount = 4096)
+        public void Open(AudioDevice device = null, int frequency = 44100, int sampleCount = 1024)
         {
-            if (_initialized)
-            {
-                Close();
-            }
+            Close();
 
             Frequency = frequency;
             SampleCount = sampleCount;
 
-            SDL2_sound.Sound_Init();
-            if (SDL2_nmix.NMIX_OpenAudio(device?.Name, Frequency, SampleCount) < 0)
+            if (SDL2_sound.Sound_Init() < 0)
             {
-                _log.Error($"Failed to initialize audio system: {SDL2.SDL_GetError()}.");
+                _log.Error($"Failed to initialize audio backend: {SDL2.SDL_GetError()}");
                 return;
             }
+            _backendInitialized = true;
 
-            _initialized = true;
+            if (SDL2_nmix.NMIX_OpenAudio(device?.Name, Frequency, SampleCount) < 0)
+            {
+                _log.Error($"Failed to initialize audio mixer: {SDL2.SDL_GetError()}");
+                return;
+            }
+            _mixerInitialized = true;
         }
 
         public void Close()
         {
-            if (SDL2_nmix.NMIX_CloseAudio() > 0)
+            if (_mixerInitialized)
             {
-                _log.Error($"Failed to stop the audio system: {SDL2.SDL_GetError()}.");
-                return;
+                if (SDL2_nmix.NMIX_CloseAudio() < 0)
+                {
+                    _log.Error($"Failed to stop the audio mixer: {SDL2.SDL_GetError()}");
+                    return;
+                }
+                _mixerInitialized = false;
             }
 
-            _initialized = false;
+            if (_backendInitialized)
+            {
+                if (SDL2_sound.Sound_Quit() < 0)
+                {
+                    _log.Error($"Failed to stop the audio backend: {SDL2.SDL_GetError()}");
+                    return;
+                }
+                _backendInitialized = false;
+            }
         }
 
         public void EnumerateDevices()
@@ -102,6 +119,14 @@ namespace Chroma.Audio
 
             for (var i = 0; i < numberOfInputDevices; i++)
                 _devices.Add(new AudioDevice(i, true));
+        }
+
+        public void OnAudioSourceFinished(AudioSource s)
+        {
+            AudioSourceFinished?.Invoke(
+                this,
+                new AudioSourceEventArgs(s)
+            );
         }
 
         internal void OnDeviceAdded(uint index, bool isCapture)
@@ -126,11 +151,6 @@ namespace Chroma.Audio
 
         internal void Initialize(AudioFormat format = null)
         {
-            Format = AudioFormat.ChromaDefault;
-            
-            if (format != null)
-                Format = format;
-
             EnumerateDevices();
             Open();
         }

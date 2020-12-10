@@ -20,6 +20,8 @@ namespace MusicAndSounds
 
         private Sound _doomShotgun;
         private Music _groovyMusic;
+        private Music _elysiumMod;
+        private Waveform _waveform;
 
         private float[] _averaged = new float[512];
         private float[] _result = new float[1024];
@@ -32,28 +34,33 @@ namespace MusicAndSounds
             Window.GoWindowed(new Size(800, 600));
             Audio.DeviceConnected += (sender, e) =>
             {
-                _log.Info($"Connected {(e.Device.IsCapture ? "input" : "output")} device {e.Device.Index}: '{e.Device.Name}'.");
+                _log.Info(
+                    $"Connected {(e.Device.IsCapture ? "input" : "output")} device {e.Device.Index}: '{e.Device.Name}'.");
             };
-
-            // Audio.AudioSourceFinished += (sender, e) =>
-            // {
-            //     if (e.Source is FileBasedAudioSource fbas)
-            //     {
-            //         fbas.Rewind();
-            //         fbas.Play();
-            //     }
-            // };
         }
 
         protected override void LoadContent()
         {
             _doomShotgun = Content.Load<Sound>("Sounds/doomsg.wav");
-            _groovyMusic = Content.Load<Music>("Music/groovy.mp3");
-            _groovyMusic.Filters.Add(DoFFT);
-        }
 
-        protected override void FixedUpdate(float delta)
-        {
+            _elysiumMod = Content.Load<Music>("Music/elysium.mod");
+            _elysiumMod.Filters.Add(DoFFT);
+
+            _groovyMusic = Content.Load<Music>("Music/groovy.mp3");
+
+
+            _waveform = new Waveform(
+                new AudioFormat(SampleFormat.F32),
+                (s, f) =>
+                {
+                    var floats = MemoryMarshal.Cast<byte, float>(s);
+                    
+                    for(var i = 0; i < floats.Length; i++)
+                    {
+                        floats[i] = MathF.Sin(2 * MathF.PI * 441f * (i / 44100f));
+                    }
+                }
+            );
         }
 
         protected override void Draw(RenderContext context)
@@ -63,30 +70,39 @@ namespace MusicAndSounds
                 "Use <F2> to pause/unpause the groovy music.\n" +
                 $"Use <space> to play the shotgun sound. ({_doomShotgun.Status})\n" +
                 $"Use <F3>/<F4> to tweak the shotgun sound volume -/+ ({_doomShotgun.Volume}).\n" +
-                $"Use <F5>/<F6> to tweak the groovy music volume -/+ ({Audio.MasterVolume}).",
+                $"Use <F5>/<F6> to tweak master volume -/+ ({Audio.MasterVolume}).\n" +
+                $"Use <F7> to play/pause the sine waveform.",
                 new Vector2(8)
             );
 
-            context.LineThickness = 2;
+            context.LineThickness = 1;
 
-            var upBeat = 128 * ((_averaged[1] + _averaged[2]));
-            
+            var upBeat = 128 * (_averaged[1] + _averaged[2]);
+            var upBeat2 = 128 * (_averaged[5] + _averaged[6] + _averaged[7]);
+
             context.Rectangle(
                 ShapeMode.Fill,
                 Window.Center - new Vector2(0, upBeat),
                 new Size(32, 32),
-                new Color(0, (byte)(upBeat % 255), 125)
+                new Color(0, (byte)(upBeat % 255), 200)
             );
-            
+
+            context.Rectangle(
+                ShapeMode.Fill,
+                Window.Center - new Vector2(0, -32 + upBeat2),
+                new Size(32, 32),
+                new Color(0, 200, (byte)(upBeat % 255))
+            );
+
             for (var i = 0; i < _averaged.Length / 2; i++)
             {
                 context.Line(
                     new Vector2(
-                        (2 + i) * (2 + context.LineThickness - 1), 
+                        (2 + i) * (2 + context.LineThickness - 1),
                         Window.Size.Height
                     ),
                     new Vector2(
-                        (2 + i) * (2 + context.LineThickness - 1), 
+                        (2 + i) * (2 + context.LineThickness - 1),
                         Window.Size.Height - 1 - _averaged[i] * 1024
                     ),
                     new Color((byte)(255f * (_averaged.Length / (float)i)), 55, (255 / (_averaged[i] * 1024)) % 255)
@@ -99,30 +115,41 @@ namespace MusicAndSounds
             switch (e.KeyCode)
             {
                 case KeyCode.F1:
-                    if (_groovyMusic.IsPlaying)
-                        _groovyMusic.Pause();
+                    if (_elysiumMod.IsPlaying)
+                        _elysiumMod.Pause();
                     else
-                        _groovyMusic.Play();
+                        _elysiumMod.Play();
                     break;
-                
+
+                case KeyCode.F2:
+                    _elysiumMod.Stop();
+                    break;
+
                 case KeyCode.Space:
                     _doomShotgun.Play();
                     break;
-                
+
                 case KeyCode.F3:
-                    _doomShotgun.Volume--;
+                    _doomShotgun.Volume -= 0.1f;
                     break;
-                
+
                 case KeyCode.F4:
-                    _doomShotgun.Volume++;
+                    _doomShotgun.Volume += 0.1f;
                     break;
-                
+
                 case KeyCode.F5:
                     Audio.MasterVolume -= 0.1f;
                     break;
-                
+
                 case KeyCode.F6:
                     Audio.MasterVolume += 0.1f;
+                    break;
+
+                case KeyCode.F7:
+                    if (_waveform.IsPlaying)
+                        _waveform.Pause();
+                    else
+                        _waveform.Play();
                     break;
             }
         }
@@ -130,12 +157,6 @@ namespace MusicAndSounds
         private void DoFFT(Span<byte> audioBufferData, AudioFormat format)
         {
             float[] chunk;
-            var r = new Random();
-
-            for (var i = 0; i < audioBufferData.Length; i++)
-            {
-                audioBufferData[i] /= (byte)r.Next(1, 2);
-            }
 
             if (format.SampleFormat != SampleFormat.F32)
             {
@@ -149,24 +170,20 @@ namespace MusicAndSounds
             {
                 chunk = MemoryMarshal.Cast<byte, float>(audioBufferData).ToArray();
             }
-            
+
             var spec = 0;
             for (var i = 0; i < chunk.Length; i += 2)
-            {
                 _samples[spec++] = new Complex((chunk[i] + chunk[i + 1]) / 2f, 0);
-            }
-        
+
             FFT.CalculateFFT(_samples, _result);
-        
+
             _averaged = new float[512];
             for (var i = 0; i < _result.Length; i++)
             {
                 _averaged[i / 2] += _result[i];
-        
+
                 if (i != 0 && i % 2 == 0)
-                {
                     _averaged[i / 2] /= 2;
-                }
             }
         }
     }

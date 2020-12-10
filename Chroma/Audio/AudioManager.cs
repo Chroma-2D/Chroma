@@ -18,7 +18,6 @@ namespace Chroma.Audio
 
         private bool _mixerInitialized;
         private bool _backendInitialized;
-
         private bool _playbackPaused;
 
         public IReadOnlyList<AudioDevice> Devices => _devices;
@@ -148,8 +147,8 @@ namespace Chroma.Audio
                 )
             );
         }
-
-        internal void Initialize(AudioFormat format = null)
+        
+        internal void Initialize()
         {
             EnumerateDevices();
             Open();

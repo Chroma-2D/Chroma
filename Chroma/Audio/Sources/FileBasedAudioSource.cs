@@ -207,13 +207,15 @@ namespace Chroma.Audio.Sources
                     Filters[i]?.Invoke(span, AudioFormat.FromSdlFormat(SoundSample->actual.format));
                 
                 _originalSourceCallback(userdata, buffer, bufferSize);
-            }
-
-            unsafe
-            {
-                if (Source->eof > 0)
+                
+                if (Source->eof > 0 && !IsLooping)
                 {
-                    Stop();
+                    if (!IsLooping)
+                    {
+                        Rewind();
+                        Status = PlaybackStatus.Stopped;
+                    }
+                    
                     AudioManager.Instance.OnAudioSourceFinished(this);
                 }
             }

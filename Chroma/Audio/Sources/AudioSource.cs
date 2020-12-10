@@ -7,9 +7,9 @@ namespace Chroma.Audio.Sources
 {
     public abstract class AudioSource : DisposableResource
     {
-        public delegate void AudioFilterDelegate(Span<byte> audioBufferData, AudioFormat format);
+        public delegate void AudioStreamDelegate(Span<byte> audioBufferData, AudioFormat format);
 
-        internal IntPtr Handle { get; set; }
+        protected IntPtr Handle { get; set; }
         
         internal unsafe SDL2_nmix.NMIX_Source* Source 
             => (SDL2_nmix.NMIX_Source*)Handle.ToPointer();
@@ -53,12 +53,8 @@ namespace Chroma.Audio.Sources
             }
         }
         
-        public List<AudioFilterDelegate> Filters { get; private set; } 
-            = new List<AudioFilterDelegate>();
-
-        internal AudioSource()
-        {
-        }
+        public List<AudioStreamDelegate> Filters { get; private set; } 
+            = new List<AudioStreamDelegate>();
 
         public virtual void Play()
         {

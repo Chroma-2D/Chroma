@@ -16,7 +16,7 @@ namespace Chroma.Graphics.Accelerated
         }
 
         public static VertexShader FromFile(string filePath)
-            => new VertexShader(File.ReadAllText(filePath));
+            => new(File.ReadAllText(filePath));
         
         private void Initialize()
         {

@@ -11,8 +11,8 @@ namespace Chroma.Graphics.Particles
 
         public int EmissionRate { get; set; } = 1;
 
-        private List<Particle> _particles;
-        private List<ParticleStateIntegrator> _stateIntegrators;
+        private readonly List<Particle> _particles;
+        private readonly List<ParticleStateIntegrator> _stateIntegrators;
 
         public IReadOnlyList<Particle> Particles => _particles;
         public IReadOnlyList<ParticleStateIntegrator> StateIntegrators => _stateIntegrators;

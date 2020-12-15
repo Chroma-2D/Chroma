@@ -7,7 +7,7 @@ namespace Chroma.Input.Internal
     {
         internal const int MaxSupportedPlayers = 24;
 
-        private static readonly Lazy<ControllerRegistry> _lazyInitializer = new Lazy<ControllerRegistry>(
+        private static readonly Lazy<ControllerRegistry> _lazyInitializer = new(
             () => new ControllerRegistry()
         );
 

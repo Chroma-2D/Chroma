@@ -14,7 +14,7 @@ namespace Chroma.Graphics.Accelerated
         }
 
         public static PixelShader FromFile(string filePath)
-            => new PixelShader(File.ReadAllText(filePath));
+            => new(File.ReadAllText(filePath));
 
         private void Initialize()
         {

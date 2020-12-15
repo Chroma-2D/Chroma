@@ -18,7 +18,7 @@ namespace Chroma.Graphics.Accelerated
         }
 
         public static Effect FromFile(string filePath)
-            => new Effect(File.ReadAllText(filePath));
+            => new(File.ReadAllText(filePath));
 
         public override void Activate()
         {

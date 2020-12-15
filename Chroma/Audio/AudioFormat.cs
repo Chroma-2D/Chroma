@@ -6,7 +6,7 @@ namespace Chroma.Audio
 {
     public class AudioFormat
     {
-        private Dictionary<SampleFormat, ushort> SdlMixerFormatBE = new Dictionary<SampleFormat, ushort>
+        private Dictionary<SampleFormat, ushort> SdlFormatBE = new()
         {
             {SampleFormat.U8, SDL2.AUDIO_U8},
             {SampleFormat.S8, SDL2.AUDIO_S8},
@@ -16,7 +16,7 @@ namespace Chroma.Audio
             {SampleFormat.F32, SDL2.AUDIO_F32MSB}
         };
 
-        private Dictionary<SampleFormat, ushort> SdlMixerFormatLE = new Dictionary<SampleFormat, ushort>
+        private Dictionary<SampleFormat, ushort> SdlFormatLE = new()
         {
             {SampleFormat.U8, SDL2.AUDIO_U8},
             {SampleFormat.S8, SDL2.AUDIO_S8},
@@ -26,7 +26,7 @@ namespace Chroma.Audio
             {SampleFormat.F32, SDL2.AUDIO_F32LSB}
         };
 
-        private Dictionary<SampleFormat, ushort> SdlMixerFormatSYS = new Dictionary<SampleFormat, ushort>
+        private Dictionary<SampleFormat, ushort> SdlFormatSYS = new()
         {
             {SampleFormat.U8, SDL2.AUDIO_U8},
             {SampleFormat.S8, SDL2.AUDIO_S8},
@@ -60,17 +60,61 @@ namespace Chroma.Audio
             ByteOrder = byteOrder;
         }
 
-        internal ushort SdlMixerFormat
+        internal ushort SdlFormat
         {
             get
             {
                 return ByteOrder switch
                 {
-                    ByteOrder.Native => SdlMixerFormatSYS[SampleFormat],
-                    ByteOrder.BigEndian => SdlMixerFormatBE[SampleFormat],
-                    ByteOrder.LittleEndian => SdlMixerFormatLE[SampleFormat],
+                    ByteOrder.Native => SdlFormatSYS[SampleFormat],
+                    ByteOrder.BigEndian => SdlFormatBE[SampleFormat],
+                    ByteOrder.LittleEndian => SdlFormatLE[SampleFormat],
                     _ => throw new FormatException("Unknown byte order specified."),
                 };
+            }
+        }
+
+        internal static AudioFormat FromSdlFormat(ushort format)
+        {
+            var (sampleFormat, byteOrder) = DetectFormat(format);
+            return new AudioFormat(sampleFormat, byteOrder);
+        }
+        
+        private static (SampleFormat, ByteOrder) DetectFormat(ushort sdlFormat)
+        {
+            switch (sdlFormat)
+            {
+                case SDL2.AUDIO_U8:
+                    return (SampleFormat.U8, ByteOrder.LittleEndian);
+                
+                case SDL2.AUDIO_S8:
+                    return (SampleFormat.S8, ByteOrder.LittleEndian);
+                
+                case SDL2.AUDIO_U16LSB:
+                    return (SampleFormat.U16, ByteOrder.LittleEndian);
+                
+                case SDL2.AUDIO_U16MSB:
+                    return (SampleFormat.U16, ByteOrder.BigEndian);
+                
+                case SDL2.AUDIO_S16LSB:
+                    return (SampleFormat.S16, ByteOrder.LittleEndian);
+                
+                case SDL2.AUDIO_S16MSB:
+                    return (SampleFormat.S16, ByteOrder.BigEndian);
+                
+                case SDL2.AUDIO_S32LSB:
+                    return (SampleFormat.S32, ByteOrder.LittleEndian);
+                
+                case SDL2.AUDIO_S32MSB:
+                    return (SampleFormat.S32, ByteOrder.BigEndian);
+
+                case SDL2.AUDIO_F32LSB:
+                    return (SampleFormat.F32, ByteOrder.LittleEndian);
+                
+                case SDL2.AUDIO_F32MSB:
+                    return (SampleFormat.F32, ByteOrder.BigEndian);
+             
+                default: throw new NotSupportedException("Unsupported SDL audio format.");
             }
         }
     }

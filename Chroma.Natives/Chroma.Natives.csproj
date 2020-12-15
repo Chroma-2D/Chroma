@@ -28,38 +28,30 @@
         <EmbeddedResource Include="Binaries\linux_64\libSDL2_sound.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libwebp.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libz.bz2" />
-<!--        <EmbeddedResource Include="Binaries\osx_64\libFLAC.bz2" />-->
 <!--        <EmbeddedResource Include="Binaries\osx_64\libfreetype.bz2" />-->
 <!--        <EmbeddedResource Include="Binaries\osx_64\libjpeg.bz2" />-->
-<!--        <EmbeddedResource Include="Binaries\osx_64\libmodplug.bz2" />-->
-<!--        <EmbeddedResource Include="Binaries\osx_64\libmpg123.bz2" />-->
-<!--        <EmbeddedResource Include="Binaries\osx_64\libogg.bz2" />-->
-<!--        <EmbeddedResource Include="Binaries\osx_64\libopus.bz2" />-->
-<!--        <EmbeddedResource Include="Binaries\osx_64\libopusfile.bz2" />-->
 <!--        <EmbeddedResource Include="Binaries\osx_64\libpng16.bz2" />-->
+<!--        <EmbeddedResource Include="Binaries\osx_64\libtiff.bz2" />-->
+<!--        <EmbeddedResource Include="Binaries\osx_64\libSDL2.bz2" />-->
 <!--        <EmbeddedResource Include="Binaries\osx_64\libSDL2_gpu.bz2" />-->
 <!--        <EmbeddedResource Include="Binaries\osx_64\libSDL2_image.bz2" />-->
-<!--        <EmbeddedResource Include="Binaries\osx_64\libSDL2_mixer.bz2" />-->
-<!--        <EmbeddedResource Include="Binaries\osx_64\libSDL2.bz2" />-->
-<!--        <EmbeddedResource Include="Binaries\osx_64\libtiff.bz2" />-->
-<!--        <EmbeddedResource Include="Binaries\osx_64\libvorbis.bz2" />-->
-<!--        <EmbeddedResource Include="Binaries\osx_64\libvorbisfile.bz2" />-->
+<!--        <EmbeddedResource Include="Binaries\osx_64\libSDL2_nmix.bz2" />-->
+<!--        <EmbeddedResource Include="Binaries\osx_64\libSDL2_sound.bz2" />-->
 <!--        <EmbeddedResource Include="Binaries\osx_64\libwebp.bz2" />-->
 <!--        <EmbeddedResource Include="Binaries\osx_64\libz.bz2" />-->
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Fody" Version="6.1.1">
+        <PackageReference Include="Fody" Version="6.3.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         
-        <PackageReference Include="ModuleInit.Fody" Version="2.1.0">
+        <PackageReference Include="ModuleInit.Fody" Version="2.1.1">
             <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         
-        <PackageReference Include="System.Text.Json" Version="4.7.2" />
+        <PackageReference Include="System.Text.Json" Version="5.0.0" />
     </ItemGroup>
 
     <ItemGroup>

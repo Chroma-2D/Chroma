@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Text;
 using Chroma;
 using Chroma.Audio;
 using Chroma.Audio.Sources;
@@ -25,9 +23,9 @@ namespace MusicAndSounds
         private Music _elysiumMod;
         private Waveform _waveform;
 
-        private float[] _averaged = new float[512];
-        private float[] _result = new float[1024];
-        private Complex[] _samples = new Complex[2048];
+        private float[] _averaged = new float[1024];
+        private float[] _result = new float[2048];
+        private Complex[] _samples = new Complex[4096];
 
         public GameCore()
         {
@@ -44,6 +42,8 @@ namespace MusicAndSounds
             {
                 _log.Info($"Decoder: {string.Join(',', e.SupportedFormats)}");
             }
+            
+            FixedTimeStepTarget = 75;
         }
 
         protected override void LoadContent()
@@ -53,7 +53,6 @@ namespace MusicAndSounds
             _elysiumMod = Content.Load<Music>("Music/elysium.mod");
 
             _groovyMusic = Content.Load<Music>("Music/groovy.mp3");
-            _groovyMusic.Filters.Add(DoFFT);
 
             _waveform = new Waveform(
                 new AudioFormat(SampleFormat.F32),
@@ -72,7 +71,7 @@ namespace MusicAndSounds
         protected override void Draw(RenderContext context)
         {
             context.DrawString(
-                $"Use <F1> to start/stop the groovy music ({_groovyMusic.Status}).\n" +
+                $"Use <F1> to start/stop the groovy music ({_elysiumMod.Status}).\n" +
                 "Use <F2> to pause/unpause the groovy music.\n" +
                 $"Use <space> to play the shotgun sound. ({_doomShotgun.Status})\n" +
                 $"Use <F3>/<F4> to tweak the shotgun sound volume -/+ ({_doomShotgun.Volume}).\n" +
@@ -84,7 +83,7 @@ namespace MusicAndSounds
             context.LineThickness = 1;
 
             var upBeat = 128 * (_averaged[1] + _averaged[2]);
-            var upBeat2 = 128 * (_averaged[5] + _averaged[6] + _averaged[7]);
+            var upBeat2 = 128 * (_averaged[4] + _averaged[5] + _averaged[6]);
 
             context.Rectangle(
                 ShapeMode.Fill,
@@ -116,19 +115,24 @@ namespace MusicAndSounds
             }
         }
 
+        protected override void FixedUpdate(float delta)
+        {
+            DoFFT(_elysiumMod.InBuffer, _elysiumMod.Format);
+        }
+
         protected override void KeyPressed(KeyEventArgs e)
         {
             switch (e.KeyCode)
             {
                 case KeyCode.F1:
-                    if (_groovyMusic.IsPlaying)
-                        _groovyMusic.Pause();
+                    if (_elysiumMod.IsPlaying)
+                        _elysiumMod.Pause();
                     else
-                        _groovyMusic.Play();
+                        _elysiumMod.Play();
                     break;
 
                 case KeyCode.F2:
-                    _groovyMusic.Stop();
+                    _elysiumMod.Stop();
                     break;
 
                 case KeyCode.Space:
@@ -183,7 +187,7 @@ namespace MusicAndSounds
 
             FFT.CalculateFFT(_samples, _result);
 
-            _averaged = new float[512];
+            _averaged = new float[1024];
             for (var i = 0; i < _result.Length; i++)
             {
                 _averaged[i / 2] += _result[i];

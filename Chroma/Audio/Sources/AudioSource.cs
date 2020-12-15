@@ -76,6 +76,28 @@ namespace Chroma.Audio.Sources
                 }
             }
         }
+        
+        public Span<byte> InBuffer
+        {
+            get
+            {
+                unsafe
+                {
+                    return new Span<byte>(Source->in_buffer.ToPointer(), Source->in_buffer_size);
+                }
+            }
+        }
+
+        public Span<byte> OutBuffer
+        {
+            get
+            {
+                unsafe
+                {
+                    return new Span<byte>(Source->out_buffer.ToPointer(), Source->out_buffer_size);
+                }
+            }
+        }
 
         public List<AudioStreamDelegate> Filters { get; } = new();
 

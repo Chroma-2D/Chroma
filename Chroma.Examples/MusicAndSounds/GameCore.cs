@@ -63,9 +63,9 @@ namespace MusicAndSounds
                     
                     for(var i = 0; i < floats.Length; i++)
                     {
-                        floats[i] = MathF.Sin(2 * MathF.PI * 441f * (i / 44100f));
+                        floats[i] = MathF.Sin(2 * MathF.PI * 13f * (i / (float)floats.Length));
                     }
-                }
+                }, ChannelMode.Mono
             );
         }
 

@@ -488,7 +488,7 @@ namespace Chroma.Graphics
         }
 
         public void DrawString(BitmapFont font, string text, Vector2 position, Color color)
-            => DrawString(font, text, position, (c, i, p, g) => new GlyphTransformData {Color = color});
+            => DrawString(font, text, position, (_, _, _, _) => new GlyphTransformData {Color = color});
 
         public void DrawString(string text, Vector2 position,
             TrueTypeFontGlyphTransform perCharTransform = null)
@@ -496,7 +496,7 @@ namespace Chroma.Graphics
 
         public void DrawString(string text, Vector2 position, Color color)
             => DrawString(EmbeddedAssets.DefaultFont, text, position,
-                (c, i, p, g) => new GlyphTransformData {Color = color});
+                (_, _, _, _) => new GlyphTransformData {Color = color});
 
         public void DrawString(TrueTypeFont font, string text, Vector2 position,
             TrueTypeFontGlyphTransform glyphTransform = null)
@@ -572,7 +572,7 @@ namespace Chroma.Graphics
         }
 
         public void DrawString(TrueTypeFont font, string text, Vector2 position, Color color)
-            => DrawString(font, text, position, (c, i, p, g) => new GlyphTransformData {Color = color});
+            => DrawString(font, text, position, (_, _, _, _) => new GlyphTransformData {Color = color});
 
         public void DrawBatch(DrawOrder order = DrawOrder.BackToFront, bool discardBatchAfterUse = true)
         {

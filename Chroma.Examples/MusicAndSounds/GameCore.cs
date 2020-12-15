@@ -44,10 +44,9 @@ namespace MusicAndSounds
             _doomShotgun = Content.Load<Sound>("Sounds/doomsg.wav");
 
             _elysiumMod = Content.Load<Music>("Music/elysium.mod");
-            _elysiumMod.Filters.Add(DoFFT);
 
             _groovyMusic = Content.Load<Music>("Music/groovy.mp3");
-
+            _groovyMusic.Filters.Add(DoFFT);
 
             _waveform = new Waveform(
                 new AudioFormat(SampleFormat.F32),
@@ -115,14 +114,14 @@ namespace MusicAndSounds
             switch (e.KeyCode)
             {
                 case KeyCode.F1:
-                    if (_elysiumMod.IsPlaying)
-                        _elysiumMod.Pause();
+                    if (_groovyMusic.IsPlaying)
+                        _groovyMusic.Pause();
                     else
-                        _elysiumMod.Play();
+                        _groovyMusic.Play();
                     break;
 
                 case KeyCode.F2:
-                    _elysiumMod.Stop();
+                    _groovyMusic.Stop();
                     break;
 
                 case KeyCode.Space:

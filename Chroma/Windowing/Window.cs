@@ -18,12 +18,12 @@ namespace Chroma.Windowing
     {
         private readonly Log _log = LogManager.GetForCurrentAssembly();
 
-        private PerformanceCounter _performanceCounter;
+        private readonly PerformanceCounter _performanceCounter;
         private readonly RenderContext _renderContext;
 
         private string _title = "Chroma Framework";
-        private Size _size = new Size(800, 600);
-        private Vector2 _position = new Vector2(SDL2.SDL_WINDOWPOS_CENTERED, SDL2.SDL_WINDOWPOS_CENTERED);
+        private Size _size = new(800, 600);
+        private Vector2 _position = new(SDL2.SDL_WINDOWPOS_CENTERED, SDL2.SDL_WINDOWPOS_CENTERED);
         private WindowState _state = WindowState.Normal;
 
         private IntPtr _currentIconPtr;

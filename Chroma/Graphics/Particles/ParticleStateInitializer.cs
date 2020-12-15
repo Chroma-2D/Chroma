@@ -4,10 +4,8 @@ namespace Chroma.Graphics.Particles
     {
         protected ParticleEmitter Emitter { get; }
 
-        public ParticleStateInitializer(ParticleEmitter emitter)
-        {
-            Emitter = emitter;
-        }
+        protected ParticleStateInitializer(ParticleEmitter emitter)
+            => Emitter = emitter;
 
         public abstract Particle CreateParticle();
     }

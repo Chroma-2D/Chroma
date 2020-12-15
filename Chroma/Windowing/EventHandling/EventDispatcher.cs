@@ -12,17 +12,13 @@ namespace Chroma.Windowing.EventHandling
         internal delegate void SdlEventHandler(Window window, SDL2.SDL_Event ev);
         internal delegate void WindowEventHandler(Window window, SDL2.SDL_WindowEvent ev);
 
-        internal Dictionary<SDL2.SDL_EventType, SdlEventHandler> SdlEventHandlers { get; }
-        internal Dictionary<SDL2.SDL_WindowEventID, WindowEventHandler> WindowEventHandlers { get; }
-        internal Dictionary<SDL2.SDL_EventType, bool> DiscardedEventTypes { get; }
+        internal Dictionary<SDL2.SDL_EventType, SdlEventHandler> SdlEventHandlers { get; } = new();
+        internal Dictionary<SDL2.SDL_WindowEventID, WindowEventHandler> WindowEventHandlers { get; } = new();
+        internal Dictionary<SDL2.SDL_EventType, bool> DiscardedEventTypes { get; } = new();
 
         internal EventDispatcher(Window owner)
         {
             Owner = owner;
-
-            SdlEventHandlers = new Dictionary<SDL2.SDL_EventType, SdlEventHandler>();
-            WindowEventHandlers = new Dictionary<SDL2.SDL_WindowEventID, WindowEventHandler>();
-            DiscardedEventTypes = new Dictionary<SDL2.SDL_EventType, bool>();
         }
 
         internal void Dispatch(SDL2.SDL_Event ev)

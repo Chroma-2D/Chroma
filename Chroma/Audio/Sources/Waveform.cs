@@ -5,7 +5,7 @@ namespace Chroma.Audio.Sources
 {
     public class Waveform : AudioSource
     {
-        private AudioStreamDelegate _chunkGenerator;
+        private readonly AudioStreamDelegate _chunkGenerator;
         private SDL2_nmix.NMIX_SourceCallback _internalCallback; // Needs to be a class field to avoid GC collection.
         
         private AudioFormat Format { get; }

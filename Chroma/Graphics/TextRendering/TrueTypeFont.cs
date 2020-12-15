@@ -13,7 +13,7 @@ using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics.TextRendering
 {
-    public unsafe class TrueTypeFont : DisposableResource
+    public class TrueTypeFont : DisposableResource
     {
         private Log Log => LogManager.GetForCurrentAssembly();
 
@@ -120,17 +120,21 @@ namespace Chroma.Graphics.TextRendering
             // because it gets rekt by GC when ran without
             // debugger
             FaceData = ms.ToArray();
-            fixed (byte* fontPtr = &FaceData[0])
-            {
-                FT.FT_New_Memory_Face(
-                    Library.Native,
-                    new IntPtr(fontPtr),
-                    FaceData.Length,
-                    0,
-                    out var facePtr
-                );
 
-                Face = facePtr;
+            unsafe
+            {
+                fixed (byte* fontPtr = &FaceData[0])
+                {
+                    FT.FT_New_Memory_Face(
+                        Library.Native,
+                        new IntPtr(fontPtr),
+                        FaceData.Length,
+                        0,
+                        out var facePtr
+                    );
+
+                    Face = facePtr;
+                }
             }
 
             InitializeFontData();
@@ -202,11 +206,15 @@ namespace Chroma.Graphics.TextRendering
             FT.FT_Set_Pixel_Sizes(Face, 0, (uint)Size);
 
             FaceRec = Marshal.PtrToStructure<FT_FaceRec>(Face);
-            ScaledLineSpacing = FaceRec.size->metrics.height.ToInt32() >> 6;
-            LineSpacing = FaceRec.height >> 6;
 
-            Ascender = FaceRec.size->metrics.ascender.ToInt32() >> 6;
-            Descender = (FaceRec.descender >> 6);
+            unsafe
+            {
+                ScaledLineSpacing = FaceRec.size->metrics.height.ToInt32() >> 6;
+                LineSpacing = FaceRec.height >> 6;
+
+                Ascender = FaceRec.size->metrics.ascender.ToInt32() >> 6;
+                Descender = (FaceRec.descender >> 6);
+            }
         }
 
         private void RebuildAtlas()
@@ -214,10 +222,9 @@ namespace Chroma.Graphics.TextRendering
             if (RenderInfo.Count > 0 && Atlas != null)
                 InvalidateFont();
 
-            if (string.IsNullOrEmpty(Alphabet))
-                Atlas = GenerateTextureAtlas(1..512);
-            else
-                Atlas = GenerateTextureAtlas(Alphabet);
+            Atlas = string.IsNullOrEmpty(Alphabet) 
+                ? GenerateTextureAtlas(1..512) 
+                : GenerateTextureAtlas(Alphabet);
         }
 
         private void InvalidateFont()
@@ -238,7 +245,7 @@ namespace Chroma.Graphics.TextRendering
             return GenerateTextureAtlas(glyphs);
         }
 
-        private Texture GenerateTextureAtlas(IEnumerable<char> glyphs)
+        private unsafe Texture GenerateTextureAtlas(IEnumerable<char> glyphs)
         {
             var enumerable = glyphs as char[] ?? glyphs.ToArray();
 
@@ -328,9 +335,9 @@ namespace Chroma.Graphics.TextRendering
             return new Vector2(kerning.x.ToInt32() >> 6, kerning.y.ToInt32() >> 6);
         }
 
-        private TrueTypeGlyph BuildGlyphInfo(FT_Bitmap bmp, int penX, int penY)
+        private unsafe TrueTypeGlyph BuildGlyphInfo(FT_Bitmap bmp, int penX, int penY)
         {
-            return new TrueTypeGlyph
+            return new()
             {
                 Position = new Vector2(penX, penY),
                 Size = new Vector2(
@@ -356,7 +363,7 @@ namespace Chroma.Graphics.TextRendering
             };
         }
 
-        private void RenderGlyphToBitmap(FT_Bitmap bmp, int penX, int penY, int texWidth, byte* pixels)
+        private unsafe void RenderGlyphToBitmap(FT_Bitmap bmp, int penX, int penY, int texWidth, byte* pixels)
         {
             var buffer = (byte*)FaceRec.glyph->bitmap.buffer.ToPointer();
 
@@ -380,7 +387,7 @@ namespace Chroma.Graphics.TextRendering
             }
         }
 
-        private Texture CreateTextureFromFTBitmap(byte* pixels, int texWidth, int texHeight)
+        private unsafe Texture CreateTextureFromFTBitmap(byte* pixels, int texWidth, int texHeight)
         {
             var surfaceSize = texWidth * texHeight * 4;
 
@@ -418,7 +425,7 @@ namespace Chroma.Graphics.TextRendering
             return new Texture(gpuImage);
         }
 
-        private bool IsMonochromeBitSet(FT_GlyphSlotRec* glyph, int x, int y)
+        private unsafe bool IsMonochromeBitSet(FT_GlyphSlotRec* glyph, int x, int y)
         {
             var pitch = glyph->bitmap.pitch;
             var buf = (byte*)glyph->bitmap.buffer.ToPointer();

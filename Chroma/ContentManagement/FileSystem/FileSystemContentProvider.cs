@@ -18,7 +18,7 @@ namespace Chroma.ContentManagement.FileSystem
         private readonly HashSet<DisposableResource> _loadedResources;
         private readonly Dictionary<Type, Func<string, object[], object>> _importers;
 
-        public string ContentRoot { get; private set; }
+        public string ContentRoot { get; }
 
         public FileSystemContentProvider(string contentRoot = null)
         {
@@ -78,7 +78,7 @@ namespace Chroma.ContentManagement.FileSystem
         {
             if (_loadedResources.Contains(resource))
                 throw new InvalidOperationException("The content you want to track is already being tracked.");
-            
+
             _loadedResources.Add(resource);
             resource.Disposing += OnResourceDisposing;
         }
@@ -88,7 +88,7 @@ namespace Chroma.ContentManagement.FileSystem
             if (!_loadedResources.Contains(resource))
                 throw new ContentNotLoadedException(
                     "The content you want to stop tracking was never tracked in the first place.");
-            
+
             resource.Disposing -= OnResourceDisposing;
             _loadedResources.Remove(resource);
         }
@@ -116,20 +116,31 @@ namespace Chroma.ContentManagement.FileSystem
         protected override void FreeManagedResources()
         {
             var disposables = new List<IDisposable>(_loadedResources);
-            
+
             foreach (var resource in disposables)
                 resource.Dispose();
         }
 
         private void RegisterImporters()
         {
-            RegisterImporter<Texture>((path, args) => { return new Texture(path); });
+            RegisterImporter<Texture>((path, _) => new Texture(path));
+            RegisterImporter<PixelShader>((path, _) => PixelShader.FromFile(path));
+            RegisterImporter<VertexShader>((path, _) => VertexShader.FromFile(path));
+            RegisterImporter<Effect>((path, _) => Effect.FromFile(path));
+            RegisterImporter<BitmapFont>((path, _) => new BitmapFont(path));
+            RegisterImporter<Sound>((path, _) => new Sound(path));
+            RegisterImporter<Music>((path, _) => new Music(path));
 
-            RegisterImporter<PixelShader>((path, args) => { return PixelShader.FromFile(path); });
+            RegisterImporter<Cursor>((path, args) =>
+            {
+                var hotSpot = new Vector2();
 
-            RegisterImporter<VertexShader>((path, args) => { return VertexShader.FromFile(path); });
-            
-            RegisterImporter<Effect>((path, args) => { return Effect.FromFile(path); });
+                if (args.Length >= 1)
+                    hotSpot = (Vector2)args[0];
+
+                var cursor = new Cursor(path, hotSpot);
+                return cursor;
+            });
 
             RegisterImporter<TrueTypeFont>((path, args) =>
             {
@@ -148,23 +159,6 @@ namespace Chroma.ContentManagement.FileSystem
                 }
 
                 return ttf;
-            });
-
-            RegisterImporter<BitmapFont>((path, args) => { return new BitmapFont(path); });
-
-            RegisterImporter<Sound>((path, args) => { return new Sound(path); });
-            
-            RegisterImporter<Music>((path, args) => { return new Music(path); });
-
-            RegisterImporter<Cursor>((path, args) =>
-            {
-                var hotSpot = new Vector2();
-
-                if (args.Length >= 1)
-                    hotSpot = (Vector2)args[0];
-
-                var cursor = new Cursor(path, hotSpot);
-                return cursor;
             });
         }
 

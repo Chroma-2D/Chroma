@@ -7,7 +7,7 @@ using Chroma.Natives.SDL;
 namespace Chroma.Audio.Sources
 {
     public class FileBasedAudioSource : AudioSource
-    {        
+    {
         private readonly Log _log = LogManager.GetForCurrentAssembly();
         private SDL2_nmix.NMIX_SourceCallback _originalSourceCallback;
         private SDL2_nmix.NMIX_SourceCallback _internalSourceCallback;
@@ -73,7 +73,7 @@ namespace Chroma.Audio.Sources
             {
                 Handle = FileSource->source;
             }
-            
+
             HookSourceCallback();
         }
 
@@ -92,17 +92,28 @@ namespace Chroma.Audio.Sources
                             new IntPtr(b),
                             arr.Length
                         );
-
+                        
                         if (RwOpsHandle == IntPtr.Zero)
                         {
                             _log.Error($"Failed to initialize RWops from stream: {SDL2.SDL_GetError()}");
                             return;
                         }
 
-                        FileSourceHandle = SDL2_nmix.NMIX_NewFileSource(RwOpsHandle, null, decodeWhole);
+                        foreach (var decoder in AudioManager.Instance.Decoders)
+                        {
+                            foreach (var format in decoder.SupportedFormats)
+                            {
+                                SDL2.SDL_RWseek(RwOpsHandle, 0, SDL2.RW_SEEK_SET);
+                                FileSourceHandle = SDL2_nmix.NMIX_NewFileSource(RwOpsHandle, format, decodeWhole);
+
+                                if (FileSourceHandle != IntPtr.Zero)
+                                    break;
+                            }
+                        }
+
                         if (FileSourceHandle == IntPtr.Zero)
                         {
-                            _log.Error($"Failed to load initialize audio source from stream: {SDL2.SDL_GetError()}");
+                            _log.Error($"Failed to initialize audio source from stream: {SDL2.SDL_GetError()}");
                             return;
                         }
 
@@ -110,16 +121,36 @@ namespace Chroma.Audio.Sources
                     }
                 }
             }
-         
             HookSourceCallback();
         }
 
         public override void Play()
         {
+            EnsureHandleValid();
+
             if (Status == PlaybackStatus.Playing)
-                Stop();
-            
-            base.Play();
+            {
+                if (SDL2_nmix.NMIX_Pause(Handle) < 0)
+                {
+                    _log.Error($"Failed to play the audio source [pause]: {SDL2.SDL_GetError()}");
+                    return;
+                }
+
+                if (SDL2_nmix.NMIX_Rewind(FileSourceHandle) < 0)
+                {
+                    _log.Error($"Failed to play the audio source [rewind]: {SDL2.SDL_GetError()}");
+                    return;
+                }
+
+                Status = PlaybackStatus.Stopped;
+            }
+
+            if (SDL2_nmix.NMIX_Play(Handle) < 0)
+            {
+                _log.Error($"Failed to play the audio source [play]: {SDL2.SDL_GetError()}");
+                return;
+            }
+
             Status = PlaybackStatus.Playing;
         }
 
@@ -127,7 +158,7 @@ namespace Chroma.Audio.Sources
         {
             if (Status == PlaybackStatus.Paused || Status == PlaybackStatus.Stopped)
                 return;
-            
+
             base.Pause();
             Status = PlaybackStatus.Paused;
         }
@@ -137,8 +168,17 @@ namespace Chroma.Audio.Sources
             EnsureHandleValid();
             EnsureFileSourceHandleValid();
 
-            SDL2_nmix.NMIX_Pause(Handle);
-            SDL2_nmix.NMIX_Rewind(FileSourceHandle);
+            if (SDL2_nmix.NMIX_Pause(Handle) < 0)
+            {
+                _log.Error($"Failed to stop the audio source [pause]: {SDL2.SDL_GetError()}");
+                return;
+            }
+
+            if (SDL2_nmix.NMIX_Rewind(FileSourceHandle) < 0)
+            {
+                _log.Error($"Failed to stop the audio source [rewind]: {SDL2.SDL_GetError()}");
+                return;
+            }
 
             Status = PlaybackStatus.Stopped;
         }
@@ -147,14 +187,20 @@ namespace Chroma.Audio.Sources
         {
             EnsureFileSourceHandleValid();
 
-            SDL2_nmix.NMIX_Rewind(FileSourceHandle);
+            if (SDL2_nmix.NMIX_Rewind(FileSourceHandle) < 0)
+            {
+                _log.Error($"Failed to rewind the requested audio source: {SDL2.SDL_GetError()}");
+            }
         }
 
         public void Seek(int milliseconds)
         {
             EnsureFileSourceHandleValid();
 
-            SDL2_nmix.NMIX_Seek(FileSourceHandle, milliseconds);
+            if (SDL2_nmix.NMIX_Seek(FileSourceHandle, milliseconds) < 0)
+            {
+                _log.Error($"Failed to seek to {milliseconds}ms: {SDL2.SDL_GetError()}");
+            }
         }
 
         protected override void FreeNativeResources()
@@ -180,12 +226,15 @@ namespace Chroma.Audio.Sources
             if (FileSourceHandle == IntPtr.Zero)
                 throw new InvalidOperationException("File source handle is invalid.");
         }
-        
+
         private void HookSourceCallback()
         {
+            EnsureHandleValid();
+
             unsafe
             {
-                _originalSourceCallback = Marshal.GetDelegateForFunctionPointer<SDL2_nmix.NMIX_SourceCallback>(Source->callback);
+                _originalSourceCallback =
+                    Marshal.GetDelegateForFunctionPointer<SDL2_nmix.NMIX_SourceCallback>(Source->callback);
                 _internalSourceCallback = InternalSourceCallback;
 
                 var ptr = Marshal.GetFunctionPointerForDelegate(_internalSourceCallback);
@@ -199,23 +248,24 @@ namespace Chroma.Audio.Sources
             unsafe
             {
                 var span = new Span<byte>(
-                    SoundSample->buffer.ToPointer(), 
+                    SoundSample->buffer.ToPointer(),
                     (int)SoundSample->buffer_size
                 );
 
                 for (var i = 0; i < Filters.Count; i++)
                     Filters[i]?.Invoke(span, AudioFormat.FromSdlFormat(SoundSample->actual.format));
-                
+
                 _originalSourceCallback(userdata, buffer, bufferSize);
-                
-                if (Source->eof > 0 && !IsLooping)
+
+                if (Source->eof > 0)
                 {
-                    if (!IsLooping)
+                    if (IsLooping)
                     {
                         Rewind();
-                        Status = PlaybackStatus.Stopped;
+                        return;
                     }
-                    
+
+                    Status = PlaybackStatus.Stopped;
                     AudioManager.Instance.OnAudioSourceFinished(this);
                 }
             }

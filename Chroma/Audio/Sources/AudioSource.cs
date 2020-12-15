@@ -10,12 +10,12 @@ namespace Chroma.Audio.Sources
         public delegate void AudioStreamDelegate(Span<byte> audioBufferData, AudioFormat format);
 
         protected IntPtr Handle { get; set; }
-        
-        internal unsafe SDL2_nmix.NMIX_Source* Source 
+
+        internal unsafe SDL2_nmix.NMIX_Source* Source
             => (SDL2_nmix.NMIX_Source*)Handle.ToPointer();
-        
+
         public virtual PlaybackStatus Status { get; set; }
-        
+
         public bool IsPlaying => SDL2_nmix.NMIX_IsPlaying(Handle);
 
         public float Panning
@@ -48,11 +48,35 @@ namespace Chroma.Audio.Sources
 
                 if (vol > 2f)
                     vol = 2f;
-                
+
                 SDL2_nmix.NMIX_SetGain(Handle, vol);
             }
         }
-        
+
+        public AudioFormat Format
+        {
+            get
+            {
+                unsafe
+                {
+                    return AudioFormat.FromSdlFormat(
+                        Source->format
+                    );
+                }
+            }
+        }
+
+        public byte ChannelCount
+        {
+            get
+            {
+                unsafe
+                {
+                    return Source->channels;
+                }
+            }
+        }
+
         public List<AudioStreamDelegate> Filters { get; } = new();
 
         public virtual void Play()
@@ -68,9 +92,7 @@ namespace Chroma.Audio.Sources
         }
 
         public virtual void Stop()
-        {
-            throw new NotSupportedException("This audio source does not support stopping.");
-        }
+            => throw new NotSupportedException("This audio source does not support stopping.");
 
         protected void EnsureHandleValid()
         {

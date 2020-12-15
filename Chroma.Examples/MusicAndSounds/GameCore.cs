@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Text;
 using Chroma;
 using Chroma.Audio;
 using Chroma.Audio.Sources;
@@ -32,11 +34,16 @@ namespace MusicAndSounds
             Content = new FileSystemContentProvider(Path.Combine(LocationOnDisk, "../../../../_common"));
 
             Window.GoWindowed(new Size(800, 600));
-            Audio.DeviceConnected += (sender, e) =>
+            Audio.DeviceConnected += (_, e) =>
             {
                 _log.Info(
                     $"Connected {(e.Device.IsCapture ? "input" : "output")} device {e.Device.Index}: '{e.Device.Name}'.");
             };
+
+            foreach (var e in Audio.Decoders)
+            {
+                _log.Info($"Decoder: {string.Join(',', e.SupportedFormats)}");
+            }
         }
 
         protected override void LoadContent()

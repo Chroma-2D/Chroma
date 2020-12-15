@@ -63,7 +63,7 @@ namespace Chroma.Audio
             SDL2_nmix.NMIX_PausePlayback(_playbackPaused);
         }
 
-        public void Open(AudioDevice device = null, int frequency = 44100, int sampleCount = 2049)
+        public void Open(AudioDevice device = null, int frequency = 44100, int sampleCount = 2048)
         {
             Close();
             

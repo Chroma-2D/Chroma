@@ -14,7 +14,7 @@ namespace Chroma.Audio
         private static AudioManager _instance;
         internal static AudioManager Instance => _instance ?? (_instance = new AudioManager());
 
-        private List<AudioDevice> _devices = new List<AudioDevice>();
+        private List<AudioDevice> _devices = new();
 
         private bool _mixerInitialized;
         private bool _backendInitialized;

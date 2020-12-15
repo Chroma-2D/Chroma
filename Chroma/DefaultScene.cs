@@ -43,7 +43,7 @@ namespace Chroma
 
             context.DrawString(
                 _welcomeMessage,
-                new Vector2(8), (c, i, p, g) =>
+                new Vector2(8), (_, i, _, _) =>
                 {
                     var ranges = _welcomeMessage.FindWordRanges("Draw", "Update");
                     var color = Color.White;

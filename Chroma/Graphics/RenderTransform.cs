@@ -6,7 +6,7 @@ namespace Chroma.Graphics
 {
     public class RenderTransform
     {
-        private RenderContext _context;
+        private readonly RenderContext _context;
 
         public Matrix4x4 Matrix
         {

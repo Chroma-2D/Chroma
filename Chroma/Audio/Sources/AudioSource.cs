@@ -53,8 +53,7 @@ namespace Chroma.Audio.Sources
             }
         }
         
-        public List<AudioStreamDelegate> Filters { get; private set; } 
-            = new List<AudioStreamDelegate>();
+        public List<AudioStreamDelegate> Filters { get; } = new();
 
         public virtual void Play()
         {

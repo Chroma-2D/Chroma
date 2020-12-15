@@ -11,8 +11,8 @@ namespace Chroma.Graphics.TextRendering.Bitmap
 {
     public class BitmapFont : DisposableResource
     {
-        private List<string> _lines;
-        private Dictionary<string, Action> _parsers;
+        private readonly List<string> _lines;
+        private readonly Dictionary<string, Action> _parsers;
         private BitmapFontLexer _lexer;
 
         private Log Log => LogManager.GetForCurrentAssembly();

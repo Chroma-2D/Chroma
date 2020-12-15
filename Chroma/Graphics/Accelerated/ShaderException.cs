@@ -12,7 +12,7 @@ namespace Chroma.Graphics.Accelerated
         internal ShaderException(string message, string rawGlslError) : base(message)
         {
             GlslErrors = rawGlslError.Split('\n').ToList();
-            GlslErrors.RemoveAll(x => string.IsNullOrWhiteSpace(x));
+            GlslErrors.RemoveAll(string.IsNullOrWhiteSpace);
         }
 
         public override string ToString()

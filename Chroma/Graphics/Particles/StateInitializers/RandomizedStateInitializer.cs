@@ -8,16 +8,16 @@ namespace Chroma.Graphics.Particles.StateInitializers
     {
         private Random Random { get; }
 
-        public Vector2 VelocityLimits { get; set; } = new Vector2(200, 400);
+        public Vector2 VelocityLimits { get; set; } = new(200, 400);
 
-        public Vector2 InitialVelocity => new Vector2(
+        public Vector2 InitialVelocity => new(
             Random.Next((int)VelocityLimits.X) * (Random.Next(-1, 1) == -1 ? -1 : 1),
             Random.Next((int)VelocityLimits.Y) * (Random.Next(-1, 1) == -1 ? -1 : 1)
         );
 
         public virtual Vector2 InitialPosition => Emitter.SpawnPosition;
 
-        public virtual Vector2 InitialOrigin => new Vector2(
+        public virtual Vector2 InitialOrigin => new(
             Emitter.Texture.Width / 2f,
             Emitter.Texture.Height / 2f
         );

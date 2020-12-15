@@ -21,10 +21,7 @@ namespace Chroma.Input
             set
             {
                 _isVisible = value;
-
-                if (_isVisible)
-                    SDL2.SDL_ShowCursor(1);
-                else SDL2.SDL_ShowCursor(0);
+                SDL2.SDL_ShowCursor(_isVisible ? 1 : 0);
             }
         }
 

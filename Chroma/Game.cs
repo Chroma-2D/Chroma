@@ -78,10 +78,9 @@ namespace Chroma
 
         public void Quit()
         {
-            Audio.Dispose();
             Content.Dispose();
 
-            SDL_mixer.Mix_Quit();
+            AudioManager.Instance.Close();
             SDL_gpu.GPU_Quit();
             SDL2.SDL_Quit();
 
@@ -215,12 +214,7 @@ namespace Chroma
 
         private void InitializeAudio()
         {
-            AudioManager.Instance.InitializeAudioMixer(
-                AudioFormat.ChromaDefault, 
-                ChannelMode.Stereo, 
-                44100, 
-                4096
-            );
+            AudioManager.Instance.Initialize();
         }
 
         private void InitializeContent()

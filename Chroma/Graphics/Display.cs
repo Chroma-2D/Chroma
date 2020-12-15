@@ -10,7 +10,7 @@ namespace Chroma.Graphics
     {
         private Log Log { get; } = LogManager.GetForCurrentAssembly();
 
-        public static readonly Display Invalid = new Display(-1);
+        public static readonly Display Invalid = new(-1);
 
         public int Index { get; }
         public bool IsValid => Index >= 0;

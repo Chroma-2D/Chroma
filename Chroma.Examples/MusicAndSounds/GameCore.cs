@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using Chroma;
 using Chroma.Audio;
 using Chroma.Audio.Sources;
@@ -20,8 +21,9 @@ namespace MusicAndSounds
         private Sound _doomShotgun;
         private Music _groovyMusic;
         private Music _elysiumMod;
+        private Waveform _waveform;
 
-        private float[] _averaged = new float[512];
+        private float[] _averaged = new float[1024];
         private float[] _result = new float[2048];
         private Complex[] _samples = new Complex[4096];
 
@@ -30,57 +32,92 @@ namespace MusicAndSounds
             Content = new FileSystemContentProvider(Path.Combine(LocationOnDisk, "../../../../_common"));
 
             Window.GoWindowed(new Size(800, 600));
-            Audio.AudioDeviceConnected += (sender, e) =>
+            Audio.DeviceConnected += (_, e) =>
             {
-                _log.Info($"Connected {(e.IsCapture ? "input" : "output")} device {e.Index}: '{e.Name}'.");
+                _log.Info(
+                    $"Connected {(e.Device.IsCapture ? "input" : "output")} device {e.Device.Index}: '{e.Device.Name}'.");
             };
 
-            Audio.HookPostMixProcessor<float>(FftPostMixProcessor);
+            foreach (var e in Audio.Decoders)
+            {
+                _log.Info($"Decoder: {string.Join(',', e.SupportedFormats)}");
+            }
+            
+            FixedTimeStepTarget = 75;
         }
 
         protected override void LoadContent()
         {
             _doomShotgun = Content.Load<Sound>("Sounds/doomsg.wav");
-            _groovyMusic = Content.Load<Music>("Music/groovy.mp3");
+
             _elysiumMod = Content.Load<Music>("Music/elysium.mod");
+
+            _groovyMusic = Content.Load<Music>("Music/groovy.mp3");
+
+            _waveform = new Waveform(
+                new AudioFormat(SampleFormat.F32),
+                (s, f) =>
+                {
+                    var floats = MemoryMarshal.Cast<byte, float>(s);
+                    
+                    for(var i = 0; i < floats.Length; i++)
+                    {
+                        floats[i] = MathF.Sin(2 * MathF.PI * 13f * (i / (float)floats.Length));
+                    }
+                }, ChannelMode.Mono
+            );
         }
 
         protected override void Draw(RenderContext context)
         {
             context.DrawString(
-                $"Use <F1> to start/stop the groovy music ({_groovyMusic.Status}).\n" +
+                $"Use <F1> to start/stop the groovy music ({_elysiumMod.Status}).\n" +
                 "Use <F2> to pause/unpause the groovy music.\n" +
                 $"Use <space> to play the shotgun sound. ({_doomShotgun.Status})\n" +
                 $"Use <F3>/<F4> to tweak the shotgun sound volume -/+ ({_doomShotgun.Volume}).\n" +
-                $"Use <F5>/<F6> to tweak the groovy music volume -/+ ({Audio.MusicVolume}).",
+                $"Use <F5>/<F6> to tweak master volume -/+ ({Audio.MasterVolume}).\n" +
+                $"Use <F7> to play/pause the sine waveform.",
                 new Vector2(8)
             );
 
-            context.LineThickness = 4;
+            context.LineThickness = 1;
 
-            var upBeat = 128 * ((_averaged[1] + _averaged[2]));
-            
+            var upBeat = 128 * (_averaged[1] + _averaged[2]);
+            var upBeat2 = 128 * (_averaged[4] + _averaged[5] + _averaged[6]);
+
             context.Rectangle(
                 ShapeMode.Fill,
                 Window.Center - new Vector2(0, upBeat),
                 new Size(32, 32),
-                new Color(0, (byte)(upBeat % 255), 125)
+                new Color(0, (byte)(upBeat % 255), 200)
             );
-            
-            for (var i = 0; i < _averaged.Length / 8; i++)
+
+            context.Rectangle(
+                ShapeMode.Fill,
+                Window.Center - new Vector2(0, -32 + upBeat2),
+                new Size(32, 32),
+                new Color(0, 200, (byte)(upBeat % 255))
+            );
+
+            for (var i = 0; i < _averaged.Length / 2; i++)
             {
                 context.Line(
                     new Vector2(
-                        (2 + i) * (2 + context.LineThickness - 1) + Window.Center.X / 2, 
+                        (2 + i) * (2 + context.LineThickness - 1),
                         Window.Size.Height
                     ),
                     new Vector2(
-                        (2 + i) * (2 + context.LineThickness - 1) + Window.Center.X / 2, 
-                        Window.Size.Height - 1 - _averaged[i] * 768
+                        (2 + i) * (2 + context.LineThickness - 1),
+                        Window.Size.Height - 1 - _averaged[i] * 1024
                     ),
                     new Color((byte)(255f * (_averaged.Length / (float)i)), 55, (255 / (_averaged[i] * 1024)) % 255)
                 );
             }
+        }
+
+        protected override void FixedUpdate(float delta)
+        {
+            DoFFT(_elysiumMod.InBuffer, _elysiumMod.Format);
         }
 
         protected override void KeyPressed(KeyEventArgs e)
@@ -88,60 +125,75 @@ namespace MusicAndSounds
             switch (e.KeyCode)
             {
                 case KeyCode.F1:
-                    if (_elysiumMod.Status == PlaybackStatus.Playing || _elysiumMod.Status == PlaybackStatus.Paused)
-                        _elysiumMod.Stop();
+                    if (_elysiumMod.IsPlaying)
+                        _elysiumMod.Pause();
                     else
                         _elysiumMod.Play();
                     break;
 
                 case KeyCode.F2:
-                    if (_elysiumMod.Status == PlaybackStatus.Playing)
-                        _elysiumMod.Pause();
-                    else if (_elysiumMod.Status == PlaybackStatus.Paused)
-                        _elysiumMod.Play();
+                    _elysiumMod.Stop();
                     break;
 
                 case KeyCode.Space:
-                    _doomShotgun.PlayOneShot();
+                    _doomShotgun.Play();
                     break;
 
                 case KeyCode.F3:
-                    _doomShotgun.Volume--;
+                    _doomShotgun.Volume -= 0.1f;
                     break;
 
                 case KeyCode.F4:
-                    _doomShotgun.Volume++;
+                    _doomShotgun.Volume += 0.1f;
                     break;
 
                 case KeyCode.F5:
-                    Audio.MusicVolume--;
+                    Audio.MasterVolume -= 0.1f;
                     break;
 
                 case KeyCode.F6:
-                    Audio.MusicVolume++;
+                    Audio.MasterVolume += 0.1f;
+                    break;
+
+                case KeyCode.F7:
+                    if (_waveform.IsPlaying)
+                        _waveform.Pause();
+                    else
+                        _waveform.Play();
                     break;
             }
         }
 
-        private void FftPostMixProcessor(Span<float> chunk, Span<byte> bytes)
+        private void DoFFT(Span<byte> audioBufferData, AudioFormat format)
         {
+            float[] chunk;
+
+            if (format.SampleFormat != SampleFormat.F32)
+            {
+                var shortSamples = MemoryMarshal.Cast<byte, short>(audioBufferData);
+                chunk = new float[shortSamples.Length];
+
+                for (var i = 0; i < shortSamples.Length; i++)
+                    chunk[i] = shortSamples[i] / 32767f;
+            }
+            else
+            {
+                chunk = MemoryMarshal.Cast<byte, float>(audioBufferData).ToArray();
+            }
+
             var spec = 0;
             for (var i = 0; i < chunk.Length; i += 2)
-            {
                 _samples[spec++] = new Complex((chunk[i] + chunk[i + 1]) / 2f, 0);
-            }
 
             FFT.CalculateFFT(_samples, _result);
 
-            _averaged = new float[512];
+            _averaged = new float[1024];
             for (var i = 0; i < _result.Length; i++)
             {
-                _averaged[i / 4] += _result[i];
+                _averaged[i / 2] += _result[i];
 
-                if (i != 0 && i % 4 == 0)
-                {
-                    _averaged[i / 4] /= 4;
-                }
+                if (i != 0 && i % 2 == 0)
+                    _averaged[i / 2] /= 2;
             }
         }
     }

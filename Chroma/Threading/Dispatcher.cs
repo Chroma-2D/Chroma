@@ -7,7 +7,7 @@ namespace Chroma.Threading
 {
     public class Dispatcher
     {
-        internal static Queue<ScheduledAction> ActionQueue { get; } = new Queue<ScheduledAction>();
+        internal static Queue<ScheduledAction> ActionQueue { get; } = new();
         
         public static int MainThreadId { get; internal set; }
 

@@ -1,6 +1,6 @@
 ﻿namespace Chroma.Hardware
 {
-    public struct ProductInfo
+    public readonly struct ProductInfo
     {
         public ushort VendorId { get; }
         public ushort ProductId { get; }

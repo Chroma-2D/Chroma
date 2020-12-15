@@ -32,7 +32,7 @@ namespace Chroma.Graphics
                 if (min == max)
                     return 0;
 
-                return (max - min) / (float)max;
+                return (max - min) / max;
             }
         }
 

@@ -27,12 +27,10 @@ namespace Chroma.Natives.SDL
         [StructLayout(LayoutKind.Sequential)]
         internal struct Sound_DecoderInfo
         {
-            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)]
-            internal string[] extensions;
-
-            [MarshalAs(UnmanagedType.LPStr)] internal string description;
-            [MarshalAs(UnmanagedType.LPStr)] internal string author;
-            [MarshalAs(UnmanagedType.LPStr)] internal string url;
+            internal IntPtr extensions;
+            internal IntPtr description;
+            internal IntPtr author;
+            internal IntPtr url;
         }
 
         [StructLayout(LayoutKind.Sequential)]

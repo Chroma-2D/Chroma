@@ -4,12 +4,12 @@ namespace Chroma.Audio.Sources
 {
     public class Sound : FileBasedAudioSource
     {
-        internal Sound(string filePath) 
+        public Sound(string filePath) 
             : base(filePath, true)
         {
         }
 
-        internal Sound(Stream stream) 
+        public Sound(Stream stream) 
             : base(stream, true)
         {
         }

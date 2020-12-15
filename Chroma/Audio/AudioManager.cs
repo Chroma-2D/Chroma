@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Chroma.Audio.Sources;
 using Chroma.Diagnostics.Logging;
 using Chroma.Natives.SDL;
@@ -15,12 +16,14 @@ namespace Chroma.Audio
         internal static AudioManager Instance => _instance ?? (_instance = new AudioManager());
 
         private List<AudioDevice> _devices = new();
+        private List<Decoder> _decoders = new();
 
         private bool _mixerInitialized;
         private bool _backendInitialized;
         private bool _playbackPaused;
 
         public IReadOnlyList<AudioDevice> Devices => _devices;
+        public IReadOnlyList<Decoder> Decoders => _decoders;
 
         public int Frequency { get; private set; }
         public int SampleCount { get; private set; }
@@ -52,7 +55,6 @@ namespace Chroma.Audio
 
         private AudioManager()
         {
-            Initialize();
         }
 
         public void PauseAll()
@@ -61,10 +63,12 @@ namespace Chroma.Audio
             SDL2_nmix.NMIX_PausePlayback(_playbackPaused);
         }
 
-        public void Open(AudioDevice device = null, int frequency = 44100, int sampleCount = 1024)
+        public void Open(AudioDevice device = null, int frequency = 44100, int sampleCount = 2049)
         {
             Close();
-
+            
+            EnumerateDevices();
+            
             Frequency = frequency;
             SampleCount = sampleCount;
 
@@ -81,10 +85,12 @@ namespace Chroma.Audio
                 return;
             }
             _mixerInitialized = true;
+            
+            EnumerateDecoders();
         }
 
         public void Close()
-        {
+        {            
             if (_mixerInitialized)
             {
                 if (SDL2_nmix.NMIX_CloseAudio() < 0)
@@ -120,6 +126,51 @@ namespace Chroma.Audio
                 _devices.Add(new AudioDevice(i, true));
         }
 
+        private void EnumerateDecoders()
+        {
+            _decoders.Clear();
+
+            unsafe
+            {
+                var p = (SDL2_sound.Sound_DecoderInfo**)SDL2_sound.Sound_AvailableDecoders();
+
+                if (p == null)
+                    return;
+
+                for (var i = 0;; i++)
+                {
+                    if (p[i] == null)
+                        break;
+
+                    var decoder = Marshal.PtrToStructure<SDL2_sound.Sound_DecoderInfo>(new IntPtr(p[i]));
+                    var p2 = (byte**)decoder.extensions;
+
+                    var fmts = new List<string>();
+                    
+                    if (p2 != null)
+                    {
+                        for (var j = 0;; j++)
+                        {
+                            var ext = Marshal.PtrToStringAnsi(new IntPtr(p2[j]));
+
+                            if (ext == null)
+                                break;
+
+                            fmts.Add(ext);
+                        }
+                    }
+
+                    _decoders.Add(
+                        new Decoder(
+                            Marshal.PtrToStringAnsi(p[i]->description),
+                            Marshal.PtrToStringUTF8(p[i]->author),
+                            Marshal.PtrToStringAnsi(p[i]->url)
+                        ) {SupportedFormats = fmts}
+                    );
+                }
+            }
+        }
+
         public void OnAudioSourceFinished(AudioSource s)
         {
             AudioSourceFinished?.Invoke(
@@ -147,10 +198,9 @@ namespace Chroma.Audio
                 )
             );
         }
-        
+
         internal void Initialize()
         {
-            EnumerateDevices();
             Open();
         }
     }

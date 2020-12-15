@@ -5,24 +5,22 @@ namespace Chroma.Audio.Sources
 {
     public class Waveform : AudioSource
     {
-        private readonly AudioStreamDelegate _chunkGenerator;
+        private readonly AudioStreamDelegate _sampleGenerator;
         private SDL2_nmix.NMIX_SourceCallback _internalCallback; // Needs to be a class field to avoid GC collection.
         
-        private AudioFormat Format { get; }
         public ChannelMode ChannelMode { get; }
         public int Frequency { get; }
         
-        public Waveform(AudioFormat format, AudioStreamDelegate chunkGenerator, ChannelMode channelMode = ChannelMode.Stereo, int frequency = 44100)
+        public Waveform(AudioFormat format, AudioStreamDelegate sampleGenerator, ChannelMode channelMode = ChannelMode.Stereo, int frequency = 44100)
         {
             _internalCallback = AudioCallback;
-            _chunkGenerator = chunkGenerator;
+            _sampleGenerator = sampleGenerator;
             
-            Format = format;
             ChannelMode = channelMode;
             Frequency = frequency;
             
             Handle = SDL2_nmix.NMIX_NewSource(
-                Format.SdlFormat,
+                format.SdlFormat,
                 (byte)ChannelMode,
                 Frequency,
                 _internalCallback,
@@ -39,7 +37,7 @@ namespace Chroma.Audio.Sources
                     bufferSize
                 );
                 
-                _chunkGenerator.Invoke(span, Format);
+                _sampleGenerator.Invoke(span, Format);
             }
         }
     }

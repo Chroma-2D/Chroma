@@ -22,7 +22,7 @@
     <Title>Chroma Framework</Title>
     <Description>2D Game Framework which *doesn't* try so hard to resemble XNA</Description>
     <PackageId>Chroma</PackageId>
-    <Version>0.26.0</Version>
+    <Version>0.27.0</Version>
     <Author>Ciastex</Author>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Ciastex/Chroma</RepositoryUrl>
@@ -47,6 +47,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="4.7.2" />
+    <PackageReference Include="System.Text.Json" Version="5.0.0" />
   </ItemGroup>
 </Project>

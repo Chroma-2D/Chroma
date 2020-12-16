@@ -9,6 +9,7 @@
     <ItemGroup>
         <EmbeddedResource Include="Binaries\windows_64\freetype.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\libjpeg-9.bz2" />
+        <EmbeddedResource Include="Binaries\windows_64\libpng16-16.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\libtiff-5.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\libwebp-7.bz2" />
         <EmbeddedResource Include="Binaries\windows_64\SDL2.bz2" />

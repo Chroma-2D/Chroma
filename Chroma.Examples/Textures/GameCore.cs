@@ -21,7 +21,7 @@ namespace Textures
         private int _currentTileIndex;
         private Size _virtRes;
 
-        private Random _rnd = new Random();
+        private Random _rnd = new();
         private float _rotation;
         private float _wave;
 
@@ -40,7 +40,7 @@ namespace Textures
             : base(false)
         {
             Content = new FileSystemContentProvider(Path.Combine(LocationOnDisk, "../../../../_common"));
-            GraphicsManager.LimitFramerate = false;
+            Graphics.LimitFramerate = false;
 
             Cursor.IsVisible = false;
         }

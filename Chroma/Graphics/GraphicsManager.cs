@@ -12,45 +12,16 @@ namespace Chroma.Graphics
 {
     public class GraphicsManager
     {
-        private static VerticalSyncMode _verticalSyncMode;
-        private static int _multiSamplingPrecision;
-
-        private static readonly Log _log = LogManager.GetForCurrentAssembly();
+        private readonly Log _log = LogManager.GetForCurrentAssembly();
+        
+        private VerticalSyncMode _verticalSyncMode;
 
         private Game Game { get; }
 
-        public static bool ViewportAutoResize { get; set; } = true;
-        public static bool LimitFramerate { get; set; } = true;
-        public static bool AutoClear { get; set; } = true;
-        public static Color AutoClearColor { get; set; } = Color.Transparent;
-
-        public static int MaximumMultiSamplingPrecision { get; private set; }
-
-        public static int MultiSamplingPrecision
-        {
-            get => _multiSamplingPrecision;
-            set
-            {
-                if (value > MaximumMultiSamplingPrecision)
-                {
-                    _log.Warning(
-                        $"Maximum supported multisampling precision is {MaximumMultiSamplingPrecision}. " +
-                        $"Amount of {value} was requested. Setting maximum instead."
-                    );
-
-                    _multiSamplingPrecision = MaximumMultiSamplingPrecision;
-                }
-                else
-                {
-                    _multiSamplingPrecision = value;
-                }
-
-                SDL2.SDL_GL_SetAttribute(
-                    SDL2.SDL_GLattr.SDL_GL_MULTISAMPLESAMPLES,
-                    _multiSamplingPrecision
-                );
-            }
-        }
+        public bool ViewportAutoResize { get; set; } = true;
+        public bool LimitFramerate { get; set; } = true;
+        public bool AutoClear { get; set; } = true;
+        public Color AutoClearColor { get; set; } = Color.Transparent;
 
         public VerticalSyncMode VerticalSyncMode
         {
@@ -107,16 +78,12 @@ namespace Chroma.Graphics
             Game = game;
 
             ProbeGlLimits(
-                preProbe: () => { MultiSamplingPrecision = 0; },
+                preProbe: () => { },
                 probe: () =>
                 {
-                    Gl.GetIntegerV(
-                        Gl.GL_MAX_SAMPLES,
-                        out var maxSamples
-                    );
-                    MaximumMultiSamplingPrecision = maxSamples;
                     EnumerateGlExtensions();
-                }, () => { }
+                }, 
+                postProbe: () => { }
             );
         }
 

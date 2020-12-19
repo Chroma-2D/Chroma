@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using Chroma;
+using Chroma.Audio.Sources;
 using Chroma.ContentManagement;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
@@ -12,7 +13,7 @@ namespace CustomContentProvider
 {
     public class ZipContentProvider : DisposableResource, IContentProvider
     {
-        private Dictionary<Type, Func<string, object[], object>> _importers;
+        private Dictionary<Type, Func<string, object[], object>> _importers = new();
 
         private Game _game;
         private FileStream _zipFileStream;
@@ -25,9 +26,7 @@ namespace CustomContentProvider
         public ZipContentProvider(Game game, string zipFile)
         {
             ContentRoot = zipFile;
-         
-            _importers = new Dictionary<Type, Func<string, object[], object>>();
-            
+
             _game = game;
             _zipFileStream = new FileStream(zipFile, FileMode.Open);
             _zipArchive = new ZipArchive(_zipFileStream, ZipArchiveMode.Read);
@@ -36,25 +35,21 @@ namespace CustomContentProvider
             {
                 if (entry.FullName.EndsWith('/'))
                     continue;
-                
+
                 Log.Info(entry.FullName);
             }
-            
-            _importers.Add(typeof(Texture), (path, args) =>
+
+            _importers.Add(typeof(Texture), (path, _) =>
             {
                 using (var stream = Open(path))
-                {
                     return new Texture(stream);
-                }
             });
-            
-            // _importers.Add(typeof(Sound), (path, args) =>
-            // {
-            //     using (var stream = Open(path))
-            //     {
-            //         return new Sound(stream);
-            //     }
-            // });
+
+            _importers.Add(typeof(Sound), (path, _) =>
+            {
+                using (var stream = Open(path))
+                    return new Sound(stream);
+            });
         }
 
         public T Load<T>(string relativePath, params object[] args) where T : DisposableResource

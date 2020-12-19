@@ -12,7 +12,7 @@ namespace Scissors
     public class GameCore : Game
     {
         private bool _useScissor = true;
-        private Rectangle _scissor = new Rectangle(64, 64, 128, 128);
+        private Rectangle _scissor = new(64, 64, 128, 128);
         private Texture _grid;
 
         public GameCore()

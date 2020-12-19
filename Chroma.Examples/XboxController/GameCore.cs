@@ -11,8 +11,8 @@ namespace XboxController
         private RenderTarget _tgt;
 
         private float _scale = 1.0f;
-        private float _rotation = 0.0f;
-        private Vector2 _position = new Vector2(32);
+        private float _rotation;
+        private Vector2 _position = new(32);
         private Color _color = Color.White;
         private ShapeMode _mode;
         private float _lineThickness = 1;

@@ -65,7 +65,7 @@ namespace Chroma.Windowing
 
                 if (Handle != IntPtr.Zero)
                 {
-                    if (GraphicsManager.ViewportAutoResize)
+                    if (Game.Graphics.ViewportAutoResize)
                     {
                         SDL_gpu.GPU_SetWindowResolution((ushort)_size.Width, (ushort)_size.Height);
                     }
@@ -388,8 +388,8 @@ namespace Chroma.Windowing
                 DoTick(PerformanceCounter.Delta);
                 DoFixedTicks(PerformanceCounter.FixedDelta);
 
-                if (GraphicsManager.AutoClear)
-                    _renderContext.Clear(GraphicsManager.AutoClearColor);
+                if (Game.Graphics.AutoClear)
+                    _renderContext.Clear(Game.Graphics.AutoClearColor);
 
                 // This is a fix for Discord's screen sharing hooks fucking something up inside SDL_gpu.
                 //
@@ -408,7 +408,7 @@ namespace Chroma.Windowing
                 Draw?.Invoke(_renderContext);
                 SDL_gpu.GPU_Flip(RenderTargetHandle);
 
-                if (GraphicsManager.LimitFramerate)
+                if (Game.Graphics.LimitFramerate)
                     Thread.Sleep(1);
             }
         }
@@ -467,7 +467,7 @@ namespace Chroma.Windowing
 
         internal void OnResized(WindowSizeEventArgs e)
         {
-            if (GraphicsManager.ViewportAutoResize)
+            if (Game.Graphics.ViewportAutoResize)
             {
                 SDL_gpu.GPU_SetWindowResolution(
                     (ushort)e.Size.Width,

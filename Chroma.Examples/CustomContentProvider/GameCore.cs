@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Numerics;
 using Chroma;
+using Chroma.Audio.Sources;
 using Chroma.Graphics;
 using Chroma.Input;
 
@@ -8,7 +9,7 @@ namespace CustomContentProvider
 {
     public class GameCore : Game
     {
-        // private Sound _shotgun;
+        private Sound _shotgun;
         private Texture _texture;
         private float _rotation;
 
@@ -22,16 +23,16 @@ namespace CustomContentProvider
         {
             _texture = Content.Load<Texture>("Textures/pentagram.png");
             _texture.FilteringMode = TextureFilteringMode.NearestNeighbor;
-            
-            // _shotgun = Content.Load<Sound>("doomsg.wav");
+
+            _shotgun = Content.Load<Sound>("doomsg.wav");
         }
 
         protected override void Draw(RenderContext context)
         {
             context.DrawTexture(
-                _texture, 
-                (Window.Center - _texture.Center), 
-                new Vector2(8), 
+                _texture,
+                (Window.Center - _texture.Center),
+                new Vector2(8),
                 _texture.Center,
                 _rotation
             );
@@ -46,7 +47,7 @@ namespace CustomContentProvider
         {
             if (e.KeyCode == KeyCode.Space)
             {
-                // _shotgun.PlayOneShot();
+                _shotgun.Play();
             }
         }
     }

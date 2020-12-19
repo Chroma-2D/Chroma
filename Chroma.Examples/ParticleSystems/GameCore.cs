@@ -4,7 +4,6 @@ using Chroma;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Diagnostics;
 using Chroma.Graphics;
-using Chroma.Graphics.Accelerated;
 using Chroma.Graphics.Particles;
 using Chroma.Input;
 

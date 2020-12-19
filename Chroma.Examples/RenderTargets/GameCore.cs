@@ -10,7 +10,7 @@ namespace RenderTargets
         private RenderTarget _tgt;
 
         private float _rotation;
-        private Vector2 _position = new Vector2(32);
+        private Vector2 _position = new(32);
 
         protected override void LoadContent()
         {

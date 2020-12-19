@@ -22,11 +22,11 @@ namespace Chroma
         private int _fixedTimeStepTarget;
 
         private readonly Log _log = LogManager.GetForCurrentAssembly();
-        
+
         public int FixedTimeStepTarget
         {
             get => _fixedTimeStepTarget;
-            
+
             protected set
             {
                 _fixedTimeStepTarget = value;
@@ -37,9 +37,9 @@ namespace Chroma
         public Window Window { get; private set; }
         public GraphicsManager Graphics { get; private set; }
         public AudioManager Audio => AudioManager.Instance;
-        
+
         public IContentProvider Content { get; protected set; }
-        
+
         public static string LocationOnDisk => Path.GetDirectoryName(
             Assembly.GetExecutingAssembly().Location
         );
@@ -63,7 +63,7 @@ namespace Chroma
             InitializeGraphics();
             InitializeAudio();
             InitializeContent();
-            
+
             AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
         }
 
@@ -199,7 +199,7 @@ namespace Chroma
         private void InitializeGraphics()
         {
             FixedTimeStepTarget = 75;
-            
+
             Graphics = new GraphicsManager(this);
             Window = new Window(this)
             {
@@ -207,7 +207,7 @@ namespace Chroma
                 Update = Update,
                 FixedUpdate = FixedUpdate
             };
-            
+
             Graphics.VerticalSyncMode = VerticalSyncMode.Retrace;
             Window.SetIcon(EmbeddedAssets.DefaultIconTexture);
         }

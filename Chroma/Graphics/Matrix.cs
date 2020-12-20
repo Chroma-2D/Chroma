@@ -2,7 +2,7 @@ using System.Numerics;
 
 namespace Chroma.Graphics
 {
-    public static class Matrix
+    internal static class Matrix
     {
         internal static unsafe Matrix4x4 FromFloatPointer(float* ptr)
         {

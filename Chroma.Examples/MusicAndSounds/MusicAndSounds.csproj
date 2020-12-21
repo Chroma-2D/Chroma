@@ -9,4 +9,8 @@
       <ProjectReference Include="..\..\Chroma\Chroma.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="FftSharp" Version="1.0.8" />
+    </ItemGroup>
+
 </Project>

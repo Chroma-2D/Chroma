@@ -259,14 +259,14 @@ namespace Chroma.Audio.Sources
 
                 if (Source->eof > 0)
                 {
-                    if (IsLooping)
+                    if (!IsLooping)
                     {
-                        Rewind();
-                        return;
+                        Pause();
+                        Status = PlaybackStatus.Stopped;
                     }
-
-                    Status = PlaybackStatus.Stopped;
-                    AudioManager.Instance.OnAudioSourceFinished(this);
+                    
+                    Rewind();
+                    AudioManager.Instance.OnAudioSourceFinished(this, IsLooping);
                 }
             }
         }

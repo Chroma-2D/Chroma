@@ -13,7 +13,7 @@ namespace Chroma.Audio
         private readonly Log _log = LogManager.GetForCurrentAssembly();
 
         private static AudioManager _instance;
-        internal static AudioManager Instance => _instance ?? (_instance = new AudioManager());
+        internal static AudioManager Instance => _instance ?? (_instance = new());
 
         private List<AudioDevice> _devices = new();
         private List<Decoder> _decoders = new();
@@ -66,7 +66,6 @@ namespace Chroma.Audio
         public void Open(AudioDevice device = null, int frequency = 44100, int sampleCount = 2048)
         {
             Close();
-            
             EnumerateDevices();
             
             Frequency = frequency;
@@ -78,6 +77,7 @@ namespace Chroma.Audio
                 return;
             }
             _backendInitialized = true;
+            EnumerateDecoders();
 
             if (SDL2_nmix.NMIX_OpenAudio(device?.Name, Frequency, SampleCount) < 0)
             {
@@ -85,8 +85,6 @@ namespace Chroma.Audio
                 return;
             }
             _mixerInitialized = true;
-            
-            EnumerateDecoders();
         }
 
         public void Close()

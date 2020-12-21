@@ -309,7 +309,7 @@ namespace Chroma.Graphics
 
         public static implicit operator Color(System.Drawing.Color systemDrawingColor)
         {
-            return new Color(
+            return new(
                 systemDrawingColor.R,
                 systemDrawingColor.G,
                 systemDrawingColor.B,
@@ -318,7 +318,7 @@ namespace Chroma.Graphics
         }
 
         internal static SDL2.SDL_Color ToSdlColor(Color color)
-            => new SDL2.SDL_Color
+            => new()
             {
                 r = color.R,
                 g = color.G,
@@ -327,7 +327,7 @@ namespace Chroma.Graphics
             };
 
         internal static Color FromSdlColor(SDL2.SDL_Color color)
-            => new Color(color.r, color.g, color.b, color.a);
+            => new(color.r, color.g, color.b, color.a);
 
         private (float, float, float, float) GetHsvParameters()
         {

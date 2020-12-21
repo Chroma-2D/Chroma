@@ -6,7 +6,7 @@ namespace Chroma.Graphics.Particles.StateInitializers
 {
     public class RandomizedStateInitializer : ParticleStateInitializer
     {
-        private Random Random { get; }
+        private Random Random { get; } = new();
 
         public Vector2 VelocityLimits { get; set; } = new(200, 400);
 
@@ -31,12 +31,11 @@ namespace Chroma.Graphics.Particles.StateInitializers
         public RandomizedStateInitializer(ParticleEmitter emitter)
             : base(emitter)
         {
-            Random = new Random();
         }
 
         public override Particle CreateParticle()
         {
-            return new Particle(
+            return new(
                 Emitter,
                 InitialTTL,
                 InitialRotation,

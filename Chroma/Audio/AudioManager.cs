@@ -169,11 +169,11 @@ namespace Chroma.Audio
             }
         }
 
-        public void OnAudioSourceFinished(AudioSource s)
+        public void OnAudioSourceFinished(AudioSource s, bool isLooping)
         {
             AudioSourceFinished?.Invoke(
                 this,
-                new AudioSourceEventArgs(s)
+                new AudioSourceEventArgs(s, isLooping)
             );
         }
 

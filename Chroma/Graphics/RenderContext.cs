@@ -346,11 +346,23 @@ namespace Chroma.Graphics
         {
             if (mode == ShapeMode.Stroke)
             {
-                SDL_gpu.GPU_Tri(CurrentRenderTarget, a.X, a.Y, b.X, b.Y, c.X, c.Y, Color.ToSdlColor(color));
+                SDL_gpu.GPU_Tri(
+                    CurrentRenderTarget,
+                    a.X, a.Y,
+                    b.X, b.Y,
+                    c.X, c.Y,
+                    Color.ToSdlColor(color)
+                );
             }
             else if (mode == ShapeMode.Fill)
             {
-                SDL_gpu.GPU_TriFilled(CurrentRenderTarget, a.X, a.Y, b.X, b.Y, c.X, c.Y, Color.ToSdlColor(color));
+                SDL_gpu.GPU_TriFilled(
+                    CurrentRenderTarget,
+                    a.X, a.Y,
+                    b.X, b.Y,
+                    c.X, c.Y,
+                    Color.ToSdlColor(color)
+                );
             }
         }
 
@@ -366,7 +378,6 @@ namespace Chroma.Graphics
                 SDL_gpu.GPU_BatchFlagEnum.GPU_BATCH_XY_ST_RGBA
             );
         }
-
 
         public void DrawTexture(Texture texture, Vector2 position, Vector2 scale, Vector2 origin, float rotation)
         {

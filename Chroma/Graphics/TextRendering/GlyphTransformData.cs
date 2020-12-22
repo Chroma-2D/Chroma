@@ -11,8 +11,13 @@ namespace Chroma.Graphics.TextRendering
         public float Rotation { get; set; }
 
         public GlyphTransformData()
+            :this(Vector2.Zero)
         {
-            Position = Vector2.Zero;
+        }
+
+        public GlyphTransformData(Vector2 basePosition)
+        {
+            Position = basePosition;
             Scale = Vector2.One;
             Origin = Vector2.Zero;
 

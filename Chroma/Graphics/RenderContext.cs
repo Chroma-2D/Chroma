@@ -464,12 +464,6 @@ namespace Chroma.Graphics
 
                 var pageTexture = font.Pages[glyph.Page].Texture;
 
-                var pos = new Vector2(x, y);
-                var transform = new GlyphTransformData();
-
-                if (glyphTransform != null)
-                    transform = glyphTransform(c, i, pos, glyph);
-
                 var kerningAmount = 0f;
                 if (i != 0 && font.UseKerning)
                 {
@@ -479,13 +473,23 @@ namespace Chroma.Graphics
                         kerningAmount = kerning.Value.Amount;
                 }
 
+                var pos = new Vector2(
+                    x + glyph.OffsetX + kerningAmount, 
+                    y + glyph.OffsetY
+                );
+                
+                var transform = new GlyphTransformData(pos);
+
+                if (glyphTransform != null)
+                    transform = glyphTransform(c, i, pos, glyph);
+
                 SDL_gpu.GPU_SetColor(pageTexture.ImageHandle, Color.ToSdlColor(transform.Color));
                 SDL_gpu.GPU_BlitTransformX(
                     pageTexture.ImageHandle,
                     ref rect,
                     CurrentRenderTarget,
-                    pos.X + transform.Position.X + glyph.OffsetX + kerningAmount,
-                    pos.Y + transform.Position.Y + glyph.OffsetY,
+                    transform.Position.X,
+                    transform.Position.Y,
                     transform.Origin.X,
                     transform.Origin.Y,
                     transform.Rotation,
@@ -558,7 +562,7 @@ namespace Chroma.Graphics
                 }
 
                 var pos = new Vector2(xPos, yPos);
-                var transform = new GlyphTransformData();
+                var transform = new GlyphTransformData(pos);
 
                 if (glyphTransform != null)
                     transform = glyphTransform(c, i, pos, info);
@@ -568,8 +572,8 @@ namespace Chroma.Graphics
                     font.Atlas.ImageHandle,
                     ref srcRect,
                     CurrentRenderTarget,
-                    pos.X + transform.Position.X,
-                    pos.Y + transform.Position.Y,
+                    transform.Position.X,
+                    transform.Position.Y,
                     transform.Origin.X,
                     transform.Origin.Y,
                     transform.Rotation,

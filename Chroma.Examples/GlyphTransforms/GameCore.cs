@@ -12,7 +12,7 @@ namespace GlyphTransforms
     {
         private float _angle;
 
-        private List<Color> _colors = new List<Color>
+        private List<Color> _colors = new()
         {
             Color.Red,
             Color.Orange,
@@ -37,6 +37,7 @@ namespace GlyphTransforms
                 {
                     return new GlyphTransformData
                     {
+                        Position = p,
                         Color = _colors[i % _colors.Count]
                     };
                 }
@@ -50,7 +51,7 @@ namespace GlyphTransforms
                     var offsetY = 3 * MathF.Sin(_angle + (i * 4));
                     return new GlyphTransformData
                     {
-                        Position = new Vector2(0, offsetY)
+                        Position = p + new Vector2(0, offsetY)
                     };
                 }
             );
@@ -73,7 +74,7 @@ namespace GlyphTransforms
 
                     return new GlyphTransformData
                     {
-                        Position = pointOnCircle + new Vector2(300) - p,
+                        Position = pointOnCircle + new Vector2(300),
                         Rotation = _angle * 10,
                         Color = _colors[i % _colors.Count]
                     };

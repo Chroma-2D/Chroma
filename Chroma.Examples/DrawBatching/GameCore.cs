@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Numerics;
 using Chroma;
@@ -19,7 +20,9 @@ namespace DrawBatching
 
         public GameCore()
         {
-            Content = new FileSystemContentProvider(Path.Combine(LocationOnDisk, "../../../../_common"));
+            Content = new FileSystemContentProvider(
+                Path.Combine(AppContext.BaseDirectory, "../../../../_common")
+            );
         }
         
         protected override void LoadContent()

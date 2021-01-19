@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Numerics;
 using Chroma;
 using Chroma.Audio.Sources;
@@ -16,7 +17,10 @@ namespace CustomContentProvider
         public GameCore() : base(false) // suppress default scene construction
         {
             Content.Dispose();
-            Content = new ZipContentProvider(this, Path.Combine(LocationOnDisk, "../../../../_common/assets.zip"));
+            Content = new ZipContentProvider(
+                this, 
+                Path.Combine(AppContext.BaseDirectory, "../../../../_common/assets.zip")
+            );
         }
 
         protected override void LoadContent()

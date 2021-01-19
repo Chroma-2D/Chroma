@@ -26,8 +26,7 @@ namespace Chroma.ContentManagement.FileSystem
 
             if (string.IsNullOrEmpty(ContentRoot))
             {
-                var appDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                ContentRoot = Path.Combine(appDirectory!, "Content");
+                ContentRoot = Path.Combine(AppContext.BaseDirectory, "Content");
             }
 
             _loadedResources = new HashSet<DisposableResource>();

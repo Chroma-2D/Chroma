@@ -29,7 +29,7 @@ namespace Chroma.Natives.Boot
 
             if (ModuleInitializer.BootConfig.NativesInApplicationDirectory)
             {
-                var appDirPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var appDirPath = AppContext.BaseDirectory;
 
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {

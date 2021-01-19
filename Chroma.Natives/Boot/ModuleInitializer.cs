@@ -59,7 +59,7 @@ namespace Chroma.Natives.Boot
         private static void ReadBootConfig()
         {
             var bootConfigPath = Path.Combine(
-                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!,
+                AppContext.BaseDirectory,
                 "boot.json"
             );
 

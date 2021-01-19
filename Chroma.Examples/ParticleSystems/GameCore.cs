@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Numerics;
 using Chroma;
 using Chroma.ContentManagement.FileSystem;
@@ -17,7 +18,9 @@ namespace ParticleSystems
 
         public GameCore()
         {
-            Content = new FileSystemContentProvider(Path.Combine(LocationOnDisk, "../../../../_common"));
+            Content = new FileSystemContentProvider(
+                Path.Combine(AppContext.BaseDirectory, "../../../../_common")
+            );
         }
         
         // Please see Chroma/Graphics/Particles/StateInitializers/RandomizedStateInitializer

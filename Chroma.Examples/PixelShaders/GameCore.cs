@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Numerics;
@@ -26,7 +27,7 @@ namespace PixelShaders
         public GameCore()
         {
             Content = new FileSystemContentProvider(
-                Path.Combine(LocationOnDisk, "../../../../_common")
+                Path.Combine(AppContext.BaseDirectory, "../../../../_common")
             );
 
             _log.Info(

@@ -28,8 +28,10 @@ namespace MusicAndSounds
 
         public GameCore()
         {
-            Content = new FileSystemContentProvider(Path.Combine(LocationOnDisk, "../../../../_common"));
-
+            Content = new FileSystemContentProvider(
+                Path.Combine(AppContext.BaseDirectory, "../../../../_common")
+            );
+            
             Window.GoWindowed(new Size(800, 600));
             Audio.DeviceConnected += (_, e) =>
             {

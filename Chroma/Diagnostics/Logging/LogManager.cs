@@ -15,10 +15,7 @@ namespace Chroma.Diagnostics.Logging
 
         static LogManager()
         {
-            LogRoot = Path.Combine(
-                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!,
-                "Logs"
-            );
+            LogRoot = Path.Combine(AppContext.BaseDirectory, "Logs");
 
             if (!Directory.Exists(LogRoot))
                 Directory.CreateDirectory(LogRoot);

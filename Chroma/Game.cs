@@ -40,10 +40,6 @@ namespace Chroma
 
         public IContentProvider Content { get; protected set; }
 
-        public static string LocationOnDisk => Path.GetDirectoryName(
-            Assembly.GetExecutingAssembly().Location
-        );
-
         public Game(bool constructDefaultScene = true)
         {
             if (_wasConstructedAlready)

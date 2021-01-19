@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.IO;
 using Chroma;
 using Chroma.ContentManagement.FileSystem;
@@ -34,7 +35,9 @@ namespace TextInput
 
         public GameCore()
         {
-            Content = new FileSystemContentProvider(Path.Combine(LocationOnDisk, "../../../../_common"));
+            Content = new FileSystemContentProvider(
+                Path.Combine(AppContext.BaseDirectory, "../../../../_common")
+            );
         }
 
         protected override void LoadContent()

@@ -114,8 +114,9 @@ namespace Chroma.Graphics
 
         internal IntPtr InitializeRenderer(Window window, out IntPtr windowHandle)
         {
-            var rendererId = FindBestRenderer();
+            SDL_gpu.GPU_SetRequiredFeatures(SDL_gpu.GPU_FeatureEnum.GPU_FEATURE_BASIC_SHADERS);
 
+            var rendererId = FindBestRenderer();
             var renderTargetHandle = SDL_gpu.GPU_InitRendererByID(
                 rendererId,
                 (ushort)window.Size.Width,

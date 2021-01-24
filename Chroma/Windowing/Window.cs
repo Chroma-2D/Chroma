@@ -271,21 +271,7 @@ namespace Chroma.Windowing
         internal Window(Game game)
         {
             Game = game;
-
-            // Handle = SDL2.SDL_CreateWindow(
-            //     Title,
-            //     (int)Position.X,
-            //     (int)Position.Y,
-            //     Size.Width,
-            //     Size.Height,
-            //     SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL |
-            //     SDL2.SDL_WindowFlags.SDL_WINDOW_ALLOW_HIGHDPI
-            // );
-
-
-            SDL_gpu.GPU_SetRequiredFeatures(SDL_gpu.GPU_FeatureEnum.GPU_FEATURE_BASIC_SHADERS);
-            // SDL_gpu.GPU_SetInitWindow(SDL2.SDL_GetWindowID(Handle));
-
+        
             RenderTargetHandle = Game.Graphics.InitializeRenderer(this, out Handle);
             
             if (Handle == IntPtr.Zero)

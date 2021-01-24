@@ -170,7 +170,7 @@ namespace TextInput
                     new Vector2(0, y * _ttf.Size),
                     (c, i, p, g) =>
                     {
-                        return new GlyphTransformData
+                        return new GlyphTransformData(p)
                         {
                             Color = _fgColorBuffer[y * TotalCols + i]
                         };

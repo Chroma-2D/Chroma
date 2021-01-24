@@ -503,7 +503,7 @@ namespace Chroma.Graphics
         }
 
         public void DrawString(BitmapFont font, string text, Vector2 position, Color color)
-            => DrawString(font, text, position, (_, _, _, _) => new GlyphTransformData {Color = color});
+            => DrawString(font, text, position, (_, _, p, _) => new GlyphTransformData(p) {Color = color});
 
         public void DrawString(string text, Vector2 position,
             TrueTypeFontGlyphTransform perCharTransform = null)
@@ -511,7 +511,7 @@ namespace Chroma.Graphics
 
         public void DrawString(string text, Vector2 position, Color color)
             => DrawString(EmbeddedAssets.DefaultFont, text, position,
-                (_, _, _, _) => new GlyphTransformData {Color = color});
+                (_, _, p, _) => new GlyphTransformData(p) {Color = color});
 
         public void DrawString(TrueTypeFont font, string text, Vector2 position,
             TrueTypeFontGlyphTransform glyphTransform = null)

@@ -23,7 +23,7 @@ namespace Chroma.Windowing
 
         private string _title = "Chroma Framework";
         private Size _size = new(800, 600);
-        private Vector2 _position = new(SDL2.SDL_WINDOWPOS_CENTERED, SDL2.SDL_WINDOWPOS_CENTERED);
+        private Vector2 _position = new(SDL2.SDL_WINDOWPOS_CENTERED);
         private WindowState _state = WindowState.Normal;
 
         private IntPtr _currentIconPtr;
@@ -42,7 +42,7 @@ namespace Chroma.Windowing
 
         public bool Exists { get; private set; }
 
-        public IntPtr Handle { get; }
+        public readonly IntPtr Handle;
 
         public Size Size
         {
@@ -272,24 +272,26 @@ namespace Chroma.Windowing
         {
             Game = game;
 
-            Handle = SDL2.SDL_CreateWindow(
-                Title,
-                (int)Position.X,
-                (int)Position.Y,
-                Size.Width,
-                Size.Height,
-                SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL |
-                SDL2.SDL_WindowFlags.SDL_WINDOW_ALLOW_HIGHDPI
-            );
+            // Handle = SDL2.SDL_CreateWindow(
+            //     Title,
+            //     (int)Position.X,
+            //     (int)Position.Y,
+            //     Size.Width,
+            //     Size.Height,
+            //     SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL |
+            //     SDL2.SDL_WindowFlags.SDL_WINDOW_ALLOW_HIGHDPI
+            // );
 
+
+            SDL_gpu.GPU_SetRequiredFeatures(SDL_gpu.GPU_FeatureEnum.GPU_FEATURE_BASIC_SHADERS);
+            // SDL_gpu.GPU_SetInitWindow(SDL2.SDL_GetWindowID(Handle));
+
+            RenderTargetHandle = Game.Graphics.InitializeRenderer(this, out Handle);
+            
             if (Handle == IntPtr.Zero)
                 throw new FrameworkException("Failed to initialize the window.", true);
 
-            SDL_gpu.GPU_SetRequiredFeatures(SDL_gpu.GPU_FeatureEnum.GPU_FEATURE_BASIC_SHADERS);
-            SDL_gpu.GPU_SetInitWindow(SDL2.SDL_GetWindowID(Handle));
-
-            RenderTargetHandle = Game.Graphics.InitializeRenderer(this);
-
+            Title = _title;
             MaximumSize = Size.Empty;
             MinimumSize = Size.Empty;
 

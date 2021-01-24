@@ -43,7 +43,7 @@ namespace Chroma
 
             context.DrawString(
                 _welcomeMessage,
-                new Vector2(8), (_, i, _, _) =>
+                new Vector2(8), (_, i, p, _) =>
                 {
                     var ranges = _welcomeMessage.FindWordRanges("Draw", "Update");
                     var color = Color.White;
@@ -60,7 +60,7 @@ namespace Chroma
 
                     return new GlyphTransformData
                     {
-                        Position = new Vector2(0, yOff),
+                        Position = p + new Vector2(0, yOff),
                         Color = color
                     };
                 }

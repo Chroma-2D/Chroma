@@ -13,7 +13,7 @@ namespace Chroma.Graphics
     public class GraphicsManager
     {
         private readonly Log _log = LogManager.GetForCurrentAssembly();
-        
+
         private VerticalSyncMode _verticalSyncMode;
 
         private Game Game { get; }
@@ -71,7 +71,7 @@ namespace Chroma.Graphics
         public bool IsDefaultShaderActive
             => SDL_gpu.GPU_IsDefaultShaderProgram(SDL_gpu.GPU_GetCurrentShaderProgram());
 
-        public List<string> GlExtensions { get; } = new List<string>();
+        public List<string> GlExtensions { get; } = new();
 
         internal GraphicsManager(Game game)
         {
@@ -79,10 +79,7 @@ namespace Chroma.Graphics
 
             ProbeGlLimits(
                 preProbe: () => { },
-                probe: () =>
-                {
-                    EnumerateGlExtensions();
-                }, 
+                probe: () => { EnumerateGlExtensions(); },
                 postProbe: () => { }
             );
         }
@@ -115,7 +112,7 @@ namespace Chroma.Graphics
             return null;
         }
 
-        internal IntPtr InitializeRenderer(Window window)
+        internal IntPtr InitializeRenderer(Window window, out IntPtr windowHandle)
         {
             var rendererId = FindBestRenderer();
 
@@ -123,11 +120,15 @@ namespace Chroma.Graphics
                 rendererId,
                 (ushort)window.Size.Width,
                 (ushort)window.Size.Height,
-                0
+                SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL
+                | SDL2.SDL_WindowFlags.SDL_WINDOW_ALLOW_HIGHDPI
             );
 
             if (renderTargetHandle == IntPtr.Zero)
-                throw new FrameworkException("Failed to initialize the renderer.", true);
+            {
+                if (renderTargetHandle == IntPtr.Zero)
+                    throw new FrameworkException("Failed to initialize the renderer.", true);
+            }
 
             _log.Info($"{OpenGlVendorString} {OpenGlRendererString} v{OpenGlVersionString}");
 
@@ -135,6 +136,7 @@ namespace Chroma.Graphics
             foreach (var d in GetDisplayList())
                 _log.Info($"  Display {d.Index} ({d.Name}) [{d.Bounds.Width}x{d.Bounds.Height}], mode {d.DesktopMode}");
 
+            windowHandle = SDL2.SDL_GL_GetCurrentWindow();
             return renderTargetHandle;
         }
 

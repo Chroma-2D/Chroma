@@ -6,6 +6,7 @@ using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
 using Chroma.Natives.SDL;
 using Chroma.Threading;
+using Chroma.STB.Image;
 
 namespace Chroma.Graphics
 {
@@ -370,22 +371,23 @@ namespace Chroma.Graphics
         {
             EnsureOnMainThread();
 
-            var bytes = new byte[stream.Length];
-            stream.Read(bytes, 0, bytes.Length);
+            var result = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
 
-            unsafe
+            if (result == null)
             {
-                fixed (byte* bp = &bytes[0])
-                {
-                    var rwops = SDL2.SDL_RWFromMem(new IntPtr(bp), bytes.Length);
-
-                    InitializeWithSurface(
-                        SDL_image.IMG_Load_RW(rwops, 1)
-                    );
-                }
+                throw new FormatException("Image format not supported.");
             }
+            
+            CreateEmpty(
+                result.Width,
+                result.Height,
+                PixelFormat.RGBA,
+                true
+            );
 
+            result.Data.CopyTo(_pixelData, 0);
             Flush();
+
             SnappingMode = TextureSnappingMode.None;
         }
 

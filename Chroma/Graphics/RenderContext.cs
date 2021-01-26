@@ -24,8 +24,6 @@ namespace Chroma.Graphics
 
         internal Stack<IntPtr> TargetStack { get; }
 
-        public RenderTransform Transform { get; }
-
         public bool RenderingToWindow
             => CurrentRenderTarget == Owner.RenderTargetHandle;
 
@@ -91,8 +89,6 @@ namespace Chroma.Graphics
             BatchBuffer = new List<BatchInfo>();
 
             SDL_gpu.GPU_SetDefaultAnchor(0, 0);
-
-            Transform = new RenderTransform(this);
 
             ShapeBlendingEnabled = false;
             ResetShapeBlending();

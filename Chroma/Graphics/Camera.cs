@@ -60,9 +60,35 @@ namespace Chroma.Graphics
             set => GpuCamera.z_near = value;
         }
 
+        public static Camera Default
+        {
+            get
+            {
+                var c = new Camera();
+                c.GpuCamera = SDL_gpu.GPU_GetDefaultCamera();
+
+                return c;
+            }
+        }
+
         public Camera()
         {
-            GpuCamera = SDL_gpu.GPU_GetDefaultCamera();
+        }
+
+        public Camera(Camera other)
+        {
+            X = other.X;
+            Y = other.Y;
+            Z = other.Z;
+
+            ZoomX = other.ZoomX;
+            ZoomY = other.ZoomY;
+
+            UseCenteredOrigin = other.UseCenteredOrigin;
+            Rotation = other.Rotation;
+            
+            FarZ = other.FarZ;
+            NearZ = other.NearZ;
         }
 
         public Camera(int x, int y)

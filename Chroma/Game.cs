@@ -36,6 +36,8 @@ namespace Chroma
 
         public Window Window { get; private set; }
         public GraphicsManager Graphics { get; private set; }
+        public RenderTransform Transform { get; private set; }
+        
         public AudioManager Audio => AudioManager.Instance;
 
         public IContentProvider Content { get; protected set; }
@@ -87,7 +89,7 @@ namespace Chroma
             => _defaultScene?.Draw(context);
 
         protected virtual void Update(float delta)
-            => _defaultScene.Update(delta);
+            => _defaultScene?.Update(delta);
 
         protected virtual void FixedUpdate(float delta)
         {
@@ -203,7 +205,8 @@ namespace Chroma
                 Update = Update,
                 FixedUpdate = FixedUpdate
             };
-
+            Transform = new RenderTransform();
+            
             Graphics.VerticalSyncMode = VerticalSyncMode.Retrace;
             Window.SetIcon(EmbeddedAssets.DefaultIconTexture);
         }

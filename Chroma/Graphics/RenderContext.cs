@@ -583,7 +583,7 @@ namespace Chroma.Graphics
         }
 
         public void DrawString(TrueTypeFont font, string text, Vector2 position, Color color)
-            => DrawString(font, text, position, (_, _, _, _) => new GlyphTransformData {Color = color});
+            => DrawString(font, text, position, (_, _, p, _) => new GlyphTransformData(p) {Color = color});
 
         public void DrawBatch(DrawOrder order = DrawOrder.BackToFront, bool discardBatchAfterUse = true)
         {

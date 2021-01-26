@@ -1,13 +1,12 @@
 ﻿using System.Numerics;
 using Chroma.Extensions;
 using Chroma.Natives.SDL;
+using Chroma.Windowing;
 
 namespace Chroma.Graphics
 {
     public class RenderTransform
     {
-        private readonly RenderContext _context;
-
         public Matrix4x4 Matrix
         {
             get
@@ -21,16 +20,8 @@ namespace Chroma.Graphics
             set => SDL_gpu.GPU_LoadMatrix(value.ToFloatArray());
         }
 
-        public bool AutoLoadIdentity { get; set; } = true;
-
-        internal RenderTransform(RenderContext context)
-            => _context = context;
-
         public void Frustum(float left, float top, float right, float bottom, float z_near, float z_far)
         {
-            if (AutoLoadIdentity)
-                SDL_gpu.GPU_LoadIdentity();
-
             var mtx = Matrix.ToFloatArray();
             SDL_gpu.GPU_MatrixFrustum(mtx, left, right, bottom, top, z_near, z_far);
 
@@ -39,9 +30,6 @@ namespace Chroma.Graphics
 
         public void Shear(Vector2 vec)
         {
-            if (AutoLoadIdentity)
-                SDL_gpu.GPU_LoadIdentity();
-
             var mtx = Matrix;
             {
                 mtx.M21 = vec.X;
@@ -52,9 +40,6 @@ namespace Chroma.Graphics
 
         public void Scale(Vector3 vec)
         {
-            if (AutoLoadIdentity)
-                SDL_gpu.GPU_LoadIdentity();
-
             var mtx = Matrix.ToFloatArray();
             SDL_gpu.GPU_MatrixScale(mtx, vec.X, vec.Y, vec.Z);
 
@@ -66,9 +51,6 @@ namespace Chroma.Graphics
 
         public void Translate(Vector3 vec)
         {
-            if (AutoLoadIdentity)
-                SDL_gpu.GPU_LoadIdentity();
-
             var mtx = Matrix.ToFloatArray();
             SDL_gpu.GPU_MatrixTranslate(mtx, vec.X, vec.Y, vec.Z);
 
@@ -80,9 +62,6 @@ namespace Chroma.Graphics
 
         public void Rotate(float angle, Vector3 pivot)
         {
-            if (AutoLoadIdentity)
-                SDL_gpu.GPU_LoadIdentity();
-
             var mtx = Matrix.ToFloatArray();
             SDL_gpu.GPU_MatrixRotate(mtx, angle, pivot.X, pivot.Y, pivot.Z);
 
@@ -95,11 +74,45 @@ namespace Chroma.Graphics
         public void Pop()
             => SDL_gpu.GPU_PopMatrix();
 
-        public void SetMatrixMode(MatrixMode mode)
+        public void SetMatrixMode(MatrixMode mode, RenderTarget target)
             => SDL_gpu.GPU_MatrixMode(
-                _context.CurrentRenderTarget,
+                target.TargetHandle,
                 (SDL_gpu.GPU_MatrixModeEnum)mode
             );
+        
+        public void SetMatrixMode(MatrixMode mode, Window window)
+            => SDL_gpu.GPU_MatrixMode(
+                window.RenderTargetHandle,
+                (SDL_gpu.GPU_MatrixModeEnum)mode
+            );
+
+        public void LoadIdentity()
+            => SDL_gpu.GPU_LoadIdentity();
+
+        public void Orthographic(float left, float top, float right, float bottom, float z_near, float z_far)
+        {
+            var mtx = Matrix.ToFloatArray();
+            SDL_gpu.GPU_MatrixOrtho(mtx, left, right, bottom, top, z_near, z_far);
+
+            LoadMatrixByFloatPointer(mtx);
+        }
+
+        public void LookAt(Vector3 eyePosition, Vector3 targetPosition, Vector3 up)
+        {
+            var mtx = Matrix.ToFloatArray();
+            SDL_gpu.GPU_MatrixLookAt(
+                mtx, 
+                eyePosition.X, 
+                eyePosition.Y, 
+                eyePosition.Z,
+                targetPosition.X,
+                targetPosition.Y,
+                targetPosition.Z,
+                up.X,
+                up.Y,
+                up.Z
+            );
+        }
 
         private unsafe void LoadMatrixByFloatPointer(float[] mtx)
         {

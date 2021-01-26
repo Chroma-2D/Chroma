@@ -273,11 +273,12 @@ namespace Chroma.Windowing
             Game = game;
         
             RenderTargetHandle = Game.Graphics.InitializeRenderer(this, out Handle);
-            
             if (Handle == IntPtr.Zero)
                 throw new FrameworkException("Failed to initialize the window.", true);
-
+            
             Title = _title;
+            Position = _position;
+            
             MaximumSize = Size.Empty;
             MinimumSize = Size.Empty;
 

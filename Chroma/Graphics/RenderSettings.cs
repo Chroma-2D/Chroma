@@ -9,9 +9,6 @@ namespace Chroma.Graphics
         private float _lineThickness;
         private bool _shapeBlendingEnabled;
 
-        private bool _pointSmoothingEnabled;
-        private bool _lineSmoothingEnabled;
-
         public bool AutoClearEnabled { get; set; }
         public Color AutoClearColor { get; set; }
 
@@ -71,9 +68,9 @@ namespace Chroma.Graphics
             LineThickness = 1;
 
             ShapeBlendingEnabled = false;
-            ResetShapeBlending();
-
             MultiSamplingEnabled = false;
+
+            ResetShapeBlending();
         }
 
         public void SetShapeBlendingEquations(BlendingEquation colorBlend, BlendingEquation alphaBlend)

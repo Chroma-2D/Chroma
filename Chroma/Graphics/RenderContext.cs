@@ -12,9 +12,6 @@ namespace Chroma.Graphics
 {
     public class RenderContext
     {
-        private float _lineThickness;
-        private bool _shapeBlendingEnabled;
-
         private Rectangle _scissor = System.Drawing.Rectangle.Empty;
 
         internal List<BatchInfo> BatchBuffer { get; }
@@ -26,34 +23,6 @@ namespace Chroma.Graphics
 
         public bool RenderingToWindow
             => CurrentRenderTarget == Owner.RenderTargetHandle;
-
-        public float LineThickness
-        {
-            get => _lineThickness;
-            set
-            {
-                _lineThickness = value;
-                SDL_gpu.GPU_SetLineThickness(_lineThickness);
-            }
-        }
-
-        public bool ShapeBlendingEnabled
-        {
-            get => _shapeBlendingEnabled;
-            set
-            {
-                _shapeBlendingEnabled = value;
-                SDL_gpu.GPU_SetShapeBlending(_shapeBlendingEnabled);
-            }
-        }
-
-        public BlendingFunction ShapeSourceColorBlendingFunction { get; private set; }
-        public BlendingFunction ShapeSourceAlphaBlendingFunction { get; private set; }
-        public BlendingFunction ShapeDestinationColorBlendingFunction { get; private set; }
-        public BlendingFunction ShapeDestinationAlphaBlendingFunction { get; private set; }
-
-        public BlendingEquation ShapeColorBlendingEquation { get; private set; }
-        public BlendingEquation ShapeAlphaBlendingEquation { get; private set; }
 
         public Rectangle Scissor
         {
@@ -87,60 +56,7 @@ namespace Chroma.Graphics
             TargetStack.Push(owner.RenderTargetHandle);
 
             BatchBuffer = new List<BatchInfo>();
-
-            SDL_gpu.GPU_SetDefaultAnchor(0, 0);
-
-            ShapeBlendingEnabled = false;
-            ResetShapeBlending();
         }
-
-        public void SetShapeBlendingEquations(BlendingEquation colorBlend, BlendingEquation alphaBlend)
-        {
-            ShapeColorBlendingEquation = colorBlend;
-            ShapeAlphaBlendingEquation = alphaBlend;
-
-            SDL_gpu.GPU_SetShapeBlendEquation(
-                (SDL_gpu.GPU_BlendEqEnum)colorBlend,
-                (SDL_gpu.GPU_BlendEqEnum)alphaBlend
-            );
-        }
-
-        public void SetShapeBlendingFunctions(BlendingFunction sourceColorBlend, BlendingFunction sourceAlphaBlend,
-            BlendingFunction destinationColorBlend, BlendingFunction destinationAlphaBlend)
-        {
-            ShapeSourceColorBlendingFunction = sourceColorBlend;
-            ShapeSourceAlphaBlendingFunction = sourceAlphaBlend;
-
-            ShapeDestinationColorBlendingFunction = destinationColorBlend;
-            ShapeDestinationAlphaBlendingFunction = destinationAlphaBlend;
-
-            SDL_gpu.GPU_SetShapeBlendFunction(
-                (SDL_gpu.GPU_BlendFuncEnum)sourceColorBlend,
-                (SDL_gpu.GPU_BlendFuncEnum)destinationColorBlend,
-                (SDL_gpu.GPU_BlendFuncEnum)sourceAlphaBlend,
-                (SDL_gpu.GPU_BlendFuncEnum)destinationAlphaBlend
-            );
-        }
-
-        public void SetShapeBlendingPreset(BlendingPreset preset)
-        {
-            var gpuPreset = (SDL_gpu.GPU_BlendPresetEnum)preset;
-            var blendModeInfo = SDL_gpu.GPU_GetBlendModeFromPreset(gpuPreset);
-
-            ShapeSourceColorBlendingFunction = (BlendingFunction)blendModeInfo.source_color;
-            ShapeSourceAlphaBlendingFunction = (BlendingFunction)blendModeInfo.source_alpha;
-
-            ShapeDestinationColorBlendingFunction = (BlendingFunction)blendModeInfo.dest_color;
-            ShapeDestinationAlphaBlendingFunction = (BlendingFunction)blendModeInfo.dest_alpha;
-
-            ShapeColorBlendingEquation = (BlendingEquation)blendModeInfo.color_equation;
-            ShapeAlphaBlendingEquation = (BlendingEquation)blendModeInfo.alpha_equation;
-
-            SDL_gpu.GPU_SetShapeBlendMode(gpuPreset);
-        }
-
-        public void ResetShapeBlending()
-            => SetShapeBlendingPreset(BlendingPreset.Normal);
 
         public void WithCamera(Camera camera, Action drawingLogic)
         {
@@ -362,16 +278,17 @@ namespace Chroma.Graphics
             }
         }
 
-        public void ArbitraryGeometry(Texture texture, ushort vertexCount, float[] renderData, ushort[] indices)
+        public void RenderArbitraryGeometry(Texture texture, VertexFormat format, ushort vertexCount,
+            float[] vertexData, ushort[] indices)
         {
             SDL_gpu.GPU_TriangleBatch(
                 texture.ImageHandle,
                 CurrentRenderTarget,
                 vertexCount,
-                renderData,
+                vertexData,
                 (ushort)indices.Length,
                 indices,
-                SDL_gpu.GPU_BatchFlagEnum.GPU_BATCH_XY_ST_RGBA
+                (SDL_gpu.GPU_BatchFlagEnum)format
             );
         }
 
@@ -470,10 +387,10 @@ namespace Chroma.Graphics
                 }
 
                 var pos = new Vector2(
-                    x + glyph.OffsetX + kerningAmount, 
+                    x + glyph.OffsetX + kerningAmount,
                     y + glyph.OffsetY
                 );
-                
+
                 var transform = new GlyphTransformData(pos);
 
                 if (glyphTransform != null)

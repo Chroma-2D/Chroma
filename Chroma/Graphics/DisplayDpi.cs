@@ -4,7 +4,7 @@ namespace Chroma.Graphics
 {
     public class DisplayDpi
     {
-        public static readonly DisplayDpi None = new DisplayDpi(0, 0, 0); 
+        public static readonly DisplayDpi None = new(0, 0, 0); 
             
         public float Diagonal { get; }
         public float Horizontal { get; }

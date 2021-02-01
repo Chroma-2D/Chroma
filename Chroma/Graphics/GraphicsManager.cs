@@ -13,15 +13,13 @@ namespace Chroma.Graphics
     public class GraphicsManager
     {
         private readonly Log _log = LogManager.GetForCurrentAssembly();
-
         private VerticalSyncMode _verticalSyncMode;
-
-        private Game Game { get; }
+        private Game _game;
 
         public bool ViewportAutoResize { get; set; } = true;
         public bool LimitFramerate { get; set; } = true;
-        public bool AutoClear { get; set; } = true;
-        public Color AutoClearColor { get; set; } = Color.Transparent;
+
+        public int MaximumMSAA { get; private set; }
 
         public VerticalSyncMode VerticalSyncMode
         {
@@ -64,23 +62,24 @@ namespace Chroma.Graphics
 
         public float ScreenGamma
         {
-            get => SDL2.SDL_GetWindowBrightness(Game.Window.Handle);
-            set => SDL2.SDL_SetWindowBrightness(Game.Window.Handle, value);
+            get => SDL2.SDL_GetWindowBrightness(_game.Window.Handle);
+            set => SDL2.SDL_SetWindowBrightness(_game.Window.Handle, value);
         }
-
-        public bool IsDefaultShaderActive
-            => SDL_gpu.GPU_IsDefaultShaderProgram(SDL_gpu.GPU_GetCurrentShaderProgram());
 
         public List<string> GlExtensions { get; } = new();
 
         internal GraphicsManager(Game game)
         {
-            Game = game;
+            _game = game;
 
             ProbeGlLimits(
-                preProbe: () => { },
-                probe: () => { EnumerateGlExtensions(); },
-                postProbe: () => { }
+                () =>
+                {
+                    EnumerateGlExtensions();
+
+                    Gl.GetIntegerV(Gl.GL_MAX_SAMPLES, out var maxMsaa);
+                    MaximumMSAA = maxMsaa;
+                }
             );
         }
 
@@ -114,7 +113,28 @@ namespace Chroma.Graphics
 
         internal IntPtr InitializeRenderer(Window window, out IntPtr windowHandle)
         {
-            SDL_gpu.GPU_SetRequiredFeatures(SDL_gpu.GPU_FeatureEnum.GPU_FEATURE_BASIC_SHADERS);
+            SDL_gpu.GPU_SetRequiredFeatures(
+                SDL_gpu.GPU_FeatureEnum.GPU_FEATURE_BASIC_SHADERS
+                | SDL_gpu.GPU_FeatureEnum.GPU_FEATURE_RENDER_TARGETS
+                | SDL_gpu.GPU_FeatureEnum.GPU_FEATURE_BLEND_EQUATIONS
+            );
+
+            var msaaSamples = _game.StartupOptions.MsaaSamples;
+            if (msaaSamples > 0)
+            {
+                if (msaaSamples > MaximumMSAA)
+                {
+                    _log.Warning(
+                        $"Requested {msaaSamples} MSAA samples, however " +
+                        $"your driver supports a maximum of {MaximumMSAA}, so you'll get that many."
+                    );
+
+                    msaaSamples = MaximumMSAA;
+                }
+                
+                SDL2.SDL_GL_SetAttribute(SDL2.SDL_GLattr.SDL_GL_MULTISAMPLEBUFFERS, 1);
+                SDL2.SDL_GL_SetAttribute(SDL2.SDL_GLattr.SDL_GL_MULTISAMPLESAMPLES, msaaSamples);
+            }
 
             var rendererId = FindBestRenderer();
             var renderTargetHandle = SDL_gpu.GPU_InitRendererByID(
@@ -123,6 +143,7 @@ namespace Chroma.Graphics
                 (ushort)window.Size.Height,
                 SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL
                 | SDL2.SDL_WindowFlags.SDL_WINDOW_ALLOW_HIGHDPI
+                | SDL2.SDL_WindowFlags.SDL_WINDOW_SHOWN
             );
 
             if (renderTargetHandle == IntPtr.Zero)
@@ -130,7 +151,9 @@ namespace Chroma.Graphics
                 if (renderTargetHandle == IntPtr.Zero)
                     throw new FrameworkException("Failed to initialize the renderer.", true);
             }
-
+            
+            SDL_gpu.GPU_SetDefaultAnchor(0, 0);
+            
             _log.Info($"{OpenGlVendorString} {OpenGlRendererString} v{OpenGlVersionString}");
 
             _log.Info(" Available displays:");
@@ -187,10 +210,8 @@ namespace Chroma.Graphics
             }).Any();
         }
 
-        private void ProbeGlLimits(Action preProbe, Action probe, Action postProbe)
+        private void ProbeGlLimits(Action probeLogic)
         {
-            preProbe();
-
             var gpuRendererId = FindBestRenderer();
 
             _log.WarningWhenFails(
@@ -235,15 +256,13 @@ namespace Chroma.Graphics
                 SDL2.SDL_GL_MakeCurrent(window, context);
             }
 
-            probe();
+            probeLogic();
 
             if (destroyContextAfter)
                 SDL2.SDL_GL_DeleteContext(context);
 
             SDL2.SDL_DestroyRenderer(renderer);
             SDL2.SDL_DestroyWindow(window);
-
-            postProbe();
         }
     }
 }

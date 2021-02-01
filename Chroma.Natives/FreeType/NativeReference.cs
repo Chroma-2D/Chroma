@@ -12,6 +12,6 @@ namespace Chroma.Natives.FreeType
             => _memPtr = memPtr;
 
         public static implicit operator NativeReference<T>(T memory)
-            => new NativeReference<T>(memory.Reference);
+            => new(memory.Reference);
     }
 }

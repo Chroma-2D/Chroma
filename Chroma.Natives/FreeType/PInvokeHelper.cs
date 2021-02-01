@@ -17,7 +17,7 @@ namespace Chroma.Natives.FreeType
         }
 
         public static IntPtr AbsoluteOffsetOf<T>(IntPtr start, string fieldName)
-            => new IntPtr(start.ToInt64() + Marshal.OffsetOf(typeof(T), fieldName).ToInt64());
+            => new(start.ToInt64() + Marshal.OffsetOf(typeof(T), fieldName).ToInt64());
 
         public static T PtrToStructure<T>(IntPtr reference)
             => (T)Marshal.PtrToStructure(reference, typeof(T));

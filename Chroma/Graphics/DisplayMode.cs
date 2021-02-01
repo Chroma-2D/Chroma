@@ -4,7 +4,7 @@ namespace Chroma.Graphics
 {
     public class DisplayMode
     {
-        public static readonly DisplayMode Invalid = new DisplayMode(-1, -1, -1);
+        public static readonly DisplayMode Invalid = new(-1, -1, -1);
 
         public int Width { get; }
         public int Height { get; }

@@ -37,7 +37,7 @@ namespace Textures
         };
 
         public GameCore()
-            : base(false)
+            : base(new(false))
         {
             Content = new FileSystemContentProvider(
                 Path.Combine(AppContext.BaseDirectory, "../../../../_common")

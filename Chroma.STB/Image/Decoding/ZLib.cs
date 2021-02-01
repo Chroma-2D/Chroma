@@ -53,9 +53,9 @@ namespace Chroma.STB.Image.Decoding
 
 		private uint code_buffer;
 		private int num_bits;
-		private readonly stbi__zhuffman z_distance = new stbi__zhuffman();
+		private readonly stbi__zhuffman z_distance = new();
 		private int z_expandable;
-		private readonly stbi__zhuffman z_length = new stbi__zhuffman();
+		private readonly stbi__zhuffman z_length = new();
 
 		private FakePtr<byte> zbuffer;
 		private FakePtr<byte> zbuffer_end;

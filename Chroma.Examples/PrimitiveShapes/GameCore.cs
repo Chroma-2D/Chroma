@@ -12,71 +12,67 @@ namespace PrimitiveShapes
     {
         private Vector2 _cursorPosition;
 
-        public GameCore()
+        public GameCore() : base(new(false, 8))
         {
             Cursor.IsVisible = false;
         }
-        
+
         protected override void Draw(RenderContext context)
         {
             context.Arc(
                 ShapeMode.Fill,
-                new Vector2(32),
+                new Vector2(256, 32),
                 radius: 32,
                 startAngle: 0,
                 endAngle: 90,
                 Color.HotPink
             );
 
-            context.LineThickness = 2;
+            RenderSettings.LineThickness = 2;
             context.Circle(
                 ShapeMode.Stroke,
-                new Vector2(64, 32),
+                new Vector2(296, 32),
                 radius: 32,
                 Color.Lime
             );
-            context.LineThickness = 1;
+            RenderSettings.LineThickness = 1;
 
             context.Ellipse(
                 ShapeMode.Fill,
-                new Vector2(96, 96),
+                new Vector2(296, 96),
                 new Vector2(16, 48),
                 rotation: 45f,
                 Color.Aqua
             );
 
-            context.LineThickness = 4;
+            RenderSettings.LineThickness = 4;
             context.Line(
                 new Vector2(120, 120),
                 new Vector2(48, 48),
                 Color.Yellow
             );
-            context.LineThickness = 1;
-            context.DrawString("<- A whole bunch\nof primitives", new Vector2(160, 64));
-
-            context.DrawString("A polygon:", new Vector2(170, 170));
+            RenderSettings.LineThickness = 1;
             context.Polygon(
                 ShapeMode.Fill,
                 new List<Point>
                 {
-                    new Point(200, 200),
-                    new Point(232, 200),
-                    new Point(260, 230),
-                    new Point(243, 240),
-                    new Point(160, 220)
+                    new(200, 200),
+                    new(232, 200),
+                    new(260, 230),
+                    new(243, 240),
+                    new(160, 220)
                 }, Color.Purple
             );
 
-            context.DrawString("A polyline:", new Vector2(270, 270));
             context.Polyline(
                 new List<Point>
                 {
-                    new Point(300, 300),
-                    new Point(310, 310),
-                    new Point(320, 295),
-                    new Point(330, 315),
-                    new Point(340, 290),
-                    new Point(350, 320)
+                    new(300, 300),
+                    new(310, 310),
+                    new(320, 295),
+                    new(330, 315),
+                    new(340, 290),
+                    new(350, 320)
                 },
                 Color.DodgerBlue,
                 closeLoop: false
@@ -85,27 +81,54 @@ namespace PrimitiveShapes
             context.Rectangle(
                 ShapeMode.Fill,
                 new Vector2(400, 400),
-                100, 
-                100, 
+                100,
+                100,
                 Color.Red
             );
-            context.DrawString("Wonderful\nrectangle.", new Vector2(410, 410));
 
-            context.LineThickness = 1;
+            RenderSettings.LineThickness = 1;
             context.Rectangle(
                 ShapeMode.Stroke,
-                _cursorPosition - Vector2.One,
-                34, 34,
+                _cursorPosition,
+                33, 33,
                 Color.White
             );
-            
-            context.SetShapeBlendingPreset(BlendingPreset.Subtract);
+
             context.Rectangle(
                 ShapeMode.Fill,
                 _cursorPosition,
                 32, 32, Color.Green
             );
-            context.ResetShapeBlending();
+
+            context.DrawString(
+                $"Shape blending [F1]: {RenderSettings.ShapeBlendingEnabled}\n" +
+                $"Multisampling [F2] {RenderSettings.MultiSamplingEnabled}\n" +
+                "Hit [F3] to set blending functions.",
+                new Vector2(16, 16)
+            );
+        }
+
+        protected override void KeyPressed(KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case KeyCode.F1:
+                    RenderSettings.ShapeBlendingEnabled = !RenderSettings.ShapeBlendingEnabled;
+                    break;
+
+                case KeyCode.F2:
+                    RenderSettings.MultiSamplingEnabled = !RenderSettings.MultiSamplingEnabled;
+                    break;
+
+                case KeyCode.F3:
+                    RenderSettings.SetShapeBlendingFunctions(
+                        destinationColorBlend: BlendingFunction.SourceAlpha,
+                        destinationAlphaBlend: BlendingFunction.DestinationColor,
+                        sourceColorBlend: BlendingFunction.OneMinusDestinationAlpha,
+                        sourceAlphaBlend: BlendingFunction.OneMinusSourceAlpha
+                    );
+                    break;
+            }
         }
 
         protected override void MouseMoved(MouseMoveEventArgs e)

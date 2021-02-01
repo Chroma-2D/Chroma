@@ -12,7 +12,7 @@ namespace RenderTransforms
         private Texture _burger;
         private RenderTarget _rt;
         
-        public GameCore() : base(false)
+        public GameCore() : base(new(false))
         {
             Content = new FileSystemContentProvider(
                 Path.Combine(AppContext.BaseDirectory, "../../../../_common")

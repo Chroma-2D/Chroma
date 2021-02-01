@@ -42,7 +42,15 @@ namespace CustomContentProvider
             _importers.Add(typeof(Texture), (path, _) =>
             {
                 using (var stream = Open(path))
-                    return new Texture(stream);
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        stream.CopyTo(ms);
+                        ms.Seek(0, SeekOrigin.Begin);
+                        
+                        return new Texture(ms);
+                    }
+                }
             });
 
             _importers.Add(typeof(Sound), (path, _) =>

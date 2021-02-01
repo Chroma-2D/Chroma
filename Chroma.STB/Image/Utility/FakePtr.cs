@@ -4,7 +4,7 @@ namespace Chroma.STB.Image.Utility
 {
 	internal struct FakePtr<T> where T: new()
 	{
-		public static FakePtr<T> Null = new FakePtr<T>(null);
+		public static FakePtr<T> Null = new(null);
 
 		public readonly T[] _array;
 
@@ -79,7 +79,7 @@ namespace Chroma.STB.Image.Utility
 
 		public static FakePtr<T> operator +(FakePtr<T> p, int offset)
 		{
-			return new FakePtr<T>(p._array) { Offset = p.Offset + offset };
+			return new(p._array) { Offset = p.Offset + offset };
 		}
 
 		public static FakePtr<T> operator -(FakePtr<T> p, int offset)

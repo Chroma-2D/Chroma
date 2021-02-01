@@ -29,6 +29,7 @@ namespace Chroma.Windowing
         private IntPtr _currentIconPtr;
 
         internal delegate void StateUpdateDelegate(float delta);
+
         internal delegate void DrawDelegate(RenderContext context);
 
         internal StateUpdateDelegate FixedUpdate;
@@ -271,14 +272,14 @@ namespace Chroma.Windowing
         internal Window(Game game)
         {
             Game = game;
-        
+
             RenderTargetHandle = Game.Graphics.InitializeRenderer(this, out Handle);
             if (Handle == IntPtr.Zero)
                 throw new FrameworkException("Failed to initialize the window.", true);
-            
+
             Title = _title;
             Position = _position;
-            
+
             MaximumSize = Size.Empty;
             MinimumSize = Size.Empty;
 
@@ -361,10 +362,9 @@ namespace Chroma.Windowing
             SDL2.SDL_FreeSurface(surface);
         }
 
-        internal void Run(Action postStatusSetAction = null)
+        internal void Run()
         {
             Exists = true;
-            postStatusSetAction?.Invoke();
 
             while (Exists)
             {
@@ -377,8 +377,8 @@ namespace Chroma.Windowing
                 DoTick(PerformanceCounter.Delta);
                 DoFixedTicks(PerformanceCounter.FixedDelta);
 
-                if (Game.Graphics.AutoClear)
-                    _renderContext.Clear(Game.Graphics.AutoClearColor);
+                if (Game.RenderSettings.AutoClearEnabled)
+                    _renderContext.Clear(Game.RenderSettings.AutoClearColor);
 
                 // This is a fix for Discord's screen sharing hooks fucking something up inside SDL_gpu.
                 //

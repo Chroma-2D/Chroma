@@ -15,6 +15,9 @@ namespace RenderTargets
         protected override void LoadContent()
         {
             _tgt = new RenderTarget(Window.Size);
+            
+            if (RenderSettings.ShapeBlendingEnabled)
+                RenderSettings.ShapeBlendingEnabled = false;
         }
 
         protected override void Update(float delta)
@@ -40,9 +43,6 @@ namespace RenderTargets
 
         protected override void Draw(RenderContext context)
         {
-            if (context.ShapeBlendingEnabled)
-                context.ShapeBlendingEnabled = false;
-
             context.RenderTo(_tgt, () =>
             {
                 context.Clear(Color.Black);

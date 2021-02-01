@@ -31,7 +31,7 @@ namespace Chroma.Diagnostics.Logging
         }
 
         public static Log CreateBareLog()
-            => new Log();
+            => new();
 
         public static Log GetForCurrentAssembly(bool initializeDefaults = true)
         {

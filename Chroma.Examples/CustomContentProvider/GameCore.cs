@@ -14,17 +14,18 @@ namespace CustomContentProvider
         private Texture _texture;
         private float _rotation;
 
-        public GameCore() : base(false) // suppress default scene construction
+        public GameCore() : base(new(false))
+        {
+        }
+
+        protected override void LoadContent()
         {
             Content.Dispose();
             Content = new ZipContentProvider(
                 this, 
                 Path.Combine(AppContext.BaseDirectory, "../../../../_common/assets.zip")
             );
-        }
-
-        protected override void LoadContent()
-        {
+            
             _texture = Content.Load<Texture>("Textures/pentagram.png");
             _texture.FilteringMode = TextureFilteringMode.NearestNeighbor;
 

@@ -19,8 +19,8 @@ namespace Chroma.Natives.FreeType.Native
             Reference = reference;
         }
 
-        public FT_ListNode Head => new FT_ListNode(rec.head);
-        public FT_ListNode Tail => new FT_ListNode(rec.tail);
+        public FT_ListNode Head => new(rec.head);
+        public FT_ListNode Tail => new(rec.tail);
 
         public IntPtr Reference
         {
@@ -34,7 +34,7 @@ namespace Chroma.Natives.FreeType.Native
         }
 
         public FT_ListNode Find(IntPtr data)
-            => new FT_ListNode(FT.FT_List_Find(Reference, data));
+            => new(FT.FT_List_Find(Reference, data));
 
         public void Add(FT_ListNode node)
             => FT.FT_List_Add(Reference, node.Reference);

@@ -48,7 +48,7 @@ namespace Chroma.Graphics.Accelerated
             }
         }
 
-        public static bool IsDefaultGpuShaderActive
+        public static bool IsDefaultActive
             => SDL_gpu.GPU_IsDefaultShaderProgram(SDL_gpu.GPU_GetCurrentShaderProgram());
 
         public static Matrix4x4 ModelViewProjection
@@ -470,13 +470,13 @@ namespace Chroma.Graphics.Accelerated
 
         protected static void EnsureCustomShaderActive()
         {
-            if (IsDefaultGpuShaderActive)
+            if (IsDefaultActive)
                 throw new InvalidOperationException("This operation requires a custom shader to be active.");
         }
 
         private static unsafe Matrix4x4 CreateMatrixFromPointer(float* mtxptr)
         {
-            return new Matrix4x4(
+            return new(
                 mtxptr[0], mtxptr[1], mtxptr[2], mtxptr[3],
                 mtxptr[4], mtxptr[5], mtxptr[6], mtxptr[7],
                 mtxptr[8], mtxptr[9], mtxptr[10], mtxptr[11],

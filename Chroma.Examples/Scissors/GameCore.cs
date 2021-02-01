@@ -43,7 +43,7 @@ namespace Scissors
             {
                 context.Scissor = Rectangle.Empty;
 
-                context.LineThickness = 1;
+                RenderSettings.LineThickness = 1;
                 context.Rectangle(
                     ShapeMode.Stroke,
                     _scissor,

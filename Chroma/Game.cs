@@ -9,6 +9,7 @@ using Chroma.Diagnostics;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.Input;
+using Chroma.Natives.GL;
 using Chroma.Natives.SDL;
 using Chroma.Threading;
 using Chroma.Windowing;
@@ -34,16 +35,23 @@ namespace Chroma
             }
         }
 
+        public GameStartupOptions StartupOptions { get; }
         public Window Window { get; private set; }
         public GraphicsManager Graphics { get; private set; }
-        public RenderTransform Transform { get; private set; }
-        
         public AudioManager Audio => AudioManager.Instance;
+        
+        public RenderTransform Transform { get; private set; }
+        public RenderSettings RenderSettings { get; private set; }
 
         public IContentProvider Content { get; protected set; }
 
-        public Game(bool constructDefaultScene = true)
+        public Game(GameStartupOptions options = null)
         {
+            if (options == null)
+                options = new GameStartupOptions();
+
+            StartupOptions = options;
+            
             if (_wasConstructedAlready)
             {
                 throw new InvalidOperationException(
@@ -53,16 +61,17 @@ namespace Chroma
             }
 
             _wasConstructedAlready = true;
-
-            if (constructDefaultScene)
+            
+            if (StartupOptions.ConstructDefaultScene)
                 _defaultScene = new DefaultScene(this);
-
+            
             InitializeThreading();
             InitializeGraphics();
             InitializeAudio();
             InitializeContent();
 
             AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
+            
         }
 
         public void Run()
@@ -199,13 +208,16 @@ namespace Chroma
             FixedTimeStepTarget = 75;
 
             Graphics = new GraphicsManager(this);
+
             Window = new Window(this)
             {
                 Draw = Draw,
                 Update = Update,
                 FixedUpdate = FixedUpdate
             };
+            
             Transform = new RenderTransform();
+            RenderSettings = new RenderSettings();
             
             Graphics.VerticalSyncMode = VerticalSyncMode.Retrace;
             Window.SetIcon(EmbeddedAssets.DefaultIconTexture);

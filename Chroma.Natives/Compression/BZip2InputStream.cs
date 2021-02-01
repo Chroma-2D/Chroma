@@ -21,7 +21,7 @@ namespace Chroma.Natives.Compression
 
         private int bsBuff;
         private int bsLive;
-        private BZip2Crc mCrc = new BZip2Crc();
+        private BZip2Crc mCrc = new();
 
         private bool[] inUse = new bool[256];
         private int nInUse;

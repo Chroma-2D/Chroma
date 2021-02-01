@@ -67,6 +67,8 @@ namespace MusicAndSounds
                     }
                 }, ChannelMode.Mono
             );
+            
+            RenderSettings.LineThickness = 1;
         }
 
         protected override void Draw(RenderContext context)
@@ -83,8 +85,6 @@ namespace MusicAndSounds
 
             if (_frequencies == null)
                 return;
-
-            context.LineThickness = 1;
 
             var upBeat = 128 * (_frequencies[0] + _frequencies[1] + _frequencies[2] + _frequencies[3]);
             var upBeat2 = 128 * (_frequencies[4] + _frequencies[5] + _frequencies[6] + _frequencies[7]);
@@ -115,11 +115,11 @@ namespace MusicAndSounds
             {
                 context.Line(
                     new Vector2(
-                        (2 + i) * (2 + context.LineThickness - 1),
+                        (2 + i) * (2 + RenderSettings.LineThickness - 1),
                         Window.Size.Height
                     ),
                     new Vector2(
-                        (2 + i) * (2 + context.LineThickness - 1),
+                        (2 + i) * (2 + RenderSettings.LineThickness - 1),
                         Window.Size.Height - 1 - (float)_frequencies[i] * 768
                     ),
                     new Color((byte)(255f * (_frequencies.Length / (float)i)), 55,

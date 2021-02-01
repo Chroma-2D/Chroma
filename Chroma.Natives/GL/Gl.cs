@@ -13,9 +13,12 @@ namespace Chroma.Natives.GL
         internal const int GL_BLEND_EQUATION_RGB = 0x8009;
         internal const int GL_BLEND_EQUATION_ALPHA = 0x883D;
 
+        internal const uint GL_POINT_SMOOTH = 0x0B10;
         internal const uint GL_LINE_SMOOTH = 0x0B20;
-        internal const uint GL_LINE_WIDTH = 0x0B21;
+        internal const uint GL_POLYGON_SMOOTH = 0x0B41;
         
+        internal const uint GL_LINE_WIDTH = 0x0B21;
+
         internal const uint GL_MULTISAMPLE = 0x809D;
         internal const uint GL_MAX_SAMPLES = 0x8D57;
 
@@ -23,16 +26,20 @@ namespace Chroma.Natives.GL
         internal const uint GL_FASTEST = 0x1101;
         internal const uint GL_NICEST = 0x1102;
 
+        internal const uint GL_BLEND = 0x0BE2;
+
+        internal const uint GL_POINT_SMOOTH_HINT = 0x0C51;
         internal const uint GL_LINE_SMOOTH_HINT = 0x0C52;
+        internal const uint GL_POLYGON_SMOOTH_HINT = 0x0C53;
 
         internal const uint GL_NO_ERROR = 0;
         internal const uint GL_INVALID_ENUM = 0x500;
-        internal const uint GL_INVALID_VALUE = 0x501; 
+        internal const uint GL_INVALID_VALUE = 0x501;
         internal const uint GL_INVALID_OPERATION = 0x502;
         internal const uint GL_STACK_OVERFLOW = 0x503;
         internal const uint GL_STACK_UNDERFLOW = 0x504;
         internal const uint GL_OUT_OF_MEMORY = 0x505;
-        
+
         internal const uint GL_NUM_EXTENSIONS = 0x821D;
         internal const uint GL_VENDOR = 0x1F00;
         internal const uint GL_RENDERER = 0x1F01;
@@ -62,9 +69,12 @@ namespace Chroma.Natives.GL
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         internal delegate IntPtr GlGetStringiDelegate(uint attr, uint index);
-        
+
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         internal delegate IntPtr GlGetStringDelegate(uint attr);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        internal delegate IntPtr GlDepthMaskDelegate(bool value);
 
         internal static GlEnableDisableDelegate Enable =>
             Marshal.GetDelegateForFunctionPointer<GlEnableDisableDelegate>(
@@ -106,11 +116,16 @@ namespace Chroma.Natives.GL
                 SDL2.SDL_GL_GetProcAddress("glLineWidth")
             );
 
+        internal static GlDepthMaskDelegate DepthMask =>
+            Marshal.GetDelegateForFunctionPointer<GlDepthMaskDelegate>(
+                SDL2.SDL_GL_GetProcAddress("glDepthMask")
+            );
+
         internal static GlGetStringiDelegate GetStringI =>
             Marshal.GetDelegateForFunctionPointer<GlGetStringiDelegate>(
                 SDL2.SDL_GL_GetProcAddress("glGetStringi")
             );
-        
+
         internal static GlGetStringDelegate GetString =>
             Marshal.GetDelegateForFunctionPointer<GlGetStringDelegate>(
                 SDL2.SDL_GL_GetProcAddress("glGetString")

@@ -15,7 +15,6 @@ namespace XboxController
         private Vector2 _position = new(32);
         private Color _color = Color.White;
         private ShapeMode _mode;
-        private float _lineThickness = 1;
 
         protected override void LoadContent()
         {
@@ -27,7 +26,6 @@ namespace XboxController
         {
             context.RenderTo(_tgt, () =>
             {
-                context.LineThickness = _lineThickness;
                 context.Clear(Color.Transparent);
                 context.Rectangle(
                     _mode,
@@ -110,14 +108,12 @@ namespace XboxController
 
             if (e.Button == ControllerButton.LeftBumper)
             {
-                _lineThickness -= 1;
-
-                if (_lineThickness <= 0)
-                    _lineThickness = 1;
+                if (RenderSettings.LineThickness - 1 >= 0)
+                    RenderSettings.LineThickness -= 1;
             }
             else if (e.Button == ControllerButton.RightBumper)
             {
-                _lineThickness += 1;
+                RenderSettings.LineThickness += 1;
             }
         }
     }

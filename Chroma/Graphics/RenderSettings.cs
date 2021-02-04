@@ -5,21 +5,25 @@ namespace Chroma.Graphics
 {
     public class RenderSettings
     {
-        private bool _multiSamplingEnabled;
         private float _lineThickness;
+        private bool _multiSamplingEnabled;
         private bool _shapeBlendingEnabled;
 
         public bool AutoClearEnabled { get; set; }
         public Color AutoClearColor { get; set; }
 
-        public BlendingFunction ShapeSourceColorBlendingFunction { get; private set; }
-        public BlendingFunction ShapeSourceAlphaBlendingFunction { get; private set; }
-        public BlendingFunction ShapeDestinationColorBlendingFunction { get; private set; }
-        public BlendingFunction ShapeDestinationAlphaBlendingFunction { get; private set; }
+        public float LineThickness
+        {
+            get => _lineThickness;
+            set
+            {
+                var val = value < 0 ? 0 : value;
+                _lineThickness = val;
 
-        public BlendingEquation ShapeColorBlendingEquation { get; private set; }
-        public BlendingEquation ShapeAlphaBlendingEquation { get; private set; }
-
+                SDL_gpu.GPU_SetLineThickness(_lineThickness);
+            }
+        }
+        
         public bool MultiSamplingEnabled
         {
             get => _multiSamplingEnabled;
@@ -38,18 +42,6 @@ namespace Chroma.Graphics
             }
         }
 
-        public float LineThickness
-        {
-            get => _lineThickness;
-            set
-            {
-                var val = value < 0 ? 0 : value;
-                _lineThickness = val;
-
-                SDL_gpu.GPU_SetLineThickness(_lineThickness);
-            }
-        }
-
         public bool ShapeBlendingEnabled
         {
             get => _shapeBlendingEnabled;
@@ -59,6 +51,14 @@ namespace Chroma.Graphics
                 SDL_gpu.GPU_SetShapeBlending(_shapeBlendingEnabled);
             }
         }
+        
+        public BlendingFunction ShapeSourceColorBlendingFunction { get; private set; }
+        public BlendingFunction ShapeSourceAlphaBlendingFunction { get; private set; }
+        public BlendingFunction ShapeDestinationColorBlendingFunction { get; private set; }
+        public BlendingFunction ShapeDestinationAlphaBlendingFunction { get; private set; }
+
+        public BlendingEquation ShapeColorBlendingEquation { get; private set; }
+        public BlendingEquation ShapeAlphaBlendingEquation { get; private set; }
 
         internal RenderSettings()
         {

@@ -507,8 +507,7 @@ namespace Chroma.Windowing
         protected override void FreeNativeResources()
         {
             SDL_gpu.GPU_FreeTarget(RenderTargetHandle);
-            SDL_gpu.GPU_Quit();
-            SDL2.SDL_Quit();
+            SDL2.SDL_DestroyWindow(Handle);
         }
     }
 }

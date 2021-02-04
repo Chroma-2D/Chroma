@@ -85,9 +85,11 @@ namespace Chroma
 
         public void Quit()
         {
+            Window.Dispose();
             Content.Dispose();
 
             AudioManager.Instance.Close();
+            
             SDL_gpu.GPU_Quit();
             SDL2.SDL_Quit();
 

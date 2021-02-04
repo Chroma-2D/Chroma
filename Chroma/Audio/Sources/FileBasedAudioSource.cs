@@ -255,10 +255,10 @@ namespace Chroma.Audio.Sources
                 for (var i = 0; i < Filters.Count; i++)
                     Filters[i]?.Invoke(span, AudioFormat.FromSdlFormat(SoundSample->actual.format));
 
-                _originalSourceCallback(userdata, buffer, bufferSize);
-
                 if (Source->eof > 0)
                 {
+                    _originalSourceCallback(userdata, buffer, bufferSize);
+
                     if (!IsLooping)
                     {
                         Pause();
@@ -267,6 +267,10 @@ namespace Chroma.Audio.Sources
                     
                     Rewind();
                     AudioManager.Instance.OnAudioSourceFinished(this, IsLooping);
+                }
+                else
+                {
+                    _originalSourceCallback(userdata, buffer, bufferSize);
                 }
             }
         }

@@ -92,14 +92,17 @@ namespace Pong
             if (_ball.CollidesWithPaddle(_leftPaddle))
             {
                 _ball.BounceFromPaddle(_leftPaddle);
+                Assets.PaddleHit.Play();
             }
             else if (_ball.CollidesWithPaddle(_rightPaddle))
             {
                 _ball.BounceFromPaddle(_rightPaddle);
+                Assets.PaddleHit.Play();
             }
             else if (_ball.CollidesWithBoardSide())
             {
                 _ball.BounceFromSide();
+                Assets.WallHit.Play();
             }
 
             if (_ball.CollidesWithEndOfPlayfield(out var left))
@@ -114,7 +117,10 @@ namespace Pong
                 }
 
                 _ball.Center();
+                Assets.OutsidePlayfield.Play();
+                
                 _ball.CanMove = false;
+                
             }
         }
     }

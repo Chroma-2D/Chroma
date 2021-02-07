@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Reflection;
 using System.Threading;
 using Chroma.Audio;
 using Chroma.ContentManagement;
@@ -9,7 +7,6 @@ using Chroma.Diagnostics;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.Input;
-using Chroma.Natives.GL;
 using Chroma.Natives.SDL;
 using Chroma.Threading;
 using Chroma.Windowing;

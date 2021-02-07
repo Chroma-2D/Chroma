@@ -340,8 +340,8 @@ namespace Chroma.Graphics
                     _virtualResolution = value;
                     SDL_gpu.GPU_SetImageVirtualResolution(
                         ImageHandle,
-                        (ushort)_virtualResolution.Value.Height,
-                        (ushort)_virtualResolution.Value.Width
+                        (ushort)_virtualResolution.Value.Width,
+                        (ushort)_virtualResolution.Value.Height
                     );
                 }
             }

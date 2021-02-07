@@ -254,6 +254,15 @@ namespace Chroma.Graphics
                 color
             );
 
+        public void Rectangle(ShapeMode mode, RectangleF rectangle, Color color)
+            => Rectangle(
+                mode,
+                new Vector2(rectangle.X, rectangle.Y),
+                rectangle.Width,
+                rectangle.Height,
+                color
+            );
+
         public void Triangle(ShapeMode mode, Vector2 a, Vector2 b, Vector2 c, Color color)
         {
             if (mode == ShapeMode.Stroke)

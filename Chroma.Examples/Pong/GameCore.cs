@@ -1,4 +1,5 @@
 using Chroma;
+using Chroma.Audio.Sfxr;
 using Chroma.Graphics;
 
 namespace Pong
@@ -10,6 +11,7 @@ namespace Pong
         public GameCore() : base(new GameStartupOptions(false))
         {
             Window.Title = "Chroma Framework - Pong Example";
+            Sfxr.Initialize(this);
         }
 
         protected override void LoadContent()

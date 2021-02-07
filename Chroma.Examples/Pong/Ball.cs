@@ -103,8 +103,8 @@ namespace Pong
 
         public void Center()
         {
-            Rectangle.X = _board.Size.Width / 2f;
-            Rectangle.Y = _board.Size.Height / 2f;
+            Rectangle.X = _board.Size.Width / 2f - Rectangle.Width / 2;
+            Rectangle.Y = _board.Size.Height / 2f - Rectangle.Height / 2;
         }
     }
 }

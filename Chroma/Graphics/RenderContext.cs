@@ -12,8 +12,6 @@ namespace Chroma.Graphics
 {
     public class RenderContext
     {
-        private Rectangle _scissor = System.Drawing.Rectangle.Empty;
-
         internal List<BatchInfo> BatchBuffer { get; }
 
         internal Window Owner { get; }
@@ -23,30 +21,6 @@ namespace Chroma.Graphics
 
         public bool RenderingToWindow
             => CurrentRenderTarget == Owner.RenderTargetHandle;
-
-        public Rectangle Scissor
-        {
-            get => _scissor;
-            set
-            {
-                _scissor = value;
-
-                if (_scissor == System.Drawing.Rectangle.Empty)
-                {
-                    SDL_gpu.GPU_UnsetClip(CurrentRenderTarget);
-                }
-                else
-                {
-                    SDL_gpu.GPU_SetClip(
-                        CurrentRenderTarget,
-                        (short)_scissor.X,
-                        (short)_scissor.Y,
-                        (ushort)_scissor.Width,
-                        (ushort)_scissor.Height
-                    );
-                }
-            }
-        }
 
         internal RenderContext(Window owner)
         {

@@ -68,7 +68,6 @@ namespace Chroma
             InitializeContent();
 
             AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
-            
         }
 
         public void Run()

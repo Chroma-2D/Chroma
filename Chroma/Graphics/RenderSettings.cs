@@ -1,3 +1,4 @@
+using System.Drawing;
 using Chroma.Natives.GL;
 using Chroma.Natives.SDL;
 
@@ -8,6 +9,7 @@ namespace Chroma.Graphics
         private float _lineThickness;
         private bool _multiSamplingEnabled;
         private bool _shapeBlendingEnabled;
+        private Rectangle _scissor = Rectangle.Empty;
 
         public bool AutoClearEnabled { get; set; }
         public Color AutoClearColor { get; set; }
@@ -49,6 +51,32 @@ namespace Chroma.Graphics
             {
                 _shapeBlendingEnabled = value;
                 SDL_gpu.GPU_SetShapeBlending(_shapeBlendingEnabled);
+            }
+        }
+        
+        public Rectangle Scissor
+        {
+            get => _scissor;
+            set
+            {
+                _scissor = value;
+
+                if (_scissor == Rectangle.Empty)
+                {
+                    SDL_gpu.GPU_UnsetClip(
+                        SDL_gpu.GPU_GetActiveTarget()
+                    );
+                }
+                else
+                {
+                    SDL_gpu.GPU_SetClip(
+                        SDL_gpu.GPU_GetActiveTarget(),
+                        (short)_scissor.X,
+                        (short)_scissor.Y,
+                        (ushort)_scissor.Width,
+                        (ushort)_scissor.Height
+                    );
+                }
             }
         }
         

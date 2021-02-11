@@ -12,7 +12,7 @@ namespace PrimitiveShapes
     {
         private Vector2 _cursorPosition;
 
-        public GameCore() : base(new(false, 8))
+        public GameCore() : base(new(false, true, 8))
         {
             Cursor.IsVisible = false;
         }

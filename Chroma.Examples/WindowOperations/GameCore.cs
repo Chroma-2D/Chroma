@@ -57,6 +57,7 @@ namespace WindowOperations
                 "Use <F2> to switch into exclusive fullscreen mode with native resolution\n" +
                 "Use <F3> to switch into borderless fullscreen mode with native resolution\n" +
                 "Use <F4> to switch into 1024x600 windowed mode - hold <Lshift> to center the window afterwards.\n" +
+                "Use <F5> toggle always-on-top status of the window.\n" +
                 $"Use <F6> to toggle window border ({Window.EnableBorder}).\n" +
                 "Use <F7> to set maximum window size to 800x600.\n" +
                 "Use <F8> to set minimum window size to 320x240.\n" +
@@ -98,6 +99,10 @@ namespace WindowOperations
                     new Size(1024, 600), 
                     e.Modifiers.HasFlag(KeyModifiers.LeftShift)
                 );
+            }
+            else if (e.KeyCode == KeyCode.F5)
+            {
+                Window.TopMost = !Window.TopMost;
             }
             else if (e.KeyCode == KeyCode.F6)
             {

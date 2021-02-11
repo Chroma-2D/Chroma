@@ -205,7 +205,6 @@ namespace Chroma
 
         private void InitializeGraphics()
         {
-            
             Graphics = new GraphicsManager(this);
             Window = new Window(this);
 

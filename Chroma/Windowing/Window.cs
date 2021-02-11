@@ -118,6 +118,39 @@ namespace Chroma.Windowing
             }
         }
 
+        public bool TopMost
+        {
+            get
+            {
+                if (Handle == IntPtr.Zero)
+                    return false;
+
+                return ((SDL2.SDL_WindowFlags)SDL2.SDL_GetWindowFlags(Handle))
+                    .HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_ALWAYS_ON_TOP);
+            }
+
+            set
+            {
+                if (Handle == IntPtr.Zero)
+                    return;
+
+                unsafe
+                {
+                    var win = (SDL2.SDL_Window*)Handle.ToPointer();
+                    if (value)
+                    {
+                        win->flags |= (uint)SDL2.SDL_WindowFlags.SDL_WINDOW_ALWAYS_ON_TOP;
+                    }
+                    else
+                    {
+                        win->flags &= (uint)(~SDL2.SDL_WindowFlags.SDL_WINDOW_ALWAYS_ON_TOP);
+                    }
+                }
+
+                SDL2.SDL_SetWindowSize(Handle, Size.Width, Size.Height);
+            }
+        }
+
         public WindowState State
         {
             get => _state;
@@ -363,7 +396,7 @@ namespace Chroma.Windowing
                 _log.Warning("Tried to initialize event dispatching twice.");
                 return;
             }
-            
+
             EventDispatcher = new EventDispatcher(this);
             _ = new WindowEventHandlers(EventDispatcher);
             _ = new FrameworkEventHandlers(EventDispatcher);

@@ -24,9 +24,9 @@ namespace RenderTransforms
             _burger = Content.Load<Texture>("Textures/burg.png");
             _rt = new RenderTarget(_burger.Width * 2, _burger.Height * 2);
 
-            Transform.SetMatrixMode(MatrixMode.Projection, Window);
-            Transform.LoadIdentity();
-            Transform.Orthographic(
+            RenderTransform.SetMatrixMode(MatrixMode.Projection, Window);
+            RenderTransform.LoadIdentity();
+            RenderTransform.Orthographic(
                 0,
                 0,
                 Window.Size.Width,
@@ -48,16 +48,16 @@ namespace RenderTransforms
             {
                 context.Clear(Color.Aqua);
 
-                Transform.SetMatrixMode(MatrixMode.Model, _rt);
-                Transform.Push();
-                Transform.LoadIdentity();
+                RenderTransform.SetMatrixMode(MatrixMode.Model, _rt);
+                RenderTransform.Push();
+                RenderTransform.LoadIdentity();
                 
-                Transform.Translate(_burger.Center);
-                Transform.Rotate(angle, new Vector3(0, 0, 1f));
-                Transform.Translate(-_burger.Center);
+                RenderTransform.Translate(_burger.Center);
+                RenderTransform.Rotate(angle, new Vector3(0, 0, 1f));
+                RenderTransform.Translate(-_burger.Center);
                 
                 context.DrawTexture(_burger, Vector2.Zero, Vector2.One, Vector2.Zero, 0);
-                Transform.Pop();
+                RenderTransform.Pop();
             });
             
             context.DrawTexture(_rt, Window.Center, Vector2.One, _rt.Center, 0);

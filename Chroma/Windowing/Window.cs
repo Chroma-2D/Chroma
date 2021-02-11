@@ -37,7 +37,7 @@ namespace Chroma.Windowing
         internal DrawDelegate Draw;
 
         internal Game Game { get; }
-        internal EventDispatcher EventDispatcher { get; }
+        internal EventDispatcher EventDispatcher { get; private set; }
 
         internal IntPtr RenderTargetHandle { get; }
 
@@ -285,12 +285,6 @@ namespace Chroma.Windowing
 
             _performanceCounter = new PerformanceCounter();
             _renderContext = new RenderContext(this);
-
-            EventDispatcher = new EventDispatcher(this);
-            _ = new WindowEventHandlers(EventDispatcher);
-            _ = new FrameworkEventHandlers(EventDispatcher);
-            _ = new InputEventHandlers(EventDispatcher);
-            _ = new AudioEventHandlers(EventDispatcher);
         }
 
         public void Show()
@@ -362,6 +356,21 @@ namespace Chroma.Windowing
             SDL2.SDL_FreeSurface(surface);
         }
 
+        internal void InitializeEventDispatcher()
+        {
+            if (EventDispatcher != null)
+            {
+                _log.Warning("Tried to initialize event dispatching twice.");
+                return;
+            }
+            
+            EventDispatcher = new EventDispatcher(this);
+            _ = new WindowEventHandlers(EventDispatcher);
+            _ = new FrameworkEventHandlers(EventDispatcher);
+            _ = new InputEventHandlers(EventDispatcher);
+            _ = new AudioEventHandlers(EventDispatcher);
+        }
+
         internal void Run()
         {
             Exists = true;
@@ -372,13 +381,13 @@ namespace Chroma.Windowing
                 _performanceCounter.FixedUpdate();
 
                 while (SDL2.SDL_PollEvent(out var ev) != 0)
-                    EventDispatcher.Dispatch(ev);
+                    EventDispatcher?.Dispatch(ev);
 
                 DoTick(PerformanceCounter.Delta);
                 DoFixedTicks(PerformanceCounter.FixedDelta);
 
-                if (Game.RenderSettings.AutoClearEnabled)
-                    _renderContext.Clear(Game.RenderSettings.AutoClearColor);
+                if (RenderSettings.AutoClearEnabled)
+                    _renderContext.Clear(RenderSettings.AutoClearColor);
 
                 // This is a fix for Discord's screen sharing hooks fucking something up inside SDL_gpu.
                 //

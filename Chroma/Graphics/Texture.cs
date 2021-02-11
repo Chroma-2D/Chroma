@@ -769,7 +769,7 @@ namespace Chroma.Graphics
         private void CopyDataFrom(Texture other)
             => other._pixelData.CopyTo(_pixelData, 0);
 
-        private void EnsureOnMainThread()
+        protected void EnsureOnMainThread()
         {
             if (!Dispatcher.IsMainThread)
                 throw new InvalidOperationException(

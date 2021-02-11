@@ -2,6 +2,7 @@
 using System.Drawing;
 using Chroma.Diagnostics.Logging;
 using Chroma.Natives.SDL;
+using Chroma.Threading;
 
 namespace Chroma.Graphics
 {
@@ -78,6 +79,8 @@ namespace Chroma.Graphics
 
         protected override void FreeNativeResources()
         {
+            EnsureOnMainThread();
+            
             SDL_gpu.GPU_FreeTarget(TargetHandle);
             base.FreeNativeResources();
         }

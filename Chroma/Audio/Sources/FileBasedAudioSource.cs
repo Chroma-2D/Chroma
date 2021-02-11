@@ -92,7 +92,7 @@ namespace Chroma.Audio.Sources
                             new IntPtr(b),
                             arr.Length
                         );
-                        
+
                         if (RwOpsHandle == IntPtr.Zero)
                         {
                             _log.Error($"Failed to initialize RWops from stream: {SDL2.SDL_GetError()}");
@@ -255,22 +255,18 @@ namespace Chroma.Audio.Sources
                 for (var i = 0; i < Filters.Count; i++)
                     Filters[i]?.Invoke(span, AudioFormat.FromSdlFormat(SoundSample->actual.format));
 
+                _originalSourceCallback(userdata, buffer, bufferSize);
+
                 if (Source->eof > 0)
                 {
-                    _originalSourceCallback(userdata, buffer, bufferSize);
-
                     if (!IsLooping)
                     {
                         Pause();
                         Status = PlaybackStatus.Stopped;
                     }
-                    
+
                     Rewind();
                     AudioManager.Instance.OnAudioSourceFinished(this, IsLooping);
-                }
-                else
-                {
-                    _originalSourceCallback(userdata, buffer, bufferSize);
                 }
             }
         }

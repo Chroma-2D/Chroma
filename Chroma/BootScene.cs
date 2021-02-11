@@ -11,6 +11,7 @@ namespace Chroma
         private const int AnimationFrameWidth = 64;
         private const int AnimationFrameHeight = 64;
         private const int TotalAnimationFrames = 300;
+        private const int ScaleFactor = 4;
         
         private readonly Game _game;
         
@@ -45,8 +46,8 @@ namespace Chroma
         {
             context.DrawTexture(
                 EmbeddedAssets.BootSheetTexture,
-                _game.Window.Center - new Vector2(32 * 6),
-                new(6), 
+                _game.Window.Center - (new Vector2(AnimationFrameWidth / 2f, AnimationFrameHeight / 2f) * ScaleFactor),
+                new(ScaleFactor), 
                 Vector2.Zero, 
                 0, 
                 _frames[_currentFrame]

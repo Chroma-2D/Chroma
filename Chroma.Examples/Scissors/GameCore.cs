@@ -35,13 +35,13 @@ namespace Scissors
         protected override void Draw(RenderContext context)
         {
             if (_useScissor)
-                context.Scissor = _scissor;
+                RenderSettings.Scissor = _scissor;
 
             context.DrawTexture(_grid, Vector2.Zero, Vector2.One, Vector2.Zero, 0f);
 
             if (_useScissor)
             {
-                context.Scissor = Rectangle.Empty;
+                RenderSettings.Scissor = Rectangle.Empty;
 
                 RenderSettings.LineThickness = 1;
                 context.Rectangle(

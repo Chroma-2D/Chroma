@@ -15,11 +15,12 @@ namespace Chroma
 {
     public class Game
     {
-        private static bool _wasConstructedAlready;
         private static DefaultScene _defaultScene;
+        private static BootScene _bootScene;
         private int _fixedTimeStepTarget;
 
         private readonly Log _log = LogManager.GetForCurrentAssembly();
+
 
         public int FixedTimeStepTarget
         {
@@ -32,36 +33,34 @@ namespace Chroma
             }
         }
 
+        internal static bool WasConstructed { get; private set; }
+
         public GameStartupOptions StartupOptions { get; }
         public Window Window { get; private set; }
         public GraphicsManager Graphics { get; private set; }
         public AudioManager Audio => AudioManager.Instance;
-        
-        public RenderTransform Transform { get; private set; }
-        public RenderSettings RenderSettings { get; private set; }
 
         public IContentProvider Content { get; protected set; }
 
         public Game(GameStartupOptions options = null)
         {
-            if (options == null)
-                options = new GameStartupOptions();
-
-            StartupOptions = options;
-            
-            if (_wasConstructedAlready)
+            if (WasConstructed)
             {
                 throw new InvalidOperationException(
                     "An instance of the Game class can only be constructed " +
                     "once in the entire application's lifetime."
                 );
             }
-
-            _wasConstructedAlready = true;
             
+            if (options == null)
+                options = new GameStartupOptions();
+
+            StartupOptions = options;
+            WasConstructed = true;
+
             if (StartupOptions.ConstructDefaultScene)
                 _defaultScene = new DefaultScene(this);
-            
+
             InitializeThreading();
             InitializeGraphics();
             InitializeAudio();
@@ -75,7 +74,10 @@ namespace Chroma
             if (Window.Exists)
                 throw new InvalidOperationException("The game is already running.");
 
-            LoadContent();
+            if (!StartupOptions.UseBootSplash)
+            {
+                LoadContent();
+            }
             Window.Run();
         }
 
@@ -85,7 +87,7 @@ namespace Chroma
             Content.Dispose();
 
             AudioManager.Instance.Close();
-            
+
             SDL_gpu.GPU_Quit();
             SDL2.SDL_Quit();
 
@@ -203,22 +205,33 @@ namespace Chroma
 
         private void InitializeGraphics()
         {
-            FixedTimeStepTarget = 75;
-
+            
             Graphics = new GraphicsManager(this);
+            Window = new Window(this);
 
-            Window = new Window(this)
+            if (StartupOptions.UseBootSplash)
             {
-                Draw = Draw,
-                Update = Update,
-                FixedUpdate = FixedUpdate
-            };
-            
-            Transform = new RenderTransform();
-            RenderSettings = new RenderSettings();
-            
+                FixedTimeStepTarget = 60;
+
+                _bootScene = new BootScene(this);
+                _bootScene.Finished += BootSceneFinished;
+                
+                Window.Draw = DrawSplash;
+                Window.FixedUpdate = FixedUpdateSplash;
+            }
+            else
+            {                
+                FixedTimeStepTarget = 75;
+
+                Window.Draw = Draw;
+                Window.Update = Update;
+                Window.FixedUpdate = FixedUpdate;
+                
+                Window.InitializeEventDispatcher();
+            }
+
             Graphics.VerticalSyncMode = VerticalSyncMode.Retrace;
-            Window.SetIcon(EmbeddedAssets.DefaultIconTexture);
+            Window.SetIcon(EmbeddedAssets.DefaultIconTexture);            
         }
 
         private void InitializeAudio()
@@ -229,6 +242,30 @@ namespace Chroma
         private void InitializeContent()
         {
             Content = new FileSystemContentProvider();
+        }
+
+        private void DrawSplash(RenderContext context)
+        {
+            _bootScene.Draw(context);
+        }
+
+        private void FixedUpdateSplash(float delta)
+        {
+            _bootScene.FixedUpdate(delta);
+        }
+
+        private void BootSceneFinished(object sender, EventArgs e)
+        {
+            LoadContent();
+            Window.InitializeEventDispatcher();
+            
+            FixedTimeStepTarget = 75;
+            
+            Window.Draw = Draw;
+            Window.Update = Update;
+            Window.FixedUpdate = FixedUpdate;
+
+            _bootScene.Finished -= BootSceneFinished;
         }
     }
 }

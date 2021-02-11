@@ -1,20 +1,21 @@
+using System;
 using System.Drawing;
 using Chroma.Natives.GL;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics
 {
-    public class RenderSettings
+    public static class RenderSettings
     {
-        private float _lineThickness;
-        private bool _multiSamplingEnabled;
-        private bool _shapeBlendingEnabled;
-        private Rectangle _scissor = Rectangle.Empty;
+        private static float _lineThickness;
+        private static bool _multiSamplingEnabled;
+        private static bool _shapeBlendingEnabled;
+        private static Rectangle _scissor = Rectangle.Empty;
 
-        public bool AutoClearEnabled { get; set; }
-        public Color AutoClearColor { get; set; }
+        public static bool AutoClearEnabled { get; set; }
+        public static Color AutoClearColor { get; set; }
 
-        public float LineThickness
+        public static float LineThickness
         {
             get => _lineThickness;
             set
@@ -26,7 +27,7 @@ namespace Chroma.Graphics
             }
         }
         
-        public bool MultiSamplingEnabled
+        public static bool MultiSamplingEnabled
         {
             get => _multiSamplingEnabled;
             set
@@ -44,7 +45,7 @@ namespace Chroma.Graphics
             }
         }
 
-        public bool ShapeBlendingEnabled
+        public static bool ShapeBlendingEnabled
         {
             get => _shapeBlendingEnabled;
             set
@@ -54,7 +55,7 @@ namespace Chroma.Graphics
             }
         }
         
-        public Rectangle Scissor
+        public static Rectangle Scissor
         {
             get => _scissor;
             set
@@ -80,16 +81,19 @@ namespace Chroma.Graphics
             }
         }
         
-        public BlendingFunction ShapeSourceColorBlendingFunction { get; private set; }
-        public BlendingFunction ShapeSourceAlphaBlendingFunction { get; private set; }
-        public BlendingFunction ShapeDestinationColorBlendingFunction { get; private set; }
-        public BlendingFunction ShapeDestinationAlphaBlendingFunction { get; private set; }
+        public static BlendingFunction ShapeSourceColorBlendingFunction { get; private set; }
+        public static BlendingFunction ShapeSourceAlphaBlendingFunction { get; private set; }
+        public static BlendingFunction ShapeDestinationColorBlendingFunction { get; private set; }
+        public static BlendingFunction ShapeDestinationAlphaBlendingFunction { get; private set; }
 
-        public BlendingEquation ShapeColorBlendingEquation { get; private set; }
-        public BlendingEquation ShapeAlphaBlendingEquation { get; private set; }
+        public static BlendingEquation ShapeColorBlendingEquation { get; private set; }
+        public static BlendingEquation ShapeAlphaBlendingEquation { get; private set; }
 
-        internal RenderSettings()
+        static RenderSettings()
         {
+            if (!Game.WasConstructed)
+                throw new InvalidOperationException("You need to initialize the engine first.");
+            
             AutoClearEnabled = true;
             AutoClearColor = Color.Transparent;
 
@@ -101,7 +105,7 @@ namespace Chroma.Graphics
             ResetShapeBlending();
         }
 
-        public void SetShapeBlendingEquations(BlendingEquation colorBlend, BlendingEquation alphaBlend)
+        public static void SetShapeBlendingEquations(BlendingEquation colorBlend, BlendingEquation alphaBlend)
         {
             ShapeColorBlendingEquation = colorBlend;
             ShapeAlphaBlendingEquation = alphaBlend;
@@ -112,7 +116,7 @@ namespace Chroma.Graphics
             );
         }
 
-        public void SetShapeBlendingFunctions(BlendingFunction sourceColorBlend, BlendingFunction sourceAlphaBlend,
+        public static void SetShapeBlendingFunctions(BlendingFunction sourceColorBlend, BlendingFunction sourceAlphaBlend,
             BlendingFunction destinationColorBlend, BlendingFunction destinationAlphaBlend)
         {
             ShapeSourceColorBlendingFunction = sourceColorBlend;
@@ -129,7 +133,7 @@ namespace Chroma.Graphics
             );
         }
 
-        public void SetShapeBlendingPreset(BlendingPreset preset)
+        public static void SetShapeBlendingPreset(BlendingPreset preset)
         {
             var gpuPreset = (SDL_gpu.GPU_BlendPresetEnum)preset;
             var blendModeInfo = SDL_gpu.GPU_GetBlendModeFromPreset(gpuPreset);
@@ -147,7 +151,7 @@ namespace Chroma.Graphics
             );
         }
 
-        public void ResetShapeBlending()
+        public static void ResetShapeBlending()
             => SetShapeBlendingPreset(BlendingPreset.Normal);
     }
 }

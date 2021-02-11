@@ -5,9 +5,9 @@ using Chroma.Windowing;
 
 namespace Chroma.Graphics
 {
-    public class RenderTransform
+    public static class RenderTransform
     {
-        public Matrix4x4 Matrix
+        public static Matrix4x4 Matrix
         {
             get
             {
@@ -20,7 +20,7 @@ namespace Chroma.Graphics
             set => SDL_gpu.GPU_LoadMatrix(value.ToFloatArray());
         }
 
-        public void Frustum(float left, float top, float right, float bottom, float z_near, float z_far)
+        public static void Frustum(float left, float top, float right, float bottom, float z_near, float z_far)
         {
             var mtx = Matrix.ToFloatArray();
             SDL_gpu.GPU_MatrixFrustum(mtx, left, right, bottom, top, z_near, z_far);
@@ -28,7 +28,7 @@ namespace Chroma.Graphics
             LoadMatrixByFloatPointer(mtx);
         }
 
-        public void Shear(Vector2 vec)
+        public static void Shear(Vector2 vec)
         {
             var mtx = Matrix;
             {
@@ -38,7 +38,7 @@ namespace Chroma.Graphics
             Matrix = mtx;
         }
 
-        public void Scale(Vector3 vec)
+        public static void Scale(Vector3 vec)
         {
             var mtx = Matrix.ToFloatArray();
             SDL_gpu.GPU_MatrixScale(mtx, vec.X, vec.Y, vec.Z);
@@ -46,10 +46,10 @@ namespace Chroma.Graphics
             LoadMatrixByFloatPointer(mtx);
         }
 
-        public void Scale(Vector2 vec)
+        public static void Scale(Vector2 vec)
             => Scale(new Vector3(vec, 1));
 
-        public void Translate(Vector3 vec)
+        public static void Translate(Vector3 vec)
         {
             var mtx = Matrix.ToFloatArray();
             SDL_gpu.GPU_MatrixTranslate(mtx, vec.X, vec.Y, vec.Z);
@@ -57,10 +57,10 @@ namespace Chroma.Graphics
             LoadMatrixByFloatPointer(mtx);
         }
 
-        public void Translate(Vector2 vec)
+        public static void Translate(Vector2 vec)
             => Translate(new Vector3(vec, 0));
 
-        public void Rotate(float angle, Vector3 pivot)
+        public static void Rotate(float angle, Vector3 pivot)
         {
             var mtx = Matrix.ToFloatArray();
             SDL_gpu.GPU_MatrixRotate(mtx, angle, pivot.X, pivot.Y, pivot.Z);
@@ -68,28 +68,28 @@ namespace Chroma.Graphics
             LoadMatrixByFloatPointer(mtx);
         }
 
-        public void Push()
+        public static void Push()
             => SDL_gpu.GPU_PushMatrix();
 
-        public void Pop()
+        public static void Pop()
             => SDL_gpu.GPU_PopMatrix();
 
-        public void SetMatrixMode(MatrixMode mode, RenderTarget target)
+        public static void SetMatrixMode(MatrixMode mode, RenderTarget target)
             => SDL_gpu.GPU_MatrixMode(
                 target.TargetHandle,
                 (SDL_gpu.GPU_MatrixModeEnum)mode
             );
         
-        public void SetMatrixMode(MatrixMode mode, Window window)
+        public static void SetMatrixMode(MatrixMode mode, Window window)
             => SDL_gpu.GPU_MatrixMode(
                 window.RenderTargetHandle,
                 (SDL_gpu.GPU_MatrixModeEnum)mode
             );
 
-        public void LoadIdentity()
+        public static void LoadIdentity()
             => SDL_gpu.GPU_LoadIdentity();
 
-        public void Orthographic(float left, float top, float right, float bottom, float z_near, float z_far)
+        public static void Orthographic(float left, float top, float right, float bottom, float z_near, float z_far)
         {
             var mtx = Matrix.ToFloatArray();
             SDL_gpu.GPU_MatrixOrtho(mtx, left, right, bottom, top, z_near, z_far);
@@ -97,7 +97,7 @@ namespace Chroma.Graphics
             LoadMatrixByFloatPointer(mtx);
         }
 
-        public void LookAt(Vector3 eyePosition, Vector3 targetPosition, Vector3 up)
+        public static void LookAt(Vector3 eyePosition, Vector3 targetPosition, Vector3 up)
         {
             var mtx = Matrix.ToFloatArray();
             SDL_gpu.GPU_MatrixLookAt(
@@ -114,7 +114,7 @@ namespace Chroma.Graphics
             );
         }
 
-        private unsafe void LoadMatrixByFloatPointer(float[] mtx)
+        private static unsafe void LoadMatrixByFloatPointer(float[] mtx)
         {
             fixed (float* mtxptr = &mtx[0])
             {

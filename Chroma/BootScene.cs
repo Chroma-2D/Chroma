@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Numerics;
 using Chroma.Graphics;
 
@@ -8,66 +6,68 @@ namespace Chroma
 {
     internal class BootScene
     {
-        private const int AnimationFrameWidth = 64;
-        private const int AnimationFrameHeight = 64;
-        private const int TotalAnimationFrames = 300;
-        private const int ScaleFactor = 4;
-        
         private readonly Game _game;
-        
+        private readonly int _frameCount = 301;
+        private readonly Vector2 _bootTextTextureOffset = new(0, 270);
+
         private int _currentFrame;
-        private List<Rectangle> _frames;
+
+        private EmbeddedAssets.BootAnimationInfo CurrentBootTextProperties
+            => EmbeddedAssets.BootAnimationData[0][_currentFrame];
+
+        private EmbeddedAssets.BootAnimationInfo CurrentBootWheelProperties
+            => EmbeddedAssets.BootAnimationData[1][_currentFrame];
+
+        private EmbeddedAssets.BootAnimationInfo CurrentBootLogoProperties
+            => EmbeddedAssets.BootAnimationData[2][_currentFrame];
 
         internal event EventHandler Finished;
 
         internal BootScene(Game game)
         {
             _game = game;
-            
-            EmbeddedAssets.BootSheetTexture.FilteringMode = TextureFilteringMode.NearestNeighbor;
-            CalculateAnimationFrames();
         }
 
         internal void FixedUpdate(float delta)
         {
-            if (_currentFrame >= _frames.Count)
+            EmbeddedAssets.BootWheelTexture.ColorMask = new Color(1f, 1f, 1f, CurrentBootWheelProperties.Opacity);
+            EmbeddedAssets.BootLogoTexture.ColorMask = new Color(1f, 1f, 1f, CurrentBootLogoProperties.Opacity);
+            EmbeddedAssets.BootTextTexture.ColorMask = new Color(1f, 1f, 1f, CurrentBootTextProperties.Opacity);
+
+            if (_currentFrame >= _frameCount)
                 return;
-            
+
             _currentFrame++;
 
-            if (_currentFrame >= _frames.Count)
-            {
+            if (_currentFrame >= _frameCount)
                 Finished?.Invoke(this, EventArgs.Empty);
-                _frames.Clear();
-            }
         }
 
         internal void Draw(RenderContext context)
         {
             context.DrawTexture(
-                EmbeddedAssets.BootSheetTexture,
-                _game.Window.Center - (new Vector2(AnimationFrameWidth / 2f, AnimationFrameHeight / 2f) * ScaleFactor),
-                new(ScaleFactor), 
-                Vector2.Zero, 
-                0, 
-                _frames[_currentFrame]
-           );
-        }
+                EmbeddedAssets.BootWheelTexture,
+                _game.Window.Center,
+                Vector2.One,
+                EmbeddedAssets.BootWheelTexture.Center,
+                CurrentBootWheelProperties.Rotation
+            );
 
-        private void CalculateAnimationFrames()
-        {
-            _frames = new List<Rectangle>();
+            context.DrawTexture(
+                EmbeddedAssets.BootLogoTexture,
+                _game.Window.Center,
+                new Vector2(CurrentBootLogoProperties.Scale),
+                EmbeddedAssets.BootLogoTexture.Center,
+                0
+            );
 
-            for (var y = 0; y < EmbeddedAssets.BootSheetTexture.Height; y += AnimationFrameHeight)
-            {
-                for (var x = 0; x < EmbeddedAssets.BootSheetTexture.Width; x += AnimationFrameWidth)
-                {
-                    _frames.Add(new Rectangle(x, y, AnimationFrameWidth, AnimationFrameHeight));
-
-                    if (_frames.Count >= TotalAnimationFrames)
-                        break;
-                }
-            }
+            context.DrawTexture(
+                EmbeddedAssets.BootTextTexture,
+                _game.Window.Center + _bootTextTextureOffset,
+                Vector2.One,
+                EmbeddedAssets.BootTextTexture.Center,
+                0
+            );
         }
     }
 }

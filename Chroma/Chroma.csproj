@@ -48,8 +48,10 @@
     <EmbeddedResource Include="Resources\deficon.png" />
     <EmbeddedResource Include="Resources\shader\default_effect.frag" />
     <EmbeddedResource Include="Resources\dummy.png" />
-    <None Remove="Resources\boot.png" />
-    <EmbeddedResource Include="Resources\boot.png" />
+    <EmbeddedResource Include="Resources\boot\anim.json" />
+    <EmbeddedResource Include="Resources\boot\crlogo.png" />
+    <EmbeddedResource Include="Resources\boot\crsub.png" />
+    <EmbeddedResource Include="Resources\boot\crwheel.png" />
   </ItemGroup>
 
   <ItemGroup>

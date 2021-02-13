@@ -1,3 +1,5 @@
+using System.Numerics;
+
 namespace Chroma.Graphics.Particles
 {
     public abstract class ParticleStateInitializer
@@ -7,6 +9,6 @@ namespace Chroma.Graphics.Particles
         protected ParticleStateInitializer(ParticleEmitter emitter)
             => Emitter = emitter;
 
-        public abstract Particle CreateParticle();
+        public abstract Particle CreateParticle(Vector2 initialPosition);
     }
 }

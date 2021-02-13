@@ -15,16 +15,14 @@ namespace Chroma.Graphics.Particles.StateInitializers
             Random.Next((int)VelocityLimits.Y) * (Random.Next(-1, 1) == -1 ? -1 : 1)
         );
 
-        public virtual Vector2 InitialPosition => Emitter.SpawnPosition;
-
         public virtual Vector2 InitialOrigin => new(
             Emitter.Texture.Width / 2f,
             Emitter.Texture.Height / 2f
         );
 
         public virtual Vector2 InitialScale => Vector2.One * Random.Next(1, 2);
-
         public virtual Color InitialColor => Color.White;
+
         public virtual float InitialRotation => 0;
         public virtual int InitialTTL => Random.Next(Emitter.MaxParticleTTL);
 
@@ -33,7 +31,7 @@ namespace Chroma.Graphics.Particles.StateInitializers
         {
         }
 
-        public override Particle CreateParticle()
+        public override Particle CreateParticle(Vector2 initialPosition)
         {
             return new(
                 Emitter,
@@ -42,7 +40,7 @@ namespace Chroma.Graphics.Particles.StateInitializers
                 InitialColor,
                 InitialScale,
                 InitialOrigin,
-                InitialPosition,
+                initialPosition,
                 InitialVelocity,
                 Rectangle.Empty
             );

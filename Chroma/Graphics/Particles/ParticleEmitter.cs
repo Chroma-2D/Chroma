@@ -9,22 +9,17 @@ namespace Chroma.Graphics.Particles
     {
         public delegate void ParticleStateIntegrator(Particle particle, float deltaTime);
 
-        public int EmissionRate { get; set; } = 1;
-
         private readonly List<Particle> _particles;
         private readonly List<ParticleStateIntegrator> _stateIntegrators;
 
         public IReadOnlyList<Particle> Particles => _particles;
         public IReadOnlyList<ParticleStateIntegrator> StateIntegrators => _stateIntegrators;
-        public ParticleStateInitializer ParticleStateInitializer { get; set; }
 
         public int Density { get; set; } = 60;
         public int MaxParticleTTL { get; set; } = 120;
 
-        public Vector2 SpawnPosition { get; set; }
-
-        public bool IsActive { get; set; }
         public Texture Texture { get; set; }
+        public ParticleStateInitializer ParticleStateInitializer { get; set; }
 
         public ParticleEmitter(Texture texture, ParticleStateInitializer initializer = null)
         {
@@ -39,6 +34,15 @@ namespace Chroma.Graphics.Particles
             _particles = new List<Particle>(1200);
 
             ParticleStateInitializer = initializer ?? new RandomizedStateInitializer(this);
+        }
+
+        public void Emit(Vector2 initialPosition, int count)
+        {
+            if (Particles.Count >= Density)
+                return;
+
+            for (var i = 0; i < count; i++)
+                CreateParticle(initialPosition);
         }
 
         public void RegisterIntegrator(ParticleStateIntegrator integrator)
@@ -76,15 +80,6 @@ namespace Chroma.Graphics.Particles
                 if (part.TTL <= 0)
                     _particles.RemoveAt(i);
             }
-
-            if (IsActive)
-            {
-                if (Particles.Count < Density)
-                {
-                    for (var limit = 0; limit < EmissionRate; limit++)
-                        CreateParticle();
-                }
-            }
         }
 
         public virtual void Draw(RenderContext context)
@@ -121,9 +116,11 @@ namespace Chroma.Graphics.Particles
             }
         }
 
-        protected virtual void CreateParticle()
+        protected virtual void CreateParticle(Vector2 initialPosition)
         {
-            _particles.Add(ParticleStateInitializer.CreateParticle());
+            _particles.Add(
+                ParticleStateInitializer.CreateParticle(initialPosition)
+            );
         }
     }
 }

@@ -514,6 +514,16 @@ namespace Chroma.Graphics
                 WritePixel(i * BytesPerPixel, colors[i]);
         }
 
+        public void SetPixelData(byte[] data)
+        {
+            EnsureNotDisposed();
+
+            if (data.Length != _pixelData.Length)
+                throw new InvalidOperationException("The byte array must be the same size as texture's.");
+
+            data.CopyTo(_pixelData, 0);
+        }
+
         public void SetPixel(int x, int y, Color color)
         {
             EnsureNotDisposed();

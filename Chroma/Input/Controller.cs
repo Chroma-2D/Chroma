@@ -38,7 +38,7 @@ namespace Chroma.Input
                 controller.DeadZones[axis] = value;
         }
 
-        public static void SetDeadZoneUniform(int playerIndex, ushort value)
+        public static void SetDeadZoneAllAxes(int playerIndex, ushort value)
         {
             var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
 

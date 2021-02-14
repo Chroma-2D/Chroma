@@ -32,7 +32,6 @@ namespace Fonts
             _alienlines = Content.Load<TrueTypeFont>("Fonts/alienlines.ttf", 24);
             _renegade = Content.Load<TrueTypeFont>("Fonts/renegade.otf", 48);
             _plasticBag = Content.Load<TrueTypeFont>("Fonts/plasticbag.ttf", 16);
-
             _plasticBagBmf = Content.Load<BitmapFont>("BitmapFonts/plasticbag.fnt");
         }
 
@@ -63,16 +62,16 @@ namespace Fonts
                 measure1.Height,
                 Color.Red);
 
-            var plasticBagStr = "This is a test of 16px high Plastic Bag font.\n" +
+            var plasticBagBmfStr = "This is a test of 16px high Plastic Bag Bitmap Font.\n" +
                       "And here's its line break. 1234567890-=!@#$aA";
             context.DrawString(
                 _plasticBagBmf,
-                plasticBagStr,
+                plasticBagBmfStr,
                 new Vector2(8, 164),
                 Color.Lime
             );
 
-            var measure2 = _plasticBagBmf.Measure(plasticBagStr);
+            var measure2 = _plasticBagBmf.Measure(plasticBagBmfStr);
             context.Rectangle(
                 ShapeMode.Stroke,
                 new Vector2(8, 164),
@@ -81,10 +80,12 @@ namespace Fonts
                 Color.Red
             );
 
-            var measure3 = _plasticBag.Measure(plasticBagStr);
+            var plasticBagTtfStr = "This is a test of 16px high Plastic Bag TTF.\n" +
+                                   "And here's its line break. 1234567890-=!@#$aA";
+            var measure3 = _plasticBag.Measure(plasticBagTtfStr);
             context.DrawString(
                 _plasticBag,
-                plasticBagStr,
+                plasticBagTtfStr,
                 new Vector2(16 + measure2.Width, 164),
                 Color.Violet
             );

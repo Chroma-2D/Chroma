@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Chroma.Graphics;
-using Chroma.Graphics.TextRendering;
+using Chroma.Graphics.TextRendering.TrueType;
 
 namespace Chroma
 {

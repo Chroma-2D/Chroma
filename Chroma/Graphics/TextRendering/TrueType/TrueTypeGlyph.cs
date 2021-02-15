@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace Chroma.Graphics.TextRendering
+namespace Chroma.Graphics.TextRendering.TrueType
 {
     public struct TrueTypeGlyph
     {

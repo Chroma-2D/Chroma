@@ -5,6 +5,7 @@ using System.Numerics;
 using Chroma.Graphics.Batching;
 using Chroma.Graphics.TextRendering;
 using Chroma.Graphics.TextRendering.Bitmap;
+using Chroma.Graphics.TextRendering.TrueType;
 using Chroma.Natives.SDL;
 using Chroma.Windowing;
 

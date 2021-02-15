@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using Chroma.Graphics;
 using Chroma.Graphics.TextRendering;
+using Chroma.Graphics.TextRendering.TrueType;
 using Chroma.Windowing;
 
 namespace TextInput

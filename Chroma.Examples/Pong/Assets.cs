@@ -2,6 +2,7 @@ using Chroma.Audio.Sfxr;
 using Chroma.ContentManagement;
 using Chroma.Graphics;
 using Chroma.Graphics.TextRendering;
+using Chroma.Graphics.TextRendering.TrueType;
 
 namespace Pong
 {

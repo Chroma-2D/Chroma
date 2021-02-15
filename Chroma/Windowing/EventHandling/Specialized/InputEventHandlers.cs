@@ -105,7 +105,9 @@ namespace Chroma.Windowing.EventHandling.Specialized
                 SDL2.SDL_GameControllerGetProduct(instance)
             );
 
-            var controllerInfo = new ControllerInfo(instance, instanceId, playerIndex, name, productInfo);
+            var guid = SDL2.SDL_JoystickGetGUID(joyInstance);
+
+            var controllerInfo = new ControllerInfo(instance, instanceId, guid, playerIndex, name, productInfo);
             ControllerRegistry.Instance.Register(instance, controllerInfo);
 
             owner.Game.OnControllerConnected(

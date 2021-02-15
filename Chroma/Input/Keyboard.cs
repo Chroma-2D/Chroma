@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Chroma.Input
 {
@@ -6,18 +7,23 @@ namespace Chroma.Input
     {
         private static readonly Dictionary<KeyCode, bool> _keyCodeStates;
         private static readonly Dictionary<ScanCode, bool> _scanCodeStates;
-
-        static Keyboard()
-        {
-            _keyCodeStates = new Dictionary<KeyCode, bool>();
-            _scanCodeStates = new Dictionary<ScanCode, bool>();
-        }
+        
+        public static IReadOnlyList<KeyCode> ActiveKeys =>
+            _keyCodeStates.Where(x => x.Value)
+                .Select(x => x.Key)
+                .ToList();
 
         public static bool IsKeyDown(KeyCode keyCode)
             => _keyCodeStates.ContainsKey(keyCode) && _keyCodeStates[keyCode];
 
         public static bool IsKeyDown(ScanCode scanCode)
             => _scanCodeStates.ContainsKey(scanCode) && _scanCodeStates[scanCode];
+        
+        static Keyboard()
+        {
+            _keyCodeStates = new Dictionary<KeyCode, bool>();
+            _scanCodeStates = new Dictionary<ScanCode, bool>();
+        }
 
         public static bool IsKeyUp(KeyCode keyCode) => !IsKeyDown(keyCode);
         public static bool IsKeyUp(ScanCode scanCode) => !IsKeyDown(scanCode);

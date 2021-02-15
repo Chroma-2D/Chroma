@@ -1,4 +1,5 @@
 ﻿using System;
+using Chroma.Diagnostics.Logging;
 using Chroma.Hardware;
 using Chroma.Input.Internal;
 using Chroma.Natives.SDL;
@@ -7,6 +8,7 @@ namespace Chroma.Input
 {
     public static class Controller
     {
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
         public static int DeviceCount => ControllerRegistry.Instance.DeviceCount;
 
         public static bool CanIgnoreAxisMotion(int playerIndex, ControllerAxis axis, short axisValue)
@@ -63,16 +65,6 @@ namespace Chroma.Input
                 return null;
 
             return SDL2.SDL_GameControllerName(controller.InstancePointer);
-        }
-
-        public static string GetMappings(int playerIndex)
-        {
-            var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
-
-            if (controller == null)
-                return null;
-
-            return SDL2.SDL_GameControllerMapping(controller.InstancePointer);
         }
 
         public static short GetAxisValue(int playerIndex, ControllerAxis axis)
@@ -133,6 +125,29 @@ namespace Chroma.Input
 
             var joystickInstance = SDL2.SDL_GameControllerGetJoystick(controller.InstancePointer);
             return (BatteryStatus)SDL2.SDL_JoystickCurrentPowerLevel(joystickInstance);
+        }
+
+
+        public static string RetrieveMapping(int playerIndex)
+        {
+            var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
+
+            if (controller == null)
+                return null;
+
+            return SDL2.SDL_GameControllerMapping(controller.InstancePointer);
+        }
+
+        public static void AddMapping(string controllerMapping)
+        {
+            if (string.IsNullOrEmpty(controllerMapping))
+            {
+                _log.Warning("Tried to add a null or empty controller mapping.");
+                return;
+            }
+
+            if (SDL2.SDL_GameControllerAddMapping(controllerMapping) < 0)
+                _log.Error($"Failed to add a controller mapping: {SDL2.SDL_GetError()}.");
         }
     }
 }

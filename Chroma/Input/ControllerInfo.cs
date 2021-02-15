@@ -9,16 +9,18 @@ namespace Chroma.Input
         internal IntPtr InstancePointer { get; }
         internal int InstanceId { get; }
 
+        public Guid Guid { get; }
         public int PlayerIndex { get; }
         public string Name { get; }
         public ProductInfo ProductInfo { get; }
         public Dictionary<ControllerAxis, ushort> DeadZones { get; }
 
-        internal ControllerInfo(IntPtr instancePointer, int instanceId, int playerIndex, string name, ProductInfo productInfo)
+        internal ControllerInfo(IntPtr instancePointer, int instanceId, Guid guid, int playerIndex, string name, ProductInfo productInfo)
         {
             InstancePointer = instancePointer;
             InstanceId = instanceId;
 
+            Guid = guid;
             PlayerIndex = playerIndex;
             Name = name;
             ProductInfo = productInfo;

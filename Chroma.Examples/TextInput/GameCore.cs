@@ -5,6 +5,7 @@ using Chroma;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Graphics;
 using Chroma.Graphics.TextRendering;
+using Chroma.Graphics.TextRendering.TrueType;
 using Chroma.Input;
 using Color = Chroma.Graphics.Color;
 

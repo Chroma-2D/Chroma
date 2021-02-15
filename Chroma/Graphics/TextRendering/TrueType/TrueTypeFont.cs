@@ -11,7 +11,7 @@ using Chroma.Natives.FreeType;
 using Chroma.Natives.FreeType.Native;
 using Chroma.Natives.SDL;
 
-namespace Chroma.Graphics.TextRendering
+namespace Chroma.Graphics.TextRendering.TrueType
 {
     public class TrueTypeFont : DisposableResource
     {

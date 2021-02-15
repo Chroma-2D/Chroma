@@ -1,4 +1,4 @@
-﻿namespace Chroma.Graphics.TextRendering
+﻿namespace Chroma.Graphics.TextRendering.TrueType
 {
     public enum HintingMode
     {

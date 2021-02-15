@@ -419,6 +419,12 @@ namespace Chroma.Windowing
                 DoTick(PerformanceCounter.Delta);
                 DoFixedTicks(PerformanceCounter.FixedDelta);
 
+                if (_renderContext.CurrentRenderTarget == IntPtr.Zero)
+                {
+                    Exists = false;
+                    break;
+                }
+
                 if (RenderSettings.AutoClearEnabled)
                     _renderContext.Clear(RenderSettings.AutoClearColor);
 
@@ -514,7 +520,9 @@ namespace Chroma.Windowing
             QuitRequested?.Invoke(this, e);
 
             if (!e.Cancel)
+            {
                 Exists = false;
+            }
         }
 
         private void DoTick(float delta)
@@ -544,6 +552,11 @@ namespace Chroma.Windowing
                 FixedUpdate?.Invoke(delta);
                 PerformanceCounter.Lag -= PerformanceCounter.FixedDelta;
             }
+        }
+
+        protected override void FreeManagedResources()
+        {
+            _renderContext.Shutdown();
         }
 
         protected override void FreeNativeResources()

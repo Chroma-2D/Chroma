@@ -16,7 +16,17 @@ namespace Chroma.Graphics
         internal List<BatchInfo> BatchBuffer { get; }
 
         internal Window Owner { get; }
-        internal IntPtr CurrentRenderTarget => TargetStack.Peek();
+
+        internal IntPtr CurrentRenderTarget
+        {
+            get
+            {
+                if (TargetStack.Count > 0)
+                    return TargetStack.Peek();
+
+                return IntPtr.Zero;
+            }
+        }
 
         internal Stack<IntPtr> TargetStack { get; }
 
@@ -31,18 +41,6 @@ namespace Chroma.Graphics
             TargetStack.Push(owner.RenderTargetHandle);
 
             BatchBuffer = new List<BatchInfo>();
-        }
-
-        public void WithCamera(Camera camera, Action drawingLogic)
-        {
-            if (camera == null)
-                throw new ArgumentNullException(nameof(camera), "Camera cannot be null.");
-
-            SDL_gpu.GPU_SetCamera(CurrentRenderTarget, ref camera.GpuCamera);
-
-            drawingLogic?.Invoke();
-
-            SDL_gpu.GPU_SetCamera(CurrentRenderTarget, IntPtr.Zero);
         }
 
         public void Clear(Color color)
@@ -275,6 +273,29 @@ namespace Chroma.Graphics
                 (SDL_gpu.GPU_BatchFlagEnum)format
             );
         }
+        
+        public void RenderTo(RenderTarget target, Action drawingLogic)
+        {
+            if (target == null)
+                throw new ArgumentNullException(nameof(target),
+                    "You can't just draw an image to a null render target...");
+
+            TargetStack.Push(target.TargetHandle);
+            drawingLogic?.Invoke();
+            TargetStack.Pop();
+        }
+        
+        public void WithCamera(Camera camera, Action drawingLogic)
+        {
+            if (camera == null)
+                throw new ArgumentNullException(nameof(camera), "Camera cannot be null.");
+
+            SDL_gpu.GPU_SetCamera(CurrentRenderTarget, ref camera.GpuCamera);
+
+            drawingLogic?.Invoke();
+
+            SDL_gpu.GPU_SetCamera(CurrentRenderTarget, IntPtr.Zero);
+        }
 
         public void DrawTexture(Texture texture, Vector2 position, Vector2 scale, Vector2 origin, float rotation)
         {
@@ -315,17 +336,6 @@ namespace Chroma.Graphics
                 scale.X,
                 scale.Y
             );
-        }
-
-        public void RenderTo(RenderTarget target, Action drawingLogic)
-        {
-            if (target == null)
-                throw new ArgumentNullException(nameof(target),
-                    "You can't just draw an image to a null render target...");
-
-            TargetStack.Push(target.TargetHandle);
-            drawingLogic?.Invoke();
-            TargetStack.Pop();
         }
 
         public void DrawString(BitmapFont font, string text, Vector2 position,
@@ -514,5 +524,8 @@ namespace Chroma.Graphics
                 }
             );
         }
+
+        internal void Shutdown()
+            => TargetStack.Clear();
     }
 }

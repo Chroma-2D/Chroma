@@ -27,6 +27,8 @@ namespace Chroma.Graphics.TextRendering.TrueType
         internal FT_FaceRec FaceRec { get; private set; }
         internal byte[] FaceData { get; private set; }
 
+        public static TrueTypeFont Default => EmbeddedAssets.DefaultFont;
+        
         public string Alphabet { get; }
 
         public Dictionary<char, TrueTypeGlyph> RenderInfo { get; private set; }

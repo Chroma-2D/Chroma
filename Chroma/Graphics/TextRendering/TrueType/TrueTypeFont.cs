@@ -31,8 +31,8 @@ namespace Chroma.Graphics.TextRendering.TrueType
         
         public string Alphabet { get; }
 
-        public Dictionary<char, TrueTypeGlyph> RenderInfo { get; private set; }
         public Texture Atlas { get; private set; }
+        public Dictionary<char, TrueTypeGlyph> RenderInfo { get; private set; }
 
         public string FileName { get; }
 
@@ -146,18 +146,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
             => RenderInfo.ContainsKey(c);
 
         public bool HasGlyph(char c)
-        {
-            try
-            {
-                return FT.FT_Get_Char_Index(Face, c) != 0;
-            }
-            catch (AccessViolationException ave)
-            {
-                Console.WriteLine(ave);
-            }
-
-            return false;
-        }
+            => FT.FT_Get_Char_Index(Face, c) != 0;
 
         public Size Measure(string text)
         {

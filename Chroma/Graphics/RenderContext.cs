@@ -431,6 +431,9 @@ namespace Chroma.Graphics
                 if (!font.HasGlyph(c))
                     continue;
 
+                if (!font.CanRenderGlyph(c))
+                    continue;
+
                 var info = font.RenderInfo[c];
 
                 var srcRect = new SDL_gpu.GPU_Rect

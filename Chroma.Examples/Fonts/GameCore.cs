@@ -64,7 +64,7 @@ namespace Fonts
                 Color.Red);
 
             var plasticBagBmfStr = "This is a test of 16px high Plastic Bag Bitmap Font.\n" +
-                      "And here's its line break. 1234567890-=!@#$aA";
+                      "And here's its line break.\n1234567890-=!@#$aA";
             context.DrawString(
                 _plasticBagBmf,
                 plasticBagBmfStr,

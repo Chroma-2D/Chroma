@@ -22,12 +22,21 @@
     <Title>Chroma Framework</Title>
     <Description>2D Game Framework which *doesn't* try so hard to resemble XNA</Description>
     <PackageId>Chroma</PackageId>
-    <Version>0.37.3</Version>
+    <Version>0.37.4</Version>
     <Author>Ciastex</Author>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Ciastex/Chroma</RepositoryUrl>
+    <PackageIcon>nugeticon.png</PackageIcon>
     <PackageTags>gamedev;engine;2d;chroma;framework;sdl;opengl;game;xna;netcore</PackageTags>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <None Include="Resources\nugeticon.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="5.0.0" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Chroma.Natives\Chroma.Natives.csproj">
@@ -52,9 +61,5 @@
     <EmbeddedResource Include="Resources\boot\crlogo.png" />
     <EmbeddedResource Include="Resources\boot\crsub.png" />
     <EmbeddedResource Include="Resources\boot\crwheel.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="5.0.0" />
   </ItemGroup>
 </Project>

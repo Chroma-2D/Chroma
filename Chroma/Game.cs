@@ -21,7 +21,8 @@ namespace Chroma
 
         private readonly Log _log = LogManager.GetForCurrentAssembly();
 
-
+        internal static bool WasConstructed { get; private set; }
+        
         public int FixedTimeStepTarget
         {
             get => _fixedTimeStepTarget;
@@ -33,13 +34,10 @@ namespace Chroma
             }
         }
 
-        internal static bool WasConstructed { get; private set; }
-
         public GameStartupOptions StartupOptions { get; }
         public Window Window { get; private set; }
         public GraphicsManager Graphics { get; private set; }
         public AudioManager Audio => AudioManager.Instance;
-
         public IContentProvider Content { get; protected set; }
 
         public Game(GameStartupOptions options = null)
@@ -78,6 +76,7 @@ namespace Chroma
             {
                 LoadContent();
             }
+            
             Window.Run();
         }
 

@@ -13,11 +13,11 @@ using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics.TextRendering.TrueType
 {
-    public class TrueTypeFont : DisposableResource
+    public class TrueTypeFont : DisposableResource, IFontProvider<TrueTypeGlyph>
     {
         private Log Log => LogManager.GetForCurrentAssembly();
 
-        private int _size;
+        private int _height;
         private bool _hintingEnabled;
         private bool _forceAutoHinting;
         private HintingMode _hintingMode;
@@ -29,19 +29,19 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
         public static TrueTypeFont Default => EmbeddedAssets.DefaultFont;
         
-        public string Alphabet { get; }
+        public IReadOnlyCollection<char> Alphabet { get; private set; }
 
         public Texture Atlas { get; private set; }
-        public Dictionary<char, TrueTypeGlyph> RenderInfo { get; private set; }
+        public Dictionary<char, TrueTypeGlyph> Glyphs { get; private set; }
 
         public string FileName { get; }
 
-        public int Size
+        public int Height
         {
-            get => _size;
+            get => _height;
             set
             {
-                _size = value;
+                _height = value;
 
                 ResizeFont();
                 RebuildAtlas();
@@ -95,8 +95,8 @@ namespace Chroma.Graphics.TextRendering.TrueType
         public TrueTypeFont(string fileName, int size, string alphabet = null)
         {
             FileName = fileName;
-            Alphabet = alphabet;
-            _size = size; // do not use property here
+            Alphabet = alphabet?.ToCharArray();
+            _height = size; // do not use property here
 
             if (!File.Exists(fileName))
                 throw new FileNotFoundException("Couldn't find the font at the provided path.", fileName);
@@ -109,8 +109,8 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
         public TrueTypeFont(Stream stream, int size, string alphabet = null)
         {
-            Alphabet = alphabet;
-            _size = size; // do not use property here to avoid premature atlas building
+            Alphabet = alphabet?.ToCharArray();
+            _height = size; // do not use property here to avoid premature atlas building
 
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream), "Stream cannot be null.");
@@ -143,7 +143,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
         }
 
         public bool CanRenderGlyph(char c)
-            => RenderInfo.ContainsKey(c);
+            => Glyphs.ContainsKey(c);
 
         public bool HasGlyph(char c)
             => FT.FT_Get_Char_Index(Face, c) != 0;
@@ -169,7 +169,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
                 if (!HasGlyph(c))
                     continue;
 
-                var info = RenderInfo[c];
+                var info = Glyphs[c];
                 width += (int)info.Advance.X;
             }
 
@@ -179,11 +179,14 @@ namespace Chroma.Graphics.TextRendering.TrueType
             return new Size(maxWidth, maxHeight);
         }
 
+        public Texture GetTexture(char c = (char)0)
+            => Atlas;
+
         private void InitializeFontData()
         {
             ResizeFont();
 
-            RenderInfo = new Dictionary<char, TrueTypeGlyph>();
+            Glyphs = new Dictionary<char, TrueTypeGlyph>();
 
             _hintingEnabled = true;
             _forceAutoHinting = true;
@@ -194,7 +197,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
         private void ResizeFont()
         {
-            FT.FT_Set_Pixel_Sizes(Face, 0, (uint)Size);
+            FT.FT_Set_Pixel_Sizes(Face, 0, (uint)Height);
 
             FaceRec = Marshal.PtrToStructure<FT_FaceRec>(Face);
 
@@ -210,17 +213,17 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
         private void RebuildAtlas()
         {
-            if (RenderInfo.Count > 0 && Atlas != null)
+            if (Glyphs.Count > 0 && Atlas != null)
                 InvalidateFont();
 
-            Atlas = string.IsNullOrEmpty(Alphabet) 
+            Atlas = (Alphabet == null)
                 ? GenerateTextureAtlas(1..512) 
                 : GenerateTextureAtlas(Alphabet);
         }
 
         private void InvalidateFont()
         {
-            RenderInfo.Clear();
+            Glyphs.Clear();
 
             Atlas.Dispose();
             Atlas = null;
@@ -233,6 +236,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
             for (var c = (char)glyphRange.Start.Value; c < (char)glyphRange.End.Value; c++)
                 glyphs.Add(c);
 
+            Alphabet = glyphs;
             return GenerateTextureAtlas(glyphs);
         }
 
@@ -306,7 +310,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
                 RenderGlyphToBitmap(bmp, penX, penY, texWidth, pixels);
                 var glyph = BuildGlyphInfo(bmp, penX, penY);
 
-                RenderInfo.Add(c, glyph);
+                Glyphs.Add(c, glyph);
 
                 if (glyph.Bearing.Y > MaxBearing)
                     MaxBearing = (int)glyph.Bearing.Y;

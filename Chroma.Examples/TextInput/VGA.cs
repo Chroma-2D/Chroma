@@ -57,7 +57,7 @@ namespace TextInput
             _ttf = ttf;
 
             ColSize = _ttf.Measure("A").Width;
-            RowSize = _ttf.Size;
+            RowSize = _ttf.Height;
 
             TotalCols = window.Size.Width / ColSize;
             TotalRows = window.Size.Height / RowSize;
@@ -168,7 +168,7 @@ namespace TextInput
                 context.DrawString(
                     _ttf,
                     str,
-                    new Vector2(0, y * _ttf.Size),
+                    new Vector2(0, y * _ttf.Height),
                     (c, i, p, g) =>
                     {
                         return new GlyphTransformData(p)

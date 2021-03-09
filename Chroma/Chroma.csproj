@@ -22,7 +22,7 @@
     <Title>Chroma Framework</Title>
     <Description>2D Game Framework which *doesn't* try so hard to resemble XNA</Description>
     <PackageId>Chroma</PackageId>
-    <Version>0.37.4</Version>
+    <Version>0.38.0</Version>
     <Author>Ciastex</Author>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Ciastex/Chroma</RepositoryUrl>
@@ -31,7 +31,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <None Include="Resources\nugeticon.png" Pack="true" PackagePath="\"/>
+    <None Include="Resources\nugeticon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>

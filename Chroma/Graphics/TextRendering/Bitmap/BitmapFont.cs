@@ -9,7 +9,7 @@ using Chroma.MemoryManagement;
 
 namespace Chroma.Graphics.TextRendering.Bitmap
 {
-    public class BitmapFont : DisposableResource
+    public class BitmapFont : DisposableResource, IFontProvider<BitmapGlyph>
     {
         private readonly List<string> _lines;
         private readonly Dictionary<string, Action> _parsers;
@@ -28,8 +28,12 @@ namespace Chroma.Graphics.TextRendering.Bitmap
         public bool UseKerning { get; set; }
 
         public List<BitmapFontPage> Pages { get; }
-        public Dictionary<char, BitmapGlyph> Glyphs { get; }
         public List<BitmapFontKerningPair> Kernings { get; }
+        
+        public Dictionary<char, BitmapGlyph> Glyphs { get; }
+
+        public int Height => Info.Size;
+        public int LineSpacing => Common.LineHeight;
 
         public BitmapFont(string fileName)
         {
@@ -93,6 +97,30 @@ namespace Chroma.Graphics.TextRendering.Bitmap
                 maxW = w;
 
             return new Size(maxW, h);
+        }
+
+        public Texture GetTexture(char c)
+        {
+            if (!Pages.Any())
+                return null;
+
+            var glyph = Glyphs.FirstOrDefault(x => x.Key == c).Value;
+
+            if (glyph == null)
+                return null;
+
+            return Pages[glyph.Page].Texture;
+        }
+
+        public Texture GetTexture(int page)
+        {
+            if (!Pages.Any())
+                return null;
+
+            if (page < 0 || page >= Pages.Count)
+                throw new ArgumentOutOfRangeException(nameof(page), "Page number invalid.");
+            
+            return Pages[page].Texture;
         }
 
         protected override void FreeManagedResources()

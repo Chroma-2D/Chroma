@@ -121,8 +121,9 @@ namespace Chroma.Graphics.TextRendering.TrueType
             // needs to be class-scope property or field
             // because it gets rekt by GC when ran without
             // debugger
-            FaceData = ms.ToArray();
-
+            FaceData = ms.GetBuffer();
+            IntPtr facePtr;
+            
             unsafe
             {
                 fixed (byte* fontPtr = &FaceData[0])
@@ -132,21 +133,17 @@ namespace Chroma.Graphics.TextRendering.TrueType
                         new IntPtr(fontPtr),
                         FaceData.Length,
                         0,
-                        out var facePtr
+                        out facePtr
                     );
-
-                    Face = facePtr;
                 }
             }
 
+            Face = facePtr;
             InitializeFontData();
         }
 
-        public bool CanRenderGlyph(char c)
-            => Glyphs.ContainsKey(c);
-
         public bool HasGlyph(char c)
-            => FT.FT_Get_Char_Index(Face, c) != 0;
+            => Glyphs.ContainsKey(c);
 
         public Size Measure(string text)
         {
@@ -239,6 +236,9 @@ namespace Chroma.Graphics.TextRendering.TrueType
             Alphabet = glyphs;
             return GenerateTextureAtlas(glyphs);
         }
+        
+        private bool TtfContainsGlyph(char c)
+            => FT.FT_Get_Char_Index(Face, c) != 0;
 
         private unsafe Texture GenerateTextureAtlas(IEnumerable<char> glyphs)
         {
@@ -265,12 +265,12 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
             foreach (var c in enumerable)
             {
-                if (!HasGlyph(c))
+                if (!TtfContainsGlyph(c))
                 {
                     continue;
                 }
 
-                if (CanRenderGlyph(c))
+                if (HasGlyph(c))
                 {
                     Log.Warning($"The font {FileName} has already generated the glyph for \\u{(int)c:X4}");
                     continue;

@@ -43,7 +43,12 @@ namespace TextInput
 
         protected override void LoadContent()
         {
-            _font = Content.Load<TrueTypeFont>("Fonts/dos8x14.ttf", 16);
+            using var fs = new FileStream(
+                Path.Combine(AppContext.BaseDirectory, "../../../../_common/Fonts/dos8x14.ttf"),
+                FileMode.Open
+            );
+
+            _font = new TrueTypeFont(fs, 16);
             _font.ForceAutoHinting = true;
 
             Window.SizeChanged += (sender, args) => { InitializeDisplay(); };

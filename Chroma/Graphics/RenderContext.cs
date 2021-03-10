@@ -429,10 +429,7 @@ namespace Chroma.Graphics
                 }
 
                 if (!font.HasGlyph(c))
-                    continue;
-
-                if (!font.CanRenderGlyph(c))
-                    continue;
+                     continue;
 
                 var info = font.Glyphs[c];
 

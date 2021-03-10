@@ -11,11 +11,11 @@ namespace Chroma.Graphics.TextRendering.Bitmap
 {
     public class BitmapFont : DisposableResource, IFontProvider<BitmapGlyph>
     {
+        private readonly Log _log = LogManager.GetForCurrentAssembly();
+        
         private readonly List<string> _lines;
         private readonly Dictionary<string, Action> _parsers;
         private BitmapFontLexer _lexer;
-
-        private Log Log => LogManager.GetForCurrentAssembly();
 
         public string FileName { get; }
 
@@ -125,7 +125,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
 
         protected override void FreeManagedResources()
         {
-            Log.Debug($"Disposing {Info.FaceName}.");
+            _log.Debug($"Disposing {Info.FaceName}.");
 
             foreach (var page in Pages)
                 page.Texture.Dispose();
@@ -151,11 +151,11 @@ namespace Chroma.Graphics.TextRendering.Bitmap
                 }
                 else
                 {
-                    Log.Warning($"Unexpected BMFont block '{verb}'");
+                    _log.Warning($"Unexpected BMFont block '{verb}'");
                 }
             }
 
-            Log.Debug($"Expected {DeclaredCharCount}, parsed: {Glyphs.Count}.");
+            _log.Debug($"Expected {DeclaredCharCount}, parsed: {Glyphs.Count}.");
         }
 
         private void ParseFontInformation()
@@ -215,7 +215,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
                         break;
 
                     default:
-                        Log.Warning($"Unexpected info parameter '{_lexer.CurrentKey}'");
+                        _log.Warning($"Unexpected info parameter '{_lexer.CurrentKey}'");
                         break;
                 }
 
@@ -273,7 +273,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
                         break;
 
                     default:
-                        Log.Warning($"Unexpected common parameter '{_lexer.CurrentKey}'.");
+                        _log.Warning($"Unexpected common parameter '{_lexer.CurrentKey}'.");
                         break;
                 }
 
@@ -303,7 +303,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
                         break;
 
                     default:
-                        Log.Warning($"Unexpected page definition parameter '{_lexer.CurrentKey}'.");
+                        _log.Warning($"Unexpected page definition parameter '{_lexer.CurrentKey}'.");
                         break;
                 }
 
@@ -317,7 +317,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
             }
             else
             {
-                Log.Warning("Failed to parse page definition. Invalid page definition line?");
+                _log.Warning("Failed to parse page definition. Invalid page definition line?");
             }
         }
 
@@ -332,7 +332,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
                         break;
 
                     default:
-                        Log.Warning($"Unexpected char count declaration paramter '{_lexer.CurrentKey}'.");
+                        _log.Warning($"Unexpected char count declaration paramter '{_lexer.CurrentKey}'.");
                         break;
                 }
 
@@ -390,7 +390,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
                         break;
 
                     default:
-                        Log.Warning($"Unexpected glyph definition parameter '{_lexer.CurrentKey}'.");
+                        _log.Warning($"Unexpected glyph definition parameter '{_lexer.CurrentKey}'.");
                         break;
                 }
 
@@ -412,7 +412,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
                         break;
 
                     default:
-                        Log.Warning($"Unexpected kerning count parameter '{_lexer.CurrentKey}'.");
+                        _log.Warning($"Unexpected kerning count parameter '{_lexer.CurrentKey}'.");
                         break;
                 }
 
@@ -442,7 +442,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
                         break;
 
                     default:
-                        Log.Warning($"Unexpected kerning info parameter '{_lexer.CurrentKey}'.");
+                        _log.Warning($"Unexpected kerning info parameter '{_lexer.CurrentKey}'.");
                         break;
                 }
 

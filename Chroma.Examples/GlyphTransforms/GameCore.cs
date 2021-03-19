@@ -33,7 +33,7 @@ namespace GlyphTransforms
             context.DrawString(
                 "This text should be colored like a rainbow UwU",
                 new Vector2(8),
-                (c, i, p, g) =>
+                (c, i, p) =>
                 {
                     return new GlyphTransformData
                     {
@@ -46,7 +46,7 @@ namespace GlyphTransforms
             context.DrawString(
                 "This text should be wavy!",
                 new Vector2(64),
-                (c, i, p, g) =>
+                (_, i, p) =>
                 {
                     var offsetY = 3 * MathF.Sin(_angle + (i * 4));
                     return new GlyphTransformData
@@ -59,7 +59,7 @@ namespace GlyphTransforms
             context.DrawString(
                 "This text should be circley!",
                 new Vector2(200),
-                (c, i, p, g) =>
+                (_, i, _) =>
                 {
                     // this example uses Bezier nuget library
                     // it's excellent for geometry calculations.

@@ -27,8 +27,9 @@ namespace Chroma.Graphics.TextRendering.TrueType
         internal FT_FaceRec FaceRec { get; private set; }
         internal byte[] FaceData { get; private set; }
 
+        public string FamilyName => Marshal.PtrToStringAnsi(FaceRec.family_name);
         public static TrueTypeFont Default => EmbeddedAssets.DefaultFont;
-        
+
         public IReadOnlyCollection<char> Alphabet { get; private set; }
 
         public Texture Atlas { get; private set; }
@@ -51,7 +52,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
         public bool UseKerning { get; set; } = true;
         
         public int ScaledLineSpacing { get; private set; }
-        public int LineSpacing { get; private set; }
+        public int LineSpacing => ScaledLineSpacing;
 
         public int Ascender { get; private set; }
         public int Descender { get; private set; }
@@ -179,6 +180,30 @@ namespace Chroma.Graphics.TextRendering.TrueType
         public Texture GetTexture(char c = (char)0)
             => Atlas;
 
+        public int GetHorizontalAdvance(char c)
+            => (int)Glyphs[c].Advance.X;
+
+        public Rectangle GetGlyphBounds(char c)
+        {
+            if (!HasGlyph(c))
+                return Rectangle.Empty;
+
+            return new(
+                (int)Glyphs[c].Position.X,
+                (int)Glyphs[c].Position.Y,
+                (int)Glyphs[c].BitmapSize.X,
+                (int)Glyphs[c].BitmapSize.Y
+            );
+        }
+
+        public Vector2 GetRenderOffsets(char c)
+        {
+            return new(
+                Glyphs[c].Bearing.X,
+                -Glyphs[c].Bearing.Y + MaxBearing
+            );
+        }
+
         private void InitializeFontData()
         {
             ResizeFont();
@@ -201,10 +226,10 @@ namespace Chroma.Graphics.TextRendering.TrueType
             unsafe
             {
                 ScaledLineSpacing = FaceRec.size->metrics.height.ToInt32() >> 6;
-                LineSpacing = FaceRec.height >> 6;
+                // LineSpacing = FaceRec.height >> 6;
 
                 Ascender = FaceRec.size->metrics.ascender.ToInt32() >> 6;
-                Descender = (FaceRec.descender >> 6);
+                Descender = FaceRec.size->metrics.descender.ToInt32() >> 6;
             }
         }
 
@@ -324,10 +349,10 @@ namespace Chroma.Graphics.TextRendering.TrueType
             return tex;
         }
 
-        public Vector2 GetKerning(char prev, char current)
+        public int GetKerning(char left, char right)
         {
-            FT.FT_Get_Kerning(Face, prev, current, 0, out var kerning);
-            return new Vector2(kerning.x.ToInt32() >> 6, kerning.y.ToInt32() >> 6);
+            FT.FT_Get_Kerning(Face, left, right, 0, out var kerning);
+            return kerning.x.ToInt32() >> 6;
         }
 
         private unsafe TrueTypeGlyph BuildGlyphInfo(FT_Bitmap bmp, int penX, int penY)

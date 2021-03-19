@@ -4,8 +4,6 @@ using System.Drawing;
 using System.Numerics;
 using Chroma.Graphics.Batching;
 using Chroma.Graphics.TextRendering;
-using Chroma.Graphics.TextRendering.Bitmap;
-using Chroma.Graphics.TextRendering.TrueType;
 using Chroma.Natives.SDL;
 using Chroma.Windowing;
 
@@ -328,90 +326,14 @@ namespace Chroma.Graphics
             TargetStack.Pop();
         }
 
-        public void DrawString(BitmapFont font, string text, Vector2 position,
-            BitmapGlyphTransform glyphTransform = null)
-        {
-            var x = position.X;
-            var y = position.Y;
-
-            for (var i = 0; i < text.Length; i++)
-            {
-                var c = text[i];
-
-                if (c == '\n')
-                {
-                    x = position.X;
-                    y += font.Common.LineHeight + font.Info.Spacing.Y;
-
-                    continue;
-                }
-
-                if (!font.HasGlyph(c))
-                    continue;
-
-                var glyph = font.Glyphs[c];
-
-                var rect = new SDL_gpu.GPU_Rect
-                {
-                    x = glyph.BitmapX,
-                    y = glyph.BitmapY,
-                    w = glyph.Width,
-                    h = glyph.Height
-                };
-
-                var pageTexture = font.Pages[glyph.Page].Texture;
-
-                var kerningAmount = 0f;
-                if (i != 0 && font.UseKerning)
-                {
-                    var kerning = font.GetKerning(text[i - 1], text[i]);
-
-                    if (kerning != null)
-                        kerningAmount = kerning.Value.Amount;
-                }
-
-                var pos = new Vector2(
-                    x + glyph.OffsetX + kerningAmount,
-                    y + glyph.OffsetY
-                );
-
-                var transform = new GlyphTransformData(pos);
-
-                if (glyphTransform != null)
-                    transform = glyphTransform(c, i, pos, glyph);
-
-                SDL_gpu.GPU_SetColor(pageTexture.ImageHandle, Color.ToSdlColor(transform.Color));
-                SDL_gpu.GPU_BlitTransformX(
-                    pageTexture.ImageHandle,
-                    ref rect,
-                    CurrentRenderTarget,
-                    transform.Position.X,
-                    transform.Position.Y,
-                    transform.Origin.X,
-                    transform.Origin.Y,
-                    transform.Rotation,
-                    transform.Scale.X,
-                    transform.Scale.Y
-                );
-                SDL_gpu.GPU_SetColor(pageTexture.ImageHandle, Color.ToSdlColor(Color.White));
-
-                x += glyph.HorizontalAdvance;
-            }
-        }
-
-        public void DrawString(BitmapFont font, string text, Vector2 position, Color color)
-            => DrawString(font, text, position, (_, _, p, _) => new GlyphTransformData(p) {Color = color});
-
-        public void DrawString(string text, Vector2 position,
-            TrueTypeFontGlyphTransform perCharTransform = null)
+        public void DrawString(string text, Vector2 position, GlyphTransform perCharTransform = null)
             => DrawString(EmbeddedAssets.DefaultFont, text, position, perCharTransform);
 
         public void DrawString(string text, Vector2 position, Color color)
             => DrawString(EmbeddedAssets.DefaultFont, text, position,
-                (_, _, p, _) => new GlyphTransformData(p) {Color = color});
+                (_, _, p) => new GlyphTransformData(p) {Color = color});
 
-        public void DrawString(TrueTypeFont font, string text, Vector2 position,
-            TrueTypeFontGlyphTransform glyphTransform = null)
+        public void DrawString(IFontProvider font, string text, Vector2 position, GlyphTransform glyphTransform = null)
         {
             var x = position.X;
             var y = position.Y;
@@ -423,22 +345,25 @@ namespace Chroma.Graphics
                 if (c == '\n')
                 {
                     x = position.X;
-                    y += font.ScaledLineSpacing;
+                    y += font.LineSpacing;
 
                     continue;
                 }
 
                 if (!font.HasGlyph(c))
-                     continue;
+                    continue;
 
-                var info = font.Glyphs[c];
+                var bounds = font.GetGlyphBounds(c);
+                var offsets = font.GetRenderOffsets(c);
+                var advance = font.GetHorizontalAdvance(c);
+                var texture = font.GetTexture(c);
 
                 var srcRect = new SDL_gpu.GPU_Rect
                 {
-                    x = info.Position.X,
-                    y = info.Position.Y,
-                    w = info.BitmapSize.X,
-                    h = info.BitmapSize.Y
+                    x = bounds.X,
+                    y = bounds.Y,
+                    w = bounds.Width,
+                    h = bounds.Height
                 };
 
                 // info.Size.X / 2 and info.Size.Y / 2
@@ -449,24 +374,24 @@ namespace Chroma.Graphics
                 // 12 apr 2020: fixed by setting Texture snapping mode to
                 // TextureSnappingMode.None by default, along with
                 // defaulting the anchor to 0.
-                var xPos = x + info.Bearing.X;
-                var yPos = y - info.Bearing.Y + font.MaxBearing;
+                var xPos = x + offsets.X;
+                var yPos = y + offsets.Y;
 
                 if (font.UseKerning && i != 0)
                 {
                     var kerning = font.GetKerning(text[i - 1], text[i]);
-                    xPos += kerning.X;
+                    xPos += kerning;
                 }
 
                 var pos = new Vector2(xPos, yPos);
                 var transform = new GlyphTransformData(pos);
 
                 if (glyphTransform != null)
-                    transform = glyphTransform(c, i, pos, info);
+                    transform = glyphTransform(c, i, pos);
 
-                SDL_gpu.GPU_SetColor(font.Atlas.ImageHandle, Color.ToSdlColor(transform.Color));
+                SDL_gpu.GPU_SetColor(texture.ImageHandle, Color.ToSdlColor(transform.Color));
                 SDL_gpu.GPU_BlitTransformX(
-                    font.Atlas.ImageHandle,
+                    texture.ImageHandle,
                     ref srcRect,
                     CurrentRenderTarget,
                     transform.Position.X,
@@ -477,14 +402,14 @@ namespace Chroma.Graphics
                     transform.Scale.X,
                     transform.Scale.Y
                 );
-                SDL_gpu.GPU_SetColor(font.Atlas.ImageHandle, Color.ToSdlColor(Color.White));
+                SDL_gpu.GPU_SetColor(texture.ImageHandle, Color.ToSdlColor(Color.White));
 
-                x += info.Advance.X;
+                x += advance;
             }
         }
 
-        public void DrawString(TrueTypeFont font, string text, Vector2 position, Color color)
-            => DrawString(font, text, position, (_, _, p, _) => new GlyphTransformData(p) {Color = color});
+        public void DrawString(IFontProvider font, string text, Vector2 position, Color color)
+            => DrawString(font, text, position, (_, _, p) => new GlyphTransformData(p) {Color = color});
 
         public void DrawBatch(DrawOrder order = DrawOrder.BackToFront, bool discardBatchAfterUse = true)
         {

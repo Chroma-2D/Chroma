@@ -12,11 +12,12 @@ namespace Chroma.Graphics.TextRendering.Bitmap
     public class BitmapFont : DisposableResource, IFontProvider<BitmapGlyph>
     {
         private readonly Log _log = LogManager.GetForCurrentAssembly();
-        
+
         private readonly List<string> _lines;
         private readonly Dictionary<string, Action> _parsers;
         private BitmapFontLexer _lexer;
 
+        public string FamilyName => Info.FaceName;
         public string FileName { get; }
 
         public BitmapFontInfo Info { get; private set; }
@@ -29,7 +30,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
 
         public List<BitmapFontPage> Pages { get; }
         public List<BitmapFontKerningPair> Kernings { get; }
-        
+
         public Dictionary<char, BitmapGlyph> Glyphs { get; }
 
         public int Height => Info.Size;
@@ -63,14 +64,14 @@ namespace Chroma.Graphics.TextRendering.Bitmap
         public bool HasGlyph(char c)
             => Glyphs.ContainsKey(c);
 
-        public BitmapFontKerningPair? GetKerning(char first, char second)
-            => Kernings.FirstOrDefault(x => x.First == first && x.Second == second);
+        public int GetKerning(char first, char second)
+            => Kernings.FirstOrDefault(x => x.First == first && x.Second == second).Amount;
 
         public Size Measure(string s)
         {
             var maxW = 0;
             var w = 0;
-            var h = Common.LineHeight;
+            var h = LineSpacing;
 
             for (var i = 0; i < s.Length; i++)
             {
@@ -78,7 +79,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
 
                 if (c == '\n')
                 {
-                    h += Common.LineHeight;
+                    h += LineSpacing;
 
                     if (w > maxW)
                         maxW = w;
@@ -104,12 +105,44 @@ namespace Chroma.Graphics.TextRendering.Bitmap
             if (!Pages.Any())
                 return null;
 
+            if (!HasGlyph(c))
+                return null;
+            
             var glyph = Glyphs.FirstOrDefault(x => x.Key == c).Value;
 
             if (glyph == null)
                 return null;
 
             return Pages[glyph.Page].Texture;
+        }
+
+        public Rectangle GetGlyphBounds(char c)
+        {
+            if (!HasGlyph(c))
+                return Rectangle.Empty;
+
+            return new(
+                Glyphs[c].BitmapX,
+                Glyphs[c].BitmapY,
+                Glyphs[c].Width,
+                Glyphs[c].Height
+            );
+        }
+
+        public Vector2 GetRenderOffsets(char c)
+        {
+            if (!HasGlyph(c))
+                return Vector2.Zero;
+
+            return new(Glyphs[c].OffsetX, Glyphs[c].OffsetY);
+        }
+
+        public int GetHorizontalAdvance(char c)
+        {
+            if (!HasGlyph(c))
+                return 0;
+
+            return Glyphs[c].HorizontalAdvance;
         }
 
         public Texture GetTexture(int page)
@@ -119,7 +152,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
 
             if (page < 0 || page >= Pages.Count)
                 throw new ArgumentOutOfRangeException(nameof(page), "Page number invalid.");
-            
+
             return Pages[page].Texture;
         }
 

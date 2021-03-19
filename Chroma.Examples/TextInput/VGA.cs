@@ -169,7 +169,7 @@ namespace TextInput
                     _ttf,
                     str,
                     new Vector2(0, y * _ttf.Height),
-                    (c, i, p, g) =>
+                    (c, i, p) =>
                     {
                         return new GlyphTransformData(p)
                         {

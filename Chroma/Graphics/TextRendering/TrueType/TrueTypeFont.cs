@@ -13,29 +13,31 @@ using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics.TextRendering.TrueType
 {
-    public class TrueTypeFont : DisposableResource, IFontProvider<TrueTypeGlyph>
+    public class TrueTypeFont : DisposableResource, IFontProvider
     {
-        private Log Log => LogManager.GetForCurrentAssembly();
+        private readonly Log _log = LogManager.GetForCurrentAssembly();
 
         private int _height;
         private bool _hintingEnabled;
         private bool _forceAutoHinting;
         private HintingMode _hintingMode;
+        private IntPtr _facePtr;
+        private int _maxBearing;
 
         internal static FreeTypeLibrary Library { get; }
-        internal IntPtr Face { get; }
-        internal FT_FaceRec FaceRec { get; private set; }
-        internal byte[] FaceData { get; private set; }
 
-        public string FamilyName => Marshal.PtrToStringAnsi(FaceRec.family_name);
+        internal FT_FaceRec FaceRec { get; private set; }
+        internal byte[] TtfData { get; private set; }
+        internal Dictionary<char, TrueTypeGlyph> Glyphs { get; } = new();
+
         public static TrueTypeFont Default => EmbeddedAssets.DefaultFont;
 
+        public string FamilyName => Marshal.PtrToStringAnsi(FaceRec.family_name);
         public IReadOnlyCollection<char> Alphabet { get; private set; }
-
         public Texture Atlas { get; private set; }
-        public Dictionary<char, TrueTypeGlyph> Glyphs { get; private set; }
 
-        public string FileName { get; }
+        public bool IsKerningEnabled { get; set; } = true;
+        public int LineSpacing { get; private set; }
 
         public int Height
         {
@@ -48,16 +50,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
                 RebuildAtlas();
             }
         }
-
-        public bool UseKerning { get; set; } = true;
         
-        public int ScaledLineSpacing { get; private set; }
-        public int LineSpacing => ScaledLineSpacing;
-
-        public int Ascender { get; private set; }
-        public int Descender { get; private set; }
-        public int MaxBearing { get; private set; }
-
         public bool ForceAutoHinting
         {
             get => _forceAutoHinting;
@@ -93,53 +86,39 @@ namespace Chroma.Graphics.TextRendering.TrueType
             Library = new FreeTypeLibrary();
         }
 
-        public TrueTypeFont(string fileName, int size, string alphabet = null)
+        public TrueTypeFont(string fileName, int height, string alphabet = null)
+            : this(File.OpenRead(fileName), height, alphabet)
         {
-            FileName = fileName;
-            Alphabet = alphabet?.ToCharArray();
-            _height = size; // do not use property here
-
-            if (!File.Exists(fileName))
-                throw new FileNotFoundException("Couldn't find the font at the provided path.", fileName);
-
-            FT.FT_New_Face(Library.Native, fileName, 0, out var facePtr);
-            Face = facePtr;
-
-            InitializeFontData();
         }
 
-        public TrueTypeFont(Stream stream, int size, string alphabet = null)
+        public TrueTypeFont(Stream stream, int height, string alphabet = null)
         {
-            Alphabet = alphabet?.ToCharArray();
-            _height = size; // do not use property here to avoid premature atlas building
-
             if (stream == null)
-                throw new ArgumentNullException(nameof(stream), "Stream cannot be null.");
+                throw new ArgumentNullException(nameof(stream), "TTF stream cannot be null.");
 
-            using var ms = new MemoryStream();
-            stream.CopyTo(ms);
+            Alphabet = alphabet?.ToCharArray();
+            _height = height; // do not use property here to avoid premature atlas building
 
-            // needs to be class-scope property or field
-            // because it gets rekt by GC when ran without
-            // debugger
-            FaceData = ms.GetBuffer();
-            IntPtr facePtr;
-            
-            unsafe
+            using (var ms = new MemoryStream())
             {
-                fixed (byte* fontPtr = &FaceData[0])
+                stream.CopyTo(ms);
+                TtfData = ms.ToArray();
+
+                unsafe
                 {
-                    FT.FT_New_Memory_Face(
-                        Library.Native,
-                        new IntPtr(fontPtr),
-                        FaceData.Length,
-                        0,
-                        out facePtr
-                    );
+                    fixed (byte* fontPtr = &TtfData[0])
+                    {
+                        FT.FT_New_Memory_Face(
+                            Library.Native,
+                            new IntPtr(fontPtr),
+                            TtfData.Length,
+                            0,
+                            out _facePtr
+                        );
+                    }
                 }
             }
-
-            Face = facePtr;
+            
             InitializeFontData();
         }
 
@@ -151,7 +130,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
             var width = 0;
 
             var maxWidth = width;
-            var maxHeight = (text.Count(c => c == '\n') + 1) * ScaledLineSpacing;
+            var maxHeight = (text.Count(c => c == '\n') + 1) * LineSpacing;
 
             foreach (var c in text)
             {
@@ -191,8 +170,8 @@ namespace Chroma.Graphics.TextRendering.TrueType
             return new(
                 (int)Glyphs[c].Position.X,
                 (int)Glyphs[c].Position.Y,
-                (int)Glyphs[c].BitmapSize.X,
-                (int)Glyphs[c].BitmapSize.Y
+                (int)Glyphs[c].Size.X,
+                (int)Glyphs[c].Size.Y
             );
         }
 
@@ -200,15 +179,19 @@ namespace Chroma.Graphics.TextRendering.TrueType
         {
             return new(
                 Glyphs[c].Bearing.X,
-                -Glyphs[c].Bearing.Y + MaxBearing
+                -Glyphs[c].Bearing.Y + _maxBearing
             );
+        }
+        
+        public int GetKerning(char left, char right)
+        {
+            FT.FT_Get_Kerning(_facePtr, left, right, 0, out var kerning);
+            return kerning.x.ToInt32() >> 6;
         }
 
         private void InitializeFontData()
         {
             ResizeFont();
-
-            Glyphs = new Dictionary<char, TrueTypeGlyph>();
 
             _hintingEnabled = true;
             _forceAutoHinting = true;
@@ -219,17 +202,13 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
         private void ResizeFont()
         {
-            FT.FT_Set_Pixel_Sizes(Face, 0, (uint)Height);
+            FT.FT_Set_Pixel_Sizes(_facePtr, 0, (uint)Height);
 
-            FaceRec = Marshal.PtrToStructure<FT_FaceRec>(Face);
+            FaceRec = Marshal.PtrToStructure<FT_FaceRec>(_facePtr);
 
             unsafe
             {
-                ScaledLineSpacing = FaceRec.size->metrics.height.ToInt32() >> 6;
-                // LineSpacing = FaceRec.height >> 6;
-
-                Ascender = FaceRec.size->metrics.ascender.ToInt32() >> 6;
-                Descender = FaceRec.size->metrics.descender.ToInt32() >> 6;
+                LineSpacing = FaceRec.size->metrics.height.ToInt32() >> 6;
             }
         }
 
@@ -239,7 +218,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
                 InvalidateFont();
 
             Atlas = (Alphabet == null)
-                ? GenerateTextureAtlas(1..512) 
+                ? GenerateTextureAtlas(1..512)
                 : GenerateTextureAtlas(Alphabet);
         }
 
@@ -251,19 +230,22 @@ namespace Chroma.Graphics.TextRendering.TrueType
             Atlas = null;
         }
 
-        private Texture GenerateTextureAtlas(Range glyphRange)
+        private Texture GenerateTextureAtlas(params Range[] ranges)
         {
             var glyphs = new List<char>();
 
-            for (var c = (char)glyphRange.Start.Value; c < (char)glyphRange.End.Value; c++)
-                glyphs.Add(c);
+            foreach (var range in ranges)
+            {
+                for (var c = (char)range.Start.Value; c < (char)range.End.Value; c++)
+                    glyphs.Add(c);
+            }
 
             Alphabet = glyphs;
             return GenerateTextureAtlas(glyphs);
         }
-        
+
         private bool TtfContainsGlyph(char c)
-            => FT.FT_Get_Char_Index(Face, c) != 0;
+            => FT.FT_Get_Char_Index(_facePtr, c) != 0;
 
         private unsafe Texture GenerateTextureAtlas(IEnumerable<char> glyphs)
         {
@@ -271,6 +253,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
             var maxDim = (1 + FaceRec.size->metrics.height.ToInt32() >> 6) *
                          MathF.Ceiling(MathF.Sqrt(enumerable.Length));
+            
             var texWidth = 1;
 
             while (texWidth < maxDim)
@@ -297,7 +280,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
                 if (HasGlyph(c))
                 {
-                    Log.Warning($"The font {FileName} has already generated the glyph for \\u{(int)c:X4}");
+                    _log.Warning($"The font {FamilyName} has already generated the glyph for \\u{(int)c:X4}");
                     continue;
                 }
 
@@ -323,7 +306,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
                     glyphFlags |= FT.FT_LOAD_MONOCHROME;
                 }
 
-                FT.FT_Load_Char(Face, c, glyphFlags);
+                FT.FT_Load_Char(_facePtr, c, glyphFlags);
                 var bmp = FaceRec.glyph->bitmap;
 
                 if (penX + bmp.width >= texWidth)
@@ -337,8 +320,8 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
                 Glyphs.Add(c, glyph);
 
-                if (glyph.Bearing.Y > MaxBearing)
-                    MaxBearing = (int)glyph.Bearing.Y;
+                if (glyph.Bearing.Y > _maxBearing)
+                    _maxBearing = (int)glyph.Bearing.Y;
 
                 penX += (int)bmp.width + 1;
             }
@@ -349,28 +332,14 @@ namespace Chroma.Graphics.TextRendering.TrueType
             return tex;
         }
 
-        public int GetKerning(char left, char right)
-        {
-            FT.FT_Get_Kerning(Face, left, right, 0, out var kerning);
-            return kerning.x.ToInt32() >> 6;
-        }
-
         private unsafe TrueTypeGlyph BuildGlyphInfo(FT_Bitmap bmp, int penX, int penY)
         {
             return new()
             {
                 Position = new Vector2(penX, penY),
                 Size = new Vector2(
-                    (FaceRec.glyph->metrics.width.ToInt32() >> 6),
-                    FaceRec.glyph->metrics.height.ToInt32() >> 6
-                ),
-                BitmapSize = new Vector2(
                     (int)bmp.width,
                     (int)bmp.rows
-                ),
-                BitmapCoordinates = new Vector2(
-                    FaceRec.glyph->bitmap_left,
-                    FaceRec.glyph->bitmap_top
                 ),
                 Bearing = new Vector2(
                     FaceRec.glyph->metrics.horiBearingX.ToInt32() >> 6,
@@ -458,13 +427,13 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
         protected override void FreeManagedResources()
         {
-            if (FaceData != null && FaceData.Length > 0)
-                FaceData = null;
+            if (TtfData != null && TtfData.Length > 0)
+                TtfData = null;
         }
 
         protected override void FreeNativeResources()
         {
-            FT.FT_Done_Face(Face);
+            FT.FT_Done_Face(_facePtr);
         }
     }
 }

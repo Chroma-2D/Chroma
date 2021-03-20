@@ -20,7 +20,7 @@ namespace Fonts
 
         private BitmapFont _plasticBagBmf;
 
-        public GameCore()
+        public GameCore() : base(new(false, false))
         {
             Content = new FileSystemContentProvider(
                 Path.Combine(AppContext.BaseDirectory, "../../../../_common")
@@ -113,11 +113,11 @@ namespace Fonts
         {
             if (e.KeyCode == KeyCode.Space)
             {
-                _republika.UseKerning = !_republika.UseKerning;
-                _alienlines.UseKerning = !_alienlines.UseKerning;
-                _plasticBag.UseKerning = !_plasticBag.UseKerning;
-                _plasticBagBmf.UseKerning = !_plasticBagBmf.UseKerning;
-                _renegade.UseKerning = !_renegade.UseKerning;
+                _republika.IsKerningEnabled = !_republika.IsKerningEnabled;
+                _alienlines.IsKerningEnabled = !_alienlines.IsKerningEnabled;
+                _plasticBag.IsKerningEnabled = !_plasticBag.IsKerningEnabled;
+                _plasticBagBmf.IsKerningEnabled = !_plasticBagBmf.IsKerningEnabled;
+                _renegade.IsKerningEnabled = !_renegade.IsKerningEnabled;
             }
         }
     }

@@ -1,6 +1,6 @@
 ﻿namespace Chroma.Graphics.TextRendering.Bitmap
 {
-    public enum BitmapFontChannelMode
+    internal enum BitmapFontChannelMode
     {
         GlyphData,
         Outline,

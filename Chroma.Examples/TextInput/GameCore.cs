@@ -125,7 +125,7 @@ namespace TextInput
             }
             else if (e.KeyCode == KeyCode.F2)
             {
-                _font.UseKerning = !_font.UseKerning;
+                _font.IsKerningEnabled = !_font.IsKerningEnabled;
             }
             else if (e.KeyCode == KeyCode.F3)
             {

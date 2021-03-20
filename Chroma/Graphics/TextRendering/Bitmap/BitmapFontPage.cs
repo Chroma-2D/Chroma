@@ -3,7 +3,7 @@ using Chroma.Diagnostics.Logging;
 
 namespace Chroma.Graphics.TextRendering.Bitmap
 {
-    public class BitmapFontPage
+    internal class BitmapFontPage
     {
         private Log Log => LogManager.GetForCurrentAssembly();
 

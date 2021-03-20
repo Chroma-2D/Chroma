@@ -11,7 +11,7 @@ namespace Chroma.Graphics.TextRendering
         public float Rotation { get; set; }
 
         public GlyphTransformData()
-            :this(Vector2.Zero)
+            : this(Vector2.Zero)
         {
         }
 

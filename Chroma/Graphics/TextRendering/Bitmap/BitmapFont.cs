@@ -9,40 +9,35 @@ using Chroma.MemoryManagement;
 
 namespace Chroma.Graphics.TextRendering.Bitmap
 {
-    public class BitmapFont : DisposableResource, IFontProvider<BitmapGlyph>
+    public class BitmapFont : DisposableResource, IFontProvider
     {
         private readonly Log _log = LogManager.GetForCurrentAssembly();
 
         private readonly List<string> _lines;
         private readonly Dictionary<string, Action> _parsers;
         private BitmapFontLexer _lexer;
+        
+        private BitmapFontInfo Info { get; set; }
+        private BitmapFontCommon Common { get; set; }
 
+        private List<BitmapFontPage> Pages { get; } = new();
+        private List<BitmapFontKerningPair> Kernings { get; } = new();
+        private Dictionary<char, BitmapGlyph> Glyphs { get; } = new();
+        
         public string FamilyName => Info.FaceName;
         public string FileName { get; }
-
-        public BitmapFontInfo Info { get; private set; }
-        public BitmapFontCommon Common { get; private set; }
 
         public int DeclaredCharCount { get; private set; }
         public int DeclaredKerningCount { get; private set; }
 
-        public bool UseKerning { get; set; }
-
-        public List<BitmapFontPage> Pages { get; }
-        public List<BitmapFontKerningPair> Kernings { get; }
-
-        public Dictionary<char, BitmapGlyph> Glyphs { get; }
+        public bool IsKerningEnabled { get; set; }
 
         public int Height => Info.Size;
-        public int LineSpacing => Common.LineHeight;
+        public int LineSpacing => (int)(Common.LineHeight + Info.Spacing.Y);
 
         public BitmapFont(string fileName)
         {
             FileName = fileName;
-
-            Pages = new List<BitmapFontPage>();
-            Glyphs = new Dictionary<char, BitmapGlyph>();
-            Kernings = new List<BitmapFontKerningPair>();
 
             using (var sr = new StreamReader(FileName))
                 _lines = sr.ReadToEnd().Split('\n').ToList();
@@ -69,9 +64,9 @@ namespace Chroma.Graphics.TextRendering.Bitmap
 
         public Size Measure(string s)
         {
-            var maxW = 0;
-            var w = 0;
-            var h = LineSpacing;
+            var maxWidth = 0;
+            var width = 0;
+            var height = LineSpacing;
 
             for (var i = 0; i < s.Length; i++)
             {
@@ -79,25 +74,25 @@ namespace Chroma.Graphics.TextRendering.Bitmap
 
                 if (c == '\n')
                 {
-                    h += LineSpacing;
+                    height += LineSpacing;
 
-                    if (w > maxW)
-                        maxW = w;
+                    if (width > maxWidth)
+                        maxWidth = width;
 
-                    w = 0;
+                    width = 0;
                     continue;
                 }
 
                 if (!HasGlyph(c))
                     continue;
 
-                w += Glyphs[c].HorizontalAdvance;
+                width += Glyphs[c].HorizontalAdvance;
             }
 
-            if (w > maxW)
-                maxW = w;
+            if (width > maxWidth)
+                maxWidth = width;
 
-            return new Size(maxW, h);
+            return new Size(maxWidth, height);
         }
 
         public Texture GetTexture(char c)

@@ -2,7 +2,7 @@
 
 namespace Chroma.Graphics.TextRendering.Bitmap
 {
-    public class BitmapFontInfo
+    internal class BitmapFontInfo
     {
         public string FaceName { get; internal set; }
         public int Size { get; internal set; }

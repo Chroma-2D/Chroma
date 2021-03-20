@@ -377,7 +377,7 @@ namespace Chroma.Graphics
                 var xPos = x + offsets.X;
                 var yPos = y + offsets.Y;
 
-                if (font.UseKerning && i != 0)
+                if (font.IsKerningEnabled && i != 0)
                 {
                     var kerning = font.GetKerning(text[i - 1], text[i]);
                     xPos += kerning;

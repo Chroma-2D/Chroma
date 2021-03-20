@@ -1,6 +1,6 @@
 ﻿namespace Chroma.Graphics.TextRendering.Bitmap
 {
-    public class BitmapGlyph
+    internal class BitmapGlyph
     {
         public char CodePoint { get; internal set; }
 

@@ -1,6 +1,6 @@
 ﻿namespace Chroma.Graphics.TextRendering.Bitmap
 {
-    public class BitmapFontCommon
+    internal class BitmapFontCommon
     {
         public int LineHeight { get; internal set; }
         public int BaseLine { get; internal set; }

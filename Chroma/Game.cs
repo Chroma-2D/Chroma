@@ -194,7 +194,9 @@ namespace Chroma
         private void OnDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             _log.Error(
-                $"Unhandled exception. There are two people who could've fucked this up. You or me.\n\n{e.ExceptionObject}");
+                $"Unhandled exception. There are two people who could've fucked this up." +
+                $"You or me.\n\n{e.ExceptionObject}"
+            );
         }
 
         private void InitializeThreading()
@@ -214,22 +216,26 @@ namespace Chroma
                 _bootScene = new BootScene(this);
                 _bootScene.Finished += BootSceneFinished;
                 
-                Window.Draw = DrawSplash;
-                Window.FixedUpdate = FixedUpdateSplash;
+                Window.Draw = _bootScene.Draw;
+                Window.FixedUpdate = _bootScene.FixedUpdate;
             }
             else
-            {                
-                FixedTimeStepTarget = 75;
-
-                Window.Draw = Draw;
-                Window.Update = Update;
-                Window.FixedUpdate = FixedUpdate;
-                
-                Window.InitializeEventDispatcher();
+            {
+                InitializeGraphicsDefault();
             }
 
             Graphics.VerticalSyncMode = VerticalSyncMode.Retrace;
             Window.SetIcon(EmbeddedAssets.DefaultIconTexture);            
+        }
+
+        private void InitializeGraphicsDefault()
+        {
+            FixedTimeStepTarget = 75;
+
+            Window.Draw = Draw;
+            Window.Update = Update;
+            Window.FixedUpdate = FixedUpdate;
+            Window.InitializeEventDispatcher();
         }
 
         private void InitializeAudio()
@@ -242,28 +248,12 @@ namespace Chroma
             Content = new FileSystemContentProvider();
         }
 
-        private void DrawSplash(RenderContext context)
-        {
-            _bootScene.Draw(context);
-        }
-
-        private void FixedUpdateSplash(float delta)
-        {
-            _bootScene.FixedUpdate(delta);
-        }
-
         private void BootSceneFinished(object sender, EventArgs e)
         {
-            LoadContent();
-            Window.InitializeEventDispatcher();
-            
-            FixedTimeStepTarget = 75;
-            
-            Window.Draw = Draw;
-            Window.Update = Update;
-            Window.FixedUpdate = FixedUpdate;
-
             _bootScene.Finished -= BootSceneFinished;
+            
+            LoadContent();
+            InitializeGraphicsDefault();
         }
     }
 }

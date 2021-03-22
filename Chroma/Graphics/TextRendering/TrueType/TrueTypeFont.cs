@@ -50,7 +50,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
                 RebuildAtlas();
             }
         }
-        
+
         public bool ForceAutoHinting
         {
             get => _forceAutoHinting;
@@ -118,7 +118,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
                     }
                 }
             }
-            
+
             InitializeFontData();
         }
 
@@ -182,7 +182,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
                 -Glyphs[c].Bearing.Y + _maxBearing
             );
         }
-        
+
         public int GetKerning(char left, char right)
         {
             FT.FT_Get_Kerning(_facePtr, left, right, 0, out var kerning);
@@ -249,11 +249,11 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
         private unsafe Texture GenerateTextureAtlas(IEnumerable<char> glyphs)
         {
-            var enumerable = glyphs as char[] ?? glyphs.ToArray();
+            var array = glyphs as char[] ?? glyphs.ToArray();
 
             var maxDim = (1 + FaceRec.size->metrics.height.ToInt32() >> 6) *
-                         MathF.Ceiling(MathF.Sqrt(enumerable.Length));
-            
+                         MathF.Ceiling(MathF.Sqrt(array.Length));
+
             var texWidth = 1;
 
             while (texWidth < maxDim)
@@ -261,75 +261,76 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
             var texHeight = texWidth;
 
-            var texSize = texWidth * texHeight;
-            var managedPixels = Marshal.AllocHGlobal(texWidth * texHeight);
-            var pixels = (byte*)managedPixels.ToPointer();
+            var texSize = texWidth * texHeight * 4;
 
-            for (var i = 0; i < texSize; i++)
-                pixels[i] = 0;
+            var pixelData = new byte[texSize];
 
-            var penX = 0;
-            var penY = 0;
-
-            foreach (var c in enumerable)
+            fixed (byte* pixels = &pixelData[0])
             {
-                if (!TtfContainsGlyph(c))
-                {
-                    continue;
-                }
+                for (var i = 0; i < texSize; i++)
+                    pixels[i] = 0;
 
-                if (HasGlyph(c))
-                {
-                    _log.Warning($"The font {FamilyName} has already generated the glyph for \\u{(int)c:X4}");
-                    continue;
-                }
+                var penX = 0;
+                var penY = 0;
 
-                var glyphFlags = FT.FT_LOAD_RENDER;
-
-                if (ForceAutoHinting)
+                for (var i = 0; i < array.Length; i++)
                 {
-                    glyphFlags |= FT.FT_LOAD_FORCE_AUTOHINT;
-                }
+                    var character = array[i];
 
-                if (HintingEnabled)
-                {
-                    glyphFlags |= HintingMode switch
+                    if (!TtfContainsGlyph(character))
+                        continue;
+
+                    if (HasGlyph(character))
                     {
-                        HintingMode.Normal => FT.FT_LOAD_TARGET_NORMAL,
-                        HintingMode.Light => FT.FT_LOAD_TARGET_LIGHT,
-                        HintingMode.Monochrome => FT.FT_LOAD_TARGET_MONO,
-                        _ => throw new InvalidOperationException("Unsupported hinting mode.")
-                    };
+                        _log.Warning($"The font {FamilyName} has already generated the glyph for \\u{(int)character:X4}");
+                        continue;
+                    }
+
+                    var glyphFlags = FT.FT_LOAD_RENDER;
+
+                    if (ForceAutoHinting)
+                    {
+                        glyphFlags |= FT.FT_LOAD_FORCE_AUTOHINT;
+                    }
+
+                    if (HintingEnabled)
+                    {
+                        glyphFlags |= HintingMode switch
+                        {
+                            HintingMode.Normal => FT.FT_LOAD_TARGET_NORMAL,
+                            HintingMode.Light => FT.FT_LOAD_TARGET_LIGHT,
+                            HintingMode.Monochrome => FT.FT_LOAD_TARGET_MONO,
+                            _ => throw new InvalidOperationException("Unsupported hinting mode.")
+                        };
+                    }
+                    else
+                    {
+                        glyphFlags |= FT.FT_LOAD_MONOCHROME;
+                    }
+
+                    FT.FT_Load_Char(_facePtr, character, glyphFlags);
+                    var bmp = FaceRec.glyph->bitmap;
+
+                    if (penX + bmp.width >= texWidth)
+                    {
+                        penX = 0;
+                        penY += ((FaceRec.size->metrics.height.ToInt32() >> 6) + 1);
+                    }
+
+                    RenderGlyphToBitmap(bmp, penX, penY, texWidth, pixels);
+                    var glyph = BuildGlyphInfo(bmp, penX, penY);
+
+                    Glyphs.Add(character, glyph);
+
+                    if (glyph.Bearing.Y > _maxBearing)
+                        _maxBearing = (int)glyph.Bearing.Y;
+
+                    penX += (int)bmp.width + 1;
                 }
-                else
-                {
-                    glyphFlags |= FT.FT_LOAD_MONOCHROME;
-                }
 
-                FT.FT_Load_Char(_facePtr, c, glyphFlags);
-                var bmp = FaceRec.glyph->bitmap;
-
-                if (penX + bmp.width >= texWidth)
-                {
-                    penX = 0;
-                    penY += ((FaceRec.size->metrics.height.ToInt32() >> 6) + 1);
-                }
-
-                RenderGlyphToBitmap(bmp, penX, penY, texWidth, pixels);
-                var glyph = BuildGlyphInfo(bmp, penX, penY);
-
-                Glyphs.Add(c, glyph);
-
-                if (glyph.Bearing.Y > _maxBearing)
-                    _maxBearing = (int)glyph.Bearing.Y;
-
-                penX += (int)bmp.width + 1;
+                var tex = CreateTextureFromFTBitmap(pixels, texWidth, texHeight);
+                return tex;
             }
-
-            var tex = CreateTextureFromFTBitmap(pixels, texWidth, texHeight);
-
-            Marshal.FreeHGlobal(managedPixels);
-            return tex;
         }
 
         private unsafe TrueTypeGlyph BuildGlyphInfo(FT_Bitmap bmp, int penX, int penY)
@@ -380,38 +381,37 @@ namespace Chroma.Graphics.TextRendering.TrueType
         {
             var surfaceSize = texWidth * texHeight * 4;
 
-            var managedSurfaceData = Marshal.AllocHGlobal(surfaceSize);
-            var surfaceData = (byte*)managedSurfaceData.ToPointer();
-
-            for (var i = 0; i < surfaceSize; i++)
-                surfaceData[i] = 0;
-
-            for (var i = 0; i < texWidth * texHeight; ++i)
+            var managedSurfaceData = new byte[surfaceSize];
+            fixed (byte* surfaceData = &managedSurfaceData[0])
             {
-                surfaceData[i * 4 + 0] = 0xFF;
-                surfaceData[i * 4 + 1] = 0xFF;
-                surfaceData[i * 4 + 2] = 0xFF;
-                surfaceData[i * 4 + 3] |= pixels[i];
+                for (var i = 0; i < surfaceSize; i++)
+                    surfaceData[i] = 0;
+
+                for (var i = 0; i < texWidth * texHeight; ++i)
+                {
+                    surfaceData[i * 4 + 0] = 0xFF;
+                    surfaceData[i * 4 + 1] = 0xFF;
+                    surfaceData[i * 4 + 2] = 0xFF;
+                    surfaceData[i * 4 + 3] |= pixels[i];
+                }
+
+                var surface = SDL2.SDL_CreateRGBSurfaceFrom(
+                    new IntPtr(surfaceData),
+                    texWidth,
+                    texHeight,
+                    32,
+                    texWidth * 4,
+                    0x000000FF,
+                    0x0000FF00,
+                    0x00FF0000,
+                    0xFF000000
+                );
+                SDL2.SDL_SetSurfaceBlendMode(surface, SDL2.SDL_BlendMode.SDL_BLENDMODE_BLEND);
+                var gpuImage = SDL_gpu.GPU_CopyImageFromSurface(surface);
+
+                SDL2.SDL_FreeSurface(surface);
+                return new Texture(gpuImage);
             }
-
-            var surface = SDL2.SDL_CreateRGBSurfaceFrom(
-                new IntPtr(surfaceData),
-                texWidth,
-                texHeight,
-                32,
-                texWidth * 4,
-                0x000000FF,
-                0x0000FF00,
-                0x00FF0000,
-                0xFF000000
-            );
-            SDL2.SDL_SetSurfaceBlendMode(surface, SDL2.SDL_BlendMode.SDL_BLENDMODE_BLEND);
-            var gpuImage = SDL_gpu.GPU_CopyImageFromSurface(surface);
-
-            SDL2.SDL_FreeSurface(surface);
-            Marshal.FreeHGlobal(managedSurfaceData);
-
-            return new Texture(gpuImage);
         }
 
         private unsafe bool IsMonochromeBitSet(FT_GlyphSlotRec* glyph, int x, int y)

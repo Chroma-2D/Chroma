@@ -79,8 +79,6 @@ namespace Chroma.Graphics
 
         protected override void FreeNativeResources()
         {
-            EnsureOnMainThread();
-            
             SDL_gpu.GPU_FreeTarget(TargetHandle);
             base.FreeNativeResources();
         }

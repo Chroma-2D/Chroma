@@ -49,7 +49,7 @@ namespace TextInput
             );
 
             _font = new TrueTypeFont(fs, 16);
-            _font.ForceAutoHinting = true;
+            _font.PreferAutoHinter = true;
 
             Window.SizeChanged += (sender, args) => { InitializeDisplay(); };
 
@@ -129,7 +129,7 @@ namespace TextInput
             }
             else if (e.KeyCode == KeyCode.F3)
             {
-                _font.ForceAutoHinting = !_font.ForceAutoHinting;
+                _font.PreferAutoHinter = !_font.PreferAutoHinter;
             }
             else if (e.KeyCode == KeyCode.F4)
             {

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
+using Chroma.Diagnostics.Logging;
 using Chroma.Graphics.Batching;
 using Chroma.Graphics.TextRendering;
 using Chroma.Natives.SDL;
@@ -29,18 +30,6 @@ namespace Chroma.Graphics
             TargetStack.Push(owner.RenderTargetHandle);
 
             BatchBuffer = new List<BatchInfo>();
-        }
-
-        public void WithCamera(Camera camera, Action drawingLogic)
-        {
-            if (camera == null)
-                throw new ArgumentNullException(nameof(camera), "Camera cannot be null.");
-
-            SDL_gpu.GPU_SetCamera(CurrentRenderTarget, ref camera.GpuCamera);
-
-            drawingLogic?.Invoke();
-
-            SDL_gpu.GPU_SetCamera(CurrentRenderTarget, IntPtr.Zero);
         }
 
         public void Clear(Color color)
@@ -137,6 +126,11 @@ namespace Chroma.Graphics
 
         public void Polygon(ShapeMode mode, List<Point> vertices, Color color)
         {
+            if (vertices == null)
+            {
+                throw new ArgumentNullException(nameof(vertices), "Vertex list cannot be null.");
+            }
+
             var floatArray = new float[vertices.Count * 2];
 
             for (var i = 0; i < vertices.Count; i++)
@@ -167,6 +161,11 @@ namespace Chroma.Graphics
 
         public void Polyline(List<Point> vertices, Color color, bool closeLoop)
         {
+            if (vertices == null)
+            {
+                throw new ArgumentNullException(nameof(vertices), "Vertex list cannot be null.");
+            }
+
             for (var i = 0; i < vertices.Count; i++)
             {
                 if (i + 1 >= vertices.Count)
@@ -263,6 +262,11 @@ namespace Chroma.Graphics
         public void RenderArbitraryGeometry(Texture texture, VertexFormat format, ushort vertexCount,
             float[] vertexData, ushort[] indices)
         {
+            if (texture == null)
+            {
+                throw new ArgumentNullException(nameof(texture), "Texture cannot be null.");
+            }
+
             SDL_gpu.GPU_TriangleBatch(
                 texture.ImageHandle,
                 CurrentRenderTarget,
@@ -276,6 +280,11 @@ namespace Chroma.Graphics
 
         public void DrawTexture(Texture texture, Vector2 position, Vector2 scale, Vector2 origin, float rotation)
         {
+            if (texture == null)
+            {
+                throw new ArgumentNullException(nameof(texture), "Texture cannot be null.");
+            }
+
             SDL_gpu.GPU_BlitTransformX(
                 texture.ImageHandle,
                 IntPtr.Zero,
@@ -318,23 +327,36 @@ namespace Chroma.Graphics
         public void RenderTo(RenderTarget target, Action drawingLogic)
         {
             if (target == null)
-                throw new ArgumentNullException(nameof(target),
-                    "You can't just draw an image to a null render target...");
+            {
+                throw new ArgumentNullException(nameof(target), "Render target you're drawing to cannot be null.");
+            }
 
             TargetStack.Push(target.TargetHandle);
             drawingLogic?.Invoke();
             TargetStack.Pop();
         }
 
-        public void DrawString(string text, Vector2 position, GlyphTransform perCharTransform = null)
-            => DrawString(EmbeddedAssets.DefaultFont, text, position, perCharTransform);
+        public void WithCamera(Camera camera, Action drawingLogic)
+        {
+            if (camera == null)
+            {
+                throw new ArgumentNullException(nameof(camera), "Cannot assign a null camera to a render target.");
+            }
 
-        public void DrawString(string text, Vector2 position, Color color)
-            => DrawString(EmbeddedAssets.DefaultFont, text, position,
-                (_, _, p) => new GlyphTransformData(p) {Color = color});
+            SDL_gpu.GPU_SetCamera(CurrentRenderTarget, ref camera.GpuCamera);
+            drawingLogic?.Invoke();
+            SDL_gpu.GPU_SetCamera(CurrentRenderTarget, IntPtr.Zero);
+        }
 
         public void DrawString(IFontProvider font, string text, Vector2 position, GlyphTransform glyphTransform = null)
         {
+            if (font == null)
+            {
+                throw new ArgumentNullException(nameof(font), "Font cannot be null.");
+            }
+
+            text = text ?? string.Empty;
+
             var x = position.X;
             var y = position.Y;
 
@@ -408,8 +430,19 @@ namespace Chroma.Graphics
             }
         }
 
+        public void DrawString(string text, Vector2 position, GlyphTransform perCharTransform = null)
+            => DrawString(EmbeddedAssets.DefaultFont, text, position, perCharTransform);
+
         public void DrawString(IFontProvider font, string text, Vector2 position, Color color)
             => DrawString(font, text, position, (_, _, p) => new GlyphTransformData(p) {Color = color});
+
+        public void DrawString(string text, Vector2 position, Color color)
+            => DrawString(
+                EmbeddedAssets.DefaultFont,
+                text,
+                position,
+                (_, _, p) => new GlyphTransformData(p) {Color = color}
+            );
 
         public void DrawBatch(DrawOrder order = DrawOrder.BackToFront, bool discardBatchAfterUse = true)
         {
@@ -420,7 +453,7 @@ namespace Chroma.Graphics
             );
 
             for (var i = 0; i < BatchBuffer.Count; i++)
-                BatchBuffer[i].DrawAction.Invoke();
+                BatchBuffer[i].DrawAction?.Invoke();
 
             if (discardBatchAfterUse)
                 BatchBuffer.Clear();
@@ -428,9 +461,6 @@ namespace Chroma.Graphics
 
         public void Batch(Action drawAction, int depth)
         {
-            if (drawAction == null)
-                return;
-
             BatchBuffer.Add(
                 new BatchInfo
                 {

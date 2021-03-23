@@ -61,7 +61,7 @@ namespace Chroma.Natives.FreeType.Native
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate FT_Error __FT_New_Memory_Face(IntPtr library, IntPtr file_base, int file_size, int face_index,
-            out IntPtr aface);
+            out FT_FaceRec* aface);
 
         public static __FT_New_Memory_Face FT_New_Memory_Face =
             FTL.LoadFunction<__FT_New_Memory_Face>("FT_New_Memory_Face");
@@ -89,7 +89,7 @@ namespace Chroma.Natives.FreeType.Native
             FT_Reference_Face = FTL.LoadFunction<__FT_Reference_Face>("FT_Reference_Face");
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate FT_Error __FT_Done_Face(IntPtr face);
+        public delegate FT_Error __FT_Done_Face(FT_FaceRec* face);
 
         public static __FT_Done_Face FT_Done_Face = FTL.LoadFunction<__FT_Done_Face>("FT_Done_Face");
 
@@ -110,18 +110,18 @@ namespace Chroma.Natives.FreeType.Native
         public static __FT_Set_Char_Size FT_Set_Char_Size = FTL.LoadFunction<__FT_Set_Char_Size>("FT_Set_Char_Size");
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate FT_Error __FT_Set_Pixel_Sizes(IntPtr face, uint pixel_width, uint pixel_height);
+        public delegate FT_Error __FT_Set_Pixel_Sizes(FT_FaceRec* face, uint pixel_width, uint pixel_height);
 
         public static __FT_Set_Pixel_Sizes FT_Set_Pixel_Sizes =
             FTL.LoadFunction<__FT_Set_Pixel_Sizes>("FT_Set_Pixel_Sizes");
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate FT_Error __FT_Load_Glyph(IntPtr face, uint glyph_index, int load_flags);
+        public delegate FT_Error __FT_Load_Glyph(FT_FaceRec* face, uint glyph_index, int load_flags);
 
         public static __FT_Load_Glyph FT_Load_Glyph = FTL.LoadFunction<__FT_Load_Glyph>("FT_Load_Glyph");
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate FT_Error __FT_Load_Char(IntPtr face, uint char_code, int load_flags);
+        public delegate FT_Error __FT_Load_Char(FT_FaceRec* face, uint char_code, int load_flags);
 
         public static __FT_Load_Char FT_Load_Char = FTL.LoadFunction<__FT_Load_Char>("FT_Load_Char");
 
@@ -131,12 +131,12 @@ namespace Chroma.Natives.FreeType.Native
         public static __FT_Set_Transform FT_Set_Transform = FTL.LoadFunction<__FT_Set_Transform>("FT_Set_Transform");
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate FT_Error __FT_Render_Glyph(IntPtr slot, FT_Render_Mode render_mode);
+        public delegate FT_Error __FT_Render_Glyph(FT_GlyphSlotRec* slot, FT_Render_Mode render_mode);
 
         public static __FT_Render_Glyph FT_Render_Glyph = FTL.LoadFunction<__FT_Render_Glyph>("FT_Render_Glyph");
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate FT_Error __FT_Get_Kerning(IntPtr face, uint left_glyph, uint right_glyph, uint kern_mode,
+        public delegate FT_Error __FT_Get_Kerning(FT_FaceRec* face, uint left_glyph, uint right_glyph, uint kern_mode,
             out FT_Vector akerning);
 
         public static __FT_Get_Kerning FT_Get_Kerning = FTL.LoadFunction<__FT_Get_Kerning>("FT_Get_Kerning");
@@ -178,7 +178,7 @@ namespace Chroma.Natives.FreeType.Native
             FTL.LoadFunction<__FT_Get_Charmap_Index>("FT_Get_Charmap_Index");
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate uint __FT_Get_Char_Index(IntPtr face, uint charcode);
+        public delegate uint __FT_Get_Char_Index(FT_FaceRec* face, uint charcode);
 
         public static __FT_Get_Char_Index
             FT_Get_Char_Index = FTL.LoadFunction<__FT_Get_Char_Index>("FT_Get_Char_Index");

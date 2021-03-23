@@ -31,10 +31,9 @@ namespace Chroma.Graphics
         public static void Shear(Vector2 vec)
         {
             var mtx = Matrix;
-            {
-                mtx.M21 = vec.X;
-                mtx.M12 = vec.Y;
-            }
+            mtx.M21 = vec.X;
+            mtx.M12 = vec.Y;
+            
             Matrix = mtx;
         }
 
@@ -79,7 +78,7 @@ namespace Chroma.Graphics
                 target.TargetHandle,
                 (SDL_gpu.GPU_MatrixModeEnum)mode
             );
-        
+
         public static void SetMatrixMode(MatrixMode mode, Window window)
             => SDL_gpu.GPU_MatrixMode(
                 window.RenderTargetHandle,
@@ -101,9 +100,9 @@ namespace Chroma.Graphics
         {
             var mtx = Matrix.ToFloatArray();
             SDL_gpu.GPU_MatrixLookAt(
-                mtx, 
-                eyePosition.X, 
-                eyePosition.Y, 
+                mtx,
+                eyePosition.X,
+                eyePosition.Y,
                 eyePosition.Z,
                 targetPosition.X,
                 targetPosition.Y,

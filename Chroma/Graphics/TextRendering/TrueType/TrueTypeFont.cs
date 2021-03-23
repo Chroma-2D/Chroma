@@ -16,25 +16,37 @@ namespace Chroma.Graphics.TextRendering.TrueType
     public class TrueTypeFont : DisposableResource, IFontProvider
     {
         private readonly Log _log = LogManager.GetForCurrentAssembly();
+        private static readonly FreeTypeLibrary _library;
+
+        private unsafe FT_FaceRec* _face;
 
         private int _height;
         private bool _hintingEnabled;
-        private bool _forceAutoHinting;
+        private bool _preferAutoHinter;
         private HintingMode _hintingMode;
-        private IntPtr _facePtr;
+        private KerningMode _kerningMode;
+
         private int _maxBearing;
 
-        internal static FreeTypeLibrary Library { get; }
-
-        internal FT_FaceRec FaceRec { get; private set; }
-        internal byte[] TtfData { get; private set; }
-        internal Dictionary<char, TrueTypeGlyph> Glyphs { get; } = new();
+        private byte[] _ttfData;
+        private Dictionary<char, TrueTypeGlyph> _glyphs = new();
+        private List<TrueTypeKerningPair> _kernings = new();
+        private Texture _atlas;
 
         public static TrueTypeFont Default => EmbeddedAssets.DefaultFont;
 
-        public string FamilyName => Marshal.PtrToStringAnsi(FaceRec.family_name);
+        public string FamilyName
+        {
+            get
+            {
+                unsafe
+                {
+                    return Marshal.PtrToStringAnsi(_face->family_name);
+                }
+            }
+        }
+
         public IReadOnlyCollection<char> Alphabet { get; private set; }
-        public Texture Atlas { get; private set; }
 
         public bool IsKerningEnabled { get; set; } = true;
         public int LineSpacing { get; private set; }
@@ -45,19 +57,17 @@ namespace Chroma.Graphics.TextRendering.TrueType
             set
             {
                 _height = value;
-
-                ResizeFont();
-                RebuildAtlas();
+                InitializeFontData();
             }
         }
 
-        public bool ForceAutoHinting
+        public bool PreferAutoHinter
         {
-            get => _forceAutoHinting;
+            get => _preferAutoHinter;
             set
             {
-                _forceAutoHinting = value;
-                RebuildAtlas();
+                _preferAutoHinter = value;
+                InitializeFontData();
             }
         }
 
@@ -67,7 +77,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
             set
             {
                 _hintingEnabled = value;
-                RebuildAtlas();
+                InitializeFontData();
             }
         }
 
@@ -77,13 +87,38 @@ namespace Chroma.Graphics.TextRendering.TrueType
             set
             {
                 _hintingMode = value;
-                RebuildAtlas();
+                InitializeFontData();
+            }
+        }
+
+        public KerningMode KerningMode
+        {
+            get => _kerningMode;
+            set
+            {
+                _kerningMode = value;
+                InitializeFontData();
+            }
+        }
+
+        public static string FreeTypeVersion
+        {
+            get
+            {
+                FT.FT_Library_Version(
+                    _library.Native,
+                    out var major,
+                    out var minor,
+                    out var patch
+                );
+
+                return $"{major}.{minor}.{patch}";
             }
         }
 
         static TrueTypeFont()
         {
-            Library = new FreeTypeLibrary();
+            _library = new FreeTypeLibrary();
         }
 
         public TrueTypeFont(string fileName, int height, string alphabet = null)
@@ -102,28 +137,18 @@ namespace Chroma.Graphics.TextRendering.TrueType
             using (var ms = new MemoryStream())
             {
                 stream.CopyTo(ms);
-                TtfData = ms.ToArray();
-
-                unsafe
-                {
-                    fixed (byte* fontPtr = &TtfData[0])
-                    {
-                        FT.FT_New_Memory_Face(
-                            Library.Native,
-                            new IntPtr(fontPtr),
-                            TtfData.Length,
-                            0,
-                            out _facePtr
-                        );
-                    }
-                }
+                _ttfData = ms.ToArray();
             }
+
+            _hintingEnabled = true;
+            _preferAutoHinter = true;
+            _hintingMode = HintingMode.Normal;
 
             InitializeFontData();
         }
 
         public bool HasGlyph(char c)
-            => Glyphs.ContainsKey(c);
+            => _glyphs.ContainsKey(c);
 
         public Size Measure(string text)
         {
@@ -146,7 +171,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
                 if (!HasGlyph(c))
                     continue;
 
-                var info = Glyphs[c];
+                var info = _glyphs[c];
                 width += (int)info.Advance.X;
             }
 
@@ -157,10 +182,10 @@ namespace Chroma.Graphics.TextRendering.TrueType
         }
 
         public Texture GetTexture(char c = (char)0)
-            => Atlas;
+            => _atlas;
 
         public int GetHorizontalAdvance(char c)
-            => (int)Glyphs[c].Advance.X;
+            => (int)_glyphs[c].Advance.X;
 
         public Rectangle GetGlyphBounds(char c)
         {
@@ -168,69 +193,104 @@ namespace Chroma.Graphics.TextRendering.TrueType
                 return Rectangle.Empty;
 
             return new(
-                (int)Glyphs[c].Position.X,
-                (int)Glyphs[c].Position.Y,
-                (int)Glyphs[c].Size.X,
-                (int)Glyphs[c].Size.Y
+                (int)_glyphs[c].Position.X,
+                (int)_glyphs[c].Position.Y,
+                (int)_glyphs[c].Size.X,
+                (int)_glyphs[c].Size.Y
             );
         }
 
         public Vector2 GetRenderOffsets(char c)
         {
             return new(
-                Glyphs[c].Bearing.X,
-                -Glyphs[c].Bearing.Y + _maxBearing
+                _glyphs[c].Bearing.X,
+                -_glyphs[c].Bearing.Y + _maxBearing
             );
         }
 
         public int GetKerning(char left, char right)
         {
-            FT.FT_Get_Kerning(_facePtr, left, right, 0, out var kerning);
-            return kerning.x.ToInt32() >> 6;
+            return _kernings.FirstOrDefault(
+                p => p.Left == left && p.Right == right
+            ).Amount;
         }
 
         private void InitializeFontData()
         {
+            InvalidateFont();
+
+            LoadTtf();
+            CreateAlphabetIfNeeded();
             ResizeFont();
-
-            _hintingEnabled = true;
-            _forceAutoHinting = true;
-            _hintingMode = HintingMode.Normal;
-
+            RetrieveKerningData();
             RebuildAtlas();
-        }
-
-        private void ResizeFont()
-        {
-            FT.FT_Set_Pixel_Sizes(_facePtr, 0, (uint)Height);
-
-            FaceRec = Marshal.PtrToStructure<FT_FaceRec>(_facePtr);
-
-            unsafe
-            {
-                LineSpacing = FaceRec.size->metrics.height.ToInt32() >> 6;
-            }
-        }
-
-        private void RebuildAtlas()
-        {
-            if (Glyphs.Count > 0 && Atlas != null)
-                InvalidateFont();
-
-            Atlas = (Alphabet == null)
-                ? GenerateTextureAtlas(1..512)
-                : GenerateTextureAtlas(Alphabet);
+            UnloadTtf();
         }
 
         private void InvalidateFont()
         {
-            Glyphs.Clear();
+            _glyphs.Clear();
+            _kernings.Clear();
 
-            Atlas.Dispose();
-            Atlas = null;
+            _atlas?.Dispose();
+            _atlas = null;
         }
 
-        private Texture GenerateTextureAtlas(params Range[] ranges)
+        private unsafe void LoadTtf()
+        {
+            fixed (byte* fontPtr = &_ttfData[0])
+            {
+                FT.FT_New_Memory_Face(
+                    _library.Native,
+                    new IntPtr(fontPtr),
+                    _ttfData.Length,
+                    0,
+                    out _face
+                );
+            }
+        }
+
+        private void CreateAlphabetIfNeeded()
+        {
+            if (Alphabet == null)
+            {
+                Alphabet = GenerateAlphabet(1..512);
+            }
+        }
+
+        private unsafe void UnloadTtf()
+        {
+            if (_face != null)
+            {
+                FT.FT_Done_Face(_face);
+                _face = null;
+            }
+        }
+
+        private unsafe void ResizeFont()
+        {
+            FT.FT_Set_Pixel_Sizes(_face, 0, (uint)Height);
+            LineSpacing = _face->size->metrics.height.ToInt32() >> 6;
+        }
+
+        private void RebuildAtlas()
+        {
+            _atlas = GenerateTextureAtlas(Alphabet);
+        }
+
+        private void RetrieveKerningData()
+        {
+            for (var i = 0; i < Alphabet.Count; i++)
+            {
+                var left = Alphabet.ElementAt(i);
+                var right = Alphabet.ElementAt(Alphabet.Count - i - 1);
+
+                var amount = GetTtfKerning(left, right);
+                _kernings.Add(new TrueTypeKerningPair(left, right, amount));
+            }
+        }
+
+        private List<char> GenerateAlphabet(params Range[] ranges)
         {
             var glyphs = new List<char>();
 
@@ -240,36 +300,45 @@ namespace Chroma.Graphics.TextRendering.TrueType
                     glyphs.Add(c);
             }
 
-            Alphabet = glyphs;
-            return GenerateTextureAtlas(glyphs);
+            return glyphs;
         }
 
         private bool TtfContainsGlyph(char c)
-            => FT.FT_Get_Char_Index(_facePtr, c) != 0;
+        {
+            unsafe
+            {
+                return FT.FT_Get_Char_Index(_face, c) != 0;
+            }
+        }
+
+        private unsafe int GetTtfKerning(char left, char right)
+        {
+            var leftIndex = FT.FT_Get_Char_Index(_face, left);
+            var rightIndex = FT.FT_Get_Char_Index(_face, right);
+
+            if (leftIndex == 0 || rightIndex == 0)
+                return 0;
+
+            FT.FT_Get_Kerning(_face, leftIndex, rightIndex, (uint)_kerningMode, out var kerning);
+            return kerning.x.ToInt32() >> 6;
+        }
 
         private unsafe Texture GenerateTextureAtlas(IEnumerable<char> glyphs)
         {
             var array = glyphs as char[] ?? glyphs.ToArray();
-
-            var maxDim = (1 + FaceRec.size->metrics.height.ToInt32() >> 6) *
-                         MathF.Ceiling(MathF.Sqrt(array.Length));
+            var maxDim = (1 + LineSpacing) * MathF.Ceiling(MathF.Sqrt(array.Length));
 
             var texWidth = 1;
-
             while (texWidth < maxDim)
                 texWidth <<= 1;
 
             var texHeight = texWidth;
 
             var texSize = texWidth * texHeight * 4;
-
             var pixelData = new byte[texSize];
 
             fixed (byte* pixels = &pixelData[0])
             {
-                for (var i = 0; i < texSize; i++)
-                    pixels[i] = 0;
-
                 var penX = 0;
                 var penY = 0;
 
@@ -282,45 +351,63 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
                     if (HasGlyph(character))
                     {
-                        _log.Warning($"The font {FamilyName} has already generated the glyph for \\u{(int)character:X4}");
+                        _log.Warning(
+                            $"The font {FamilyName} has already generated the glyph for \\u{(int)character:X4}");
                         continue;
                     }
 
-                    var glyphFlags = FT.FT_LOAD_RENDER;
-
-                    if (ForceAutoHinting)
-                    {
-                        glyphFlags |= FT.FT_LOAD_FORCE_AUTOHINT;
-                    }
+                    var glyphFlags = FT.FT_LOAD_RENDER | FT.FT_LOAD_PEDANTIC;
+                    var renderMode = FT_Render_Mode.FT_RENDER_MODE_NORMAL;
 
                     if (HintingEnabled)
                     {
-                        glyphFlags |= HintingMode switch
+                        if (PreferAutoHinter)
                         {
-                            HintingMode.Normal => FT.FT_LOAD_TARGET_NORMAL,
-                            HintingMode.Light => FT.FT_LOAD_TARGET_LIGHT,
-                            HintingMode.Monochrome => FT.FT_LOAD_TARGET_MONO,
-                            _ => throw new InvalidOperationException("Unsupported hinting mode.")
-                        };
+                            glyphFlags |= FT.FT_LOAD_FORCE_AUTOHINT;
+                        }
+                        
+                        switch (HintingMode)
+                        {
+                            case HintingMode.Normal:
+                                glyphFlags |= FT.FT_LOAD_TARGET_NORMAL;
+                                break;
+
+                            case HintingMode.Light:
+                                glyphFlags |= FT.FT_LOAD_TARGET_LIGHT;
+                                renderMode = FT_Render_Mode.FT_RENDER_MODE_LIGHT;
+                                break;
+
+                            case HintingMode.Monochrome:
+                                glyphFlags |= FT.FT_LOAD_TARGET_MONO;
+                                glyphFlags |= FT.FT_LOAD_MONOCHROME;
+
+                                renderMode = FT_Render_Mode.FT_RENDER_MODE_MONO;
+                                break;
+
+                            default: throw new InvalidOperationException("Unsupported hinting mode.");
+                        }
                     }
                     else
                     {
-                        glyphFlags |= FT.FT_LOAD_MONOCHROME;
+                        glyphFlags |= FT.FT_LOAD_NO_HINTING;
                     }
 
-                    FT.FT_Load_Char(_facePtr, character, glyphFlags);
-                    var bmp = FaceRec.glyph->bitmap;
+                    var index = FT.FT_Get_Char_Index(_face, character);
+                    FT.FT_Load_Glyph(_face, index, glyphFlags);
+                    FT.FT_Render_Glyph(_face->glyph, renderMode);
+
+                    var bmp = _face->glyph->bitmap;
 
                     if (penX + bmp.width >= texWidth)
                     {
                         penX = 0;
-                        penY += ((FaceRec.size->metrics.height.ToInt32() >> 6) + 1);
+                        penY += ((_face->size->metrics.height.ToInt32() >> 6) + 1);
                     }
 
                     RenderGlyphToBitmap(bmp, penX, penY, texWidth, pixels);
                     var glyph = BuildGlyphInfo(bmp, penX, penY);
 
-                    Glyphs.Add(character, glyph);
+                    _glyphs.Add(character, glyph);
 
                     if (glyph.Bearing.Y > _maxBearing)
                         _maxBearing = (int)glyph.Bearing.Y;
@@ -343,19 +430,19 @@ namespace Chroma.Graphics.TextRendering.TrueType
                     (int)bmp.rows
                 ),
                 Bearing = new Vector2(
-                    FaceRec.glyph->metrics.horiBearingX.ToInt32() >> 6,
-                    FaceRec.glyph->metrics.horiBearingY.ToInt32() >> 6
+                    _face->glyph->metrics.horiBearingX.ToInt32() >> 6,
+                    _face->glyph->metrics.horiBearingY.ToInt32() >> 6
                 ),
                 Advance = new Vector2(
-                    FaceRec.glyph->advance.x.ToInt32() >> 6,
-                    FaceRec.glyph->advance.y.ToInt32() >> 6
+                    _face->glyph->advance.x.ToInt32() >> 6,
+                    _face->glyph->advance.y.ToInt32() >> 6
                 )
             };
         }
 
         private unsafe void RenderGlyphToBitmap(FT_Bitmap bmp, int penX, int penY, int texWidth, byte* pixels)
         {
-            var buffer = (byte*)FaceRec.glyph->bitmap.buffer.ToPointer();
+            var buffer = (byte*)_face->glyph->bitmap.buffer.ToPointer();
 
             for (var row = 0; row < bmp.rows; ++row)
             {
@@ -364,14 +451,14 @@ namespace Chroma.Graphics.TextRendering.TrueType
                     var x = penX + col;
                     var y = penY + row;
 
-                    if (HintingEnabled && HintingMode != HintingMode.Monochrome)
+                    if (HintingEnabled && HintingMode == HintingMode.Monochrome)
                     {
-                        pixels[y * texWidth + x] = buffer[row * bmp.pitch + col];
+                        pixels[y * texWidth + x] =
+                            IsMonochromeBitSet(_face->glyph, col, row) ? (byte)0xFF : (byte)0x00;
                     }
                     else
                     {
-                        pixels[y * texWidth + x] =
-                            IsMonochromeBitSet(FaceRec.glyph, col, row) ? (byte)0xFF : (byte)0x00;
+                        pixels[y * texWidth + x] = buffer[row * bmp.pitch + col];
                     }
                 }
             }
@@ -427,13 +514,10 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
         protected override void FreeManagedResources()
         {
-            if (TtfData != null && TtfData.Length > 0)
-                TtfData = null;
-        }
+            if (_ttfData != null && _ttfData.Length > 0)
+                _ttfData = null;
 
-        protected override void FreeNativeResources()
-        {
-            FT.FT_Done_Face(_facePtr);
+            InvalidateFont();
         }
     }
 }

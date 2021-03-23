@@ -398,10 +398,13 @@ namespace Chroma.Graphics
 
         public Texture(Texture other)
         {
-            EnsureOnMainThread();
-
+            if (other == null)
+                throw new ArgumentNullException(nameof(other), "The other texture is null.");
+            
             if (other.Disposed)
                 throw new InvalidOperationException("The source texture has been disposed.");
+            
+            EnsureOnMainThread();
 
             CreateEmpty(
                 other.Width,
@@ -418,13 +421,13 @@ namespace Chroma.Graphics
 
         public Texture(int width, int height, PixelFormat pixelFormat = PixelFormat.RGBA)
         {
-            EnsureOnMainThread();
-
             if (width < 0)
                 throw new ArgumentOutOfRangeException(nameof(width), "Width cannot be negative.");
 
             if (height < 0)
                 throw new ArgumentOutOfRangeException(nameof(height), "Height cannot be negative.");
+            
+            EnsureOnMainThread();
 
             CreateEmpty(
                 (ushort)width,
@@ -439,14 +442,17 @@ namespace Chroma.Graphics
 
         public Texture(int width, int height, byte[] data, PixelFormat pixelFormat = PixelFormat.RGBA)
         {
-            EnsureOnMainThread();
-            
             if (width < 0)
                 throw new ArgumentOutOfRangeException(nameof(width), "Width cannot be negative.");
 
             if (height < 0)
                 throw new ArgumentOutOfRangeException(nameof(height), "Height cannot be negative.");
 
+            if (data == null)
+                throw new ArgumentNullException(nameof(data), "Pixel data is null.");
+            
+            EnsureOnMainThread();
+            
             CreateEmpty(
                 (ushort)width,
                 (ushort)height,
@@ -465,7 +471,7 @@ namespace Chroma.Graphics
             EnsureOnMainThread();
 
             if (gpuImageHandle == IntPtr.Zero)
-                throw new ArgumentException("Invalid image handle.");
+                throw new ArgumentException("Invalid image handle.", nameof(gpuImageHandle));
 
             ImageHandle = gpuImageHandle;
 

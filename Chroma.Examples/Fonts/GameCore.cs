@@ -39,7 +39,7 @@ namespace Fonts
             _alienlines = Content.Load<TrueTypeFont>("Fonts/alienlines.ttf", 24);
             _renegade = Content.Load<TrueTypeFont>("Fonts/renegade.otf", 48);
             _plasticBag = Content.Load<TrueTypeFont>("Fonts/plasticbag.ttf", 16);
-            _copam8x8 = Content.Load<TrueTypeFont>("Fonts/Copam_8x8.ttf", 8);
+            _copam8x8 = Content.Load<TrueTypeFont>("Fonts/Copam_8x8.ttf", 16);
             _plasticBagBmf = Content.Load<BitmapFont>("BitmapFonts/plasticbag.fnt");
         }
 
@@ -58,71 +58,71 @@ namespace Fonts
                 new Vector2(8), 
                 Color.Red
             );
-            //
-            // var alienlinesStr = "This is a test of 24px high Alien Lines TTF.\n" +
-            //                     "And here's its line break.1234567890!@#$%^&*()_+_-=[];'\\";
-            // context.DrawString(
-            //     _alienlines,
-            //     alienlinesStr,
-            //     new Vector2(8, 96),
-            //     Color.Aqua
-            // );
-            //
-            // var measure1 = _alienlines.Measure(alienlinesStr);
-            // context.Rectangle(
-            //     ShapeMode.Stroke,
-            //     new Vector2(8, 96),
-            //     measure1.Width,
-            //     measure1.Height,
-            //     Color.Red);
-            //
-            // var plasticBagBmfStr = "This is a test of 16px high Plastic Bag Bitmap Font.\n" +
-            //           "And here's its line break.\n1234567890-=!@#$aA";
-            // context.DrawString(
-            //     _plasticBagBmf,
-            //     plasticBagBmfStr,
-            //     new Vector2(8, 164),
-            //     Color.Lime
-            // );
-            //
-            // var measure2 = _plasticBagBmf.Measure(plasticBagBmfStr);
-            // context.Rectangle(
-            //     ShapeMode.Stroke,
-            //     new Vector2(8, 164),
-            //     measure2.Width,
-            //     measure2.Height,
-            //     Color.Red
-            // );
-            //
-            // var plasticBagTtfStr = "This is a test of 16px high Plastic Bag TTF.\n" +
-            //                        "And here's its line break. 1234567890-=!@#$aA";
-            // var measure3 = _plasticBag.Measure(plasticBagTtfStr);
-            // context.DrawString(
-            //     _plasticBag,
-            //     plasticBagTtfStr,
-            //     new Vector2(16 + measure2.Width, 164),
-            //     Color.Violet
-            // );
-            //
-            // context.Rectangle(
-            //     ShapeMode.Stroke,
-            //     new Vector2(16 + measure2.Width, 164),
-            //     measure3.Width,
-            //     measure3.Height,
-            //     Color.Red
-            // );
-            //
-            // context.DrawString(
-            //     _renegade,
-            //     "This is a test of 48px high\n" +
-            //     "Renegade OTF.",
-            //     new Vector2(8, 204),
-            //     Color.HotPink
-            // );
+            
+            var alienlinesStr = "This is a test of 24px high Alien Lines TTF.\n" +
+                                "And here's its line break.1234567890!@#$%^&*()_+_-=[];'\\";
+            context.DrawString(
+                _alienlines,
+                alienlinesStr,
+                new Vector2(8, 96),
+                Color.Aqua
+            );
+            
+            var measure1 = _alienlines.Measure(alienlinesStr);
+            context.Rectangle(
+                ShapeMode.Stroke,
+                new Vector2(8, 96),
+                measure1.Width,
+                measure1.Height,
+                Color.Red);
+            
+            var plasticBagBmfStr = "This is a test of 16px high Plastic Bag Bitmap Font.\n" +
+                      "And here's its line break.\n1234567890-=!@#$aA";
+            context.DrawString(
+                _plasticBagBmf,
+                plasticBagBmfStr,
+                new Vector2(8, 152),
+                Color.Lime
+            );
+            
+            var measure2 = _plasticBagBmf.Measure(plasticBagBmfStr);
+            context.Rectangle(
+                ShapeMode.Stroke,
+                new Vector2(8, 152),
+                measure2.Width,
+                measure2.Height,
+                Color.Red
+            );
+            
+            var plasticBagTtfStr = "This is a test of 16px high Plastic Bag TTF.\n" +
+                                   "And here's its line break. 1234567890-=!@#$aA";
+            context.DrawString(
+                _plasticBag,
+                plasticBagTtfStr,
+                new Vector2(16 + measure2.Width, 152),
+                Color.Violet
+            );
+            
+            var measure3 = _plasticBag.Measure(plasticBagTtfStr);
+            context.Rectangle(
+                ShapeMode.Stroke,
+                new Vector2(16 + measure2.Width, 152),
+                measure3.Width,
+                measure3.Height,
+                Color.Red
+            );
+            
+            context.DrawString(
+                _renegade,
+                "This is a test of 48px high\n" +
+                "Renegade OTF.",
+                new Vector2(8, 204),
+                Color.HotPink
+            );
 
             context.DrawString(
                 _copam8x8,
-                _republika.HintingMode.ToString() + $"\nHinting: {_republika.HintingEnabled}\nAutoHint: {_republika.PreferAutoHinter}",
+                _renegade.HintingMode.ToString() + $"\nHinting: {_renegade.HintingEnabled}\nAutoHint: {_renegade.PreferAutoHinter}",
                 Mouse.GetPosition()
             );
         }
@@ -131,17 +131,17 @@ namespace Fonts
         {
             if (e.KeyCode == KeyCode.Space)
             {
-                _republika.HintingMode = (HintingMode)((((int)_republika.HintingMode) + 1) % 3);
+                _renegade.HintingMode = (HintingMode)((((int)_renegade.HintingMode) + 1) % 3);
             }
 
             if (e.KeyCode == KeyCode.F1)
             {
-                _republika.PreferAutoHinter = !_republika.PreferAutoHinter;
+                _renegade.PreferAutoHinter = !_renegade.PreferAutoHinter;
             }
 
             if (e.KeyCode == KeyCode.F2)
             {
-                _republika.HintingEnabled = !_republika.HintingEnabled;
+                _renegade.HintingEnabled = !_renegade.HintingEnabled;
             }
         }
     }

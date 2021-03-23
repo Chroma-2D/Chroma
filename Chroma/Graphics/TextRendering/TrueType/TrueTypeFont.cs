@@ -229,11 +229,11 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
         private void InvalidateFont()
         {
-            _glyphs.Clear();
-            _kernings.Clear();
-
             _atlas?.Dispose();
             _atlas = null;
+            
+            _glyphs.Clear();
+            _kernings.Clear();
         }
 
         private unsafe void LoadTtf()
@@ -490,7 +490,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
                     0x00FF0000,
                     0xFF000000
                 );
-                SDL2.SDL_SetSurfaceBlendMode(surface, SDL2.SDL_BlendMode.SDL_BLENDMODE_BLEND);
+
                 var gpuImage = SDL_gpu.GPU_CopyImageFromSurface(surface);
 
                 SDL2.SDL_FreeSurface(surface);
@@ -511,10 +511,10 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
         protected override void FreeManagedResources()
         {
+            InvalidateFont();
+            
             if (_ttfData != null && _ttfData.Length > 0)
                 _ttfData = null;
-
-            InvalidateFont();
         }
     }
 }

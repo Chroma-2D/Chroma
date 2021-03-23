@@ -471,9 +471,6 @@ namespace Chroma.Graphics.TextRendering.TrueType
             var managedSurfaceData = new byte[surfaceSize];
             fixed (byte* surfaceData = &managedSurfaceData[0])
             {
-                for (var i = 0; i < surfaceSize; i++)
-                    surfaceData[i] = 0;
-
                 for (var i = 0; i < texWidth * texHeight; ++i)
                 {
                     surfaceData[i * 4 + 0] = 0xFF;

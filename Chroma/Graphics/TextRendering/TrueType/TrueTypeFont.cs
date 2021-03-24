@@ -30,7 +30,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
         private byte[] _ttfData;
         private Dictionary<char, TrueTypeGlyph> _glyphs = new();
-        private List<TrueTypeKerningPair> _kernings = new();
+        private Dictionary<int, int> _kernings = new();
         private Texture _atlas;
 
         public static TrueTypeFont Default => EmbeddedAssets.DefaultFont;
@@ -210,9 +210,10 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
         public int GetKerning(char left, char right)
         {
-            return _kernings.FirstOrDefault(
-                p => p.Left == left && p.Right == right
-            ).Amount;
+            var key = (left << 16) | right;
+            
+            _kernings.TryGetValue(key, out var kerning);
+            return kerning;
         }
 
         private void InitializeFontData()
@@ -285,8 +286,10 @@ namespace Chroma.Graphics.TextRendering.TrueType
                 var left = Alphabet.ElementAt(i);
                 var right = Alphabet.ElementAt(Alphabet.Count - i - 1);
 
+                var key = (left << 16) | right;
+                
                 var amount = GetTtfKerning(left, right);
-                _kernings.Add(new TrueTypeKerningPair(left, right, amount));
+                _kernings.Add(key, amount);
             }
         }
 

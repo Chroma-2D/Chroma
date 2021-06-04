@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Chroma.Extensions
+namespace Chroma
 {
-    public static class RangeExtensions
+    public static partial class Extensions
     {
         public static bool Includes(this Range range, int number)
             => range.Start.Value <= number && range.End.Value > number;

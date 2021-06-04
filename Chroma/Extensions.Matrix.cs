@@ -1,8 +1,8 @@
 ﻿using System.Numerics;
 
-namespace Chroma.Extensions
+namespace Chroma
 {
-    public static class MatrixExtensions
+    public static partial class Extensions
     {
         public static float[] ToFloatArray(this Matrix4x4 mtx)
         {

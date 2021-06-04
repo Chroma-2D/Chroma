@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using Chroma.Extensions;
 using Chroma.Natives.SDL;
 using Chroma.Windowing;
 

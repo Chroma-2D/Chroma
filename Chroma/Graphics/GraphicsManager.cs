@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Chroma.Diagnostics.Logging;
-using Chroma.Extensions;
 using Chroma.Natives.GL;
 using Chroma.Natives.SDL;
 using Chroma.Windowing;

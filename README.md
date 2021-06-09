@@ -1,4 +1,4 @@
-<p align="center"><img src="https://img.vddcore.eu/AnSrjXY.png"><br>Chroma Framework</p>
+<p align="center"><img src="https://raw.githubusercontent.com/Chroma-2D/Chroma/master/Chroma/Resources/deficon.png"><br>Chroma Framework</p>
 
 **What? Another one?**  
 *Yeah!* ***Another one!*** Chroma is a 2D-focused game development framework. Works just as well for other kinds of 2D applications too. Might as well call it a glorified SDL wrapper for .NET 5 if you like.

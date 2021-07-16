@@ -72,15 +72,15 @@ namespace Chroma.Natives.Boot
                 var libraryPath = Path.Combine(targetDir, fileName);
                 filePaths.Add(libraryPath);
 
-                var embeddedPackageStream = EmbeddedResources.GetResourceStream(resourceName);
-                var bzipStream = new BZip2InputStream(embeddedPackageStream);
+                using var embeddedPackageStream = EmbeddedResources.GetResourceStream(resourceName);
+                using var bzipStream = new BZip2InputStream(embeddedPackageStream);
 
                 if (File.Exists(libraryPath))
                 {
                     if (ModuleInitializer.BootConfig.SkipChecksumVerification)
                         continue;
 
-                    var memoryStream = new MemoryStream();
+                    using var memoryStream = new MemoryStream();
                     bzipStream.CopyTo(memoryStream, 1024);
 
                     var memoryBuffer = memoryStream.ToArray();

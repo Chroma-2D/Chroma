@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
-using Chroma.Diagnostics.Logging;
 using Chroma.Graphics.Batching;
 using Chroma.Graphics.TextRendering;
 using Chroma.Natives.SDL;
@@ -35,14 +34,14 @@ namespace Chroma.Graphics
         public void Clear(Color color)
             => SDL_gpu.GPU_ClearRGBA(CurrentRenderTarget, color.R, color.G, color.B, color.A);
 
-        public void Arc(ShapeMode mode, Vector2 position, float radius, float startAngle, float endAngle, Color color)
+        public void Arc(ShapeMode mode, float x, float y, float radius, float startAngle, float endAngle, Color color)
         {
             if (mode == ShapeMode.Stroke)
             {
                 SDL_gpu.GPU_Arc(
                     CurrentRenderTarget,
-                    position.X,
-                    position.Y,
+                    x,
+                    y,
                     radius,
                     startAngle,
                     endAngle,
@@ -53,8 +52,8 @@ namespace Chroma.Graphics
             {
                 SDL_gpu.GPU_ArcFilled(
                     CurrentRenderTarget,
-                    position.X,
-                    position.Y,
+                    x,
+                    y,
                     radius,
                     startAngle,
                     endAngle,
@@ -63,14 +62,17 @@ namespace Chroma.Graphics
             }
         }
 
-        public void Circle(ShapeMode mode, Vector2 position, float radius, Color color)
+        public void Arc(ShapeMode mode, Vector2 position, float radius, float startAngle, float endAngle, Color color)
+            => Arc(mode, position.X, position.Y, radius, startAngle, endAngle, color);
+
+        public void Circle(ShapeMode mode, float x, float y, float radius, Color color)
         {
             if (mode == ShapeMode.Stroke)
             {
                 SDL_gpu.GPU_Circle(
                     CurrentRenderTarget,
-                    position.X,
-                    position.Y,
+                    x,
+                    y,
                     radius,
                     Color.ToSdlColor(color)
                 );
@@ -79,24 +81,27 @@ namespace Chroma.Graphics
             {
                 SDL_gpu.GPU_CircleFilled(
                     CurrentRenderTarget,
-                    position.X,
-                    position.Y,
+                    x,
+                    y,
                     radius,
                     Color.ToSdlColor(color)
                 );
             }
         }
 
-        public void Ellipse(ShapeMode mode, Vector2 position, Vector2 radii, float rotation, Color color)
+        public void Circle(ShapeMode mode, Vector2 position, float radius, Color color)
+            => Circle(mode, position.X, position.Y, radius, color);
+
+        public void Ellipse(ShapeMode mode, float x, float y, float hRadius, float vRadius, float rotation, Color color)
         {
             if (mode == ShapeMode.Stroke)
             {
                 SDL_gpu.GPU_Ellipse(
                     CurrentRenderTarget,
-                    position.X,
-                    position.Y,
-                    radii.X,
-                    radii.Y,
+                    x,
+                    y,
+                    hRadius,
+                    vRadius,
                     rotation,
                     Color.ToSdlColor(color)
                 );
@@ -105,24 +110,36 @@ namespace Chroma.Graphics
             {
                 SDL_gpu.GPU_EllipseFilled(
                     CurrentRenderTarget,
-                    position.X,
-                    position.Y,
-                    radii.X,
-                    radii.Y,
+                    x,
+                    y,
+                    hRadius,
+                    vRadius,
                     rotation,
                     Color.ToSdlColor(color)
                 );
             }
         }
 
+        public void Ellipse(ShapeMode mode, Vector2 position, Vector2 radii, float rotation, Color color)
+            => Ellipse(mode, position.X, position.Y, radii.X, radii.Y, rotation, color);
+
+        public void Line(float x1, float y1, float x2, float y2, Color color)
+            => SDL_gpu.GPU_Line(CurrentRenderTarget, x1, y1, x2, y2, Color.ToSdlColor(color));
+
         public void Line(Vector2 start, Vector2 end, Color color)
-            => SDL_gpu.GPU_Line(CurrentRenderTarget, start.X, start.Y, end.X, end.Y, Color.ToSdlColor(color));
+            => Line(start.X, start.Y, end.X, end.Y, color);
+        
+        public void Pixel(float x, float y, Color color)
+            => SDL_gpu.GPU_Pixel(CurrentRenderTarget, x, y, Color.ToSdlColor(color));
 
         public void Pixel(Vector2 position, Color color)
-            => SDL_gpu.GPU_Pixel(CurrentRenderTarget, position.X, position.Y, Color.ToSdlColor(color));
+            => Pixel(position.X, position.Y, color);
+        
+        public Color GetPixel(short x, short y)
+            => Color.FromSdlColor(SDL_gpu.GPU_GetPixel(CurrentRenderTarget, x, y));
 
         public Color GetPixel(Vector2 position)
-            => Color.FromSdlColor(SDL_gpu.GPU_GetPixel(CurrentRenderTarget, (short)position.X, (short)position.Y));
+            => GetPixel((short)position.X, (short)position.Y);
 
         public void Polygon(ShapeMode mode, List<Point> vertices, Color color)
         {
@@ -188,16 +205,16 @@ namespace Chroma.Graphics
             }
         }
 
-        public void Rectangle(ShapeMode mode, Vector2 position, float width, float height, Color color)
+        public void Rectangle(ShapeMode mode, float x, float y, float width, float height, Color color)
         {
             if (mode == ShapeMode.Stroke)
             {
                 SDL_gpu.GPU_Rectangle(
                     CurrentRenderTarget,
-                    position.X,
-                    position.Y,
-                    position.X + width,
-                    position.Y + height,
+                    x,
+                    y,
+                    x + width,
+                    y + height,
                     Color.ToSdlColor(color)
                 );
             }
@@ -205,14 +222,17 @@ namespace Chroma.Graphics
             {
                 SDL_gpu.GPU_RectangleFilled(
                     CurrentRenderTarget,
-                    position.X,
-                    position.Y,
-                    position.X + width,
-                    position.Y + height,
+                    x,
+                    y,
+                    x + width,
+                    y + height,
                     Color.ToSdlColor(color)
                 );
             }
         }
+
+        public void Rectangle(ShapeMode mode, Vector2 position, float width, float height, Color color)
+            => Rectangle(mode, position.X, position.Y, width, height, color);
 
         public void Rectangle(ShapeMode mode, Vector2 position, Size size, Color color)
             => Rectangle(mode, position, size.Width, size.Height, color);
@@ -220,7 +240,8 @@ namespace Chroma.Graphics
         public void Rectangle(ShapeMode mode, Rectangle rectangle, Color color)
             => Rectangle(
                 mode,
-                new Vector2(rectangle.X, rectangle.Y),
+                rectangle.X,
+                rectangle.Y,
                 rectangle.Width,
                 rectangle.Height,
                 color
@@ -229,7 +250,8 @@ namespace Chroma.Graphics
         public void Rectangle(ShapeMode mode, RectangleF rectangle, Color color)
             => Rectangle(
                 mode,
-                new Vector2(rectangle.X, rectangle.Y),
+                rectangle.X,
+                rectangle.Y,
                 rectangle.Width,
                 rectangle.Height,
                 color

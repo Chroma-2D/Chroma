@@ -351,16 +351,19 @@ namespace Chroma.Windowing
             );
         }
 
-        public void GoWindowed(Size size, bool centerOnScreen = false)
+        public void GoWindowed(ushort width, ushort height, bool centerOnScreen = false)
         {
             SDL2.SDL_SetWindowFullscreen(Handle, 0);
-            SDL_gpu.GPU_SetWindowResolution((ushort)size.Width, (ushort)size.Height);
+            SDL_gpu.GPU_SetWindowResolution(width, height);
 
-            Size = size;
+            Size = new Size(width, height);
 
             if (centerOnScreen)
                 CenterOnScreen();
         }
+
+        public void GoWindowed(Size size, bool centerOnScreen = false)
+            => GoWindowed((ushort)size.Width, (ushort)size.Height, centerOnScreen);
 
         public void SetIcon(Texture texture)
         {

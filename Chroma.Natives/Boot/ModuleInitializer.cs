@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using Chroma.Natives.Boot.Config;
@@ -16,6 +16,7 @@ namespace Chroma.Natives.Boot
         internal static IPlatform Platform { get; private set; }
         internal static BootConfig BootConfig { get; private set; }
 
+        [ModuleInitializer]
         public static void Initialize()
         {
             if (!Environment.Is64BitOperatingSystem)
@@ -39,7 +40,8 @@ namespace Chroma.Natives.Boot
             {
                 Console.WriteLine($"{nee.Message}. Inner exception: {nee.InnerException}");
                 Console.WriteLine("Press any key to terminate...");
-
+                Console.ReadKey();
+                
                 Environment.Exit(1);
             }
             InitializeSdlSystems();

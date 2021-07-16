@@ -1,6 +1,5 @@
 ﻿using Chroma.Diagnostics.Logging.Base;
 using Chroma.Diagnostics.Logging.Sinks;
-using Chroma.Extensions;
 
 namespace Chroma.Diagnostics.Logging.Decorators
 {

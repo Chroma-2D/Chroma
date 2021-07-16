@@ -1,7 +1,6 @@
 using System;
 using System.Numerics;
 using System.Reflection;
-using Chroma.Extensions;
 using Chroma.Graphics;
 using Chroma.Graphics.TextRendering;
 

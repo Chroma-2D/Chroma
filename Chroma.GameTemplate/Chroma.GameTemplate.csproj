@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <PackageType>Template</PackageType>
-        <PackageVersion>1.0.3</PackageVersion>
+        <PackageVersion>1.0.4</PackageVersion>
         <PackageId>Chroma.GameTemplate</PackageId>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
 
-        <TargetFramework>netstandard2.1</TargetFramework>
+        <TargetFramework>net5.0</TargetFramework>
 
         <Title>Chroma Game Template</Title>
         <Authors>Ciastex</Authors>
-        <Description>Bare-bones game project to help you get started quickly with Chroma Game Framework.</Description>
+        <Description>Bare-bones game project to help you get started with Chroma Game Framework quickly.</Description>
         <PackageTags>dotnet-new;templates;chroma;gamedev;engine;framework;game</PackageTags>
 	
 	<RepositoryUrl>https://github.com/Ciastex/Chroma</RepositoryUrl>

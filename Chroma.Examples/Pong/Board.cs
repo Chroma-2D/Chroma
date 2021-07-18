@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Numerics;
+using Chroma;
 using Chroma.Graphics;
 using Chroma.Input;
 using Color = Chroma.Graphics.Color;
@@ -66,10 +67,8 @@ namespace Pong
             context.DrawString(
                 Assets.ScoreFont,
                 scoreStr,
-                new Vector2(
-                    Size.Width / 2f,
-                    Size.Height / 2f
-                ) - new Vector2(scoreSize.Width / 2f, scoreSize.Height / 2f),
+                Size.Width / 2f - scoreSize.Width / 2f,
+                Size.Height / 2f - scoreSize.Height / 2f,
                 Color.White
             );
 
@@ -118,9 +117,8 @@ namespace Pong
 
                 _ball.Center();
                 Assets.OutsidePlayfield.Play();
-                
+
                 _ball.CanMove = false;
-                
             }
         }
     }

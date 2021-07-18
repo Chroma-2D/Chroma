@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Numerics;
+using Chroma;
 using Chroma.Graphics;
 using Color = Chroma.Graphics.Color;
 

@@ -1281,10 +1281,13 @@ namespace Chroma.Natives.SDL
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_BlitTransformX(IntPtr image, ref GPU_Rect src_rect, IntPtr target, float x, float y, float pivot_x, float pivot_y, float degrees, float scaleX, float scaleY);
-
+        
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_BlitTransformX(IntPtr image, IntPtr src_rect, IntPtr target, float x, float y, float pivot_x, float pivot_y, float degrees, float scaleX, float scaleY);
 
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern unsafe void GPU_BlitTransformX(IntPtr image, GPU_Rect* src_rect, IntPtr target, float x, float y, float pivot_x, float pivot_y, float degrees, float scaleX, float scaleY);
+        
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_BlitRect(IntPtr image, ref GPU_Rect src_rect, IntPtr target, ref GPU_Rect dest_rect);
 

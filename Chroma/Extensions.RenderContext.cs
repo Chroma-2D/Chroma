@@ -84,7 +84,6 @@ namespace Chroma
             Color color
         ) => context.Rectangle(mode, position, size.Width, size.Height, color);
         
-
         public static void Rectangle(
             this RenderContext context,
             ShapeMode mode,
@@ -99,14 +98,37 @@ namespace Chroma
             Color color
         ) => context.Rectangle(mode, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, color);
 
-        public static void DrawString(
+
+        public static void DrawTexture(
             this RenderContext context,
-            string text,
-            float x,
-            float y,
-            GlyphTransform perCharTransform = null
-        ) => context.DrawString(EmbeddedAssets.DefaultFont, text, x, y, perCharTransform);
+            Texture texture,
+            Vector2 position,
+            Vector2 scale,
+            Vector2 origin,
+            float rotation
+        ) => context.DrawTexture(texture, position, scale, origin, rotation, null);
         
+        public static void DrawTexture(
+            this RenderContext context,
+            Texture texture,
+            Vector2 position,
+            Vector2 scale,
+            Vector2 origin
+        ) => context.DrawTexture(texture, position, scale, origin, 0, null);
+        
+        public static void DrawTexture(
+            this RenderContext context,
+            Texture texture,
+            Vector2 position,
+            Vector2 scale
+        ) => context.DrawTexture(texture, position, scale, Vector2.Zero, 0, null);
+        
+        public static void DrawTexture(
+            this RenderContext context,
+            Texture texture,
+            Vector2 position
+        ) => context.DrawTexture(texture, position, Vector2.One, Vector2.Zero, 0, null);
+
         public static void DrawString(
             this RenderContext context,
             IFontProvider font,
@@ -121,30 +143,37 @@ namespace Chroma
             IFontProvider font,
             string text,
             Vector2 position,
-            Color color
-        ) => context.DrawString(font, text, position.X, position.Y, (_, _, p) => new(p) {Color = color});
+            GlyphTransform perCharTransform = null
+        ) => context.DrawString(font, text, position.X, position.Y, perCharTransform);
         
         public static void DrawString(
             this RenderContext context,
             IFontProvider font,
             string text,
             Vector2 position,
-            GlyphTransform perCharTransform = null
-        ) => context.DrawString(font, text, position.X, position.Y, perCharTransform);
+            Color color
+        ) => context.DrawString(font, text, position.X, position.Y, (_, _, p) => new(p) {Color = color});
 
+        public static void DrawString(
+            this RenderContext context,
+            string text,
+            float x,
+            float y,
+            GlyphTransform perCharTransform = null
+        ) => context.DrawString(EmbeddedAssets.DefaultFont, text, x, y, perCharTransform);
+        
         public static void DrawString(
             this RenderContext context,
             string text,
             Vector2 position,
             GlyphTransform perCharTransform = null
         ) => context.DrawString(EmbeddedAssets.DefaultFont, text, position.X, position.Y, perCharTransform);
-
+        
         public static void DrawString(
             this RenderContext context,
             string text,
             Vector2 position,
             Color color
         ) => context.DrawString(EmbeddedAssets.DefaultFont, text, position.X, position.Y, (_, _, p) => new(p) {Color = color});
-        
     }
 }

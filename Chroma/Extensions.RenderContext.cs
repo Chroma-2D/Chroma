@@ -98,7 +98,6 @@ namespace Chroma
             Color color
         ) => context.Rectangle(mode, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, color);
 
-
         public static void DrawTexture(
             this RenderContext context,
             Texture texture,

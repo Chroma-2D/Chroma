@@ -11,12 +11,12 @@ namespace Chroma.Graphics
 {
     public class RenderContext
     {
-        internal List<BatchInfo> BatchBuffer { get; }
 
         internal Window Owner { get; }
         internal IntPtr CurrentRenderTarget => TargetStack.Peek();
 
-        internal Stack<IntPtr> TargetStack { get; }
+        internal Stack<IntPtr> TargetStack { get; } = new();
+        internal List<BatchInfo> BatchBuffer { get; } = new();
 
         public bool RenderingToWindow
             => CurrentRenderTarget == Owner.RenderTargetHandle;
@@ -24,11 +24,7 @@ namespace Chroma.Graphics
         internal RenderContext(Window owner)
         {
             Owner = owner;
-
-            TargetStack = new Stack<IntPtr>();
             TargetStack.Push(owner.RenderTargetHandle);
-
-            BatchBuffer = new List<BatchInfo>();
         }
 
         public void Clear(byte r, byte g, byte b, byte a)
@@ -127,7 +123,10 @@ namespace Chroma.Graphics
         {
             if (vertices == null)
             {
-                throw new ArgumentNullException(nameof(vertices), "Vertex list cannot be null.");
+                throw new ArgumentNullException(
+                    nameof(vertices), 
+                    "Vertex list cannot be null."
+                );
             }
 
             var floatArray = new float[vertices.Count * 2];
@@ -162,7 +161,10 @@ namespace Chroma.Graphics
         {
             if (vertices == null)
             {
-                throw new ArgumentNullException(nameof(vertices), "Vertex list cannot be null.");
+                throw new ArgumentNullException(
+                    nameof(vertices), 
+                    "Vertex list cannot be null."
+                );
             }
 
             for (var i = 0; i < vertices.Count; i++)
@@ -246,7 +248,10 @@ namespace Chroma.Graphics
         {
             if (texture == null)
             {
-                throw new ArgumentNullException(nameof(texture), "Texture cannot be null.");
+                throw new ArgumentNullException(
+                    nameof(texture), 
+                    "Texture cannot be null."
+                );
             }
 
             SDL_gpu.GPU_TriangleBatch(
@@ -263,6 +268,11 @@ namespace Chroma.Graphics
         public void DrawTexture(Texture texture, Vector2 position, Vector2 scale, Vector2 origin, float rotation,
             Rectangle? sourceRectangle)
         {
+            if (texture == null)
+            {
+                throw new ArgumentNullException(nameof(texture), "Texture cannot be null.");
+            }
+            
             unsafe
             {
                 var rect = (SDL_gpu.GPU_Rect*)0;
@@ -297,25 +307,41 @@ namespace Chroma.Graphics
 
         public void RenderTo(RenderTarget target, Action drawingLogic)
         {
+            if (drawingLogic == null)
+                return;
+            
             if (target == null)
             {
-                throw new ArgumentNullException(nameof(target), "Render target you're drawing to cannot be null.");
+                throw new ArgumentNullException(
+                    nameof(target), 
+                    "Render target cannot be null."
+                );
             }
 
             TargetStack.Push(target.TargetHandle);
-            drawingLogic?.Invoke();
+            {
+                drawingLogic.Invoke();
+            }
             TargetStack.Pop();
         }
 
         public void WithCamera(Camera camera, Action drawingLogic)
         {
+            if (drawingLogic == null)
+                return;
+            
             if (camera == null)
             {
-                throw new ArgumentNullException(nameof(camera), "Cannot assign a null camera to a render target.");
+                throw new ArgumentNullException(
+                    nameof(camera), 
+                    "Camera cannot be null"
+                );
             }
 
             SDL_gpu.GPU_SetCamera(CurrentRenderTarget, ref camera.GpuCamera);
-            drawingLogic?.Invoke();
+            {
+                drawingLogic.Invoke();
+            }
             SDL_gpu.GPU_SetCamera(CurrentRenderTarget, IntPtr.Zero);
         }
 
@@ -418,6 +444,9 @@ namespace Chroma.Graphics
 
         public void Batch(Action drawAction, int depth)
         {
+            if (drawAction == null)
+                return;
+            
             BatchBuffer.Add(
                 new BatchInfo
                 {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Reflection;
 using Chroma.Graphics;
@@ -14,6 +15,7 @@ namespace Chroma
             "Welcome to Chroma Framework.\nTo get started, override Draw and Update methods.";
         private static readonly string _versionString = $"v{Assembly.GetExecutingAssembly().GetName().Version}";
         private float _betaEmblemHue;
+        private List<Range> _wordRanges = _welcomeMessage.FindWordRanges("Draw", "Update");
 
         internal DefaultScene(Game game)
             => Game = game;
@@ -44,11 +46,10 @@ namespace Chroma
                 _welcomeMessage,
                 new Vector2(8), (_, i, p) =>
                 {
-                    var ranges = _welcomeMessage.FindWordRanges("Draw", "Update");
                     var color = Color.White;
                     var yOff = 0f;
                     
-                    foreach (var range in ranges)
+                    foreach (var range in _wordRanges)
                     {
                         if (range.Includes(i))
                         {
@@ -66,6 +67,7 @@ namespace Chroma
             );
 
             var measure = EmbeddedAssets.DefaultFont.Measure(_versionString);
+            
             context.DrawString(
                 _versionString,
                 new Vector2(

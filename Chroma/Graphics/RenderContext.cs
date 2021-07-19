@@ -30,10 +30,10 @@ namespace Chroma.Graphics
 
             BatchBuffer = new List<BatchInfo>();
         }
-        
+
         public void Clear(byte r, byte g, byte b, byte a)
             => SDL_gpu.GPU_ClearRGBA(CurrentRenderTarget, r, g, b, a);
-    
+
         public void Arc(ShapeMode mode, float x, float y, float radius, float startAngle, float endAngle, Color color)
         {
             if (mode == ShapeMode.Stroke)
@@ -113,7 +113,7 @@ namespace Chroma.Graphics
                 );
             }
         }
-        
+
         public void Line(float x1, float y1, float x2, float y2, Color color)
             => SDL_gpu.GPU_Line(CurrentRenderTarget, x1, y1, x2, y2, Color.ToSdlColor(color));
 
@@ -171,9 +171,9 @@ namespace Chroma.Graphics
                     break;
 
                 Line(
-                    vertices[i].X, 
+                    vertices[i].X,
                     vertices[i].Y,
-                    vertices[i + 1].X, 
+                    vertices[i + 1].X,
                     vertices[i + 1].Y,
                     color
                 );
@@ -182,7 +182,7 @@ namespace Chroma.Graphics
             if (closeLoop)
             {
                 Line(
-                    vertices[0].X, 
+                    vertices[0].X,
                     vertices[0].Y,
                     vertices[vertices.Count - 1].X,
                     vertices[vertices.Count - 1].Y,
@@ -260,50 +260,39 @@ namespace Chroma.Graphics
             );
         }
 
-        public void DrawTexture(Texture texture, Vector2 position, Vector2 scale, Vector2 origin, float rotation)
-        {
-            if (texture == null)
-            {
-                throw new ArgumentNullException(nameof(texture), "Texture cannot be null.");
-            }
-
-            SDL_gpu.GPU_BlitTransformX(
-                texture.ImageHandle,
-                IntPtr.Zero,
-                CurrentRenderTarget,
-                position.X,
-                position.Y,
-                origin.X,
-                origin.Y,
-                rotation,
-                scale.X,
-                scale.Y
-            );
-        }
-
         public void DrawTexture(Texture texture, Vector2 position, Vector2 scale, Vector2 origin, float rotation,
-            Rectangle sourceRectangle)
+            Rectangle? sourceRectangle)
         {
-            var rect = new SDL_gpu.GPU_Rect
+            unsafe
             {
-                x = sourceRectangle.X,
-                y = sourceRectangle.Y,
-                w = sourceRectangle.Width,
-                h = sourceRectangle.Height
-            };
+                var rect = (SDL_gpu.GPU_Rect*)0;
 
-            SDL_gpu.GPU_BlitTransformX(
-                texture.ImageHandle,
-                ref rect,
-                CurrentRenderTarget,
-                position.X,
-                position.Y,
-                origin.X,
-                origin.Y,
-                rotation,
-                scale.X,
-                scale.Y
-            );
+                if (sourceRectangle.HasValue)
+                {
+                    var r = new SDL_gpu.GPU_Rect
+                    {
+                        x = sourceRectangle.Value.X,
+                        y = sourceRectangle.Value.Y,
+                        w = sourceRectangle.Value.Width,
+                        h = sourceRectangle.Value.Height
+                    };
+
+                    rect = &r;
+                }
+
+                SDL_gpu.GPU_BlitTransformX(
+                    texture.ImageHandle,
+                    rect,
+                    CurrentRenderTarget,
+                    position.X,
+                    position.Y,
+                    origin.X,
+                    origin.Y,
+                    rotation,
+                    scale.X,
+                    scale.Y
+                );
+            }
         }
 
         public void RenderTo(RenderTarget target, Action drawingLogic)

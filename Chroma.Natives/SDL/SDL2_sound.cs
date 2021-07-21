@@ -7,6 +7,7 @@ namespace Chroma.Natives.SDL
     {
         internal const string LibraryName = "SDL2_sound";
 
+        [Flags]
         internal enum Sound_SampleFlags
         {
             SOUND_SAMPLEFLAG_NONE = 0,

@@ -23,6 +23,18 @@ namespace Chroma.Audio.Sources
 
         public override PlaybackStatus Status { get; set; }
 
+        public bool CanSeek
+        {
+            get
+            {
+                unsafe
+                {
+                    EnsureFileSourceHandleValid();
+                    return SoundSample->flags.HasFlag(SDL2_sound.Sound_SampleFlags.SOUND_SAMPLEFLAG_CANSEEK);
+                }
+            }
+        }
+
         public float Duration
         {
             get

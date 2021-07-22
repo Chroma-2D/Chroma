@@ -20,26 +20,25 @@ namespace MusicAndSounds
         private readonly Log _log = LogManager.GetForCurrentAssembly();
 
         private Sound _doomShotgun;
-        private Music _groovyMusic;
         private Music _elysiumMod;
         private Waveform _waveform;
 
         private double[] _frequencies;
 
-        public GameCore()
+        public GameCore() : base(new(false, false))
         {
             Content = new FileSystemContentProvider(
                 Path.Combine(AppContext.BaseDirectory, "../../../../_common")
             );
             
             Window.GoWindowed(new Size(800, 600));
-            Audio.DeviceConnected += (_, e) =>
+            AudioOutput.DeviceConnected += (_, e) =>
             {
                 _log.Info(
                     $"Connected {(e.Device.IsCapture ? "input" : "output")} device {e.Device.Index}: '{e.Device.Name}'.");
             };
 
-            foreach (var e in Audio.Decoders)
+            foreach (var e in AudioOutput.Decoders)
             {
                 _log.Info($"Decoder: {string.Join(',', e.SupportedFormats)}");
             }
@@ -52,8 +51,6 @@ namespace MusicAndSounds
             _doomShotgun = Content.Load<Sound>("Sounds/doomsg.wav");
 
             _elysiumMod = Content.Load<Music>("Music/elysium.mod");
-
-            _groovyMusic = Content.Load<Music>("Music/groovy.mp3");
 
             _waveform = new Waveform(
                 new AudioFormat(SampleFormat.F32),
@@ -74,11 +71,12 @@ namespace MusicAndSounds
         protected override void Draw(RenderContext context)
         {
             context.DrawString(
-                $"Use <F1> to start/stop the groovy music ({_groovyMusic.Status}).\n" +
-                "Use <F2> to pause/unpause the groovy music.\n" +
-                $"Use <space> to play the shotgun sound. ({_doomShotgun.Status})\n" +
+                $"Use <F1> to resume/pause the groovy music ({_elysiumMod.Status}) [{_elysiumMod.Position:F3}s / {_elysiumMod.Duration:F3}s].\n" +
+                "Use <F2> to stop the groovy music.\n" +
+                "Use Ctrl+F1 to skip 10 seconds of groovy music.\n" + 
+                $"Use <space> to play the shotgun sound. ({_doomShotgun.Status}) [{_doomShotgun.Position:F3}s / {_doomShotgun.Duration:F3}s]\n" +
                 $"Use <F3>/<F4> to tweak the shotgun sound volume -/+ ({_doomShotgun.Volume}).\n" +
-                $"Use <F5>/<F6> to tweak master volume -/+ ({Audio.MasterVolume}).\n" +
+                $"Use <F5>/<F6> to tweak master volume -/+ ({AudioOutput.MasterVolume}).\n" +
                 $"Use <F7> to play/pause the sine waveform.",
                 new Vector2(8)
             );
@@ -111,7 +109,7 @@ namespace MusicAndSounds
                 new Color(200, 0, (byte)(upBeat3 % 255))
             );
 
-            for (var i = 0; i < _frequencies.Length / 2; i++)
+            for (var i = 0; i < _frequencies.Length / 4; i ++)
             {
                 context.Line(
                     new Vector2(
@@ -122,15 +120,19 @@ namespace MusicAndSounds
                         (2 + i) * (2 + RenderSettings.LineThickness - 1),
                         Window.Size.Height - 1 - (float)_frequencies[i] * 768
                     ),
-                    new Color((byte)(255f * (_frequencies.Length / (float)i)), 55,
-                        (255 / ((float)_frequencies[i] * 768)) % 255)
+                    new Color(
+                        i / ((float)_frequencies.Length / 4), 
+                        1f - i / ((float)_frequencies.Length / 4), 
+                        1f, 
+                        1f
+                    )
                 );
             }
         }
 
         protected override void FixedUpdate(float delta)
         {
-            DoFFT(_groovyMusic.InBuffer, _groovyMusic.Format);
+            DoFFT(_elysiumMod.InBuffer, _elysiumMod.Format);
         }
 
         protected override void KeyPressed(KeyEventArgs e)
@@ -138,14 +140,29 @@ namespace MusicAndSounds
             switch (e.KeyCode)
             {
                 case KeyCode.F1:
-                    if (_groovyMusic.IsPlaying)
-                        _groovyMusic.Pause();
+                {
+                    var skip = 10;
+                    
+                    if (e.Modifiers.HasFlag(KeyModifiers.LeftControl))
+                    {
+                        if (e.Modifiers.HasFlag(KeyModifiers.LeftShift))
+                            skip *= -1;
+                        
+                        _elysiumMod.Seek(skip, SeekOrigin.Current);
+                    }
                     else
-                        _groovyMusic.Play();
+                    {
+                        if (_elysiumMod.IsPlaying)
+                            _elysiumMod.Pause();
+                        else
+                            _elysiumMod.Play();
+                    }
+
                     break;
+                }
 
                 case KeyCode.F2:
-                    _groovyMusic.Stop();
+                    _elysiumMod.Stop();
                     break;
 
                 case KeyCode.Space:
@@ -161,11 +178,11 @@ namespace MusicAndSounds
                     break;
 
                 case KeyCode.F5:
-                    Audio.MasterVolume -= 0.1f;
+                    AudioOutput.MasterVolume -= 0.1f;
                     break;
 
                 case KeyCode.F6:
-                    Audio.MasterVolume += 0.1f;
+                    AudioOutput.MasterVolume += 0.1f;
                     break;
 
                 case KeyCode.F7:

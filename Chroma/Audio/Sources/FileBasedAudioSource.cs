@@ -35,14 +35,16 @@ namespace Chroma.Audio.Sources
             }
         }
 
-        public float Duration
+        public double Duration
         {
             get
             {
                 EnsureFileSourceHandleValid();
-                return SDL2_nmix.NMIX_GetDuration(FileSourceHandle);
+                return SDL2_nmix.NMIX_GetDuration(FileSourceHandle) / 1000.0;
             }
         }
+
+        public double Position { get; private set; }
 
         public bool IsLooping
         {
@@ -111,7 +113,7 @@ namespace Chroma.Audio.Sources
                             return;
                         }
 
-                        foreach (var decoder in AudioManager.Instance.Decoders)
+                        foreach (var decoder in AudioOutput.Instance.Decoders)
                         {
                             foreach (var format in decoder.SupportedFormats)
                             {
@@ -163,6 +165,11 @@ namespace Chroma.Audio.Sources
                 return;
             }
 
+            if (Status == PlaybackStatus.Stopped)
+            {
+                Position = 0;
+            }
+
             Status = PlaybackStatus.Playing;
         }
 
@@ -192,6 +199,7 @@ namespace Chroma.Audio.Sources
                 return;
             }
 
+            Position = 0;
             Status = PlaybackStatus.Stopped;
         }
 
@@ -202,17 +210,52 @@ namespace Chroma.Audio.Sources
             if (SDL2_nmix.NMIX_Rewind(FileSourceHandle) < 0)
             {
                 _log.Error($"Failed to rewind the requested audio source: {SDL2.SDL_GetError()}");
+                return;
             }
+
+            Position = 0;
         }
 
-        public void Seek(int milliseconds)
+        public void Seek(double seconds, SeekOrigin origin = SeekOrigin.Begin)
         {
             EnsureFileSourceHandleValid();
 
-            if (SDL2_nmix.NMIX_Seek(FileSourceHandle, milliseconds) < 0)
+            if (!CanSeek)
             {
-                _log.Error($"Failed to seek to {milliseconds}ms: {SDL2.SDL_GetError()}");
+                _log.Error("This audio source does not support seeking.");
+                return;
             }
+
+            if (Status == PlaybackStatus.Stopped)
+            {
+                _log.Error("Cannot seek while stopped.");
+                return;
+            }
+
+            var targetPosition = origin switch
+            {
+                SeekOrigin.Begin => seconds,
+                SeekOrigin.Current => Position + seconds,
+                SeekOrigin.End => Duration - seconds,
+                _ => throw new ArgumentException("Unsupported seek origin.")
+            };
+
+            if (targetPosition >= Duration)
+            {
+                targetPosition = targetPosition - Duration;
+            }
+            else if (targetPosition < 0)
+            {
+                targetPosition = Duration + targetPosition;
+            }
+            
+            if (SDL2_nmix.NMIX_Seek(FileSourceHandle, (int)(targetPosition * 1000)) < 0)
+            {
+                _log.Error($"Failed to seek to {seconds}: {SDL2.SDL_GetError()}");
+                return;
+            }
+
+            Position = targetPosition;
         }
 
         protected override void FreeNativeResources()
@@ -264,10 +307,18 @@ namespace Chroma.Audio.Sources
                     (int)SoundSample->buffer_size
                 );
 
+                var actualAudioFormat = AudioFormat.FromSdlFormat(SoundSample->actual.format);
+
                 for (var i = 0; i < Filters.Count; i++)
-                    Filters[i]?.Invoke(span, AudioFormat.FromSdlFormat(SoundSample->actual.format));
+                    Filters[i]?.Invoke(span, actualAudioFormat);
 
                 _originalSourceCallback(userdata, buffer, bufferSize);
+
+                var sampleDuration = (double)bufferSize / (
+                    SoundSample->actual.rate * SoundSample->actual.channels * (actualAudioFormat.BitsPerSample / 8)
+                );
+
+                Position += sampleDuration;
 
                 if (Source->eof > 0)
                 {
@@ -278,7 +329,7 @@ namespace Chroma.Audio.Sources
                     }
 
                     Rewind();
-                    AudioManager.Instance.OnAudioSourceFinished(this, IsLooping);
+                    AudioOutput.Instance.OnAudioSourceFinished(this, IsLooping);
                 }
             }
         }

@@ -8,12 +8,12 @@ using Chroma.Natives.SDL;
 
 namespace Chroma.Audio
 {
-    public class AudioManager
+    public class AudioOutput
     {
         private readonly Log _log = LogManager.GetForCurrentAssembly();
 
-        private static AudioManager _instance;
-        internal static AudioManager Instance => _instance ?? (_instance = new());
+        private static AudioOutput _instance;
+        internal static AudioOutput Instance => _instance ?? (_instance = new());
 
         private List<AudioDevice> _devices = new();
         private List<Decoder> _decoders = new();
@@ -53,7 +53,7 @@ namespace Chroma.Audio
             x => x.Index == SDL2_nmix.NMIX_GetAudioDevice()
         );
 
-        private AudioManager()
+        private AudioOutput()
         {
         }
 
@@ -115,13 +115,9 @@ namespace Chroma.Audio
             _devices.Clear();
 
             var numberOfOutputDevices = SDL2.SDL_GetNumAudioDevices(0);
-            var numberOfInputDevices = SDL2.SDL_GetNumAudioDevices(1);
 
             for (var i = 0; i < numberOfOutputDevices; i++)
                 _devices.Add(new AudioDevice(i, false));
-
-            for (var i = 0; i < numberOfInputDevices; i++)
-                _devices.Add(new AudioDevice(i, true));
         }
 
         private void EnumerateDecoders()

@@ -15,9 +15,9 @@ namespace Chroma.Windowing.EventHandling.Specialized
         }
 
         private void AudioDeviceAdded(Window owner, SDL2.SDL_Event ev)
-            => owner.Game.Audio.OnDeviceAdded(ev.adevice.which, ev.adevice.iscapture != 0);
+            => owner.Game.AudioOutput.OnDeviceAdded(ev.adevice.which, ev.adevice.iscapture != 0);
         
         private void AudioDeviceRemoved(Window owner, SDL2.SDL_Event ev)
-            => owner.Game.Audio.OnDeviceRemoved(ev.adevice.which, ev.adevice.iscapture != 0);
+            => owner.Game.AudioOutput.OnDeviceRemoved(ev.adevice.which, ev.adevice.iscapture != 0);
     }
 }

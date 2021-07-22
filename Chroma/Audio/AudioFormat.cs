@@ -6,7 +6,7 @@ namespace Chroma.Audio
 {
     public class AudioFormat
     {
-        private Dictionary<SampleFormat, ushort> SdlFormatBE = new()
+        private readonly Dictionary<SampleFormat, ushort> SdlFormatBE = new()
         {
             {SampleFormat.U8, SDL2.AUDIO_U8},
             {SampleFormat.S8, SDL2.AUDIO_S8},
@@ -16,7 +16,7 @@ namespace Chroma.Audio
             {SampleFormat.F32, SDL2.AUDIO_F32MSB}
         };
 
-        private Dictionary<SampleFormat, ushort> SdlFormatLE = new()
+        private readonly Dictionary<SampleFormat, ushort> SdlFormatLE = new()
         {
             {SampleFormat.U8, SDL2.AUDIO_U8},
             {SampleFormat.S8, SDL2.AUDIO_S8},
@@ -26,7 +26,7 @@ namespace Chroma.Audio
             {SampleFormat.F32, SDL2.AUDIO_F32LSB}
         };
 
-        private Dictionary<SampleFormat, ushort> SdlFormatSYS = new()
+        private readonly Dictionary<SampleFormat, ushort> SdlFormatSYS = new()
         {
             {SampleFormat.U8, SDL2.AUDIO_U8},
             {SampleFormat.S8, SDL2.AUDIO_S8},
@@ -44,9 +44,25 @@ namespace Chroma.Audio
             ? new AudioFormat(SampleFormat.F32, ByteOrder.LittleEndian)
             : new AudioFormat(SampleFormat.F32, ByteOrder.BigEndian);
 
-
         public SampleFormat SampleFormat { get; private set; }
         public ByteOrder ByteOrder { get; private set; }
+        
+        public byte BitsPerSample
+        {
+            get
+            {
+                return SampleFormat switch
+                {
+                    SampleFormat.F32 => 32,
+                    SampleFormat.S32 => 32,
+                    SampleFormat.S16 => 16,
+                    SampleFormat.U16 => 16,
+                    SampleFormat.U8 => 8,
+                    SampleFormat.S8 => 8,
+                    _ => throw new InvalidOperationException($"Sample format '{SampleFormat}' is not supported.")
+                };
+            }
+        }
 
         public AudioFormat(SampleFormat sampleFormat)
         {

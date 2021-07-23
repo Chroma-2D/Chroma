@@ -1,6 +1,8 @@
-﻿namespace Chroma.Audio
+﻿using System;
+
+namespace Chroma.Audio
 {
-    public class AudioDeviceEventArgs
+    public class AudioDeviceEventArgs : EventArgs
     {
         public AudioDevice Device { get; }
 

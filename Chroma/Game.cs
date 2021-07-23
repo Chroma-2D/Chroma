@@ -37,7 +37,7 @@ namespace Chroma
         public GameStartupOptions StartupOptions { get; }
         public Window Window { get; private set; }
         public GraphicsManager Graphics { get; private set; }
-        public AudioOutput AudioOutput => AudioOutput.Instance;
+        public AudioManager Audio { get; private set; }
         public IContentProvider Content { get; protected set; }
 
         public Game(GameStartupOptions options = null)
@@ -86,6 +86,7 @@ namespace Chroma
             Content.Dispose();
 
             AudioOutput.Instance.Close();
+            AudioInput.Instance.Close();
 
             SDL_gpu.GPU_Quit();
             SDL2.SDL_Quit();
@@ -240,7 +241,8 @@ namespace Chroma
 
         private void InitializeAudio()
         {
-            AudioOutput.Instance.Initialize();
+            Audio = new AudioManager();
+            Audio.Initialize();
         }
 
         private void InitializeContent()

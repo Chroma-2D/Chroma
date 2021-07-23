@@ -7268,6 +7268,13 @@ namespace Chroma.Natives.SDL
 			IntPtr data,
 			uint len
 		);
+		
+		[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+		public static extern unsafe uint SDL_DequeueAudio(
+			uint dev,
+			void* data,
+			uint len
+		);
 
 		/* dev refers to an SDL_AudioDeviceID
 		 * Only available in 2.0.4 or higher.

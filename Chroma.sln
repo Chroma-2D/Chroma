@@ -55,6 +55,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RenderTransforms", "Chroma.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pong", "Chroma.Examples\Pong\Pong.csproj", "{BB3A7071-86D8-454B-97DC-162A7C88D89E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioRecording", "Chroma.Examples\AudioRecording\AudioRecording.csproj", "{A87AB6BE-D668-48C0-9596-BE405E27A5F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -161,6 +163,10 @@ Global
 		{BB3A7071-86D8-454B-97DC-162A7C88D89E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB3A7071-86D8-454B-97DC-162A7C88D89E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BB3A7071-86D8-454B-97DC-162A7C88D89E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A87AB6BE-D668-48C0-9596-BE405E27A5F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A87AB6BE-D668-48C0-9596-BE405E27A5F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A87AB6BE-D668-48C0-9596-BE405E27A5F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A87AB6BE-D668-48C0-9596-BE405E27A5F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -188,6 +194,7 @@ Global
 		{F31B1B70-3FD1-4B6D-B9B1-BFEC377025BD} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
 		{A2821B3E-C7B4-4345-8ED8-65ACA8CC649F} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
 		{BB3A7071-86D8-454B-97DC-162A7C88D89E} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
+		{A87AB6BE-D668-48C0-9596-BE405E27A5F7} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BD41D1A7-4878-4659-ADD4-D387313A77CA}

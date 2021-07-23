@@ -2,11 +2,11 @@ using System.IO;
 
 namespace Chroma.Audio.Captures
 {
-    public class BufferedAudioCapture : AudioCapture
+    public class StreamAudioCapture : AudioCapture
     {
         private Stream _stream;
         
-        public BufferedAudioCapture(
+        public StreamAudioCapture(
             Stream stream,
             AudioDevice device = null, 
             AudioFormat format = null, 

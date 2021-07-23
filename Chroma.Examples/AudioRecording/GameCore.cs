@@ -46,7 +46,7 @@ namespace AudioRecording
                 if (_recording != null)
                     _recording.Dispose();
 
-                _recording = new BufferedAudioCapture(_stream);
+                _recording = new StreamAudioCapture(_stream);
                 _recording.Start();
             }
             else if (e.KeyCode == KeyCode.F2)

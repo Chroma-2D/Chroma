@@ -28,8 +28,6 @@ namespace Chroma.Audio
         public int Frequency { get; private set; }
         public int SampleCount { get; private set; }
 
-        public event EventHandler<AudioDeviceEventArgs> DeviceConnected;
-        public event EventHandler<AudioDeviceEventArgs> DeviceDisconnected;
         public event EventHandler<AudioSourceEventArgs> AudioSourceFinished;
 
         public float MasterVolume
@@ -80,15 +78,16 @@ namespace Chroma.Audio
             EnumerateDecoders();
 
             device = device ?? _devices.FirstOrDefault()
-                ?? throw new InvalidOperationException("No input devices found.");
+                ?? throw new InvalidOperationException("No output devices found.");
 
             if (SDL2_nmix.NMIX_OpenAudio(device.Name, Frequency, SampleCount) < 0)
             {
                 _log.Error($"Failed to initialize audio mixer: {SDL2.SDL_GetError()}");
                 return;
             }
+            
             _mixerInitialized = true;
-            device.Lock();
+            device.Lock(SDL2_nmix.NMIX_GetAudioDevice());
         }
 
         public void Close()
@@ -116,17 +115,20 @@ namespace Chroma.Audio
             }
 
             if (device > 0)
-                _devices.First(x => x.Index == device).Unlock();
+            {
+                _devices.First(x => x.OpenIndex == device).Unlock();
+            }
         }
 
-        public void EnumerateDevices()
+        private void EnumerateDevices()
         {
             _devices.Clear();
 
             var numberOfOutputDevices = SDL2.SDL_GetNumAudioDevices(0);
-
             for (var i = 0; i < numberOfOutputDevices; i++)
+            {
                 _devices.Add(new AudioDevice(i, false));
+            }
         }
 
         private void EnumerateDecoders()
@@ -179,26 +181,6 @@ namespace Chroma.Audio
             AudioSourceFinished?.Invoke(
                 this,
                 new AudioSourceEventArgs(s, isLooping)
-            );
-        }
-
-        internal void OnDeviceAdded(uint index, bool isCapture)
-        {
-            DeviceConnected?.Invoke(
-                this,
-                new AudioDeviceEventArgs(
-                    new AudioDevice((int)index, isCapture)
-                )
-            );
-        }
-
-        internal void OnDeviceRemoved(uint index, bool isCapture)
-        {
-            DeviceDisconnected?.Invoke(
-                this,
-                new AudioDeviceEventArgs(
-                    new AudioDevice((int)index, isCapture)
-                )
             );
         }
 

@@ -4,9 +4,11 @@ namespace Chroma.Audio
 {
     public class AudioDevice
     {
+        internal uint OpenIndex { get; private set; }
         public int Index { get; }
+        
         public bool IsCapture { get; }
-        public bool IsCurrentlyInUse { get; private set; }
+        public bool IsCurrentlyInUse => OpenIndex != 0;
 
         public string Name => SDL2.SDL_GetAudioDeviceName(Index, IsCapture);
 
@@ -15,15 +17,15 @@ namespace Chroma.Audio
             Index = index;
             IsCapture = isCapture;
         }
-
-        internal void Lock()
+        
+        internal void Lock(uint openIndex)
         {
-            IsCurrentlyInUse = true;
+            OpenIndex = openIndex;
         }
 
         internal void Unlock()
         {
-            IsCurrentlyInUse = false;
+            OpenIndex = 0;
         }
     }
 }

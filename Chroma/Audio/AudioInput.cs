@@ -48,7 +48,7 @@ namespace Chroma.Audio
                 return 0;
             }
 
-            device.Lock();
+            device.Lock(deviceId);
             return deviceId;
         }
 
@@ -58,18 +58,8 @@ namespace Chroma.Audio
             device.Unlock();
         }
 
-        public void EnumerateDevices()
-        {
-            _devices.Clear();
-
-            var numberOfInputDevices = SDL2.SDL_GetNumAudioDevices(1);
-
-            for (var i = 0; i < numberOfInputDevices; i++)
-                _devices.Add(new AudioDevice(i, true));
-        }
-
         internal void Initialize()
-        {
+        {            
             if (SDL2.SDL_WasInit(SDL2.SDL_INIT_AUDIO) == 0)
             {
                 if (SDL2.SDL_Init(SDL2.SDL_INIT_AUDIO) < 0)
@@ -77,6 +67,10 @@ namespace Chroma.Audio
                     _log.Error($"Could not initialize SDL audio: {SDL2.SDL_GetError()}");
                     return;
                 }
+            }
+            else
+            {
+                Close();
             }
             
             EnumerateDevices();
@@ -98,6 +92,16 @@ namespace Chroma.Audio
         internal void Untrack(AudioCapture capture)
         {
             _activeCaptures.Remove(capture);
+        }
+        
+        private void EnumerateDevices()
+        {
+            _devices.Clear();
+
+            var numberOfInputDevices = SDL2.SDL_GetNumAudioDevices(1);
+
+            for (var i = 0; i < numberOfInputDevices; i++)
+                _devices.Add(new AudioDevice(i, true));
         }
     }
 }

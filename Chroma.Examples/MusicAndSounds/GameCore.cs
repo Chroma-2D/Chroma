@@ -32,13 +32,13 @@ namespace MusicAndSounds
             );
             
             Window.GoWindowed(new Size(800, 600));
-            AudioOutput.DeviceConnected += (_, e) =>
+            Audio.DeviceConnected += (_, e) =>
             {
                 _log.Info(
                     $"Connected {(e.Device.IsCapture ? "input" : "output")} device {e.Device.Index}: '{e.Device.Name}'.");
             };
 
-            foreach (var e in AudioOutput.Decoders)
+            foreach (var e in Audio.Output.Decoders)
             {
                 _log.Info($"Decoder: {string.Join(',', e.SupportedFormats)}");
             }
@@ -76,7 +76,7 @@ namespace MusicAndSounds
                 "Use Ctrl+F1 to skip 10 seconds of groovy music.\n" + 
                 $"Use <space> to play the shotgun sound. ({_doomShotgun.Status}) [{_doomShotgun.Position:F3}s / {_doomShotgun.Duration:F3}s]\n" +
                 $"Use <F3>/<F4> to tweak the shotgun sound volume -/+ ({_doomShotgun.Volume}).\n" +
-                $"Use <F5>/<F6> to tweak master volume -/+ ({AudioOutput.MasterVolume}).\n" +
+                $"Use <F5>/<F6> to tweak master volume -/+ ({Audio.Output.MasterVolume}).\n" +
                 $"Use <F7> to play/pause the sine waveform.",
                 new Vector2(8)
             );
@@ -178,11 +178,11 @@ namespace MusicAndSounds
                     break;
 
                 case KeyCode.F5:
-                    AudioOutput.MasterVolume -= 0.1f;
+                    Audio.Output.MasterVolume -= 0.1f;
                     break;
 
                 case KeyCode.F6:
-                    AudioOutput.MasterVolume += 0.1f;
+                    Audio.Output.MasterVolume += 0.1f;
                     break;
 
                 case KeyCode.F7:

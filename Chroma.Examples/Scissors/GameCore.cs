@@ -16,7 +16,7 @@ namespace Scissors
         private Rectangle _scissor = new(64, 64, 128, 128);
         private Texture _grid;
 
-        public GameCore()
+        public GameCore() : base(new(false, false))
         {
             Content = new FileSystemContentProvider(
                 Path.Combine(AppContext.BaseDirectory, "../../../../_common")

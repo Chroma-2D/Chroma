@@ -22,6 +22,10 @@ namespace GlyphTransforms
             Color.Indigo,
             Color.Purple
         };
+        
+        public GameCore() : base(new(false, false))
+        {
+        }
 
         protected override void Update(float delta)
         {

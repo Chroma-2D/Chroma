@@ -15,7 +15,7 @@ namespace Cameras
         private Texture _grid;
         private Texture _burg;
 
-        public GameCore()
+        public GameCore() : base(new(false, false))
         {
             Content = new FileSystemContentProvider(
                 Path.Combine(AppContext.BaseDirectory, "../../../../_common")

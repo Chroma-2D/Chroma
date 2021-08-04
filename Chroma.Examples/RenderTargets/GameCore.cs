@@ -11,6 +11,10 @@ namespace RenderTargets
 
         private float _rotation;
         private Vector2 _position = new(32);
+        
+        public GameCore() : base(new(false, false))
+        {
+        }
 
         protected override void LoadContent()
         {

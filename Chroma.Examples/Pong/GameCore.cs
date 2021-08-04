@@ -8,7 +8,7 @@ namespace Pong
     {
         private Board _board;
 
-        public GameCore() : base(new GameStartupOptions(false))
+        public GameCore() : base(new(false, false))
         {
             Window.Title = "Chroma Framework - Pong Example";
             Sfxr.Initialize(this);

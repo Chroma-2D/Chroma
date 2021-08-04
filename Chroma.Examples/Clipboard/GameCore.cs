@@ -9,6 +9,10 @@ namespace Clipboard
 {
     public class GameCore : Game
     {
+        public GameCore() : base(new(false, false))
+        {
+        }
+        
         protected override void Draw(RenderContext context)
         {
             context.DrawString(

@@ -16,7 +16,7 @@ namespace ParticleSystems
         private RenderTarget _target;
         private ParticleEmitter _emitter;
 
-        public GameCore()
+        public GameCore() : base(new(false, false))
         {
             Content = new FileSystemContentProvider(
                 Path.Combine(AppContext.BaseDirectory, "../../../../_common")

@@ -12,7 +12,7 @@ namespace CustomHardwareCursor
     {
         private Cursor _cursor;
 
-        public GameCore()
+        public GameCore() : base(new(false, false))
         {
             // in normal use cases this is completely unnecessary
             // but there is more than one example project

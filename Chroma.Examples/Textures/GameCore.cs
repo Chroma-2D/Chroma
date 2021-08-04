@@ -36,8 +36,7 @@ namespace Textures
             Color.Orange
         };
 
-        public GameCore()
-            : base(new(false))
+        public GameCore() : base(new(false, false))
         {
             Content = new FileSystemContentProvider(
                 Path.Combine(AppContext.BaseDirectory, "../../../../_common")

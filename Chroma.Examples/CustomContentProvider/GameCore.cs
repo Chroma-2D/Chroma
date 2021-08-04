@@ -14,7 +14,7 @@ namespace CustomContentProvider
         private Texture _texture;
         private float _rotation;
 
-        public GameCore() : base(new(false))
+        public GameCore() : base(new(false, false))
         {
         }
 

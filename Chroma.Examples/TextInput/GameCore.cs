@@ -34,7 +34,7 @@ namespace TextInput
         private Terminal _terminal;
         private VGA _vga;
 
-        public GameCore()
+        public GameCore() : base(new(false, false))
         {
             Content = new FileSystemContentProvider(
                 Path.Combine(AppContext.BaseDirectory, "../../../../_common")

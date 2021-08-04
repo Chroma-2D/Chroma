@@ -10,6 +10,10 @@ namespace FixedTimeStep
     {
         private Action _currentLagInducer;
         
+        public GameCore() : base(new(false, false))
+        {
+        }
+        
         protected override void Update(float delta)
         {
             _currentLagInducer?.Invoke();

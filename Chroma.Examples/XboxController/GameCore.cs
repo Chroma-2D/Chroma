@@ -15,6 +15,10 @@ namespace XboxController
         private Vector2 _position = new(32);
         private Color _color = Color.White;
         private ShapeMode _mode;
+        
+        public GameCore() : base(new(false, false))
+        {
+        }
 
         protected override void LoadContent()
         {

@@ -16,6 +16,10 @@ namespace Asynchronicity
         private readonly Log _log = LogManager.GetForCurrentAssembly();
         private RenderTarget _target;
 
+        public GameCore() : base(new(false, false))
+        {
+        }
+
         protected override void LoadContent()
         {
         }

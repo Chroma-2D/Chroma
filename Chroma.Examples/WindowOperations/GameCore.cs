@@ -19,7 +19,7 @@ namespace WindowOperations
         private bool _drawCenterVector;
         private int _lastResult;
 
-        public GameCore()
+        public GameCore() : base(new(false, false))
         {
             var sb = new StringBuilder();
 

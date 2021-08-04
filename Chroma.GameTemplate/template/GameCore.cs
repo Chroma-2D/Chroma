@@ -7,8 +7,9 @@ namespace ChromaGame
     internal class GameCore : Game
     {
         private Log Log { get; } = LogManager.GetForCurrentAssembly();
-
-        internal GameCore()
+                            // uncomment this to disable construction of
+                            // the default scene and splash screen
+        internal GameCore() // : base(new(false, false))
         {
             Log.Info("Hello, world!");
         }

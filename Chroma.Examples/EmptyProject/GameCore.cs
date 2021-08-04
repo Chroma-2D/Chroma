@@ -1,4 +1,3 @@
-using System;
 using Chroma;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
@@ -9,7 +8,7 @@ namespace EmptyProject
     {
         private Log Log { get; } = LogManager.GetForCurrentAssembly();
 
-        internal GameCore() : base(new(false, false))
+        internal GameCore()
         {
             Log.Info("Hello, world!");
         }

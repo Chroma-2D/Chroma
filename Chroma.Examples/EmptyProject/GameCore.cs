@@ -1,6 +1,5 @@
 using Chroma;
 using Chroma.Diagnostics.Logging;
-using Chroma.Graphics;
 
 namespace EmptyProject
 {
@@ -11,10 +10,6 @@ namespace EmptyProject
         internal GameCore()
         {
             Log.Info("Hello, world!");
-        }
-
-        protected override void Draw(RenderContext context)
-        {
         }
     }
 }

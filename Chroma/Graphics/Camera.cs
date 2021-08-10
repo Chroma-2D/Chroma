@@ -1,3 +1,4 @@
+using System.Numerics;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics
@@ -24,6 +25,18 @@ namespace Chroma.Graphics
             set => GpuCamera.z = value;
         }
 
+        public Vector3 Position
+        {
+            get => new(X, Y, Z);
+
+            set
+            {
+                X = value.X;
+                Y = value.Y;
+                Z = value.Z;
+            }
+        }
+
         public float ZoomX
         {
             get => GpuCamera.zoom_x;
@@ -34,6 +47,17 @@ namespace Chroma.Graphics
         {
             get => GpuCamera.zoom_y;
             set => GpuCamera.zoom_y = value;
+        }
+
+        public Vector2 Zoom
+        {
+            get => new(ZoomX, ZoomY);
+            
+            set
+            {
+                ZoomX = value.X;
+                ZoomY = value.Y;
+            }
         }
 
         public bool UseCenteredOrigin

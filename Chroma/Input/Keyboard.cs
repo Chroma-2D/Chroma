@@ -5,8 +5,8 @@ namespace Chroma.Input
 {
     public static class Keyboard
     {
-        private static readonly Dictionary<KeyCode, bool> _keyCodeStates;
-        private static readonly Dictionary<ScanCode, bool> _scanCodeStates;
+        private static readonly Dictionary<KeyCode, bool> _keyCodeStates = new();
+        private static readonly Dictionary<ScanCode, bool> _scanCodeStates = new();
         
         public static IReadOnlyList<KeyCode> ActiveKeys =>
             _keyCodeStates.Where(x => x.Value)
@@ -19,14 +19,11 @@ namespace Chroma.Input
         public static bool IsKeyDown(ScanCode scanCode)
             => _scanCodeStates.ContainsKey(scanCode) && _scanCodeStates[scanCode];
         
-        static Keyboard()
-        {
-            _keyCodeStates = new Dictionary<KeyCode, bool>();
-            _scanCodeStates = new Dictionary<ScanCode, bool>();
-        }
-
-        public static bool IsKeyUp(KeyCode keyCode) => !IsKeyDown(keyCode);
-        public static bool IsKeyUp(ScanCode scanCode) => !IsKeyDown(scanCode);
+        public static bool IsKeyUp(KeyCode keyCode) 
+            => !IsKeyDown(keyCode);
+        
+        public static bool IsKeyUp(ScanCode scanCode) 
+            => !IsKeyDown(scanCode);
 
         internal static void OnKeyReleased(Game game, KeyEventArgs e)
         {

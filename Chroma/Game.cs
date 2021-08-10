@@ -5,6 +5,7 @@ using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Diagnostics;
 using Chroma.Diagnostics.Logging;
+using Chroma.Extensibility;
 using Chroma.Graphics;
 using Chroma.Input;
 using Chroma.Natives.SDL;
@@ -65,6 +66,8 @@ namespace Chroma
             InitializeContent();
 
             AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
+
+            ExtensionRegistry.FindAndLoadExtensions(this);
         }
 
         public void Run()

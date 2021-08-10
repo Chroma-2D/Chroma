@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Numerics;
 using Chroma;
+using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Graphics;
 using Chroma.Input;
@@ -18,7 +19,11 @@ namespace Scissors
 
         public GameCore() : base(new(false, false))
         {
-            Content = new FileSystemContentProvider(
+        }
+
+        protected override IContentProvider InitializeContentPipeline()
+        {
+            return new FileSystemContentProvider(
                 Path.Combine(AppContext.BaseDirectory, "../../../../_common")
             );
         }

@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using Chroma;
+using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Graphics;
 using Chroma.Graphics.TextRendering;
@@ -36,7 +37,11 @@ namespace TextInput
 
         public GameCore() : base(new(false, false))
         {
-            Content = new FileSystemContentProvider(
+        }
+
+        protected override IContentProvider InitializeContentPipeline()
+        {
+            return new FileSystemContentProvider(
                 Path.Combine(AppContext.BaseDirectory, "../../../../_common")
             );
         }

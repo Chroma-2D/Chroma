@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Numerics;
 using Chroma;
+using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Diagnostics;
 using Chroma.Diagnostics.Logging;
@@ -26,15 +27,18 @@ namespace PixelShaders
 
         public GameCore() : base(new(false, false))
         {
-            Content = new FileSystemContentProvider(
-                Path.Combine(AppContext.BaseDirectory, "../../../../_common")
-            );
-
             _log.Info(
                 $"GLSL {Shader.MinimumSupportedGlslVersion}-{Shader.MaximumSupportedGlslVersion} supported.");
             
             Window.GoWindowed(new Size(1024, 600));
             Window.CenterOnScreen();
+        }
+
+        protected override IContentProvider InitializeContentPipeline()
+        {
+            return new FileSystemContentProvider(
+                Path.Combine(AppContext.BaseDirectory, "../../../../_common")
+            );
         }
 
         protected override void LoadContent()

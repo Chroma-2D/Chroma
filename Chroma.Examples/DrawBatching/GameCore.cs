@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Numerics;
 using Chroma;
+using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Graphics;
 using Chroma.Graphics.Batching;
@@ -20,11 +21,15 @@ namespace DrawBatching
 
         public GameCore() : base(new(false, false))
         {
-            Content = new FileSystemContentProvider(
+        }
+
+        protected override IContentProvider InitializeContentPipeline()
+        {
+            return new FileSystemContentProvider(
                 Path.Combine(AppContext.BaseDirectory, "../../../../_common")
             );
         }
-        
+
         protected override void LoadContent()
         {
             _texA = Content.Load<Texture>("Textures/burg.png");

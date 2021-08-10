@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Numerics;
 using Chroma;
+using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Diagnostics;
 using Chroma.Graphics;
@@ -37,13 +38,16 @@ namespace Textures
         };
 
         public GameCore() : base(new(false, false))
-        {
-            Content = new FileSystemContentProvider(
-                Path.Combine(AppContext.BaseDirectory, "../../../../_common")
-            );
-            
+        {           
             Graphics.LimitFramerate = false;
             Cursor.IsVisible = false;
+        }
+
+        protected override IContentProvider InitializeContentPipeline()
+        {
+            return new FileSystemContentProvider(
+                Path.Combine(AppContext.BaseDirectory, "../../../../_common")
+            );
         }
 
         protected override void LoadContent()

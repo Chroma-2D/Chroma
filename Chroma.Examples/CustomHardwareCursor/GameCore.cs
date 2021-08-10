@@ -2,6 +2,7 @@
 using System.IO;
 using System.Numerics;
 using Chroma;
+using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Graphics;
 using Chroma.Input;
@@ -14,11 +15,15 @@ namespace CustomHardwareCursor
 
         public GameCore() : base(new(false, false))
         {
+        }
+
+        protected override IContentProvider InitializeContentPipeline()
+        {
             // in normal use cases this is completely unnecessary
             // but there is more than one example project
             // so sharing between them is necessary to keep the
             // source tree clean
-            Content = new FileSystemContentProvider(
+            return new FileSystemContentProvider(
                 Path.Combine(AppContext.BaseDirectory, "../../../../_common")
             );
         }

@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using Chroma;
 using Chroma.Audio;
 using Chroma.Audio.Sources;
+using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
@@ -27,10 +28,6 @@ namespace MusicAndSounds
 
         public GameCore() : base(new(false, false))
         {
-            Content = new FileSystemContentProvider(
-                Path.Combine(AppContext.BaseDirectory, "../../../../_common")
-            );
-            
             Window.GoWindowed(new Size(800, 600));
             Audio.DeviceConnected += (_, e) =>
             {
@@ -44,6 +41,13 @@ namespace MusicAndSounds
             }
 
             FixedTimeStepTarget = 75;
+        }
+
+        protected override IContentProvider InitializeContentPipeline()
+        {
+            return new FileSystemContentProvider(
+                Path.Combine(AppContext.BaseDirectory, "../../../../_common")
+            );
         }
 
         protected override void LoadContent()

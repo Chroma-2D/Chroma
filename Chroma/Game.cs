@@ -39,7 +39,7 @@ namespace Chroma
         public Window Window { get; private set; }
         public GraphicsManager Graphics { get; private set; }
         public AudioManager Audio { get; private set; }
-        public IContentProvider Content { get; protected set; }
+        public IContentProvider Content { get; private set; }
 
         public Game(GameStartupOptions options = null)
         {
@@ -63,11 +63,8 @@ namespace Chroma
             InitializeThreading();
             InitializeGraphics();
             InitializeAudio();
-            InitializeContent();
 
             AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
-
-            ExtensionRegistry.FindAndLoadExtensions(this);
         }
 
         public void Run()
@@ -77,7 +74,7 @@ namespace Chroma
 
             if (!StartupOptions.UseBootSplash)
             {
-                LoadContent();
+                FinishBoot();
             }
             
             Window.Run();
@@ -105,6 +102,11 @@ namespace Chroma
 
         protected virtual void FixedUpdate(float delta)
         {
+        }
+        
+        protected virtual IContentProvider InitializeContentPipeline()
+        {
+            return new FileSystemContentProvider();
         }
 
         protected virtual void LoadContent()
@@ -248,17 +250,21 @@ namespace Chroma
             Audio.Initialize();
         }
 
-        private void InitializeContent()
-        {
-            Content = new FileSystemContentProvider();
-        }
-
         private void BootSceneFinished(object sender, EventArgs e)
         {
             _bootScene.Finished -= BootSceneFinished;
+
+            FinishBoot();
             
-            LoadContent();
             InitializeGraphicsDefault();
+        }
+
+        private void FinishBoot()
+        {
+            Content = InitializeContentPipeline();
+            LoadContent();
+                
+            ExtensionRegistry.FindAndLoadExtensions(this);
         }
     }
 }

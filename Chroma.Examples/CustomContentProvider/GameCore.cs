@@ -3,6 +3,7 @@ using System.IO;
 using System.Numerics;
 using Chroma;
 using Chroma.Audio.Sources;
+using Chroma.ContentManagement;
 using Chroma.Graphics;
 using Chroma.Input;
 
@@ -20,16 +21,18 @@ namespace CustomContentProvider
 
         protected override void LoadContent()
         {
-            Content.Dispose();
-            Content = new ZipContentProvider(
-                this, 
-                Path.Combine(AppContext.BaseDirectory, "../../../../_common/assets.zip")
-            );
-            
             _texture = Content.Load<Texture>("Textures/pentagram.png");
             _texture.FilteringMode = TextureFilteringMode.NearestNeighbor;
 
             _shotgun = Content.Load<Sound>("doomsg.wav");
+        }
+
+        protected override IContentProvider InitializeContentPipeline()
+        {
+            return new ZipContentProvider(
+                this, 
+                Path.Combine(AppContext.BaseDirectory, "../../../../_common/assets.zip")
+            );
         }
 
         protected override void Draw(RenderContext context)

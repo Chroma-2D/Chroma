@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using Chroma;
+using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Graphics;
 using Chroma.Graphics.TextRendering.Bitmap;
@@ -23,14 +24,17 @@ namespace Fonts
 
         public GameCore() : base(new(false, false))
         {
-            Content = new FileSystemContentProvider(
-                Path.Combine(AppContext.BaseDirectory, "../../../../_common")
-            );
-
             Graphics.VerticalSyncMode = VerticalSyncMode.None;
             Cursor.IsVisible = false;
         }
-        
+
+        protected override IContentProvider InitializeContentPipeline()
+        {
+            return new FileSystemContentProvider(
+                Path.Combine(AppContext.BaseDirectory, "../../../../_common")
+            );
+        }
+
         protected override void LoadContent()
         {
             _republika = Content.Load<TrueTypeFont>("Fonts/republika.ttf", 32);

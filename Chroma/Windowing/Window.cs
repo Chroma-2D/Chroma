@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Threading;
 using Chroma.Diagnostics;
 using Chroma.Diagnostics.Logging;
+using Chroma.Extensibility;
 using Chroma.Graphics;
 using Chroma.MemoryManagement;
 using Chroma.Natives.SDL;
@@ -439,7 +440,12 @@ namespace Chroma.Windowing
                     -1, -1, 0, 0, 0, 1, 1
                 );
 
-                Draw?.Invoke(_renderContext);
+                if(ExtensionRegistry.InvokeBeforeDrawHooks(_renderContext))
+                {
+                    Draw?.Invoke(_renderContext);
+                    ExtensionRegistry.InvokeAfterDrawHooks(_renderContext);
+                }
+
                 SDL_gpu.GPU_Flip(RenderTargetHandle);
 
                 if (Game.Graphics.LimitFramerate)
@@ -522,7 +528,11 @@ namespace Chroma.Windowing
 
         private void DoTick(float delta)
         {
-            Update?.Invoke(delta);
+            if (ExtensionRegistry.InvokeBeforeUpdateHooks(delta))
+            {
+                Update?.Invoke(delta);
+                ExtensionRegistry.InvokeAfterUpdateHooks(delta);
+            }
 
             while (Dispatcher.ActionQueue.Any())
             {
@@ -544,7 +554,12 @@ namespace Chroma.Windowing
         {
             while (PerformanceCounter.Lag >= PerformanceCounter.FixedDelta)
             {
-                FixedUpdate?.Invoke(delta);
+                if (ExtensionRegistry.InvokeBeforeFixedUpdateHooks(delta))
+                {
+                    FixedUpdate?.Invoke(delta);
+                    ExtensionRegistry.InvokeAfterFixedUpdateHooks(delta);
+                }
+
                 PerformanceCounter.Lag -= PerformanceCounter.FixedDelta;
             }
         }

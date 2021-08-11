@@ -262,9 +262,9 @@ namespace Chroma
         private void FinishBoot()
         {
             Content = InitializeContentPipeline();
-            LoadContent();
-                
             ExtensionRegistry.FindAndLoadExtensions(this);
+                
+            LoadContent();
         }
     }
 }

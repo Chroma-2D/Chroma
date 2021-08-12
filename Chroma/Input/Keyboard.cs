@@ -1,56 +1,38 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace Chroma.Input
 {
     public static class Keyboard
     {
-        private static readonly Dictionary<KeyCode, bool> _keyCodeStates = new();
-        private static readonly Dictionary<ScanCode, bool> _scanCodeStates = new();
-        
-        public static IReadOnlyList<KeyCode> ActiveKeys =>
-            _keyCodeStates.Where(x => x.Value)
-                .Select(x => x.Key)
-                .ToList();
+        private static readonly HashSet<KeyCode> _keyCodeStates = new();
+        private static readonly HashSet<ScanCode> _scanCodeStates = new();
+
+        public static IReadOnlySet<KeyCode> ActiveKeys => _keyCodeStates;
 
         public static bool IsKeyDown(KeyCode keyCode)
-            => _keyCodeStates.ContainsKey(keyCode) && _keyCodeStates[keyCode];
+            => _keyCodeStates.Contains(keyCode);
 
         public static bool IsKeyDown(ScanCode scanCode)
-            => _scanCodeStates.ContainsKey(scanCode) && _scanCodeStates[scanCode];
-        
-        public static bool IsKeyUp(KeyCode keyCode) 
+            => _scanCodeStates.Contains(scanCode);
+
+        public static bool IsKeyUp(KeyCode keyCode)
             => !IsKeyDown(keyCode);
-        
-        public static bool IsKeyUp(ScanCode scanCode) 
+
+        public static bool IsKeyUp(ScanCode scanCode)
             => !IsKeyDown(scanCode);
 
         internal static void OnKeyReleased(Game game, KeyEventArgs e)
         {
-            if (!_keyCodeStates.ContainsKey(e.KeyCode))
-                _keyCodeStates.Add(e.KeyCode, false);
-            else
-                _keyCodeStates[e.KeyCode] = false;
-
-            if (!_scanCodeStates.ContainsKey(e.ScanCode))
-                _scanCodeStates.Add(e.ScanCode, false);
-            else
-                _scanCodeStates[e.ScanCode] = false;
+            _keyCodeStates.Remove(e.KeyCode);
+            _scanCodeStates.Remove(e.ScanCode);
 
             game.OnKeyReleased(e);
         }
 
         internal static void OnKeyPressed(Game game, KeyEventArgs e)
         {
-            if (!_keyCodeStates.ContainsKey(e.KeyCode))
-                _keyCodeStates.Add(e.KeyCode, true);
-            else
-                _keyCodeStates[e.KeyCode] = true;
-
-            if (!_scanCodeStates.ContainsKey(e.ScanCode))
-                _scanCodeStates.Add(e.ScanCode, true);
-            else
-                _scanCodeStates[e.ScanCode] = true;
+            _keyCodeStates.Add(e.KeyCode);
+            _scanCodeStates.Add(e.ScanCode);
 
             game.OnKeyPressed(e);
         }

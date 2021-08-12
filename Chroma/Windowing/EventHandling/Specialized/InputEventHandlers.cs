@@ -198,7 +198,8 @@ namespace Chroma.Windowing.EventHandling.Specialized
             if (ev.button.which == SDL2.SDL_TOUCH_MOUSEID)
                 return;
 
-            owner.Game.OnMousePressed(
+            Mouse.OnButtonPressed(
+                owner.Game,
                 new MouseButtonEventArgs(
                     new Vector2(
                         ev.button.x,
@@ -216,7 +217,8 @@ namespace Chroma.Windowing.EventHandling.Specialized
             if (ev.button.which == SDL2.SDL_TOUCH_MOUSEID)
                 return;
 
-            owner.Game.OnMouseReleased(
+            Mouse.OnButtonReleased(
+                owner.Game,
                 new MouseButtonEventArgs(
                     new Vector2(
                         ev.button.x,

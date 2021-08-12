@@ -1,10 +1,15 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Input
 {
     public static class Mouse
     {
+        private static readonly HashSet<MouseButton> _buttonStates = new();
+
+        public static IReadOnlySet<MouseButton> ActiveButtons => _buttonStates;
+
         public static bool IsRelativeModeEnabled
         {
             get => SDL2.SDL_GetRelativeMouseMode() == SDL2.SDL_bool.SDL_TRUE;
@@ -27,5 +32,19 @@ namespace Chroma.Input
 
         public static bool IsButtonUp(MouseButton button)
             => !IsButtonDown(button);
+
+        internal static void OnButtonPressed(Game game, MouseButtonEventArgs e)
+        {
+            _buttonStates.Add(e.Button);
+            
+            game.OnMousePressed(e);
+        }
+
+        internal static void OnButtonReleased(Game game, MouseButtonEventArgs e)
+        {
+            _buttonStates.Remove(e.Button);
+            
+            game.OnMouseReleased(e);
+        }
     }
 }

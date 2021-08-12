@@ -51,6 +51,8 @@ namespace Chroma.Graphics.TextRendering.TrueType
         public bool IsKerningEnabled { get; set; } = true;
         public int LineSpacing { get; private set; }
 
+        public int MaximumBearing => _maxBearing;
+
         public int Height
         {
             get => _height;
@@ -145,6 +147,24 @@ namespace Chroma.Graphics.TextRendering.TrueType
             _hintingMode = HintingMode.Normal;
 
             InitializeFontData();
+        }
+
+        public void GetGlyphControlBox(char c, out int xMin, out int xMax, out int yMin, out int yMax)
+        {
+            xMin = 0;
+            xMax = 0;
+            
+            yMin = 0;
+            yMax = 0;
+            
+            if (!HasGlyph(c))
+                return;
+
+            xMin = _glyphs[c].MinimumX;
+            xMax = _glyphs[c].MaximumX;
+            
+            yMin = _glyphs[c].MinimumY;
+            yMax = _glyphs[c].MaximumY;
         }
 
         public bool HasGlyph(char c)
@@ -400,7 +420,6 @@ namespace Chroma.Graphics.TextRendering.TrueType
                     FT.FT_Render_Glyph(_face->glyph, renderMode);
 
                     var bmp = _face->glyph->bitmap;
-
                     if (penX + bmp.width >= texWidth)
                     {
                         penX = 0;
@@ -425,6 +444,13 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
         private unsafe TrueTypeGlyph BuildGlyphInfo(FT_Bitmap bmp, int penX, int penY)
         {
+            FT.FT_Get_Glyph((IntPtr)_face->glyph, out var glyph);
+            FT.FT_Glyph_Get_CBox(
+                glyph,
+                FT_Glyph_BBox_Mode.FT_GLYPH_BBOX_PIXELS,
+                out var cbox
+            );
+            
             return new()
             {
                 Position = new Vector2(penX, penY),
@@ -439,7 +465,11 @@ namespace Chroma.Graphics.TextRendering.TrueType
                 Advance = new Vector2(
                     _face->glyph->advance.x.ToInt32() >> 6,
                     _face->glyph->advance.y.ToInt32() >> 6
-                )
+                ),
+                MaximumX = cbox.xMax.ToInt32(),
+                MaximumY = cbox.yMax.ToInt32(),
+                MinimumX = cbox.xMin.ToInt32(),
+                MinimumY = cbox.yMin.ToInt32()
             };
         }
 

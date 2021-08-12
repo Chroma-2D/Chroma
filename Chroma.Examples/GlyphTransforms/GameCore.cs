@@ -5,6 +5,7 @@ using System.Numerics;
 using Chroma;
 using Chroma.Graphics;
 using Chroma.Graphics.TextRendering;
+using Chroma.Graphics.TextRendering.TrueType;
 
 namespace GlyphTransforms
 {
@@ -81,6 +82,29 @@ namespace GlyphTransforms
                         Position = pointOnCircle + new Vector2(300),
                         Rotation = _angle * 10,
                         Color = _colors[i % _colors.Count]
+                    };
+                }
+            );
+            
+            context.DrawString(
+                "This text should be rotated 90 degrees right.",
+                new Vector2(120, 250),
+                (c, i, p) =>
+                {                   
+                    var offsets = TrueTypeFont.Default.GetRenderOffsets(c);
+                    var bounds = TrueTypeFont.Default.GetGlyphBounds(c);
+                    TrueTypeFont.Default.GetGlyphControlBox(
+                        c, 
+                        out _, 
+                        out _, 
+                        out var yMin, 
+                        out _
+                    );
+                    
+                    return new GlyphTransformData
+                    {
+                        Position = new(p.Y - offsets.Y + bounds.Height + yMin, p.X),
+                        Rotation = 90
                     };
                 }
             );

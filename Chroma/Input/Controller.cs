@@ -15,11 +15,6 @@ namespace Chroma.Input
 
         private static readonly HashSet<ControllerButton>[] _buttonStates =
             new HashSet<ControllerButton>[ControllerRegistry.MaxSupportedPlayers];
-
-        private static readonly Dictionary<int, HashSet<ControllerButton>> _buttonStatesDict =
-            new(ControllerRegistry.MaxSupportedPlayers);
-
-        private static readonly Stopwatch _sw = new();
         
         public static IReadOnlyList<IReadOnlySet<ControllerButton>> ActiveButtons => _buttonStates;
         public static int DeviceCount => ControllerRegistry.Instance.DeviceCount;
@@ -102,19 +97,10 @@ namespace Chroma.Input
             => GetAxisValue(playerIndex, axis) / 32768f;
 
         public static bool IsButtonDown(int playerIndex, ControllerButton button)
-        {
-            _sw.Restart();
-            var result = _buttonStates[playerIndex] != null && _buttonStates[playerIndex].Contains(button);
-            _sw.Stop();
-            Console.Write($"Array ButtonDown: {result} | ");
-            _sw.Restart();
-            var result2 = _buttonStatesDict.ContainsKey(playerIndex) && _buttonStatesDict[playerIndex].Contains(button);
-            _sw.Stop();
-            Console.WriteLine($"Dictionary ButtonDown: {result}");
-            return result2;
-        }
+            => _buttonStates[playerIndex] != null && _buttonStates[playerIndex].Contains(button);
 
-        public static bool IsButtonUp(int playerIndex, ControllerButton button) => !IsButtonDown(playerIndex, button);
+        public static bool IsButtonUp(int playerIndex, ControllerButton button)
+            => !IsButtonDown(playerIndex, button);
 
         public static void Vibrate(int playerIndex, ushort lowFreq, ushort highFreq, uint duration)
         {
@@ -168,7 +154,6 @@ namespace Chroma.Input
         internal static void OnControllerConnected(Game game, ControllerEventArgs e)
         {
             _buttonStates[e.Controller.PlayerIndex] = new();
-            _buttonStatesDict.Add(e.Controller.PlayerIndex, new());
             game.OnControllerConnected(e);
         }
 
@@ -176,25 +161,18 @@ namespace Chroma.Input
         {
             _buttonStates[e.Controller.PlayerIndex].Clear();
             _buttonStates[e.Controller.PlayerIndex] = null;
-            _buttonStatesDict.Remove(e.Controller.PlayerIndex);
             game.OnControllerDisconnected(e);
         }
 
         internal static void OnButtonReleased(Game game, ControllerButtonEventArgs e)
         {
             _buttonStates[e.Controller.PlayerIndex].Remove(e.Button);
-            
-            _buttonStatesDict[e.Controller.PlayerIndex].Remove(e.Button);
-
             game.OnControllerButtonReleased(e);
         }
 
         internal static void OnButtonPressed(Game game, ControllerButtonEventArgs e)
         {
             _buttonStates[e.Controller.PlayerIndex].Add(e.Button);
-
-            _buttonStatesDict[e.Controller.PlayerIndex].Add(e.Button);
-
             game.OnControllerButtonPressed(e);
         }
     }

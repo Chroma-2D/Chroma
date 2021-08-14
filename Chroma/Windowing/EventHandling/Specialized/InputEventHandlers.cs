@@ -122,9 +122,7 @@ namespace Chroma.Windowing.EventHandling.Specialized
 
             ControllerRegistry.Instance.Unregister(instance);
 
-            owner.Game.OnControllerDisconnected(
-                new ControllerEventArgs(controllerInfo)
-            );
+            Controller.OnControllerDisconnected(owner.Game, new ControllerEventArgs(controllerInfo));
         }
 
         private void KeyReleased(Window owner, SDL2.SDL_Event ev)

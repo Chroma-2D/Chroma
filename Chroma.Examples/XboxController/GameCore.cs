@@ -41,7 +41,9 @@ namespace XboxController
             });
 
             context.DrawTexture(_tgt, _position + _tgt.Center, Vector2.One * _scale, _tgt.Center, _rotation);
-            var inputs = Controller.ActiveKeys[0].Aggregate("", (current, btn) => current + (btn + ", "));
+            var inputs = "";
+            if(Controller.DeviceCount >= 1)
+                inputs = string.Join(' ', Controller.ActiveButtons[0]);
             context.DrawString("Use left stick to control the rectangle.\n" +
                                "Use right stick to control rumble.\n" +
                                "Use left trigger to control rotation.\n" +

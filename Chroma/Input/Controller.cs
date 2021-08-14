@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Chroma.Diagnostics.Logging;
 using Chroma.Hardware;
 using Chroma.Input.Internal;
@@ -9,6 +11,11 @@ namespace Chroma.Input
     public static class Controller
     {
         private static readonly Log _log = LogManager.GetForCurrentAssembly();
+
+        private static readonly HashSet<ControllerButton>[] _activeButtons =
+            new HashSet<ControllerButton>[ControllerRegistry.MaxSupportedPlayers];
+        
+        public static IReadOnlyList<IReadOnlySet<ControllerButton>> ActiveKeys => Array.AsReadOnly(_activeButtons);
         public static int DeviceCount => ControllerRegistry.Instance.DeviceCount;
 
         public static bool CanIgnoreAxisMotion(int playerIndex, ControllerAxis axis, short axisValue)
@@ -88,18 +95,10 @@ namespace Chroma.Input
         public static float GetAxisValueNormalized(int playerIndex, ControllerAxis axis)
             => GetAxisValue(playerIndex, axis) / 32768f;
 
-        public static bool IsButtonPressed(int playerIndex, ControllerButton button)
-        {
-            var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
+        public static bool IsButtonDown(int playerIndex, ControllerButton button)
+            => _activeButtons[playerIndex] != null && _activeButtons[playerIndex].Contains(button);
 
-            if (controller == null)
-                return false;
-
-            return SDL2.SDL_GameControllerGetButton(
-                controller.InstancePointer,
-                (SDL2.SDL_GameControllerButton)button
-            ) > 0;
-        }
+        public static bool IsButtonUp(int playerIndex, ControllerButton button) => !IsButtonDown(playerIndex, button);
 
         public static void Vibrate(int playerIndex, ushort lowFreq, ushort highFreq, uint duration)
         {
@@ -148,6 +147,34 @@ namespace Chroma.Input
 
             if (SDL2.SDL_GameControllerAddMapping(controllerMapping) < 0)
                 _log.Error($"Failed to add a controller mapping: {SDL2.SDL_GetError()}.");
+        }
+
+        internal static void OnControllerConnected(Game game, ControllerEventArgs e)
+        {
+            _activeButtons[e.Controller.PlayerIndex] = new();
+            game.OnControllerConnected(e);
+        }
+
+        internal static void OnControllerDisconnected(Game game, ControllerEventArgs e)
+        {
+            _activeButtons[e.Controller.PlayerIndex].Clear();
+            game.OnControllerDisconnected(e);
+        }
+
+        internal static void OnButtonReleased(Game game, ControllerButtonEventArgs e)
+        {
+            _activeButtons[e.Controller.PlayerIndex] ??= new();
+            _activeButtons[e.Controller.PlayerIndex].Remove(e.Button);
+
+            game.OnControllerButtonReleased(e);
+        }
+
+        internal static void OnButtonPressed(Game game, ControllerButtonEventArgs e)
+        {
+            _activeButtons[e.Controller.PlayerIndex] ??= new();
+            _activeButtons[e.Controller.PlayerIndex].Add(e.Button);
+
+            game.OnControllerButtonPressed(e);
         }
     }
 }

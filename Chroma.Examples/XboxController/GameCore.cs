@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Numerics;
 using Chroma;
 using Chroma.Graphics;
@@ -40,13 +41,15 @@ namespace XboxController
             });
 
             context.DrawTexture(_tgt, _position + _tgt.Center, Vector2.One * _scale, _tgt.Center, _rotation);
+            var inputs = Controller.ActiveKeys[0].Aggregate("", (current, btn) => current + (btn + ", "));
             context.DrawString("Use left stick to control the rectangle.\n" +
                                "Use right stick to control rumble.\n" +
                                "Use left trigger to control rotation.\n" +
                                "Use right trigger to control scale.\n" +
                                "Use A/B/X/Y to control colors.\n" +
                                "Use left/right stick buttons to toggle between stroke and fill.\n" +
-                               "Use left/right bumper to control line thickness.", new Vector2(8));
+                               "Use left/right bumper to control line thickness.\n" +
+                               inputs, new Vector2(8));
         }
 
         protected override void Update(float delta)
@@ -54,8 +57,8 @@ namespace XboxController
             _scale = 1.0f + 16f * Controller.GetAxisValueNormalized(0, ControllerAxis.RightTrigger);
             _rotation = 360 * Controller.GetAxisValueNormalized(0, ControllerAxis.LeftTrigger);
 
-            _position.X += 120 * delta * Controller.GetAxisValueNormalized(0, ControllerAxis.LeftStickX);
-            _position.Y += 120 * delta * Controller.GetAxisValueNormalized(0, ControllerAxis.LeftStickY);
+            _position.X += (Controller.IsButtonDown(0, ControllerButton.A) ? 240 : 120) * delta * Controller.GetAxisValueNormalized(0, ControllerAxis.LeftStickX);
+            _position.Y += (Controller.IsButtonDown(0, ControllerButton.A) ? 240 : 120) * delta * Controller.GetAxisValueNormalized(0, ControllerAxis.LeftStickY);
 
             var rumbleSide = Controller.GetAxisValueNormalized(0, ControllerAxis.RightStickX);
 

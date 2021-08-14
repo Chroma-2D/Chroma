@@ -67,7 +67,8 @@ namespace Chroma.Windowing.EventHandling.Specialized
 
             var button = (ControllerButton)ev.cbutton.button;
 
-            owner.Game.OnControllerButtonPressed(
+            Controller.OnButtonPressed(
+                owner.Game,
                 new ControllerButtonEventArgs(
                     controller,
                     button
@@ -82,7 +83,8 @@ namespace Chroma.Windowing.EventHandling.Specialized
 
             var button = (ControllerButton)ev.cbutton.button;
 
-            owner.Game.OnControllerButtonReleased(
+            Controller.OnButtonReleased(
+                owner.Game,
                 new ControllerButtonEventArgs(
                     controller,
                     button
@@ -110,9 +112,7 @@ namespace Chroma.Windowing.EventHandling.Specialized
             var controllerInfo = new ControllerInfo(instance, instanceId, guid, playerIndex, name, productInfo);
             ControllerRegistry.Instance.Register(instance, controllerInfo);
 
-            owner.Game.OnControllerConnected(
-                new ControllerEventArgs(controllerInfo)
-            );
+            Controller.OnControllerConnected(owner.Game, new ControllerEventArgs(controllerInfo));
         }
 
         private void ControllerDisconnected(Window owner, SDL2.SDL_Event ev)

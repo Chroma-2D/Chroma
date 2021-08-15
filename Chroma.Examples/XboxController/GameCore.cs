@@ -105,12 +105,12 @@ namespace XboxController
 
         protected override void ControllerConnected(ControllerEventArgs e)
         {
-            Controller.SetDeadZone(e.Controller.Info.PlayerIndex, ControllerAxis.LeftStickX, 5500);
-            Controller.SetDeadZone(e.Controller.Info.PlayerIndex, ControllerAxis.LeftStickY, 5500);
-            Controller.SetDeadZone(e.Controller.Info.PlayerIndex, ControllerAxis.RightStickX, 5500);
-            Controller.SetDeadZone(e.Controller.Info.PlayerIndex, ControllerAxis.RightStickY, 5500);
+            e.Controller.SetDeadZone(ControllerAxis.LeftStickX, 5500);
+            e.Controller.SetDeadZone(ControllerAxis.LeftStickY, 5500);
+            e.Controller.SetDeadZone(ControllerAxis.RightStickX, 5500);
+            e.Controller.SetDeadZone(ControllerAxis.RightStickY, 5500);
 
-            Console.WriteLine(e.Controller);
+            Console.WriteLine(e.Controller.Info);
         }
 
         protected override void ControllerButtonPressed(ControllerButtonEventArgs e)

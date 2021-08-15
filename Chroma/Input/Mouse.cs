@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
 using Chroma.Natives.SDL;
+using Chroma.Windowing;
 
 namespace Chroma.Input
 {
@@ -12,14 +13,60 @@ namespace Chroma.Input
 
         public static bool IsRelativeModeEnabled
         {
-            get => SDL2.SDL_GetRelativeMouseMode() == SDL2.SDL_bool.SDL_TRUE;
-            set => SDL2.SDL_SetRelativeMouseMode(value ? SDL2.SDL_bool.SDL_TRUE : SDL2.SDL_bool.SDL_FALSE);
+            get => SDL2.SDL_GetRelativeMouseMode();
+            set => SDL2.SDL_SetRelativeMouseMode(value);
         }
 
-        public static Vector2 GetPosition()
+        public static bool IsCaptured
         {
-            _ = SDL2.SDL_GetMouseState(out var x, out var y);
-            return new Vector2(x, y);
+            get => SDL2.SDL_GetWindowMouseGrab(Window.InternalHandle);
+
+            set
+            {
+                if (value) Capture();
+                else Release();
+            }
+        }
+
+        public static Vector2 WindowSpacePosition
+        {
+            get
+            {
+                _ = SDL2.SDL_GetMouseState(out var x, out var y);
+                return new Vector2(x, y);
+            }
+
+            set => SetPosition((int)value.X, (int)value.Y);
+        }
+
+        public static Vector2 ScreenSpacePosition
+        {
+            get
+            {
+                _ = SDL2.SDL_GetGlobalMouseState(out var x, out var y);
+                return new Vector2(x, y);
+            }
+
+            set => SetPosition((int)value.X, (int)value.Y, true);
+        }
+
+        public static Vector2 GetPosition(bool screenSpace = false)
+        {
+            return screenSpace
+                ? ScreenSpacePosition
+                : WindowSpacePosition;
+        }
+
+        public static void SetPosition(int x, int y, bool screenSpace = false)
+        {
+            if (screenSpace)
+            {
+                SDL2.SDL_WarpMouseGlobal(x, y);
+            }
+            else
+            {
+                SDL2.SDL_WarpMouseInWindow(Window.InternalHandle, x, y);
+            }
         }
 
         public static bool IsButtonDown(MouseButton button)
@@ -32,6 +79,12 @@ namespace Chroma.Input
 
         public static bool IsButtonUp(MouseButton button)
             => !IsButtonDown(button);
+
+        public static void Capture()
+            => SDL2.SDL_SetWindowMouseGrab(Window.InternalHandle, true);
+        
+        public static void Release()
+            => SDL2.SDL_SetWindowMouseGrab(Window.InternalHandle, false);
 
         internal static void OnButtonPressed(Game game, MouseButtonEventArgs e)
         {

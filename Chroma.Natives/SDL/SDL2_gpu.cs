@@ -587,21 +587,21 @@ namespace Chroma.Natives.SDL
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_LogInfo(
-            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LpUtf8StrMarshaler))]
             string format,
             __arglist
         );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_LogWarning(
-            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LpUtf8StrMarshaler))]
             string format,
             __arglist
         );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_LogError(
-            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LpUtf8StrMarshaler))]
             string format,
             __arglist
         );
@@ -611,10 +611,10 @@ namespace Chroma.Natives.SDL
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_PushErrorCode(
-            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LpUtf8StrMarshaler))]
             string function,
             GPU_ErrorEnum error,
-            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LpUtf8StrMarshaler))]
             string details,
             __arglist
         );
@@ -623,7 +623,7 @@ namespace Chroma.Natives.SDL
         public static extern GPU_ErrorObject GPU_PopErrorCode();
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler), MarshalCookie = LPUtf8StrMarshaler.LeaveAllocated)]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LpUtf8StrMarshaler), MarshalCookie = LpUtf8StrMarshaler.LeaveAllocated)]
         public static extern string GPU_GetErrorString(GPU_ErrorEnum error);
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
@@ -633,7 +633,7 @@ namespace Chroma.Natives.SDL
         #region Renderer Setup
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern GPU_RendererID GPU_MakeRendererID(
-            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LpUtf8StrMarshaler))]
             string name,
             GPU_RendererEnum renderer,
             int major_version,
@@ -1128,7 +1128,7 @@ namespace Chroma.Natives.SDL
         #region Matrix Stack Accessors
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler), MarshalCookie = LPUtf8StrMarshaler.LeaveAllocated)]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LpUtf8StrMarshaler), MarshalCookie = LpUtf8StrMarshaler.LeaveAllocated)]
         public static unsafe extern string GPU_GetMatrixString(float* matrix);
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
@@ -1453,14 +1453,14 @@ namespace Chroma.Natives.SDL
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern uint GPU_CompileShader(
             GPU_ShaderEnum shader_type,
-            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LpUtf8StrMarshaler))]
             string shader_source
         );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern uint GPU_LoadShader(
             GPU_ShaderEnum shader_type,
-            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LpUtf8StrMarshaler))]
             string filename
         );
 
@@ -1505,13 +1505,13 @@ namespace Chroma.Natives.SDL
         public static extern void GPU_DeactivateShaderProgram();
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+        [return: MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LpUtf8StrMarshaler))]
         public static extern string GPU_GetShaderMessage();
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern int GPU_GetAttributeLocation(
             uint program_object,
-            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LpUtf8StrMarshaler))]
             string attrib_name
         );
 
@@ -1524,20 +1524,20 @@ namespace Chroma.Natives.SDL
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern int GPU_GetUniformLocation(
             uint program_object,
-            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LpUtf8StrMarshaler))]
             string uniform_name
         );
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern GPU_ShaderBlock GPU_LoadShaderBlock(
             uint program_object,
-            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LpUtf8StrMarshaler))]
             string position_name,
-            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LpUtf8StrMarshaler))]
             string texcoord_name,
-            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LpUtf8StrMarshaler))]
             string color_name,
-            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LPUtf8StrMarshaler))]
+            [In, MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(LpUtf8StrMarshaler))]
             string modelViewMatrix_name
         );
 

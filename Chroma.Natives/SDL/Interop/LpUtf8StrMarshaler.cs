@@ -4,14 +4,14 @@ using System.Text;
 
 namespace Chroma.Natives.SDL.Interop
 {
-    internal unsafe class LPUtf8StrMarshaler : ICustomMarshaler
+    internal unsafe class LpUtf8StrMarshaler : ICustomMarshaler
     {
         public const string LeaveAllocated = "LeaveAllocated";
 
         private bool _leaveAllocated;
 
-        private static readonly ICustomMarshaler _leaveAllocatedInstance = new LPUtf8StrMarshaler(true);
-        private static ICustomMarshaler _defaultInstance = new LPUtf8StrMarshaler(true);
+        private static readonly ICustomMarshaler _leaveAllocatedInstance = new LpUtf8StrMarshaler(true);
+        private static ICustomMarshaler _defaultInstance = new LpUtf8StrMarshaler(true);
 
         public static ICustomMarshaler GetInstance(string cookie)
         {
@@ -22,7 +22,7 @@ namespace Chroma.Natives.SDL.Interop
             };
         }
 
-        public LPUtf8StrMarshaler(bool leaveAllocated)
+        public LpUtf8StrMarshaler(bool leaveAllocated)
             => _leaveAllocated = leaveAllocated;
 
         public object MarshalNativeToManaged(IntPtr pNativeData)

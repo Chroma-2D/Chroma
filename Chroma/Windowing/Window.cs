@@ -135,20 +135,7 @@ namespace Chroma.Windowing
                 if (Handle == IntPtr.Zero)
                     return;
 
-                unsafe
-                {
-                    var win = (SDL2.SDL_Window*)Handle.ToPointer();
-                    if (value)
-                    {
-                        win->flags |= (uint)SDL2.SDL_WindowFlags.SDL_WINDOW_ALWAYS_ON_TOP;
-                    }
-                    else
-                    {
-                        win->flags &= (uint)(~SDL2.SDL_WindowFlags.SDL_WINDOW_ALWAYS_ON_TOP);
-                    }
-                }
-
-                SDL2.SDL_SetWindowSize(Handle, Size.Width, Size.Height);
+                SDL2.SDL_SetWindowAlwaysOnTop(Handle, value);
             }
         }
 
@@ -326,6 +313,12 @@ namespace Chroma.Windowing
 
         public void Hide()
             => SDL2.SDL_HideWindow(Handle);
+
+        public void Flash(WindowFlash flash)
+            => SDL2.SDL_FlashWindow(Handle, (SDL2.SDL_FlashOperation)flash);
+
+        public void StopFlashing()
+            => SDL2.SDL_FlashWindow(Handle, SDL2.SDL_FlashOperation.SDL_FLASH_CANCEL);
 
         public void CenterOnScreen()
         {

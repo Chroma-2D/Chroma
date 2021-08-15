@@ -14,6 +14,7 @@ namespace XboxController
         private float _rotation;
         private Vector2 _position = new(32);
         private Color _color = Color.White;
+        private Color _bgColor = Color.Black;
         private ShapeMode _mode;
         
         public GameCore() : base(new(false, false))
@@ -28,6 +29,7 @@ namespace XboxController
 
         protected override void Draw(RenderContext context)
         {
+            context.Clear(_bgColor);
             context.RenderTo(_tgt, () =>
             {
                 context.Clear(Color.Transparent);
@@ -40,13 +42,22 @@ namespace XboxController
             });
 
             context.DrawTexture(_tgt, _position + _tgt.Center, Vector2.One * _scale, _tgt.Center, _rotation);
+            var inputs = "";
+            for (var i = 0; i < Controller.ActiveButtons.Count; i++)
+            {
+                if (Controller.ActiveButtons[i] == null)
+                    continue;
+                inputs += $"Controller {i}: {string.Join(' ', Controller.ActiveButtons[i])}\n";
+            }
             context.DrawString("Use left stick to control the rectangle.\n" +
                                "Use right stick to control rumble.\n" +
                                "Use left trigger to control rotation.\n" +
                                "Use right trigger to control scale.\n" +
                                "Use A/B/X/Y to control colors.\n" +
+                               "Use A/B/X/Y on player 2 to control background colors.\n" +
                                "Use left/right stick buttons to toggle between stroke and fill.\n" +
-                               "Use left/right bumper to control line thickness.", new Vector2(8));
+                               "Use left/right bumper to control line thickness.\n" +
+                               inputs, new Vector2(8));
         }
 
         protected override void Update(float delta)
@@ -56,6 +67,17 @@ namespace XboxController
 
             _position.X += 120 * delta * Controller.GetAxisValueNormalized(0, ControllerAxis.LeftStickX);
             _position.Y += 120 * delta * Controller.GetAxisValueNormalized(0, ControllerAxis.LeftStickY);
+
+            if (Controller.IsButtonDown(1, ControllerButton.A))
+                _bgColor = Color.SlateGray;
+            else if (Controller.IsButtonDown(1, ControllerButton.B))
+                _bgColor = Color.DarkCyan;
+            else if (Controller.IsButtonDown(1, ControllerButton.X))
+                _bgColor = Color.DarkGreen;
+            else if (Controller.IsButtonDown(1, ControllerButton.Y))
+                _bgColor = Color.DarkRed;
+            else
+                _bgColor = Color.Black;
 
             var rumbleSide = Controller.GetAxisValueNormalized(0, ControllerAxis.RightStickX);
 

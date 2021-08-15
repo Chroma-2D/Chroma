@@ -15,7 +15,7 @@ namespace WindowOperations
     public class GameCore : Game
     {
         private readonly Log _log = LogManager.GetForCurrentAssembly();
-        
+
         private bool _drawCenterVector;
         private int _lastResult;
 
@@ -67,7 +67,9 @@ namespace WindowOperations
                 "Use <space> to toggle the center vector on/off.\n\n" +
                 $"Current viewport resolution: {Window.Size.Width}x{Window.Size.Height}\n" +
                 $"Maximum screen dimensions: {Window.MaximumSize.Width}x{Window.MaximumSize.Height}\n" +
-                $"Minimum screen dimensions: {Window.MinimumSize.Width}x{Window.MinimumSize.Height}",
+                $"Minimum screen dimensions: {Window.MinimumSize.Width}x{Window.MinimumSize.Height}\n" +
+                $"Has keyboard focus: {Window.HasKeyboardFocus}\n" +
+                $"Is mouse over: {Window.IsMouseOver}",
                 new Vector2(8)
             );
         }
@@ -96,7 +98,7 @@ namespace WindowOperations
             else if (e.KeyCode == KeyCode.F4)
             {
                 Window.GoWindowed(
-                    new Size(1024, 600), 
+                    new Size(1024, 600),
                     e.Modifiers.HasFlag(KeyModifiers.LeftShift)
                 );
             }
@@ -122,8 +124,6 @@ namespace WindowOperations
             }
             else if (e.KeyCode == KeyCode.F10)
             {
-                // <YandereDevMode IgnoreSassyComments="true"
-                //                 IfElseGoodGoodCodeBad="yesplease">
                 if (Graphics.VerticalSyncMode == VerticalSyncMode.Adaptive)
                 {
                     Graphics.VerticalSyncMode = VerticalSyncMode.None;
@@ -136,7 +136,6 @@ namespace WindowOperations
                 {
                     Graphics.VerticalSyncMode = VerticalSyncMode.Adaptive;
                 }
-                // </YandereDevMode>
             }
             else if (e.KeyCode == KeyCode.Space)
             {
@@ -148,8 +147,8 @@ namespace WindowOperations
                     .Titled("Test message box")
                     .WithMessage("This is a test message. For testing!")
                     .WithButton("Alright?")
-                    .WithButton("Okay...", i => _drawCenterVector = true)
-                    .WithButton("/shrug", i => _drawCenterVector = false)
+                    .WithButton("Okay...", _ => _drawCenterVector = true)
+                    .WithButton("/shrug", _ => _drawCenterVector = false)
                     .HandleAbnormalClosureWith(() => Console.WriteLine("Fukc. MessageBox closed abnormally."))
                     .Show(Window);
             }

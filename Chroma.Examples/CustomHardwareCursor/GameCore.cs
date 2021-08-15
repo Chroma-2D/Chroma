@@ -37,7 +37,10 @@ namespace CustomHardwareCursor
         {
             context.DrawString(
                 "Press <F1> to toggle between default and custom cursor.\n" +
-                "Press <F2> to toggle the cursor's visibility.\n",
+                "Press <F2> to toggle the cursor's visibility.\n" +
+                $"Press <F3> to confine the cursor to the current window (captured? {Mouse.IsCaptured}).\n" +
+                $"Mouse screen-space position: {Mouse.ScreenSpacePosition}\n" +
+                $"Mouse window-space position: {Mouse.WindowSpacePosition}\n",
                 new Vector2(8, 8)
             );
         }
@@ -46,13 +49,16 @@ namespace CustomHardwareCursor
         {
             if (e.KeyCode == KeyCode.F1)
             {
-                if (!_cursor.IsCurrent)
-                    _cursor.SetCurrent();
+                if (!_cursor.IsCurrent) _cursor.SetCurrent();
                 else Cursor.Reset();
             }
             else if (e.KeyCode == KeyCode.F2)
             {
                 Cursor.IsVisible = !Cursor.IsVisible;
+            }
+            else if (e.KeyCode == KeyCode.F3)
+            {
+                Mouse.IsCaptured = !Mouse.IsCaptured;
             }
         }
     }

@@ -5,7 +5,6 @@ using Chroma;
 using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Graphics;
-using Chroma.Graphics.TextRendering;
 using Chroma.Graphics.TextRendering.TrueType;
 using Chroma.Input;
 using Color = Chroma.Graphics.Color;
@@ -56,7 +55,7 @@ namespace TextInput
             _font = new TrueTypeFont(fs, 16);
             _font.PreferAutoHinter = true;
 
-            Window.SizeChanged += (sender, args) => { InitializeDisplay(); };
+            Window.SizeChanged += (_, _) => { InitializeDisplay(); };
 
             InitializeDisplay();
         }

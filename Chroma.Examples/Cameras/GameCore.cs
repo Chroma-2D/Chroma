@@ -134,7 +134,7 @@ namespace Cameras
         {
             if (e.KeyCode == KeyCode.F1)
             {
-                Window.IsCursorGrabbed = !Window.IsCursorGrabbed;
+                Mouse.IsCaptured = !Mouse.IsCaptured;
                 Mouse.IsRelativeModeEnabled = !Mouse.IsRelativeModeEnabled;
             }
         }

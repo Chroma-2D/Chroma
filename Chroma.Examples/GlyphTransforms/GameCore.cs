@@ -38,7 +38,7 @@ namespace GlyphTransforms
             context.DrawString(
                 "This text should be colored like a rainbow UwU",
                 new Vector2(8),
-                (c, i, p) =>
+                (_, i, p) =>
                 {
                     return new GlyphTransformData
                     {

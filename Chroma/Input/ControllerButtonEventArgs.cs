@@ -2,10 +2,10 @@
 {
     public class ControllerButtonEventArgs
     {
-        public ControllerInfo Controller { get; }
+        public Controller Controller { get; }
         public ControllerButton Button { get; }
 
-        internal ControllerButtonEventArgs(ControllerInfo controller, ControllerButton button)
+        internal ControllerButtonEventArgs(Controller controller, ControllerButton button)
         {
             Controller = controller;
             Button = button;

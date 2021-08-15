@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using Chroma.Hardware;
 using Chroma.Input;
-using Chroma.Input.Internal;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Windowing.EventHandling.Specialized
@@ -47,48 +47,38 @@ namespace Chroma.Windowing.EventHandling.Specialized
         private void ControllerAxisMoved(Window owner, SDL2.SDL_Event ev)
         {
             var instance = SDL2.SDL_GameControllerFromInstanceID(ev.caxis.which);
-            var controller = ControllerRegistry.Instance.GetControllerInfoByPointer(instance);
+            var controller = ControllerRegistry.Instance.GetControllerByPointer(instance);
 
             var axis = (ControllerAxis)ev.caxis.axis;
 
             owner.Game.OnControllerAxisMoved(
-                new ControllerAxisEventArgs(
-                    controller,
-                    axis,
-                    ev.caxis.axisValue
-                )
+                new(controller, axis, ev.caxis.axisValue)
             );
         }
 
         private void ControllerButtonPressed(Window owner, SDL2.SDL_Event ev)
         {
             var instance = SDL2.SDL_GameControllerFromInstanceID(ev.cbutton.which);
-            var controller = ControllerRegistry.Instance.GetControllerInfoByPointer(instance);
+            var controller = ControllerRegistry.Instance.GetControllerByPointer(instance);
 
             var button = (ControllerButton)ev.cbutton.button;
 
             Controller.OnButtonPressed(
                 owner.Game,
-                new ControllerButtonEventArgs(
-                    controller,
-                    button
-                )
+                new(controller, button)
             );
         }
 
         private void ControllerButtonReleased(Window owner, SDL2.SDL_Event ev)
         {
             var instance = SDL2.SDL_GameControllerFromInstanceID(ev.cbutton.which);
-            var controller = ControllerRegistry.Instance.GetControllerInfoByPointer(instance);
+            var controller = ControllerRegistry.Instance.GetControllerByPointer(instance);
 
             var button = (ControllerButton)ev.cbutton.button;
 
             Controller.OnButtonReleased(
                 owner.Game,
-                new ControllerButtonEventArgs(
-                    controller,
-                    button
-                )
+                new(controller, button)
             );
         }
 
@@ -98,7 +88,10 @@ namespace Chroma.Windowing.EventHandling.Specialized
             var joyInstance = SDL2.SDL_GameControllerGetJoystick(instance);
             var instanceId = SDL2.SDL_JoystickInstanceID(joyInstance);
 
-            var playerIndex = ControllerRegistry.Instance.GetFirstFreePlayerSlot();
+            var guid = SDL2.SDL_JoystickGetGUID(joyInstance);
+            var serialNumber = SDL2.SDL_GameControllerGetSerial(instance);
+            
+            var playerIndex = ControllerRegistry.Instance.FindFirstFreePlayerSlot();
             SDL2.SDL_GameControllerSetPlayerIndex(instance, playerIndex);
 
             var name = SDL2.SDL_GameControllerName(instance);
@@ -106,28 +99,73 @@ namespace Chroma.Windowing.EventHandling.Specialized
                 SDL2.SDL_GameControllerGetVendor(instance),
                 SDL2.SDL_GameControllerGetProduct(instance)
             );
+            var type = (ControllerType)SDL2.SDL_GameControllerGetType(instance);
+            var hasConfigurableLed = SDL2.SDL_GameControllerHasLED(instance);
 
-            var guid = SDL2.SDL_JoystickGetGUID(joyInstance);
+            var hasGyroscope = SDL2.SDL_GameControllerHasSensor(instance, SDL2.SDL_SensorType.SDL_SENSOR_GYRO);
+            var hasAccelerometer = SDL2.SDL_GameControllerHasSensor(instance, SDL2.SDL_SensorType.SDL_SENSOR_ACCEL);
 
-            var controllerInfo = new ControllerInfo(instance, instanceId, guid, playerIndex, name, productInfo);
-            ControllerRegistry.Instance.Register(instance, controllerInfo);
+            var touchpadCount = SDL2.SDL_GameControllerGetNumTouchpads(instance);
+            
+            var supportedAxes = new Dictionary<ControllerAxis, bool>();
+            for (var i = SDL2.SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_LEFTX;
+                i < SDL2.SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_MAX;
+                i++)
+            {
+                supportedAxes.Add(
+                    (ControllerAxis)i, 
+                    SDL2.SDL_GameControllerHasAxis(instance, i)
+                );
+            }
 
+            var supportedButtons = new Dictionary<ControllerButton, bool>();
+            for (var i = SDL2.SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_A;
+                i < SDL2.SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_MAX;
+                i++)
+            {
+                supportedButtons.Add(
+                    (ControllerButton)i,
+                    SDL2.SDL_GameControllerHasButton(instance, i)
+                );
+            }
+
+            var controllerInfo = new ControllerInfo(
+                instance, 
+                instanceId,
+                guid,
+                playerIndex,
+                name,
+                serialNumber,
+                productInfo,
+                type,
+                hasConfigurableLed,
+                hasGyroscope,
+                hasAccelerometer,
+                touchpadCount,
+                supportedAxes,
+                supportedButtons
+            );
+
+            var controller = ControllerFactory.Create(type, controllerInfo);
+            
+            ControllerRegistry.Instance.Register(instance, controller);
+            
             Controller.OnConnected(
                 owner.Game, 
-                new ControllerEventArgs(controllerInfo)
+                new(controller)
             );
         }
 
         private void ControllerDisconnected(Window owner, SDL2.SDL_Event ev)
         {
             var instance = SDL2.SDL_GameControllerFromInstanceID(ev.cdevice.which);
-            var controllerInfo = ControllerRegistry.Instance.GetControllerInfoByPointer(instance);
+            var controller = ControllerRegistry.Instance.GetControllerByPointer(instance);
 
             ControllerRegistry.Instance.Unregister(instance);
 
             Controller.OnDisconnected(
                 owner.Game, 
-                new ControllerEventArgs(controllerInfo)
+                new ControllerEventArgs(controller)
             );
         }
 

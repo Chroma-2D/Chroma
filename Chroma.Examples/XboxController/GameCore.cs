@@ -43,21 +43,28 @@ namespace XboxController
 
             context.DrawTexture(_tgt, _position + _tgt.Center, Vector2.One * _scale, _tgt.Center, _rotation);
             var inputs = "";
-            for (var i = 0; i < Controller.ActiveButtons.Count; i++)
+            
+            for (var i = 0; i < Controller.DeviceCount; i++)
             {
-                if (Controller.ActiveButtons[i] == null)
+                var buttonSet = Controller.GetActiveButtons(i);
+                if (buttonSet == null)
                     continue;
-                inputs += $"Controller {i}: {string.Join(' ', Controller.ActiveButtons[i])}\n";
+                
+                inputs += $"Controller {i}: {string.Join(", ", buttonSet)}\n";
             }
-            context.DrawString("Use left stick to control the rectangle.\n" +
-                               "Use right stick to control rumble.\n" +
-                               "Use left trigger to control rotation.\n" +
-                               "Use right trigger to control scale.\n" +
-                               "Use A/B/X/Y to control colors.\n" +
-                               "Use A/B/X/Y on player 2 to control background colors.\n" +
-                               "Use left/right stick buttons to toggle between stroke and fill.\n" +
-                               "Use left/right bumper to control line thickness.\n" +
-                               inputs, new Vector2(8));
+            
+            context.DrawString(
+                "Use left stick to control the rectangle.\n" +
+                "Use right stick to control rumble.\n" +
+                "Use left trigger to control rotation.\n" +
+                "Use right trigger to control scale.\n" +
+                "Use A/B/X/Y to control colors.\n" +
+                "Use A/B/X/Y on player 2 to control background colors.\n" +
+                "Use left/right stick buttons to toggle between stroke and fill.\n" +
+                "Use left/right bumper to control line thickness.\n\n" +
+                inputs, 
+                new Vector2(8)
+            );
         }
 
         protected override void Update(float delta)
@@ -93,15 +100,17 @@ namespace XboxController
                 rightIntensity = MathF.Abs(rumbleSide);
             }
 
-            Controller.Vibrate(0, (ushort)(65535 * leftIntensity), (ushort)(65535 * rightIntensity), 1000);
+            Controller.Rumble(0, (ushort)(65535 * leftIntensity), (ushort)(65535 * rightIntensity), 1000);
         }
 
         protected override void ControllerConnected(ControllerEventArgs e)
         {
-            Controller.SetDeadZone(e.Controller.PlayerIndex, ControllerAxis.LeftStickX, 5500);
-            Controller.SetDeadZone(e.Controller.PlayerIndex, ControllerAxis.LeftStickY, 5500);
-            Controller.SetDeadZone(e.Controller.PlayerIndex, ControllerAxis.RightStickX, 5500);
-            Controller.SetDeadZone(e.Controller.PlayerIndex, ControllerAxis.RightStickY, 5500);
+            Controller.SetDeadZone(e.Controller.Info.PlayerIndex, ControllerAxis.LeftStickX, 5500);
+            Controller.SetDeadZone(e.Controller.Info.PlayerIndex, ControllerAxis.LeftStickY, 5500);
+            Controller.SetDeadZone(e.Controller.Info.PlayerIndex, ControllerAxis.RightStickX, 5500);
+            Controller.SetDeadZone(e.Controller.Info.PlayerIndex, ControllerAxis.RightStickY, 5500);
+
+            Console.WriteLine(e.Controller);
         }
 
         protected override void ControllerButtonPressed(ControllerButtonEventArgs e)

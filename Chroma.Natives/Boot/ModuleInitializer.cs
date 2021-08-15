@@ -120,7 +120,9 @@ namespace Chroma.Natives.Boot
         {
             Console.WriteLine("---");
             
-            Console.WriteLine("Initializing SDL2 core...");
+            SDL2.SDL_GetVersion(out var sdlVersion);
+            Console.WriteLine($"Initializing SDL {sdlVersion.major}.{sdlVersion.minor}.{sdlVersion.patch}");
+            
             SDL2.SDL_Init(BootConfig.SdlModules.SdlInitFlags);
             
             if (BootConfig.EnableSdlGpuDebugging)

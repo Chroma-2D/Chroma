@@ -13,7 +13,7 @@ namespace Chroma.Input
 
         private static readonly HashSet<ControllerButton>[] _buttonStates
             = new HashSet<ControllerButton>[ControllerRegistry.MaxSupportedPlayers];
-        
+
         public static IReadOnlyList<IReadOnlySet<ControllerButton>> ActiveButtons => _buttonStates;
         public static int DeviceCount => ControllerRegistry.Instance.DeviceCount;
 
@@ -24,13 +24,8 @@ namespace Chroma.Input
             if (controller == null)
                 return true;
 
-            if (controller.DeadZones.ContainsKey(axis))
-            {
-                if (Math.Abs((int)axisValue) < controller.DeadZones[axis])
-                    return true;
-            }
-
-            return false;
+            return controller.DeadZones.ContainsKey(axis) &&
+                   Math.Abs((int)axisValue) < controller.DeadZones[axis];
         }
 
         public static void SetDeadZone(int playerIndex, ControllerAxis axis, ushort value)
@@ -69,7 +64,7 @@ namespace Chroma.Input
 
             if (controller == null)
                 return null;
-
+            
             return SDL2.SDL_GameControllerName(controller.InstancePointer);
         }
 
@@ -126,7 +121,6 @@ namespace Chroma.Input
             return (BatteryStatus)SDL2.SDL_JoystickCurrentPowerLevel(joystickInstance);
         }
 
-
         public static string RetrieveMapping(int playerIndex)
         {
             var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
@@ -149,13 +143,13 @@ namespace Chroma.Input
                 _log.Error($"Failed to add a controller mapping: {SDL2.SDL_GetError()}.");
         }
 
-        internal static void OnControllerConnected(Game game, ControllerEventArgs e)
+        internal static void OnConnected(Game game, ControllerEventArgs e)
         {
             _buttonStates[e.Controller.PlayerIndex] = new();
             game.OnControllerConnected(e);
         }
 
-        internal static void OnControllerDisconnected(Game game, ControllerEventArgs e)
+        internal static void OnDisconnected(Game game, ControllerEventArgs e)
         {
             _buttonStates[e.Controller.PlayerIndex].Clear();
             _buttonStates[e.Controller.PlayerIndex] = null;

@@ -1,136 +1,217 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Chroma.Diagnostics.Logging;
 using Chroma.Hardware;
-using Chroma.Input.Internal;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Input
 {
-    public static class Controller
+    public class Controller
     {
         private static readonly Log _log = LogManager.GetForCurrentAssembly();
 
-        private static readonly HashSet<ControllerButton>[] _buttonStates
-            = new HashSet<ControllerButton>[ControllerRegistry.MaxSupportedPlayers];
+        protected Dictionary<ControllerAxis, ushort> _deadZones = new();
+        protected HashSet<ControllerButton> _buttonStates = new();
 
-        public static IReadOnlyList<IReadOnlySet<ControllerButton>> ActiveButtons => _buttonStates;
+        public IReadOnlyDictionary<ControllerAxis, ushort> DeadZones => _deadZones;
+        public IReadOnlySet<ControllerButton> ActiveButtons => _buttonStates;
+
+        public ControllerInfo Info { get; }
         public static int DeviceCount => ControllerRegistry.Instance.DeviceCount;
 
-        public static bool CanIgnoreAxisMotion(int playerIndex, ControllerAxis axis, short axisValue)
+        public virtual BatteryStatus BatteryStatus
         {
-            var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
+            get
+            {
+                if (Info == null || Info.InstancePointer == IntPtr.Zero)
+                    return BatteryStatus.Unknown;
 
-            if (controller == null)
-                return true;
-
-            return controller.DeadZones.ContainsKey(axis) &&
-                   Math.Abs((int)axisValue) < controller.DeadZones[axis];
+                var joystickInstance = SDL2.SDL_GameControllerGetJoystick(Info.InstancePointer);
+                return (BatteryStatus)SDL2.SDL_JoystickCurrentPowerLevel(joystickInstance);
+            }
         }
 
-        public static void SetDeadZone(int playerIndex, ControllerAxis axis, ushort value)
+        internal Controller(ControllerInfo info)
         {
-            var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
+            Info = info;
+        }
 
-            if (controller == null)
-                return;
+        public T As<T>() where T : Controller
+            => this as T;
 
-            if (!controller.DeadZones.ContainsKey(axis))
-                controller.DeadZones.Add(axis, value);
+        public virtual void SetDeadZone(ControllerAxis axis, ushort value)
+        {
+            if (!_deadZones.ContainsKey(axis))
+                _deadZones.Add(axis, value);
             else
-                controller.DeadZones[axis] = value;
+                _deadZones[axis] = value;
         }
 
-        public static void SetDeadZoneAllAxes(int playerIndex, ushort value)
+        public virtual void SetDeadZoneAllAxes(ushort value)
         {
-            var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
-
-            if (controller == null)
-                return;
-
-            controller.DeadZones.Clear();
-
-            SetDeadZone(playerIndex, ControllerAxis.LeftStickX, value);
-            SetDeadZone(playerIndex, ControllerAxis.RightStickX, value);
-            SetDeadZone(playerIndex, ControllerAxis.LeftStickY, value);
-            SetDeadZone(playerIndex, ControllerAxis.RightStickY, value);
-            SetDeadZone(playerIndex, ControllerAxis.LeftTrigger, value);
-            SetDeadZone(playerIndex, ControllerAxis.RightTrigger, value);
+            SetDeadZone(ControllerAxis.LeftStickX, value);
+            SetDeadZone(ControllerAxis.RightStickX, value);
+            SetDeadZone(ControllerAxis.LeftStickY, value);
+            SetDeadZone(ControllerAxis.RightStickY, value);
+            SetDeadZone(ControllerAxis.LeftTrigger, value);
+            SetDeadZone(ControllerAxis.RightTrigger, value);
         }
 
-        public static string GetName(int playerIndex)
+        public virtual bool CanIgnoreAxisMotion(ControllerAxis axis, short axisValue)
         {
-            var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
-
-            if (controller == null)
-                return null;
-            
-            return SDL2.SDL_GameControllerName(controller.InstancePointer);
+            return _deadZones.ContainsKey(axis)
+                   && Math.Abs((int)axisValue) < _deadZones[axis];
         }
 
-        public static short GetAxisValue(int playerIndex, ControllerAxis axis)
+        public virtual short GetRawAxisValue(ControllerAxis axis)
         {
-            var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
-
-            if (controller == null)
+            if (Info == null || Info.InstancePointer == IntPtr.Zero)
                 return 0;
 
             var axisValue = SDL2.SDL_GameControllerGetAxis(
-                controller.InstancePointer,
+                Info.InstancePointer,
                 (SDL2.SDL_GameControllerAxis)axis
             );
 
-            if (CanIgnoreAxisMotion(playerIndex, axis, axisValue))
+            return axisValue;
+        }
+
+        public virtual float GetRawAxisValueNormalized(ControllerAxis axis)
+            => GetRawAxisValue(axis) / 32768f;
+
+        public virtual short GetAxisValue(ControllerAxis axis)
+        {
+            var axisValue = GetRawAxisValue(axis);
+
+            if (CanIgnoreAxisMotion(axis, axisValue))
                 return 0;
 
             return axisValue;
         }
 
-        public static float GetAxisValueNormalized(int playerIndex, ControllerAxis axis)
-            => GetAxisValue(playerIndex, axis) / 32768f;
+        public virtual float GetAxisValueNormalized(ControllerAxis axis)
+            => GetAxisValue(axis) / 32768f;
 
-        public static bool IsButtonDown(int playerIndex, ControllerButton button)
-            => _buttonStates[playerIndex] != null && _buttonStates[playerIndex].Contains(button);
+        public virtual bool IsButtonDown(ControllerButton button)
+            => _buttonStates.Contains(button);
 
-        public static bool IsButtonUp(int playerIndex, ControllerButton button)
-            => !IsButtonDown(playerIndex, button);
+        public virtual bool IsButtonUp(ControllerButton button)
+            => !IsButtonDown(button);
 
-        public static void Vibrate(int playerIndex, ushort lowFreq, ushort highFreq, uint duration)
+        public virtual void Rumble(ushort leftIntensity, ushort rightIntensity, uint duration)
         {
-            var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
-
-            if (controller == null)
+            if (Info == null || Info.InstancePointer == IntPtr.Zero)
                 return;
 
             SDL2.SDL_GameControllerRumble(
-                controller.InstancePointer,
-                lowFreq,
-                highFreq,
+                Info.InstancePointer,
+                leftIntensity,
+                rightIntensity,
                 duration
             );
         }
 
-        public static BatteryStatus GetBatteryLevel(int playerIndex)
+        public string RetrieveMapping()
         {
-            var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
+            if (Info == null || Info.InstancePointer == IntPtr.Zero)
+                return string.Empty;
 
-            if (controller == null)
-                return BatteryStatus.Unknown;
-
-            var joystickInstance = SDL2.SDL_GameControllerGetJoystick(controller.InstancePointer);
-            return (BatteryStatus)SDL2.SDL_JoystickCurrentPowerLevel(joystickInstance);
+            return SDL2.SDL_GameControllerMapping(Info.InstancePointer);
         }
 
-        public static string RetrieveMapping(int playerIndex)
+        public static void SetDeadZone(int playerIndex, ControllerAxis axis, ushort value)
         {
-            var controller = ControllerRegistry.Instance.GetControllerInfo(playerIndex);
+            var controller = ControllerRegistry.Instance.GetController(playerIndex);
 
             if (controller == null)
-                return null;
+                return;
 
-            return SDL2.SDL_GameControllerMapping(controller.InstancePointer);
+            controller.SetDeadZone(axis, value);
         }
 
+        public static void SetDeadZoneAllAxes(int playerIndex, ushort value)
+        {
+            var controller = ControllerRegistry.Instance.GetController(playerIndex);
+
+            if (controller == null)
+                return;
+
+            controller.SetDeadZoneAllAxes(value);
+        }
+
+        public static bool CanIgnoreAxisMotion(int playerIndex, ControllerAxis axis, short axisValue)
+        {
+            var controller = ControllerRegistry.Instance.GetController(playerIndex);
+
+            if (controller == null)
+                return false;
+
+            return controller.CanIgnoreAxisMotion(axis, axisValue);
+        }
+
+        public static short GetRawAxisValue(int playerIndex, ControllerAxis axis)
+        {
+            var controller = ControllerRegistry.Instance.GetController(playerIndex);
+
+            if (controller == null)
+                return 0;
+
+            return controller.GetRawAxisValue(axis);
+        }
+
+        public static float GetRawAxisValueNormalized(int playerIndex, ControllerAxis axis)
+        {
+            var controller = ControllerRegistry.Instance.GetController(playerIndex);
+
+            if (controller == null)
+                return 0;
+
+            return controller.GetRawAxisValueNormalized(axis);
+        }
+
+        public static short GetAxisValue(int playerIndex, ControllerAxis axis)
+        {
+            var controller = ControllerRegistry.Instance.GetController(playerIndex);
+
+            if (controller == null)
+                return 0;
+
+            return controller.GetAxisValue(axis);
+        }
+
+        public static float GetAxisValueNormalized(int playerIndex, ControllerAxis axis)
+        {
+            var controller = ControllerRegistry.Instance.GetController(playerIndex);
+
+            if (controller == null)
+                return 0;
+
+            return controller.GetAxisValueNormalized(axis);
+        }
+
+        public static bool IsButtonDown(int playerIndex, ControllerButton button)
+        {
+            var controller = ControllerRegistry.Instance.GetController(playerIndex);
+
+            if (controller == null)
+                return false;
+
+            return controller.IsButtonDown(button);
+        }
+
+        public static bool IsButtonUp(int playerIndex, ControllerButton button)
+            => IsButtonDown(playerIndex, button);
+
+        public static void Rumble(int playerIndex, ushort leftIntensity, ushort rightIntensity, uint duration)
+        {
+            var controller = ControllerRegistry.Instance.GetController(playerIndex);
+
+            if (controller == null)
+                return;
+
+            controller.Rumble(leftIntensity, rightIntensity, duration);
+        }
+        
         public static void AddMapping(string controllerMapping)
         {
             if (string.IsNullOrEmpty(controllerMapping))
@@ -143,28 +224,45 @@ namespace Chroma.Input
                 _log.Error($"Failed to add a controller mapping: {SDL2.SDL_GetError()}.");
         }
 
+        public static string RetrieveMapping(int playerIndex)
+        {
+            var controller = ControllerRegistry.Instance.GetController(playerIndex);
+
+            if (controller == null)
+                return string.Empty;
+
+            return controller.RetrieveMapping();
+        }
+
+        public static IReadOnlySet<ControllerButton> GetActiveButtons(int playerIndex)
+        {
+            var controller = ControllerRegistry.Instance.GetController(playerIndex);
+
+            if (controller == null)
+                return null;
+
+            return controller.ActiveButtons;
+        }
+
         internal static void OnConnected(Game game, ControllerEventArgs e)
         {
-            _buttonStates[e.Controller.PlayerIndex] = new();
             game.OnControllerConnected(e);
         }
 
         internal static void OnDisconnected(Game game, ControllerEventArgs e)
         {
-            _buttonStates[e.Controller.PlayerIndex].Clear();
-            _buttonStates[e.Controller.PlayerIndex] = null;
             game.OnControllerDisconnected(e);
         }
 
         internal static void OnButtonReleased(Game game, ControllerButtonEventArgs e)
         {
-            _buttonStates[e.Controller.PlayerIndex].Remove(e.Button);
+            e.Controller._buttonStates.Remove(e.Button);
             game.OnControllerButtonReleased(e);
         }
 
         internal static void OnButtonPressed(Game game, ControllerButtonEventArgs e)
         {
-            _buttonStates[e.Controller.PlayerIndex].Add(e.Button);
+            e.Controller._buttonStates.Add(e.Button);
             game.OnControllerButtonPressed(e);
         }
     }

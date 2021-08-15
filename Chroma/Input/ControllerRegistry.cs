@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Chroma.Input.Internal
+namespace Chroma.Input
 {
     internal class ControllerRegistry
     {
@@ -11,7 +11,7 @@ namespace Chroma.Input.Internal
             () => new ControllerRegistry()
         );
 
-        private readonly Dictionary<IntPtr, ControllerInfo> _controllers;
+        private readonly Dictionary<IntPtr, Controller> _controllers;
         private readonly Dictionary<int, IntPtr> _playerMappings;
 
         internal int DeviceCount => _controllers.Count;
@@ -20,22 +20,22 @@ namespace Chroma.Input.Internal
 
         private ControllerRegistry()
         {
-            _controllers = new Dictionary<IntPtr, ControllerInfo>();
+            _controllers = new Dictionary<IntPtr, Controller>();
             _playerMappings = new Dictionary<int, IntPtr>(MaxSupportedPlayers);
 
             for (var i = 0; i < MaxSupportedPlayers; i++)
                 _playerMappings.Add(i, IntPtr.Zero);
         }
 
-        public void Register(IntPtr instance, ControllerInfo controller)
+        public void Register(IntPtr instance, Controller controller)
         {
             if (_controllers.ContainsKey(instance))
                 throw new InvalidOperationException("Duplicate controller instance pointer.");
 
-            if (_playerMappings[controller.PlayerIndex] != IntPtr.Zero)
+            if (_playerMappings[controller.Info.PlayerIndex] != IntPtr.Zero)
                 throw new InvalidOperationException("Duplicate controller player index.");
 
-            _playerMappings[controller.PlayerIndex] = instance;
+            _playerMappings[controller.Info.PlayerIndex] = instance;
             _controllers.Add(instance, controller);
         }
 
@@ -44,13 +44,13 @@ namespace Chroma.Input.Internal
             if (!_controllers.ContainsKey(instance))
                 throw new InvalidOperationException($"Controller with instance ID {instance} does not exist.");
 
-            var playerIndex = _controllers[instance].PlayerIndex;
+            var playerIndex = _controllers[instance].Info.PlayerIndex;
             _playerMappings[playerIndex] = IntPtr.Zero;
 
             _controllers.Remove(instance);
         }
 
-        public int GetFirstFreePlayerSlot()
+        public int FindFirstFreePlayerSlot()
         {
             for (var i = 0; i < _playerMappings.Count; i++)
                 if (_playerMappings[i] == IntPtr.Zero)
@@ -59,7 +59,7 @@ namespace Chroma.Input.Internal
             return -1;
         }
 
-        public ControllerInfo GetControllerInfo(int playerIndex)
+        public Controller GetController(int playerIndex)
         {
             if (!_playerMappings.ContainsKey(playerIndex) || _playerMappings[playerIndex] == IntPtr.Zero)
                 return null;
@@ -68,7 +68,7 @@ namespace Chroma.Input.Internal
             return _controllers[instancePointer];
         }
 
-        internal ControllerInfo GetControllerInfoByPointer(IntPtr instancePointer)
+        internal Controller GetControllerByPointer(IntPtr instancePointer)
         {
             if (!_controllers.ContainsKey(instancePointer))
                 return null;

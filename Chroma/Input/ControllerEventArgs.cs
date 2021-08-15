@@ -2,9 +2,9 @@
 {
     public class ControllerEventArgs
     {
-        public ControllerInfo Controller { get; }
+        public Controller Controller { get; }
 
-        internal ControllerEventArgs(ControllerInfo controller)
+        internal ControllerEventArgs(Controller controller)
         {
             Controller = controller;
         }

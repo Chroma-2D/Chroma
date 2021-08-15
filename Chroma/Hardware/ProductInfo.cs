@@ -1,4 +1,6 @@
-﻿namespace Chroma.Hardware
+﻿using System.Text;
+
+namespace Chroma.Hardware
 {
     public readonly struct ProductInfo
     {
@@ -9,6 +11,17 @@
         {
             VendorId = vid;
             ProductId = pid;
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            
+            sb.Append(VendorId);
+            sb.Append(":");
+            sb.Append(ProductId);
+
+            return sb.ToString();
         }
     }
 }

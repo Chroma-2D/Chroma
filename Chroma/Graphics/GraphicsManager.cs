@@ -112,6 +112,8 @@ namespace Chroma.Graphics
 
         internal IntPtr InitializeRenderer(Window window, out IntPtr windowHandle)
         {
+            SDL2.SDL_SetHint(SDL2.SDL_HINT_JOYSTICK_HIDAPI, "1");
+            
             SDL_gpu.GPU_SetRequiredFeatures(
                 SDL_gpu.GPU_FeatureEnum.GPU_FEATURE_BASIC_SHADERS
                 | SDL_gpu.GPU_FeatureEnum.GPU_FEATURE_RENDER_TARGETS

@@ -42,9 +42,14 @@ namespace Chroma.Windowing
 
         internal IntPtr RenderTargetHandle { get; }
 
-        public bool Exists { get; private set; }
+        // Chroma does not support multiple windows,
+        // so it's safe to assume there will always be
+        // just one.
+        internal static IntPtr InternalHandle;
 
         public readonly IntPtr Handle;
+
+        public bool Exists { get; private set; }
 
         public Size Size
         {
@@ -126,7 +131,7 @@ namespace Chroma.Windowing
                 if (Handle == IntPtr.Zero)
                     return false;
 
-                return ((SDL2.SDL_WindowFlags)SDL2.SDL_GetWindowFlags(Handle))
+                return SDL2.SDL_GetWindowFlags(Handle)
                     .HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_ALWAYS_ON_TOP);
             }
 
@@ -152,7 +157,7 @@ namespace Chroma.Windowing
                     switch (value)
                     {
                         case WindowState.Maximized:
-                            var flags = (SDL2.SDL_WindowFlags)SDL2.SDL_GetWindowFlags(Handle);
+                            var flags = SDL2.SDL_GetWindowFlags(Handle);
 
                             if (!flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_RESIZABLE))
                             {
@@ -179,16 +184,11 @@ namespace Chroma.Windowing
         {
             get
             {
-                var flags = (SDL2.SDL_WindowFlags)SDL2.SDL_GetWindowFlags(Handle);
+                var flags = SDL2.SDL_GetWindowFlags(Handle);
                 return flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_RESIZABLE);
             }
 
-            set => SDL2.SDL_SetWindowResizable(
-                Handle,
-                value
-                    ? SDL2.SDL_bool.SDL_TRUE
-                    : SDL2.SDL_bool.SDL_FALSE
-            );
+            set => SDL2.SDL_SetWindowResizable(Handle, value);
         }
 
         public Size MaximumSize
@@ -237,27 +237,21 @@ namespace Chroma.Windowing
         {
             get
             {
-                var flags = (SDL2.SDL_WindowFlags)SDL2.SDL_GetWindowFlags(Handle);
+                var flags = SDL2.SDL_GetWindowFlags(Handle);
                 return !flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_BORDERLESS);
             }
-            set => SDL2.SDL_SetWindowBordered(Handle, value ? SDL2.SDL_bool.SDL_TRUE : SDL2.SDL_bool.SDL_FALSE);
+            set => SDL2.SDL_SetWindowBordered(Handle, value);
         }
 
         public bool IsFullScreen
         {
             get
             {
-                var flags = (SDL2.SDL_WindowFlags)SDL2.SDL_GetWindowFlags(Handle);
+                var flags = SDL2.SDL_GetWindowFlags(Handle);
 
                 return flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN)
                        || flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP);
             }
-        }
-
-        public bool IsCursorGrabbed
-        {
-            get => SDL2.SDL_GetWindowGrab(Handle) == SDL2.SDL_bool.SDL_TRUE;
-            set => SDL2.SDL_SetWindowGrab(Handle, value ? SDL2.SDL_bool.SDL_TRUE : SDL2.SDL_bool.SDL_FALSE);
         }
 
         public Display CurrentDisplay
@@ -273,6 +267,32 @@ namespace Chroma.Windowing
                 }
 
                 return Game.Graphics.GetDisplayList()[index];
+            }
+        }
+
+        public bool HasKeyboardFocus
+        {
+            get
+            {
+                if (Handle == IntPtr.Zero)
+                    return false;
+
+                return SDL2.SDL_GetWindowFlags(Handle).HasFlag(
+                    SDL2.SDL_WindowFlags.SDL_WINDOW_INPUT_FOCUS
+                );
+            }
+        }
+
+        public bool IsMouseOver
+        {
+            get
+            {
+                if (Handle == IntPtr.Zero)
+                    return false;
+
+                return SDL2.SDL_GetWindowFlags(Handle).HasFlag(
+                    SDL2.SDL_WindowFlags.SDL_WINDOW_MOUSE_FOCUS
+                );
             }
         }
 
@@ -295,6 +315,8 @@ namespace Chroma.Windowing
             Game = game;
 
             RenderTargetHandle = Game.Graphics.InitializeRenderer(this, out Handle);
+            InternalHandle = Handle;
+
             if (Handle == IntPtr.Zero)
                 throw new FrameworkException("Failed to initialize the window.", true);
 
@@ -433,7 +455,7 @@ namespace Chroma.Windowing
                     -1, -1, 0, 0, 0, 1, 1
                 );
 
-                if(ExtensionRegistry.InvokeBeforeDrawHooks(_renderContext))
+                if (ExtensionRegistry.InvokeBeforeDrawHooks(_renderContext))
                 {
                     Draw?.Invoke(_renderContext);
                     ExtensionRegistry.InvokeAfterDrawHooks(_renderContext);
@@ -561,6 +583,8 @@ namespace Chroma.Windowing
         {
             SDL_gpu.GPU_FreeTarget(RenderTargetHandle);
             SDL2.SDL_DestroyWindow(Handle);
+
+            InternalHandle = IntPtr.Zero;
         }
     }
 }

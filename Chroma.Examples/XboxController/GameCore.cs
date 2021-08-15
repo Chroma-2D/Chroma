@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Numerics;
 using Chroma;
 using Chroma.Graphics;
@@ -15,6 +14,7 @@ namespace XboxController
         private float _rotation;
         private Vector2 _position = new(32);
         private Color _color = Color.White;
+        private Color _bgColor = Color.Black;
         private ShapeMode _mode;
         
         public GameCore() : base(new(false, false))
@@ -29,6 +29,7 @@ namespace XboxController
 
         protected override void Draw(RenderContext context)
         {
+            context.Clear(_bgColor);
             context.RenderTo(_tgt, () =>
             {
                 context.Clear(Color.Transparent);
@@ -42,13 +43,18 @@ namespace XboxController
 
             context.DrawTexture(_tgt, _position + _tgt.Center, Vector2.One * _scale, _tgt.Center, _rotation);
             var inputs = "";
-            if(Controller.DeviceCount >= 1)
-                inputs = string.Join(' ', Controller.ActiveButtons[0]);
+            for (var i = 0; i < Controller.ActiveButtons.Count; i++)
+            {
+                if (Controller.ActiveButtons[i] == null)
+                    continue;
+                inputs += $"Controller {i}: {string.Join(' ', Controller.ActiveButtons[i])}\n";
+            }
             context.DrawString("Use left stick to control the rectangle.\n" +
                                "Use right stick to control rumble.\n" +
                                "Use left trigger to control rotation.\n" +
                                "Use right trigger to control scale.\n" +
                                "Use A/B/X/Y to control colors.\n" +
+                               "Use A/B/X/Y on player 2 to control background colors.\n" +
                                "Use left/right stick buttons to toggle between stroke and fill.\n" +
                                "Use left/right bumper to control line thickness.\n" +
                                inputs, new Vector2(8));
@@ -59,8 +65,19 @@ namespace XboxController
             _scale = 1.0f + 16f * Controller.GetAxisValueNormalized(0, ControllerAxis.RightTrigger);
             _rotation = 360 * Controller.GetAxisValueNormalized(0, ControllerAxis.LeftTrigger);
 
-            _position.X += (Controller.IsButtonDown(0, ControllerButton.A) ? 240 : 120) * delta * Controller.GetAxisValueNormalized(0, ControllerAxis.LeftStickX);
-            _position.Y += (Controller.IsButtonDown(0, ControllerButton.A) ? 240 : 120) * delta * Controller.GetAxisValueNormalized(0, ControllerAxis.LeftStickY);
+            _position.X += 120 * delta * Controller.GetAxisValueNormalized(0, ControllerAxis.LeftStickX);
+            _position.Y += 120 * delta * Controller.GetAxisValueNormalized(0, ControllerAxis.LeftStickY);
+
+            if (Controller.IsButtonDown(1, ControllerButton.A))
+                _bgColor = Color.SlateGray;
+            else if (Controller.IsButtonDown(1, ControllerButton.B))
+                _bgColor = Color.DarkCyan;
+            else if (Controller.IsButtonDown(1, ControllerButton.X))
+                _bgColor = Color.DarkGreen;
+            else if (Controller.IsButtonDown(1, ControllerButton.Y))
+                _bgColor = Color.DarkRed;
+            else
+                _bgColor = Color.Black;
 
             var rumbleSide = Controller.GetAxisValueNormalized(0, ControllerAxis.RightStickX);
 

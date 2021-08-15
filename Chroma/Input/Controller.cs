@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using Chroma.Diagnostics.Logging;
 using Chroma.Hardware;
 using Chroma.Input.Internal;
@@ -13,8 +11,8 @@ namespace Chroma.Input
     {
         private static readonly Log _log = LogManager.GetForCurrentAssembly();
 
-        private static readonly HashSet<ControllerButton>[] _buttonStates =
-            new HashSet<ControllerButton>[ControllerRegistry.MaxSupportedPlayers];
+        private static readonly HashSet<ControllerButton>[] _buttonStates
+            = new HashSet<ControllerButton>[ControllerRegistry.MaxSupportedPlayers];
         
         public static IReadOnlyList<IReadOnlySet<ControllerButton>> ActiveButtons => _buttonStates;
         public static int DeviceCount => ControllerRegistry.Instance.DeviceCount;

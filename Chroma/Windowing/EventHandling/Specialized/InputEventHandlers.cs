@@ -34,6 +34,9 @@ namespace Chroma.Windowing.EventHandling.Specialized
             Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_CONTROLLERBUTTONDOWN, ControllerButtonPressed);
             Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_CONTROLLERBUTTONUP, ControllerButtonReleased);
             Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_CONTROLLERAXISMOTION, ControllerAxisMoved);
+            Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_CONTROLLERTOUCHPADMOTION, ControllerTouchpadMoved);
+            Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_CONTROLLERTOUCHPADDOWN, ControllerTouchpadTouched);
+            Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_CONTROLLERTOUCHPADUP, ControllerTouchpadReleased);
 
             Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_KEYUP, KeyReleased);
             Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_KEYDOWN, KeyPressed);
@@ -43,6 +46,39 @@ namespace Chroma.Windowing.EventHandling.Specialized
             Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_MOUSEWHEEL, WheelMoved);
             Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_MOUSEBUTTONDOWN, MousePressed);
             Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_MOUSEBUTTONUP, MouseReleased);
+        }
+
+        private void ControllerTouchpadReleased(Window owner, SDL2.SDL_Event ev)
+        {
+            var instance = SDL2.SDL_GameControllerFromInstanceID(ev.ctouchpad.which);
+            var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance);
+
+            Controller.OnTouchpadReleased(
+                owner.Game,
+                new(controller, ev.ctouchpad.touchpad, ev.ctouchpad.finger, new(ev.ctouchpad.x, ev.ctouchpad.y), ev.ctouchpad.pressure)
+            );
+        }
+
+        private void ControllerTouchpadTouched(Window owner, SDL2.SDL_Event ev)
+        {
+            var instance = SDL2.SDL_GameControllerFromInstanceID(ev.ctouchpad.which);
+            var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance);
+
+            Controller.OnTouchpadTouched(
+                owner.Game,
+                new(controller, ev.ctouchpad.touchpad, ev.ctouchpad.finger, new(ev.ctouchpad.x, ev.ctouchpad.y), ev.ctouchpad.pressure)
+            );
+        }
+
+        private void ControllerTouchpadMoved(Window owner, SDL2.SDL_Event ev)
+        {
+            var instance = SDL2.SDL_GameControllerFromInstanceID(ev.ctouchpad.which);
+            var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance);
+
+            Controller.OnTouchpadMoved(
+                owner.Game,
+                new(controller, ev.ctouchpad.touchpad, ev.ctouchpad.finger, new(ev.ctouchpad.x, ev.ctouchpad.y), ev.ctouchpad.pressure)
+            );
         }
 
         private void ControllerAxisMoved(Window owner, SDL2.SDL_Event ev)
@@ -107,6 +143,12 @@ namespace Chroma.Windowing.EventHandling.Specialized
             var hasAccelerometer = SDL2.SDL_GameControllerHasSensor(instance, SDL2.SDL_SensorType.SDL_SENSOR_ACCEL);
 
             var touchpadCount = SDL2.SDL_GameControllerGetNumTouchpads(instance);
+            var touchpadFingerLimit = new int[touchpadCount];
+
+            for (var i = 0; i < touchpadCount; i++)
+            {
+                touchpadFingerLimit[i] = SDL2.SDL_GameControllerGetNumTouchpadFingers(instance, i);
+            }
             
             var supportedAxes = new Dictionary<ControllerAxis, bool>();
             for (var i = SDL2.SDL_GameControllerAxis.SDL_CONTROLLER_AXIS_LEFTX;
@@ -143,6 +185,7 @@ namespace Chroma.Windowing.EventHandling.Specialized
                 hasGyroscope,
                 hasAccelerometer,
                 touchpadCount,
+                touchpadFingerLimit,
                 supportedAxes,
                 supportedButtons
             );

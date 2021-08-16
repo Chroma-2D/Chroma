@@ -4,7 +4,8 @@ namespace Chroma.Input.GameControllers.Drivers
     {
         public override string Name { get; } = "Generic Chroma Controller Driver";
 
-        public GenericControllerDriver(ControllerInfo info) : base(info)
+        public GenericControllerDriver(ControllerInfo info) 
+            : base(info)
         {
         }
     }

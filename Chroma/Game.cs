@@ -8,6 +8,7 @@ using Chroma.Diagnostics.Logging;
 using Chroma.Extensibility;
 using Chroma.Graphics;
 using Chroma.Input;
+using Chroma.Input.GameControllers;
 using Chroma.Natives.SDL;
 using Chroma.Threading;
 using Chroma.Windowing;

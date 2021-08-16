@@ -1,11 +1,11 @@
-﻿namespace Chroma.Input
+﻿namespace Chroma.Input.GameControllers
 {
     public class ControllerButtonEventArgs
     {
-        public Controller Controller { get; }
+        public ControllerDriver Controller { get; }
         public ControllerButton Button { get; }
 
-        internal ControllerButtonEventArgs(Controller controller, ControllerButton button)
+        internal ControllerButtonEventArgs(ControllerDriver controller, ControllerButton button)
         {
             Controller = controller;
             Button = button;

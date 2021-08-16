@@ -1,6 +1,6 @@
 ﻿using Chroma.Natives.SDL;
 
-namespace Chroma.Input
+namespace Chroma.Input.GameControllers
 {
     public enum ControllerButton
     {
@@ -19,11 +19,11 @@ namespace Chroma.Input
         DpadDown = SDL2.SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_DPAD_DOWN,
         RightBumper = SDL2.SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_RIGHTSHOULDER,
         LeftBumper = SDL2.SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_LEFTSHOULDER,
-        Touchpad = SDL2.SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_TOUCHPAD,
         RightTopPaddle = SDL2.SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_PADDLE1,
         RightBottomPaddle = SDL2.SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_PADDLE2,
         LeftTopPaddle = SDL2.SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_PADDLE3,
         LeftBottomPaddle = SDL2.SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_PADDLE4,
+        Touchpad = SDL2.SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_TOUCHPAD,
         Special = SDL2.SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_MISC1
     }
 }

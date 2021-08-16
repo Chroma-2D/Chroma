@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Geometry;
 using System.Numerics;
 using Chroma;
 using Chroma.Graphics;
 using Chroma.Graphics.TextRendering;
 using Chroma.Graphics.TextRendering.TrueType;
+using Color = Chroma.Graphics.Color;
 
 namespace GlyphTransforms
 {
@@ -108,6 +110,17 @@ namespace GlyphTransforms
                     };
                 }
             );
+
+            var rect = new Rectangle(200, 200, 240, TrueTypeFont.Default.Height);
+            context.Rectangle(ShapeMode.Fill, rect, Color.Red);
+
+            var text = "this should be centered";
+            var measure = TrueTypeFont.Default.Measure(text);
+            var targetPos = new Vector2(
+                rect.X + (rect.Width / 2) - measure.Width / 2,
+                rect.Y + (rect.Height / 2) - measure.Height / 2
+            );
+            context.DrawString(text, targetPos);
         }
     }
 }

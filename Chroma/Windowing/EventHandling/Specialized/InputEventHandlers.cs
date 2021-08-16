@@ -4,6 +4,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using Chroma.Hardware;
 using Chroma.Input;
+using Chroma.Input.GameControllers;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Windowing.EventHandling.Specialized
@@ -47,7 +48,7 @@ namespace Chroma.Windowing.EventHandling.Specialized
         private void ControllerAxisMoved(Window owner, SDL2.SDL_Event ev)
         {
             var instance = SDL2.SDL_GameControllerFromInstanceID(ev.caxis.which);
-            var controller = ControllerRegistry.Instance.GetControllerByPointer(instance);
+            var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance);
 
             var axis = (ControllerAxis)ev.caxis.axis;
 
@@ -59,7 +60,7 @@ namespace Chroma.Windowing.EventHandling.Specialized
         private void ControllerButtonPressed(Window owner, SDL2.SDL_Event ev)
         {
             var instance = SDL2.SDL_GameControllerFromInstanceID(ev.cbutton.which);
-            var controller = ControllerRegistry.Instance.GetControllerByPointer(instance);
+            var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance);
 
             var button = (ControllerButton)ev.cbutton.button;
 
@@ -72,7 +73,7 @@ namespace Chroma.Windowing.EventHandling.Specialized
         private void ControllerButtonReleased(Window owner, SDL2.SDL_Event ev)
         {
             var instance = SDL2.SDL_GameControllerFromInstanceID(ev.cbutton.which);
-            var controller = ControllerRegistry.Instance.GetControllerByPointer(instance);
+            var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance);
 
             var button = (ControllerButton)ev.cbutton.button;
 
@@ -146,8 +147,7 @@ namespace Chroma.Windowing.EventHandling.Specialized
                 supportedButtons
             );
 
-            var controller = ControllerFactory.Create(type, controllerInfo);
-            
+            var controller = ControllerFactory.Create(controllerInfo);
             ControllerRegistry.Instance.Register(instance, controller);
             
             Controller.OnConnected(
@@ -159,7 +159,7 @@ namespace Chroma.Windowing.EventHandling.Specialized
         private void ControllerDisconnected(Window owner, SDL2.SDL_Event ev)
         {
             var instance = SDL2.SDL_GameControllerFromInstanceID(ev.cdevice.which);
-            var controller = ControllerRegistry.Instance.GetControllerByPointer(instance);
+            var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance);
 
             ControllerRegistry.Instance.Unregister(instance);
 

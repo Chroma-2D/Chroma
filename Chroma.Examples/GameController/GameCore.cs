@@ -136,21 +136,25 @@ namespace GameController
             else
                 _bgColor = Color.Black;
 
-            var rumbleSide = Controller.GetAxisValueNormalized(0, ControllerAxis.RightStickX);
-
-            var leftIntensity = 0f;
-            var rightIntensity = 0f;
-
-            if (rumbleSide < 0)
+            for(var i = 0; i < Controller.DeviceCount; i++)
             {
-                leftIntensity = MathF.Abs(rumbleSide);
-            }
-            else
-            {
-                rightIntensity = MathF.Abs(rumbleSide);
+                var rumbleSide = Controller.GetAxisValueNormalized(i, ControllerAxis.RightStickX);
+
+                var leftIntensity = 0f;
+                var rightIntensity = 0f;
+
+                if (rumbleSide < 0)
+                {
+                    leftIntensity = MathF.Abs(rumbleSide);
+                }
+                else
+                {
+                    rightIntensity = MathF.Abs(rumbleSide);
+                }
+
+                Controller.Rumble(i, (ushort)(65535 * leftIntensity), (ushort)(65535 * rightIntensity), 1000);
             }
 
-            Controller.Rumble(0, (ushort)(65535 * leftIntensity), (ushort)(65535 * rightIntensity), 1000);
         }
 
         protected override void ControllerConnected(ControllerEventArgs e)

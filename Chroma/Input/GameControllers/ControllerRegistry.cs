@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Chroma.Input
+namespace Chroma.Input.GameControllers
 {
     internal class ControllerRegistry
     {
@@ -11,7 +11,7 @@ namespace Chroma.Input
             () => new ControllerRegistry()
         );
 
-        private readonly Dictionary<IntPtr, Controller> _controllers;
+        private readonly Dictionary<IntPtr, ControllerDriver> _controllers;
         private readonly Dictionary<int, IntPtr> _playerMappings;
 
         internal int DeviceCount => _controllers.Count;
@@ -20,14 +20,14 @@ namespace Chroma.Input
 
         private ControllerRegistry()
         {
-            _controllers = new Dictionary<IntPtr, Controller>();
+            _controllers = new Dictionary<IntPtr, ControllerDriver>();
             _playerMappings = new Dictionary<int, IntPtr>(MaxSupportedPlayers);
 
             for (var i = 0; i < MaxSupportedPlayers; i++)
                 _playerMappings.Add(i, IntPtr.Zero);
         }
 
-        public void Register(IntPtr instance, Controller controller)
+        public void Register(IntPtr instance, ControllerDriver controller)
         {
             if (_controllers.ContainsKey(instance))
                 throw new InvalidOperationException("Duplicate controller instance pointer.");
@@ -59,7 +59,7 @@ namespace Chroma.Input
             return -1;
         }
 
-        public Controller GetController(int playerIndex)
+        public ControllerDriver GetControllerDriver(int playerIndex)
         {
             if (!_playerMappings.ContainsKey(playerIndex) || _playerMappings[playerIndex] == IntPtr.Zero)
                 return null;
@@ -68,7 +68,7 @@ namespace Chroma.Input
             return _controllers[instancePointer];
         }
 
-        internal Controller GetControllerByPointer(IntPtr instancePointer)
+        internal ControllerDriver GetControllerDriverByPointer(IntPtr instancePointer)
         {
             if (!_controllers.ContainsKey(instancePointer))
                 return null;

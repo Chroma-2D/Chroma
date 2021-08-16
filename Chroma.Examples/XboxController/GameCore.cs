@@ -3,6 +3,7 @@ using System.Numerics;
 using Chroma;
 using Chroma.Graphics;
 using Chroma.Input;
+using Chroma.Input.GameControllers;
 
 namespace XboxController
 {

@@ -1,12 +1,12 @@
-﻿namespace Chroma.Input
+﻿namespace Chroma.Input.GameControllers
 {
     public class ControllerAxisEventArgs
     {
-        public Controller Controller { get; }
+        public ControllerDriver Controller { get; }
         public ControllerAxis Axis { get; }
         public short Value { get; }
 
-        internal ControllerAxisEventArgs(Controller controller, ControllerAxis axis, short value)
+        internal ControllerAxisEventArgs(ControllerDriver controller, ControllerAxis axis, short value)
         {
             Controller = controller;
             Axis = axis;

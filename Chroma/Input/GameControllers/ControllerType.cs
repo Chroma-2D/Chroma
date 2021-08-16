@@ -1,6 +1,6 @@
 using Chroma.Natives.SDL;
 
-namespace Chroma.Input
+namespace Chroma.Input.GameControllers
 {
     public enum ControllerType
     {

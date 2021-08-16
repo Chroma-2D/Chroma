@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Chroma.Hardware;
 
-namespace Chroma.Input
+namespace Chroma.Input.GameControllers
 {
     public class ControllerInfo
     {
@@ -75,14 +75,14 @@ namespace Chroma.Input
             sb.AppendLine($"  Has gyroscope: {HasGyroscope}");
             sb.AppendLine($"  Has accelerometer: {HasAccelerometer}");
             sb.AppendLine($"  Touchpad count: {TouchpadCount}");
-            sb.AppendLine("  Supported axes {{");
+            sb.AppendLine("  Supported axes {");
 
             foreach (var kvp in _supportedAxes)
                 sb.AppendLine($"    {kvp.Key}: {kvp.Value}");
 
             sb.AppendLine("  }");
 
-            sb.AppendLine("  Supported buttons {{");
+            sb.AppendLine("  Supported buttons {");
             foreach (var kvp in _supportedButtons)
                 sb.AppendLine($"    {kvp.Key}: {kvp.Value}");
 

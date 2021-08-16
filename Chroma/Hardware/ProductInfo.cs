@@ -17,9 +17,9 @@ namespace Chroma.Hardware
         {
             var sb = new StringBuilder();
             
-            sb.Append(VendorId);
+            sb.Append(VendorId.ToString("X4"));
             sb.Append(":");
-            sb.Append(ProductId);
+            sb.Append(ProductId.ToString("X4"));
 
             return sb.ToString();
         }

@@ -174,6 +174,10 @@ namespace Chroma
         {
         }
 
+        protected virtual void ControllerGyroscopeStateChanged(ControllerGyroscopeEventArgs e)
+        {
+        }
+
         internal void OnMouseMoved(MouseMoveEventArgs e)
             => MouseMoved(e);
 
@@ -218,6 +222,9 @@ namespace Chroma
 
         internal void OnControllerTouchpadReleased(ControllerTouchpadEventArgs e)
             => ControllerTouchpadReleased(e);
+
+        internal void OnControllerGyroscopeStateChanged(ControllerGyroscopeEventArgs e)
+            => ControllerGyroscopeStateChanged(e);
 
         private void OnDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {

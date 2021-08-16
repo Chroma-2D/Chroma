@@ -37,6 +37,7 @@ namespace Chroma.Windowing.EventHandling.Specialized
             Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_CONTROLLERTOUCHPADMOTION, ControllerTouchpadMoved);
             Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_CONTROLLERTOUCHPADDOWN, ControllerTouchpadTouched);
             Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_CONTROLLERTOUCHPADUP, ControllerTouchpadReleased);
+            Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_CONTROLLERSENSORUPDATE, ControllerSensorUpdated);
 
             Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_KEYUP, KeyReleased);
             Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_KEYDOWN, KeyPressed);
@@ -46,6 +47,26 @@ namespace Chroma.Windowing.EventHandling.Specialized
             Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_MOUSEWHEEL, WheelMoved);
             Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_MOUSEBUTTONDOWN, MousePressed);
             Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_MOUSEBUTTONUP, MouseReleased);
+        }
+
+        private void ControllerSensorUpdated(Window owner, SDL2.SDL_Event ev)
+        {
+            var instance = SDL2.SDL_GameControllerFromInstanceID(ev.ctouchpad.which);
+            var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance);
+
+            if (ev.csensor.sensor == SDL2.SDL_SensorType.SDL_SENSOR_GYRO)
+            {
+                Controller.OnGyroscopeStateChanged(
+                    owner.Game,
+                    new(controller, ev.csensor.data1, ev.csensor.data2, ev.csensor.data3)
+                );
+            }
+            else if(ev.csensor.sensor == SDL2.SDL_SensorType.SDL_SENSOR_ACCEL)
+            {
+                //Controller.OnAccelerometerStateChanged(
+
+                //);
+            }
         }
 
         private void ControllerTouchpadReleased(Window owner, SDL2.SDL_Event ev)

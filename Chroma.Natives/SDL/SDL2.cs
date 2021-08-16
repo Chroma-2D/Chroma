@@ -4948,7 +4948,7 @@ namespace Chroma.Natives.SDL
 			public UInt32 type;
 			public UInt32 timestamp;
 			public Int32 which; /* SDL_JoystickID */
-			public Int32 sensor;
+			public SDL_SensorType sensor;
 			public float data1;
 			public float data2;
 			public float data3;
@@ -7137,6 +7137,14 @@ namespace Chroma.Natives.SDL
 			IntPtr gamecontroller,
 			SDL_SensorType type,
 			IntPtr data,
+			int num_values
+		);
+
+		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+		public static extern unsafe int SDL_GameControllerGetSensorData(
+			IntPtr gamecontroller,
+			SDL_SensorType type,
+			float* data,
 			int num_values
 		);
 

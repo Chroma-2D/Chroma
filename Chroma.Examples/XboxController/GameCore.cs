@@ -5,6 +5,7 @@ using Chroma.Graphics;
 using Chroma.Input;
 using Chroma.Input.GameControllers;
 using Chroma.Input.GameControllers.Drivers;
+using Chroma.Input.GameControllers.Drivers.Capabilities;
 
 namespace XboxController
 {
@@ -65,8 +66,8 @@ namespace XboxController
             }
 
             context.DrawTexture(_tgt, _position + _tgt.Center, Vector2.One * _scale, _tgt.Center, _rotation);
-            var inputs = "";
 
+            var inputs = string.Empty;
             for (var i = 0; i < Controller.DeviceCount; i++)
             {
                 var buttonSet = Controller.GetActiveButtons(i);
@@ -74,6 +75,19 @@ namespace XboxController
                     continue;
 
                 inputs += $"Controller {i}: {string.Join(", ", buttonSet)}\n";
+            }
+
+            var gyroState = string.Empty;
+            if (Controller.Get(0) is IGyroscopeEnabled gyroEnabledDriver)
+            {
+                if (gyroEnabledDriver.GyroscopeEnabled)
+                {
+                    gyroState = $"Gyroscope position: {gyroEnabledDriver.ReadGyroscopeSensor()}";
+                }
+                else
+                {
+                    gyroState = string.Empty;
+                }
             }
 
             context.DrawString(
@@ -85,7 +99,8 @@ namespace XboxController
                 "Use A/B/X/Y on player 2 to control background colors.\n" +
                 "Use left/right stick buttons to toggle between stroke and fill.\n" +
                 "Use left/right bumper to control line thickness.\n\n" +
-                inputs,
+                inputs + "\n" +
+                gyroState,
                 new Vector2(8)
             );
         }
@@ -184,7 +199,18 @@ namespace XboxController
             {
                 if (e.Controller.Is<DualShockControllerDriver>())
                 {
-                    e.Controller.As<DualShockControllerDriver>().SetLedColor(Color.Orange);
+                    var ds4 = e.Controller.As<DualShockControllerDriver>();
+
+                    ds4.GyroscopeEnabled = !ds4.GyroscopeEnabled;
+
+                    if (ds4.GyroscopeEnabled)
+                    {
+                        ds4.SetLedColor(Color.Lime);
+                    }
+                    else
+                    {
+                        ds4.SetLedColor(Color.CornflowerBlue);
+                    }
                 }
             }
         }

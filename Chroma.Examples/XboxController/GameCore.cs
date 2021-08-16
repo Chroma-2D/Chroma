@@ -18,7 +18,10 @@ namespace XboxController
         private Color _color = Color.White;
         private Color _bgColor = Color.Black;
         private ShapeMode _mode;
-        
+
+        private Vector2?[] _touchPointPositions;
+        private float?[] _touchPointPressures;
+
         public GameCore() : base(new(false, false))
         {
         }
@@ -41,20 +44,38 @@ namespace XboxController
                     32, 32,
                     _color
                 );
+
+
             });
+
+            for (var i = 0; i < _touchPointPositions.Length; i++)
+            {
+                if (_touchPointPositions[i] != null)
+                {
+                    context.Circle(
+                        ShapeMode.Fill,
+                        new Vector2(
+                            Window.Size.Width * _touchPointPositions[i].Value.X,
+                            Window.Size.Height * _touchPointPositions[i].Value.Y
+                        ),
+                        _touchPointPressures[i].Value * 32,
+                        Color.White
+                    );
+                }
+            }
 
             context.DrawTexture(_tgt, _position + _tgt.Center, Vector2.One * _scale, _tgt.Center, _rotation);
             var inputs = "";
-            
+
             for (var i = 0; i < Controller.DeviceCount; i++)
             {
                 var buttonSet = Controller.GetActiveButtons(i);
                 if (buttonSet == null)
                     continue;
-                
+
                 inputs += $"Controller {i}: {string.Join(", ", buttonSet)}\n";
             }
-            
+
             context.DrawString(
                 "Use left stick to control the rectangle.\n" +
                 "Use right stick to control rumble.\n" +
@@ -64,7 +85,7 @@ namespace XboxController
                 "Use A/B/X/Y on player 2 to control background colors.\n" +
                 "Use left/right stick buttons to toggle between stroke and fill.\n" +
                 "Use left/right bumper to control line thickness.\n\n" +
-                inputs, 
+                inputs,
                 new Vector2(8)
             );
         }
@@ -113,6 +134,12 @@ namespace XboxController
             e.Controller.SetDeadZone(ControllerAxis.RightStickY, 5500);
 
             Console.WriteLine(e.Controller.Info);
+
+            if (e.Controller.Is<DualShockControllerDriver>() && e.Controller.Info.PlayerIndex == 0)
+            {
+                _touchPointPositions = new Vector2?[2];
+                _touchPointPressures = new float?[2];
+            }
         }
 
         protected override void ControllerButtonPressed(ControllerButtonEventArgs e)
@@ -157,9 +184,27 @@ namespace XboxController
             {
                 if (e.Controller.Is<DualShockControllerDriver>())
                 {
-                    e.Controller.As<DualShockControllerDriver>().SetLED(Color.Orange);
+                    e.Controller.As<DualShockControllerDriver>().SetLedColor(Color.Orange);
                 }
             }
+        }
+
+        protected override void ControllerTouchpadMoved(ControllerTouchpadEventArgs e)
+        {
+            _touchPointPositions[e.FingerIndex] = e.Position;
+            _touchPointPressures[e.FingerIndex] = e.Pressure;
+        }
+
+        protected override void ControllerTouchpadTouched(ControllerTouchpadEventArgs e)
+        {
+            _touchPointPositions[e.FingerIndex] = e.Position;
+            _touchPointPressures[e.FingerIndex] = e.Pressure;
+        }
+
+        protected override void ControllerTouchpadReleased(ControllerTouchpadEventArgs e)
+        {
+            _touchPointPositions[e.FingerIndex] = null;
+            _touchPointPressures[e.FingerIndex] = e.Pressure;
         }
     }
 }

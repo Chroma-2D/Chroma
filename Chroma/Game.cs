@@ -24,7 +24,7 @@ namespace Chroma
         private readonly Log _log = LogManager.GetForCurrentAssembly();
 
         internal static bool WasConstructed { get; private set; }
-        
+
         public int FixedTimeStepTarget
         {
             get => _fixedTimeStepTarget;
@@ -51,7 +51,7 @@ namespace Chroma
                     "once in the entire application's lifetime."
                 );
             }
-            
+
             if (options == null)
                 options = new GameStartupOptions();
 
@@ -77,7 +77,7 @@ namespace Chroma
             {
                 FinishBoot();
             }
-            
+
             Window.Run();
         }
 
@@ -104,7 +104,7 @@ namespace Chroma
         protected virtual void FixedUpdate(float delta)
         {
         }
-        
+
         protected virtual IContentProvider InitializeContentPipeline()
         {
             return new FileSystemContentProvider();
@@ -162,6 +162,18 @@ namespace Chroma
         {
         }
 
+        protected virtual void ControllerTouchpadMoved(ControllerTouchpadEventArgs e)
+        {
+        }
+
+        protected virtual void ControllerTouchpadTouched(ControllerTouchpadEventArgs e)
+        {
+        }
+
+        protected virtual void ControllerTouchpadReleased(ControllerTouchpadEventArgs e)
+        {
+        }
+
         internal void OnMouseMoved(MouseMoveEventArgs e)
             => MouseMoved(e);
 
@@ -198,6 +210,15 @@ namespace Chroma
         internal void OnControllerAxisMoved(ControllerAxisEventArgs e)
             => ControllerAxisMoved(e);
 
+        internal void OnControllerTouchpadMoved(ControllerTouchpadEventArgs e)
+            => ControllerTouchpadMoved(e);
+
+        internal void OnControllerTouchpadTouched(ControllerTouchpadEventArgs e)
+            => ControllerTouchpadTouched(e);
+
+        internal void OnControllerTouchpadReleased(ControllerTouchpadEventArgs e)
+            => ControllerTouchpadReleased(e);
+
         private void OnDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             _log.Error(
@@ -222,7 +243,7 @@ namespace Chroma
 
                 _bootScene = new BootScene(this);
                 _bootScene.Finished += BootSceneFinished;
-                
+
                 Window.Draw = _bootScene.Draw;
                 Window.FixedUpdate = _bootScene.FixedUpdate;
             }
@@ -232,7 +253,7 @@ namespace Chroma
             }
 
             Graphics.VerticalSyncMode = VerticalSyncMode.Retrace;
-            Window.SetIcon(EmbeddedAssets.DefaultIconTexture);            
+            Window.SetIcon(EmbeddedAssets.DefaultIconTexture);
         }
 
         private void InitializeGraphicsDefault()
@@ -256,7 +277,7 @@ namespace Chroma
             _bootScene.Finished -= BootSceneFinished;
 
             FinishBoot();
-            
+
             InitializeGraphicsDefault();
         }
 
@@ -264,7 +285,7 @@ namespace Chroma
         {
             Content = InitializeContentPipeline();
             ExtensionRegistry.FindAndLoadExtensions(this);
-                
+
             LoadContent();
         }
     }

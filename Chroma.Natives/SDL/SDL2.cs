@@ -5109,9 +5109,9 @@ namespace Chroma.Natives.SDL
 			[FieldOffset(0)]
 			public SDL_ControllerDeviceEvent cdevice;
 			[FieldOffset(0)]
-			public SDL_ControllerDeviceEvent ctouchpad;
+			public SDL_ControllerTouchpadEvent ctouchpad;
 			[FieldOffset(0)]
-			public SDL_ControllerDeviceEvent csensor;
+			public SDL_ControllerSensorEvent csensor;
 			[FieldOffset(0)]
 			public SDL_AudioDeviceEvent adevice;
 			[FieldOffset(0)]

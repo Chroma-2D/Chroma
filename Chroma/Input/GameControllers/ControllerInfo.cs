@@ -23,6 +23,7 @@ namespace Chroma.Input.GameControllers
         public bool HasGyroscope { get; }
         public bool HasAccelerometer { get; }
         public int TouchpadCount { get; }
+        public int[] TouchpadFingerLimit { get; }
 
         public IReadOnlyDictionary<ControllerAxis, bool> SupportedAxes => _supportedAxes;
         public IReadOnlyDictionary<ControllerButton, bool> SupportedButtons => _supportedButtons;
@@ -40,6 +41,7 @@ namespace Chroma.Input.GameControllers
             bool hasGyroscope,
             bool hasAccelerometer,
             int touchpadCount,
+            int[] touchpadFingerLimit,
             Dictionary<ControllerAxis, bool> supportedAxes,
             Dictionary<ControllerButton, bool> supportedButtons)
         {
@@ -56,6 +58,7 @@ namespace Chroma.Input.GameControllers
             HasGyroscope = hasGyroscope;
             HasAccelerometer = hasAccelerometer;
             TouchpadCount = touchpadCount;
+            TouchpadFingerLimit = touchpadFingerLimit;
             
             _supportedAxes = supportedAxes;
             _supportedButtons = supportedButtons;

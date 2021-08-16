@@ -1,23 +1,21 @@
-using System.Collections.Generic;
-using System.Numerics;
 using Chroma.Graphics;
 using Chroma.Natives.SDL;
+using System.Collections.Generic;
 
 namespace Chroma.Input.GameControllers.Drivers
 {
-    public class DualShockControllerDriver : ControllerDriver
+    public class DualShockControllerDriver : TouchpadEnabledControllerDriver
     {
-        private Vector2[] _touchPoints = new Vector2[] { new(-1, -1), new(-1, -1) };
-        
         public override string Name { get; } = "Sony DualShock 4 Chroma Driver";
-        
-        public IReadOnlyCollection<Vector2> TouchPoints => _touchPoints;
 
-        public DualShockControllerDriver(ControllerInfo info) : base(info)
+        public new IReadOnlyCollection<ControllerTouchPoint> TouchPoints => _touchPoints[0];
+
+        internal DualShockControllerDriver(ControllerInfo info)
+            : base(info)
         {
         }
 
-        public void SetLED(Color color)
+        public void SetLedColor(Color color)
         {
             if (SDL2.SDL_GameControllerSetLED(Info.InstancePointer, color.R, color.G, color.B) < 0)
                 _log.Error(SDL2.SDL_GetError());

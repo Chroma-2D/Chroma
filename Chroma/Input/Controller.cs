@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Chroma.Diagnostics.Logging;
 using Chroma.Input.GameControllers;
+using Chroma.Input.GameControllers.Drivers;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Input
@@ -168,6 +169,39 @@ namespace Chroma.Input
         {
             e.Controller.OnButtonPressed(e.Button);
             game.OnControllerButtonPressed(e);
+        }
+
+        internal static void OnTouchpadMoved(Game game, ControllerTouchpadEventArgs e)
+        {
+            var touchEnabledDriver = e.Controller.As<TouchpadEnabledControllerDriver>();
+
+            if (touchEnabledDriver != null)
+            {
+                touchEnabledDriver.OnTouchpadMoved(e.TouchpadIndex, e.FingerIndex, e.Position.X, e.Position.Y);
+                game.OnControllerTouchpadMoved(e);
+            }
+        }
+
+        internal static void OnTouchpadTouched(Game game, ControllerTouchpadEventArgs e)
+        {
+            var touchEnabledDriver = e.Controller.As<TouchpadEnabledControllerDriver>();
+
+            if (touchEnabledDriver != null)
+            {
+                touchEnabledDriver.OnTouchpadTouched(e.TouchpadIndex, e.FingerIndex, e.Position.X, e.Position.Y);
+                game.OnControllerTouchpadTouched(e);
+            }
+        }
+
+        internal static void OnTouchpadReleased(Game game, ControllerTouchpadEventArgs e)
+        {
+            var touchEnabledDriver = e.Controller.As<TouchpadEnabledControllerDriver>();
+
+            if (touchEnabledDriver != null)
+            {
+                touchEnabledDriver.OnTouchpadReleased(e.TouchpadIndex, e.FingerIndex, e.Position.X, e.Position.Y);
+                game.OnControllerTouchpadReleased(e);
+            }
         }
     }
 }

@@ -174,7 +174,11 @@ namespace Chroma
         {
         }
 
-        protected virtual void ControllerGyroscopeStateChanged(ControllerGyroscopeEventArgs e)
+        protected virtual void ControllerGyroscopeStateChanged(ControllerSensorEventArgs e)
+        {
+        }
+
+        protected virtual void ControllerAccelerometerStateChanged(ControllerSensorEventArgs e)
         {
         }
 
@@ -223,8 +227,11 @@ namespace Chroma
         internal void OnControllerTouchpadReleased(ControllerTouchpadEventArgs e)
             => ControllerTouchpadReleased(e);
 
-        internal void OnControllerGyroscopeStateChanged(ControllerGyroscopeEventArgs e)
+        internal void OnControllerGyroscopeStateChanged(ControllerSensorEventArgs e)
             => ControllerGyroscopeStateChanged(e);
+
+        internal void OnControllerAccelerometerStateChanged(ControllerSensorEventArgs e)
+            => ControllerAccelerometerStateChanged(e);
 
         private void OnDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {

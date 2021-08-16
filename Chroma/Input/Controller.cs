@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Chroma.Diagnostics.Logging;
 using Chroma.Input.GameControllers;
 using Chroma.Input.GameControllers.Drivers;
+using Chroma.Input.GameControllers.Drivers.Capabilities;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Input
@@ -11,10 +12,10 @@ namespace Chroma.Input
         private static readonly Log _log = LogManager.GetForCurrentAssembly();
 
         public static int DeviceCount => ControllerRegistry.Instance.DeviceCount;
-        
+
         public static ControllerDriver Get(int playerIndex)
             => ControllerRegistry.Instance.GetControllerDriver(playerIndex);
-        
+
         public static bool Is<T>(int playerIndex) where T : ControllerDriver
         {
             var driver = Get(playerIndex);
@@ -116,7 +117,7 @@ namespace Chroma.Input
 
             driver.Rumble(leftIntensity, rightIntensity, duration);
         }
-        
+
         public static void AddMapping(string controllerMapping)
         {
             if (string.IsNullOrEmpty(controllerMapping))
@@ -201,6 +202,15 @@ namespace Chroma.Input
             {
                 touchEnabledDriver.OnTouchpadReleased(e.TouchpadIndex, e.FingerIndex, e.Position.X, e.Position.Y);
                 game.OnControllerTouchpadReleased(e);
+            }
+        }
+
+        internal static void OnGyroscopeStateChanged(Game game, ControllerGyroscopeEventArgs e)
+        {
+            if (e.Controller is IGyroscopeEnabled gyroEnabledDriver)
+            {
+                gyroEnabledDriver.OnGyroscopeStateChanged(e.Position.X, e.Position.Y, e.Position.Z);
+                game.OnControllerGyroscopeStateChanged(e);
             }
         }
     }

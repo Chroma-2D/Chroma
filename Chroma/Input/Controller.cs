@@ -174,9 +174,7 @@ namespace Chroma.Input
 
         internal static void OnTouchpadMoved(Game game, ControllerTouchpadEventArgs e)
         {
-            var touchEnabledDriver = e.Controller.As<TouchpadEnabledControllerDriver>();
-
-            if (touchEnabledDriver != null)
+            if (e.Controller is ITouchEnabled touchEnabledDriver)
             {
                 touchEnabledDriver.OnTouchpadMoved(e.TouchpadIndex, e.FingerIndex, e.Position.X, e.Position.Y);
                 game.OnControllerTouchpadMoved(e);
@@ -185,9 +183,7 @@ namespace Chroma.Input
 
         internal static void OnTouchpadTouched(Game game, ControllerTouchpadEventArgs e)
         {
-            var touchEnabledDriver = e.Controller.As<TouchpadEnabledControllerDriver>();
-
-            if (touchEnabledDriver != null)
+            if (e.Controller is ITouchEnabled touchEnabledDriver)
             {
                 touchEnabledDriver.OnTouchpadTouched(e.TouchpadIndex, e.FingerIndex, e.Position.X, e.Position.Y);
                 game.OnControllerTouchpadTouched(e);
@@ -196,21 +192,28 @@ namespace Chroma.Input
 
         internal static void OnTouchpadReleased(Game game, ControllerTouchpadEventArgs e)
         {
-            var touchEnabledDriver = e.Controller.As<TouchpadEnabledControllerDriver>();
-
-            if (touchEnabledDriver != null)
+            if (e.Controller is ITouchEnabled touchEnabledDriver)
             {
                 touchEnabledDriver.OnTouchpadReleased(e.TouchpadIndex, e.FingerIndex, e.Position.X, e.Position.Y);
                 game.OnControllerTouchpadReleased(e);
             }
         }
 
-        internal static void OnGyroscopeStateChanged(Game game, ControllerGyroscopeEventArgs e)
+        internal static void OnGyroscopeStateChanged(Game game, ControllerSensorEventArgs e)
         {
             if (e.Controller is IGyroscopeEnabled gyroEnabledDriver)
             {
-                gyroEnabledDriver.OnGyroscopeStateChanged(e.Position.X, e.Position.Y, e.Position.Z);
+                gyroEnabledDriver.OnGyroscopeStateChanged(e.Values.X, e.Values.Y, e.Values.Z);
                 game.OnControllerGyroscopeStateChanged(e);
+            }
+        }
+
+        internal static void OnAccelerometerStateChanged(Game game, ControllerSensorEventArgs e)
+        {
+            if(e.Controller is IAccelerometerEnabled acceleroEnabledDriver)
+            {
+                acceleroEnabledDriver.OnAccelerometerStateChanged(e.Values.X, e.Values.Y, e.Values.Z);
+                game.OnControllerAccelerometerStateChanged(e);
             }
         }
     }

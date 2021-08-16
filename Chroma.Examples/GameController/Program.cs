@@ -1,4 +1,4 @@
-﻿namespace XboxController
+﻿namespace GameController
 {
     internal class Program
     {

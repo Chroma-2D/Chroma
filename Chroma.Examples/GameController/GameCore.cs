@@ -7,7 +7,7 @@ using Chroma.Input.GameControllers;
 using Chroma.Input.GameControllers.Drivers;
 using Chroma.Input.GameControllers.Drivers.Capabilities;
 
-namespace XboxController
+namespace GameController
 {
     public class GameCore : Game
     {
@@ -45,8 +45,6 @@ namespace XboxController
                     32, 32,
                     _color
                 );
-
-
             });
 
             for (var i = 0; i < _touchPointPositions.Length; i++)
@@ -90,6 +88,19 @@ namespace XboxController
                 }
             }
 
+            var acceleroState = string.Empty;
+            if (Controller.Get(0) is IAccelerometerEnabled acceleroEnabledDriver)
+            {
+                if (acceleroEnabledDriver.AccelerometerEnabled)
+                {
+                    acceleroState = $"Accelerometer acceleration: {acceleroEnabledDriver.ReadAccelerometerSensor()}";
+                }
+                else
+                {
+                    acceleroState = string.Empty;
+                }
+            }
+
             context.DrawString(
                 "Use left stick to control the rectangle.\n" +
                 "Use right stick to control rumble.\n" +
@@ -100,7 +111,8 @@ namespace XboxController
                 "Use left/right stick buttons to toggle between stroke and fill.\n" +
                 "Use left/right bumper to control line thickness.\n\n" +
                 inputs + "\n" +
-                gyroState,
+                gyroState + "\n" +
+                acceleroState,
                 new Vector2(8)
             );
         }
@@ -195,22 +207,29 @@ namespace XboxController
                 RenderSettings.LineThickness += 1;
             }
 
-            if (e.Button == ControllerButton.Logo)
+            var ds4 = e.Controller.As<DualShockControllerDriver>();
+            if (ds4 != null)
             {
-                if (e.Controller.Is<DualShockControllerDriver>())
+                if (e.Button == ControllerButton.DpadLeft)
                 {
-                    var ds4 = e.Controller.As<DualShockControllerDriver>();
-
                     ds4.GyroscopeEnabled = !ds4.GyroscopeEnabled;
+                }
+                else if (e.Button == ControllerButton.DpadRight)
+                {
+                    ds4.AccelerometerEnabled = !ds4.AccelerometerEnabled;
+                }
 
-                    if (ds4.GyroscopeEnabled)
-                    {
-                        ds4.SetLedColor(Color.Lime);
-                    }
-                    else
-                    {
-                        ds4.SetLedColor(Color.CornflowerBlue);
-                    }
+                if (ds4.GyroscopeEnabled && ds4.AccelerometerEnabled)
+                {
+                    ds4.SetLedColor(Color.Violet);
+                }
+                else if(ds4.GyroscopeEnabled)
+                {
+                    ds4.SetLedColor(Color.CornflowerBlue);
+                }
+                else if(ds4.AccelerometerEnabled)
+                {
+                    ds4.SetLedColor(Color.Red);
                 }
             }
         }

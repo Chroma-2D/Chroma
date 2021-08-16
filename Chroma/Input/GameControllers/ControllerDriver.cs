@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Chroma.Diagnostics.Logging;
 using Chroma.Hardware;
 using Chroma.Natives.SDL;
 
@@ -8,6 +9,8 @@ namespace Chroma.Input.GameControllers
 {
     public abstract class ControllerDriver
     {
+        protected static Log _log = LogManager.GetForCurrentAssembly();
+            
         protected Dictionary<ControllerAxis, ushort> _deadZones = new();
         protected HashSet<ControllerButton> _buttonStates = new();
 
@@ -37,7 +40,7 @@ namespace Chroma.Input.GameControllers
         public T As<T>() where T : ControllerDriver
             => this as T;
 
-        public bool Is<T>() where T: ControllerDriver
+        public bool Is<T>() where T : ControllerDriver
             => this is T;
 
         public virtual void SetDeadZone(ControllerAxis axis, ushort value)

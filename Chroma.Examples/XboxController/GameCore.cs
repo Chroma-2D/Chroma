@@ -4,6 +4,7 @@ using Chroma;
 using Chroma.Graphics;
 using Chroma.Input;
 using Chroma.Input.GameControllers;
+using Chroma.Input.GameControllers.Drivers;
 
 namespace XboxController
 {
@@ -150,6 +151,14 @@ namespace XboxController
             else if (e.Button == ControllerButton.RightBumper)
             {
                 RenderSettings.LineThickness += 1;
+            }
+
+            if (e.Button == ControllerButton.Logo)
+            {
+                if (e.Controller.Is<DualShockControllerDriver>())
+                {
+                    e.Controller.As<DualShockControllerDriver>().SetLED(Color.Orange);
+                }
             }
         }
     }

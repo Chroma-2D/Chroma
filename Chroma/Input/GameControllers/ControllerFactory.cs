@@ -20,13 +20,17 @@ namespace Chroma.Input.GameControllers
             
             switch (type)
             {
-                case ControllerType.Virtual:
+                case ControllerType.PlayStation5:
+                    return new DualSenseControllerDriver(info);
+                
+                case ControllerType.PlayStation4:
+                    return new DualShockControllerDriver(info);
+                
                 case ControllerType.Xbox360:
                 case ControllerType.XboxOne:
                 case ControllerType.PlayStation3:
-                case ControllerType.PlayStation4:
-                case ControllerType.PlayStation5:
                 case ControllerType.NintendoSwitch:
+                case ControllerType.Virtual:
                 case ControllerType.Unknown:
                     return new GenericControllerDriver(info);
                 

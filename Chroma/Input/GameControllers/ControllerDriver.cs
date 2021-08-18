@@ -10,7 +10,7 @@ namespace Chroma.Input.GameControllers
     public abstract class ControllerDriver
     {
         protected static Log _log = LogManager.GetForCurrentAssembly();
-            
+
         protected Dictionary<ControllerAxis, ushort> _deadZones = new();
         protected HashSet<ControllerButton> _buttonStates = new();
 
@@ -121,6 +121,23 @@ namespace Chroma.Input.GameControllers
                 return string.Empty;
 
             return SDL2.SDL_GameControllerMapping(Info.InstancePointer);
+        }
+
+        public virtual void SendEffect(byte[] data)
+        {
+            if (Info == null || Info.InstancePointer == IntPtr.Zero)
+                return;
+
+            unsafe
+            {
+                fixed (byte* bp = &data[0])
+                {
+                    if (SDL2.SDL_GameControllerSendEffect(Info.InstancePointer, bp, data.Length) < 0)
+                    {
+                        _log.Error($"Failed to send effect: '{SDL2.SDL_GetError()}");
+                    }
+                }
+            }
         }
 
         internal void OnButtonPressed(ControllerButton button)

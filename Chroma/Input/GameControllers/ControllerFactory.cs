@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Chroma.Hardware;
 using Chroma.Input.GameControllers.Drivers;
+using Chroma.Natives.SDL;
 
 namespace Chroma.Input.GameControllers
 {
@@ -9,31 +10,54 @@ namespace Chroma.Input.GameControllers
     {
         public delegate ControllerDriver ControllerFactoryDelegate(ControllerInfo info);
 
-        private static Dictionary<ProductInfo, ControllerFactoryDelegate> _factoryDelegateLookup = new();
-        
+        private static Dictionary<ProductInfo, ControllerFactoryDelegate> _factoryDelegateLookup = new()
+        {
+            {new(0x057E, 0x2006), CreateNintendoDriverInstance},
+            {new(0x057E, 0x2007), CreateNintendoDriverInstance},
+            {new(0x057E, 0x2009), CreateNintendoDriverInstance},
+        };
+
+        private static ControllerDriver CreateNintendoDriverInstance(ControllerInfo info)
+        {
+            if (info.ProductInfo.VendorId != 0x057E)
+                throw new InvalidOperationException("Vendor ID mismatch, expected Nintendo VID.");
+
+            switch (info.ProductInfo.ProductId)
+            {
+                case 0x2006:
+                case 0x2007:
+                    return new SwitchJoyConControllerDriver(info);
+                case 0x2009:
+                    return new SwitchProControllerDriver(info);
+            }
+
+            throw new NotSupportedException("Unsupported product ID.");
+        }
+
         internal static ControllerDriver Create(ControllerInfo info)
         {
             var type = info.Type;
-            
+
             if (_factoryDelegateLookup.ContainsKey(info.ProductInfo))
                 return _factoryDelegateLookup[info.ProductInfo](info);
-            
+
             switch (type)
             {
                 case ControllerType.PlayStation5:
                     return new DualSenseControllerDriver(info);
-                
+
                 case ControllerType.PlayStation4:
                     return new DualShockControllerDriver(info);
-                
+
+                // NintendoSwitch handled by special case
+
                 case ControllerType.Xbox360:
                 case ControllerType.XboxOne:
                 case ControllerType.PlayStation3:
-                case ControllerType.NintendoSwitch:
                 case ControllerType.Virtual:
                 case ControllerType.Unknown:
                     return new GenericControllerDriver(info);
-                
+
                 default:
                     throw new NotSupportedException("Unrecognized controller type.");
             }

@@ -148,11 +148,15 @@ namespace Chroma.Input.GameControllers
                 _log.Error($"Failed to set LED color: {SDL2.SDL_GetError()}");
         }
 
-        internal void OnButtonPressed(ControllerButton button)
-            => _buttonStates.Add(button);
+        internal virtual void OnButtonPressed(ControllerButtonEventArgs e)
+            => _buttonStates.Add(e.Button);
 
-        internal void OnButtonReleased(ControllerButton button)
-            => _buttonStates.Remove(button);
+        internal virtual void OnButtonReleased(ControllerButtonEventArgs e)
+            => _buttonStates.Remove(e.Button);
+
+        internal virtual void OnAxisMoved(ControllerAxisEventArgs e)
+        {
+        }
 
         public override string ToString()
         {

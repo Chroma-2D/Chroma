@@ -52,6 +52,7 @@ namespace Chroma.Natives.SDL
 			}
 			return (str.Length * 4) + 1;
 		}
+		
 		internal static unsafe byte* Utf8Encode(string str, byte* buffer, int bufferSize)
 		{
 			if (str == null)

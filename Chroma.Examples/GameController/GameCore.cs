@@ -47,19 +47,22 @@ namespace GameController
                 );
             });
 
-            for (var i = 0; i < _touchPointPositions.Length; i++)
+            if (_touchPointPositions != null)
             {
-                if (_touchPointPositions[i] != null)
+                for (var i = 0; i < _touchPointPositions.Length; i++)
                 {
-                    context.Circle(
-                        ShapeMode.Fill,
-                        new Vector2(
-                            Window.Size.Width * _touchPointPositions[i].Value.X,
-                            Window.Size.Height * _touchPointPositions[i].Value.Y
-                        ),
-                        _touchPointPressures[i].Value * 32,
-                        Color.White
-                    );
+                    if (_touchPointPositions[i] != null)
+                    {
+                        context.Circle(
+                            ShapeMode.Fill,
+                            new Vector2(
+                                Window.Size.Width * _touchPointPositions[i].Value.X,
+                                Window.Size.Height * _touchPointPositions[i].Value.Y
+                            ),
+                            _touchPointPressures[i].Value * 32,
+                            Color.White
+                        );
+                    }
                 }
             }
 

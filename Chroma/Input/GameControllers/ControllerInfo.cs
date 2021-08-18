@@ -10,6 +10,7 @@ namespace Chroma.Input.GameControllers
         private Dictionary<ControllerAxis, bool> _supportedAxes;
         private Dictionary<ControllerButton, bool> _supportedButtons;
 
+        internal IntPtr JoystickPointer { get; }
         internal IntPtr InstancePointer { get; }
         internal int InstanceId { get; }
 
@@ -29,6 +30,7 @@ namespace Chroma.Input.GameControllers
         public IReadOnlyDictionary<ControllerButton, bool> SupportedButtons => _supportedButtons;
         
         internal ControllerInfo(
+            IntPtr joystickPointer,
             IntPtr instancePointer,
             int instanceId,
             Guid guid,
@@ -45,6 +47,7 @@ namespace Chroma.Input.GameControllers
             Dictionary<ControllerAxis, bool> supportedAxes,
             Dictionary<ControllerButton, bool> supportedButtons)
         {
+            JoystickPointer = joystickPointer; 
             InstancePointer = instancePointer;
             InstanceId = instanceId;
 

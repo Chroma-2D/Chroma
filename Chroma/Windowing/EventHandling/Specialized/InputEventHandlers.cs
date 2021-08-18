@@ -195,6 +195,7 @@ namespace Chroma.Windowing.EventHandling.Specialized
             }
 
             var controllerInfo = new ControllerInfo(
+                joyInstance,
                 instance, 
                 instanceId,
                 guid,

@@ -8,6 +8,7 @@ namespace Chroma.Input.GameControllers.Drivers
     {
         private Vector3 _gyroscopeState;
         private Vector3 _accelerometerState;
+        
         public override string Name { get; } = "Nintendo Pro Controller Chroma Driver";
         
         public Vector3 Gyroscope => _gyroscopeState;

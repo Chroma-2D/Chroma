@@ -18,10 +18,10 @@ namespace Chroma.Natives.Boot.Config
         public bool EnableSdlGpuDebugging { get; set; }
         
         [JsonPropertyName("sdl_modules")]
-        public SdlModuleConfig SdlModules { get; private set; } = new();
+        public SdlModuleConfig SdlModules { get; set; } = new();
 
         [JsonPropertyName("sdl_initialization_hints")]
-        public Dictionary<string, string> SdlInitializationHints { get; private set; } = new()
+        public Dictionary<string, string> SdlInitializationHints { get; set; } = new()
         {
             { SDL2.SDL_HINT_JOYSTICK_HIDAPI, "1" },
             { SDL2.SDL_HINT_JOYSTICK_HIDAPI_PS4, "1" },

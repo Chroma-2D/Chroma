@@ -110,7 +110,8 @@ namespace Chroma.Windowing.EventHandling.Specialized
 
             var axis = (ControllerAxis)ev.caxis.axis;
 
-            owner.Game.OnControllerAxisMoved(
+            Controller.OnAxisMoved(
+                owner.Game,
                 new(controller, axis, ev.caxis.axisValue)
             );
         }

@@ -7,14 +7,14 @@ namespace Chroma.Natives.Boot.Config
     [Serializable]
     internal class SdlModuleConfig
     {
-        [JsonPropertyName("audio")] public bool Audio { get; private set; } = true;
-        [JsonPropertyName("video")] public bool Video { get; private set; } = true;
-        [JsonPropertyName("timer")] public bool Timer { get; private set; } = true;
-        [JsonPropertyName("events")] public bool Events { get; private set; } = true;
-        [JsonPropertyName("haptic")] public bool Haptic { get; private set; } = true;
-        [JsonPropertyName("sensor")] public bool Sensor { get; private set; } = true;
-        [JsonPropertyName("joystick")] public bool Joystick { get; private set; } = true;
-        [JsonPropertyName("controller")] public bool Controller { get; private set; } = true;
+        [JsonPropertyName("audio")] public bool Audio { get; set; } = true;
+        [JsonPropertyName("video")] public bool Video { get; set; } = true;
+        [JsonPropertyName("timer")] public bool Timer { get; set; } = true;
+        [JsonPropertyName("events")] public bool Events { get; set; } = true;
+        [JsonPropertyName("haptic")] public bool Haptic { get; set; } = true;
+        [JsonPropertyName("sensor")] public bool Sensor { get; set; } = true;
+        [JsonPropertyName("joystick")] public bool Joystick { get; set; } = true;
+        [JsonPropertyName("controller")] public bool Controller { get; set; } = true;
 
         [JsonIgnore]
         public uint SdlInitFlags

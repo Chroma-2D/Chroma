@@ -34,22 +34,6 @@ namespace GameController.Views
         {
         }
 
-        public override void OnConnected(ControllerEventArgs e)
-        {
-            base.OnConnected(e);
-
-            if (e.Controller.Info.Type != ControllerType.PlayStation4)
-                return;
-
-            var ds4 = e.Controller.As<DualShockControllerDriver>();
-
-            if (!ds4.AccelerometerEnabled)
-                ds4.AccelerometerEnabled = true;
-
-            if (!ds4.GyroscopeEnabled)
-                ds4.GyroscopeEnabled = true;
-        }
-
         public override void Update(float delta)
         {
             base.Update(delta);

@@ -162,14 +162,20 @@ namespace Chroma.Input
 
         internal static void OnButtonReleased(Game game, ControllerButtonEventArgs e)
         {
-            e.Controller.OnButtonReleased(e.Button);
+            e.Controller.OnButtonReleased(e);
             game.OnControllerButtonReleased(e);
         }
 
         internal static void OnButtonPressed(Game game, ControllerButtonEventArgs e)
         {
-            e.Controller.OnButtonPressed(e.Button);
+            e.Controller.OnButtonPressed(e);
             game.OnControllerButtonPressed(e);
+        }
+
+        internal static void OnAxisMoved(Game game, ControllerAxisEventArgs e)
+        {
+            e.Controller.OnAxisMoved(e);
+            game.OnControllerAxisMoved(e);
         }
 
         internal static void OnTouchpadMoved(Game game, ControllerTouchpadEventArgs e)

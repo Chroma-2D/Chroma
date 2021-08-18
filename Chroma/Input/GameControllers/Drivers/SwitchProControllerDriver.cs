@@ -1,20 +1,18 @@
+﻿using System.Numerics;
 using Chroma.Input.GameControllers.Drivers.Capabilities;
 using Chroma.Natives.SDL;
-using System.Collections.Generic;
-using System.Numerics;
 
 namespace Chroma.Input.GameControllers.Drivers
 {
-    public sealed class DualShockControllerDriver : ControllerDriver, ITouchEnabled, IGyroscopeEnabled, IAccelerometerEnabled
+    public class SwitchProControllerDriver  : ControllerDriver, IGyroscopeEnabled, IAccelerometerEnabled
     {
         private Vector3 _gyroscopeState;
         private Vector3 _accelerometerState;
-        private readonly ControllerTouchPoint[] _touchPoints = new ControllerTouchPoint[2];
-
-        public override string Name { get; } = "Sony DualShock 4 Chroma Driver";
-
-        public IReadOnlyCollection<ControllerTouchPoint> TouchPoints => _touchPoints;
-
+        public override string Name { get; } = "Nintendo Pro Controller Chroma Driver";
+        
+        public Vector3 Gyroscope => _gyroscopeState;
+        public Vector3 Accelerometer => _accelerometerState;
+        
         public bool GyroscopeEnabled
         {
             get => SDL2.SDL_GameControllerIsSensorEnabled(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_GYRO);
@@ -35,12 +33,8 @@ namespace Chroma.Input.GameControllers.Drivers
                     _log.Error($"Failed to enable accelerometer: {SDL2.SDL_GetError()}");
             }
         }
-
-        public Vector3 Gyroscope => _gyroscopeState;
-        public Vector3 Accelerometer => _accelerometerState;
-
-        internal DualShockControllerDriver(ControllerInfo info)
-            : base(info)
+        
+        public SwitchProControllerDriver(ControllerInfo info) : base(info)
         {
         }
 
@@ -102,26 +96,6 @@ namespace Chroma.Input.GameControllers.Drivers
             _accelerometerState.X = x;
             _accelerometerState.Y = y;
             _accelerometerState.Z = z;
-        }
-
-        void ITouchEnabled.OnTouchpadMoved(int touchpadIndex, int fingerIndex, float x, float y)
-        {
-            _touchPoints[fingerIndex].X = x;
-            _touchPoints[fingerIndex].Y = y;
-        }
-
-        void ITouchEnabled.OnTouchpadTouched(int touchpadIndex, int fingerIndex, float x, float y)
-        {
-            _touchPoints[fingerIndex].X = x;
-            _touchPoints[fingerIndex].Y = y;
-            _touchPoints[fingerIndex].Touching = true;
-        }
-
-        void ITouchEnabled.OnTouchpadReleased(int touchpadIndex, int fingerIndex, float x, float y)
-        {
-            _touchPoints[fingerIndex].X = x;
-            _touchPoints[fingerIndex].Y = y;
-            _touchPoints[fingerIndex].Touching = false;
         }
     }
 }

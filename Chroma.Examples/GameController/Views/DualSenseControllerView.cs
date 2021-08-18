@@ -26,7 +26,7 @@ namespace GameController.Views
         {
         }
 
-        protected override void DrawViewSpecific(RenderContext context)
+        protected override void PostDraw(RenderContext context)
         {
             var quip = "vdd's poor ass can't afford a DualSense controller yet\nso here's this text instead";
             var quipMeasure = TrueTypeFont.Default.Measure(quip);

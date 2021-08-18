@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using Chroma.Graphics;
 using Chroma.Input.GameControllers;
+using Chroma.Input.GameControllers.Drivers;
 using Chroma.Windowing;
 
 namespace GameController.Views
@@ -31,20 +34,104 @@ namespace GameController.Views
         {
         }
 
-        public override void OnTouchpadMoved(ControllerTouchpadEventArgs e)
+        public override void OnConnected(ControllerEventArgs e)
         {
+            base.OnConnected(e);
+
+            if (e.Controller.Info.Type != ControllerType.PlayStation4)
+                return;
+
+            var ds4 = e.Controller.As<DualShockControllerDriver>();
+
+            if (!ds4.AccelerometerEnabled)
+                ds4.AccelerometerEnabled = true;
+
+            if (!ds4.GyroscopeEnabled)
+                ds4.GyroscopeEnabled = true;
         }
 
-        public override void OnTouchpadTouched(ControllerTouchpadEventArgs e)
+        public override void Update(float delta)
         {
+            base.Update(delta);
+
+            foreach (var kvp in _controllers)
+            {
+                if (kvp.Key is DualShockControllerDriver ds4)
+                {
+                    if (ds4.AccelerometerEnabled)
+                        kvp.Value.Accelerometer = Vector3.Normalize(ds4.ReadAccelerometerSensor());
+                    else kvp.Value.Accelerometer = Vector3.Zero;
+
+                    if (ds4.GyroscopeEnabled)
+                        kvp.Value.Gyroscope = Vector3.Normalize(ds4.ReadGyroscopeSensor());
+                    else kvp.Value.Gyroscope = Vector3.Zero;
+
+                    kvp.Value.TouchPoints = ds4.TouchPoints.ToArray();
+                }
+            }
         }
 
-        public override void OnTouchpadReleased(ControllerTouchpadEventArgs e)
+        protected override void DrawViewSpecific(PlayerView player, RenderContext context)
         {
+            if (Math.Abs(player.Accelerometer.X) > 0.03f || Math.Abs(player.Accelerometer.Z) > 0.03f)
+            {
+                context.Line(
+                    player.Rectangle.X + player.Rectangle.Width / 2,
+                    player.Rectangle.Y + player.Rectangle.Height / 2,
+                    player.Rectangle.X + player.Rectangle.Width / 2 - 72 * player.Accelerometer.X,
+                    player.Rectangle.Y + player.Rectangle.Width / 2 - 72 * player.Accelerometer.Z,
+                    Color.Cyan
+                );
+            }
+
+            if (Math.Abs(player.Gyroscope.X) > 0.03f || Math.Abs(player.Gyroscope.Z) > 0.03f)
+            {
+                context.Line(
+                    player.Rectangle.X + player.Rectangle.Width / 2,
+                    player.Rectangle.Y + player.Rectangle.Height / 2,
+                    player.Rectangle.X + player.Rectangle.Width / 2 - 72 * player.Gyroscope.Y,
+                    player.Rectangle.Y + player.Rectangle.Width / 2 - 72 * player.Gyroscope.X,
+                    Color.Gold
+                );
+            }
+
+            foreach (var touchPoint in player.TouchPoints)
+            {
+                if (touchPoint.Touching)
+                {
+                    context.Circle(
+                        ShapeMode.Stroke,
+                        player.Rectangle.X + player.Rectangle.Width / 2 + 128 * touchPoint.Position.X - 64,
+                        player.Rectangle.Y + player.Rectangle.Height / 2 + 64 * touchPoint.Position.Y - 32,
+                        8,
+                        Color.Magenta
+                    );
+                }
+            }
         }
 
-        public override void OnSensorStateChanged(ControllerSensorEventArgs e)
+        public override void OnButtonPressed(ControllerButtonEventArgs e)
         {
+            if (e.Button == ControllerButton.Touchpad)
+            {
+                var ds4 = e.Controller.As<DualShockControllerDriver>();
+
+                foreach (var tp in ds4.TouchPoints)
+                {
+                    if (tp.Touching)
+                    {
+                        if (tp.Position.X > 0.5)
+                        {
+                            ds4.AccelerometerEnabled = !ds4.AccelerometerEnabled;
+                        }
+                        else if (tp.Position.X < 0.5)
+                        {
+                            ds4.GyroscopeEnabled = !ds4.GyroscopeEnabled;
+                        }
+                        break;
+                    }
+                }
+            }
         }
     }
 }

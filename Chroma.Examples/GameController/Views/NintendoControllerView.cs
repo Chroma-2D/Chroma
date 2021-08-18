@@ -23,7 +23,7 @@ namespace GameController.Views
         {
         }
 
-        protected override void DrawViewSpecific(RenderContext context)
+        protected override void PostDraw(RenderContext context)
         {
             var quip = "Implement me when you get up, Elijah :)";
             var quipMeasure = TrueTypeFont.Default.Measure(quip);
@@ -33,7 +33,7 @@ namespace GameController.Views
                 new Vector2(
                     _renderTarget.Width / 2 - quipMeasure.Width / 2,
                     _renderTarget.Height / 2 - quipMeasure.Height / 2
-                )
+                ), Color.White
             );
         }
     }

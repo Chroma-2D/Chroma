@@ -12,15 +12,15 @@ namespace GameController.Views
 {
     public class GenericControllerView
     {
-        protected Window _window;
-        protected RenderTarget _renderTarget;
-        
-        private Dictionary<ControllerDriver, PlayerView> _controllers = new();
-
         private Queue<ControllerDriver> _scheduledForConnection = new();
         private Queue<ControllerDriver> _scheduledForRemoval = new();
 
-        private float _movementSpeed = 300.0f;
+        protected Window _window;
+        protected RenderTarget _renderTarget;
+        
+        protected Dictionary<ControllerDriver, PlayerView> _controllers = new();
+
+        protected float _movementSpeed = 300.0f;
 
         public virtual string ViewName => "Generic controllers";
         
@@ -273,15 +273,17 @@ namespace GameController.Views
                             RightStickHatColor
                         );
                     }
+
+                    DrawViewSpecific(player, context);
                 }
+
+                PostDraw(context);
             
                 context.DrawString(
                     ViewName, 
                     new(8, 8), 
                     Color.White
                 );
-                
-                DrawViewSpecific(context);
             });
             
             context.DrawTexture(
@@ -290,8 +292,13 @@ namespace GameController.Views
             );
         }
 
-        protected virtual void DrawViewSpecific(RenderContext context)
+        protected virtual void DrawViewSpecific(PlayerView player, RenderContext context)
         {
+        }
+
+        protected virtual void PostDraw(RenderContext context)
+        {
+
         }
         
         private void BlendTriggerBar(Action renderLogic)

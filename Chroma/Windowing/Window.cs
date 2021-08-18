@@ -313,7 +313,7 @@ namespace Chroma.Windowing
         internal Window(Game game)
         {
             Game = game;
-
+            
             RenderTargetHandle = Game.Graphics.InitializeRenderer(this, out Handle);
             InternalHandle = Handle;
 

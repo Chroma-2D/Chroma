@@ -9,6 +9,7 @@ namespace Chroma.Input.GameControllers.Drivers
     {
         private Vector3 _gyroscopeState;
         private Vector3 _accelerometerState;
+        
         private readonly ControllerTouchPoint[] _touchPoints = new ControllerTouchPoint[2];
 
         public override string Name { get; } = "Sony DualShock 4 Chroma Driver";

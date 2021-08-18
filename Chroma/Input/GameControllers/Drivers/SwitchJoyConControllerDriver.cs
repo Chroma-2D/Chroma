@@ -84,45 +84,6 @@ namespace Chroma.Input.GameControllers.Drivers
             IsLeftSide = info.ProductInfo.ProductId == 0x2006;
         }
 
-        internal override void OnButtonPressed(ControllerButtonEventArgs e)
-        {
-            if (UseInputRemapping)
-            {
-                if (TryRemapButton(e.Button, out var remappedButton))
-                    e.Button = remappedButton;
-                else if (IgnoreMissingMappings)
-                    return;
-            }
-
-            base.OnButtonPressed(e);
-        }
-
-        internal override void OnButtonReleased(ControllerButtonEventArgs e)
-        {
-            if (UseInputRemapping)
-            {
-                if (TryRemapButton(e.Button, out var remappedButton))
-                    e.Button = remappedButton;
-                else if (IgnoreMissingMappings)
-                    return;
-            }
-
-            base.OnButtonReleased(e);
-        }
-
-        internal override void OnAxisMoved(ControllerAxisEventArgs e)
-        {
-            if (UseInputRemapping)
-            {
-                if (TryRemapAxis(e.Axis, out var remappedAxis))
-                    e.Axis = remappedAxis;
-                else if (IgnoreMissingMappings)
-                    return;
-            }
-            
-            base.OnAxisMoved(e);
-        }
-
         public override short GetRawAxisValue(ControllerAxis axis)
         {
             if (UseInputRemapping)
@@ -134,42 +95,6 @@ namespace Chroma.Input.GameControllers.Drivers
             }
 
             return base.GetRawAxisValue(axis);
-        }
-
-        private bool TryRemapButton(ControllerButton button, out ControllerButton remappedButton)
-        {
-            if (IsLeftSide && _leftButtonRemappings.ContainsKey(button))
-            {
-                remappedButton = _leftButtonRemappings[button];
-                return true;
-            }
-
-            if (IsRightSide && _rightButtonRemappings.ContainsKey(button))
-            {
-                remappedButton = _rightButtonRemappings[button];
-                return true;
-            }
-
-            remappedButton = button;
-            return false;
-        }
-
-        private bool TryRemapAxis(ControllerAxis axis, out ControllerAxis remappedAxis)
-        {
-            if (IsLeftSide && _leftAxisRemappings.ContainsKey(axis))
-            {
-                remappedAxis = _leftAxisRemappings[axis];
-                return true;
-            }
-
-            if (IsRightSide && _rightAxisRemappings.ContainsKey(axis))
-            {
-                remappedAxis = _rightAxisRemappings[axis];
-                return true;
-            }
-
-            remappedAxis = axis;
-            return false;
         }
 
         public Vector3 ReadGyroscopeSensor()
@@ -219,6 +144,82 @@ namespace Chroma.Input.GameControllers.Drivers
 
             return _accelerometerState;
         }
+        
+        internal override void OnButtonPressed(ControllerButtonEventArgs e)
+        {
+            if (UseInputRemapping)
+            {
+                if (TryRemapButton(e.Button, out var remappedButton))
+                    e.Button = remappedButton;
+                else if (IgnoreMissingMappings)
+                    return;
+            }
+
+            base.OnButtonPressed(e);
+        }
+
+        internal override void OnButtonReleased(ControllerButtonEventArgs e)
+        {
+            if (UseInputRemapping)
+            {
+                if (TryRemapButton(e.Button, out var remappedButton))
+                    e.Button = remappedButton;
+                else if (IgnoreMissingMappings)
+                    return;
+            }
+
+            base.OnButtonReleased(e);
+        }
+
+        internal override void OnAxisMoved(ControllerAxisEventArgs e)
+        {
+            if (UseInputRemapping)
+            {
+                if (TryRemapAxis(e.Axis, out var remappedAxis))
+                    e.Axis = remappedAxis;
+                else if (IgnoreMissingMappings)
+                    return;
+            }
+            
+            base.OnAxisMoved(e);
+        }
+        
+        private bool TryRemapButton(ControllerButton button, out ControllerButton remappedButton)
+        {
+            if (IsLeftSide && _leftButtonRemappings.ContainsKey(button))
+            {
+                remappedButton = _leftButtonRemappings[button];
+                return true;
+            }
+
+            if (IsRightSide && _rightButtonRemappings.ContainsKey(button))
+            {
+                remappedButton = _rightButtonRemappings[button];
+                return true;
+            }
+
+            remappedButton = button;
+            return false;
+        }
+
+        private bool TryRemapAxis(ControllerAxis axis, out ControllerAxis remappedAxis)
+        {
+            if (IsLeftSide && _leftAxisRemappings.ContainsKey(axis))
+            {
+                remappedAxis = _leftAxisRemappings[axis];
+                return true;
+            }
+
+            if (IsRightSide && _rightAxisRemappings.ContainsKey(axis))
+            {
+                remappedAxis = _rightAxisRemappings[axis];
+                return true;
+            }
+
+            remappedAxis = axis;
+            return false;
+        }
+
 
         void IGyroscopeEnabled.OnGyroscopeStateChanged(float x, float y, float z)
         {

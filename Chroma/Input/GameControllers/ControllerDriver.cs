@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Chroma.Diagnostics.Logging;
+using Chroma.Graphics;
 using Chroma.Hardware;
 using Chroma.Natives.SDL;
 
@@ -133,11 +134,18 @@ namespace Chroma.Input.GameControllers
                 fixed (byte* bp = &data[0])
                 {
                     if (SDL2.SDL_GameControllerSendEffect(Info.InstancePointer, bp, data.Length) < 0)
-                    {
-                        _log.Error($"Failed to send effect: '{SDL2.SDL_GetError()}");
-                    }
+                        _log.Error($"Failed to send effect: {SDL2.SDL_GetError()}");
                 }
             }
+        }
+        
+        public virtual void SetLedColor(Color color)
+        {
+            if (!Info.HasConfigurableLed)
+                return;
+            
+            if (SDL2.SDL_GameControllerSetLED(Info.InstancePointer, color.R, color.G, color.B) < 0)
+                _log.Error($"Failed to set LED color: {SDL2.SDL_GetError()}");
         }
 
         internal void OnButtonPressed(ControllerButton button)

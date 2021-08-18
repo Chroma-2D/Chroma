@@ -45,12 +45,6 @@ namespace Chroma.Input.GameControllers.Drivers
         {
         }
 
-        public void SetLedColor(Color color)
-        {
-            if (SDL2.SDL_GameControllerSetLED(Info.InstancePointer, color.R, color.G, color.B) < 0)
-                _log.Error(SDL2.SDL_GetError());
-        }
-
         public Vector3 ReadGyroscopeSensor()
         {
             var data = new float[3];

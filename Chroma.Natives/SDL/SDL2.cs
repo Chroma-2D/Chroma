@@ -7167,6 +7167,13 @@ namespace Chroma.Natives.SDL
 			IntPtr data,
 			int size
 		);
+		
+		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+		public static extern unsafe int SDL_GameControllerSendEffect(
+			IntPtr gamecontroller,
+			void* data,
+			int size
+		);
 
 		#endregion
 

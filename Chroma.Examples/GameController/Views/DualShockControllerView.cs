@@ -55,7 +55,7 @@ namespace GameController.Views
             }
         }
 
-        protected override void DrawViewSpecific(PlayerView player, RenderContext context)
+        protected override void DrawViewSpecific(ControllerDriver controller, PlayerView player, RenderContext context)
         {
             if (Math.Abs(player.Accelerometer.X) > 0.03f || Math.Abs(player.Accelerometer.Z) > 0.03f)
             {

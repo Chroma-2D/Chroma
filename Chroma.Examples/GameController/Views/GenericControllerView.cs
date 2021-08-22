@@ -274,7 +274,7 @@ namespace GameController.Views
                         );
                     }
 
-                    DrawViewSpecific(player, context);
+                    DrawViewSpecific(controller, player, context);
                 }
 
                 PostDraw(context);
@@ -292,7 +292,7 @@ namespace GameController.Views
             );
         }
 
-        protected virtual void DrawViewSpecific(PlayerView player, RenderContext context)
+        protected virtual void DrawViewSpecific(ControllerDriver controller, PlayerView player, RenderContext context)
         {
         }
 

@@ -1,15 +1,26 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
 using Chroma.Input.GameControllers.Drivers.Capabilities;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Input.GameControllers.Drivers
 {
-    public class SwitchProControllerDriver  : ControllerDriver, IGyroscopeEnabled, IAccelerometerEnabled
+    public class SwitchProControllerDriver  : NintendoControllerDriver, IGyroscopeEnabled, IAccelerometerEnabled
     {
         private Vector3 _gyroscopeState;
         private Vector3 _accelerometerState;
         
+        private Dictionary<ControllerButton, ControllerButton> _remappedXboxLayout = new()
+        {
+            {ControllerButton.X, ControllerButton.Y},
+            {ControllerButton.Y, ControllerButton.X},
+            {ControllerButton.B, ControllerButton.A},
+            {ControllerButton.A, ControllerButton.B}
+        };
+        
         public override string Name { get; } = "Nintendo Pro Controller Chroma Driver";
+        
+        public override bool UseXboxButtonLayout { get; set; }
         
         public Vector3 Gyroscope => _gyroscopeState;
         public Vector3 Accelerometer => _accelerometerState;
@@ -37,6 +48,31 @@ namespace Chroma.Input.GameControllers.Drivers
         
         public SwitchProControllerDriver(ControllerInfo info) : base(info)
         {
+            UseXboxButtonLayout = false;
+        }
+
+        internal override void OnButtonPressed(ControllerButtonEventArgs e)
+        {
+            if (UseXboxButtonLayout && _remappedXboxLayout.TryGetValue(e.Button, out var remappedButton))
+            {
+                e.Button = remappedButton;
+                base.OnButtonPressed(e);
+                return;
+            }
+
+            base.OnButtonPressed(e);
+        }
+
+        internal override void OnButtonReleased(ControllerButtonEventArgs e)
+        {
+            if (UseXboxButtonLayout && _remappedXboxLayout.TryGetValue(e.Button, out var remappedButton))
+            {
+                e.Button = remappedButton;
+                base.OnButtonReleased(e);
+                return;
+            }
+
+            base.OnButtonReleased(e);
         }
 
         public Vector3 ReadGyroscopeSensor()

@@ -5,7 +5,7 @@ using Chroma.Natives.SDL;
 
 namespace Chroma.Input.GameControllers.Drivers
 {
-    public class SwitchJoyConControllerDriver : ControllerDriver, IGyroscopeEnabled, IAccelerometerEnabled
+    public class SwitchJoyConControllerDriver : NintendoControllerDriver, IGyroscopeEnabled, IAccelerometerEnabled
     {
         private Dictionary<ControllerButton, ControllerButton> _leftButtonRemappings = new()
         {
@@ -13,11 +13,7 @@ namespace Chroma.Input.GameControllers.Drivers
             {ControllerButton.Special, ControllerButton.Logo},
             {ControllerButton.LeftBottomPaddle, ControllerButton.RightBumper},
             {ControllerButton.RightBottomPaddle, ControllerButton.LeftBumper},
-            {ControllerButton.LeftStick, ControllerButton.LeftStick},
-            {ControllerButton.DpadUp, ControllerButton.X},
-            {ControllerButton.DpadDown, ControllerButton.B},
-            {ControllerButton.DpadLeft, ControllerButton.Y},
-            {ControllerButton.DpadRight, ControllerButton.A},
+            {ControllerButton.LeftStick, ControllerButton.LeftStick}
         };
 
         private Dictionary<ControllerButton, ControllerButton> _rightButtonRemappings = new()
@@ -26,25 +22,22 @@ namespace Chroma.Input.GameControllers.Drivers
             {ControllerButton.Logo, ControllerButton.Logo},
             {ControllerButton.RightTopPaddle, ControllerButton.RightBumper},
             {ControllerButton.LeftTopPaddle, ControllerButton.LeftBumper},
-            {ControllerButton.RightStick, ControllerButton.LeftStick},
-            {ControllerButton.X, ControllerButton.X},
-            {ControllerButton.B, ControllerButton.B},
-            {ControllerButton.Y, ControllerButton.Y},
-            {ControllerButton.A, ControllerButton.A},
+            {ControllerButton.RightStick, ControllerButton.LeftStick}
         };
 
         private Dictionary<ControllerAxis, ControllerAxis> _leftAxisRemappings = new()
         {
-            {ControllerAxis.LeftStickX, ControllerAxis.LeftStickX},
-            {ControllerAxis.LeftStickY, ControllerAxis.LeftStickY}
+            {ControllerAxis.LeftStickY, ControllerAxis.LeftStickX},
+            {ControllerAxis.LeftStickX, ControllerAxis.LeftStickY}
         };
 
         private Dictionary<ControllerAxis, ControllerAxis> _rightAxisRemappings = new()
         {
-            {ControllerAxis.LeftStickX, ControllerAxis.RightStickX},
-            {ControllerAxis.LeftStickY, ControllerAxis.RightStickY}
+            {ControllerAxis.LeftStickY, ControllerAxis.RightStickX},
+            {ControllerAxis.LeftStickX, ControllerAxis.RightStickY}
         };
 
+        private bool _useXboxButtonLayout;
         private Vector3 _gyroscopeState;
         private Vector3 _accelerometerState;
 
@@ -74,6 +67,21 @@ namespace Chroma.Input.GameControllers.Drivers
         }
 
         public bool UseInputRemapping { get; set; } = true;
+
+        public override bool UseXboxButtonLayout
+        {
+            get => _useXboxButtonLayout;
+            set
+            {
+                _useXboxButtonLayout = value;
+
+                if (value)
+                    SetXboxActionButtonLayout();
+                else
+                    SetNintendoActionButtonLayout();
+            }
+        }
+        
         public bool IgnoreMissingMappings { get; set; } = true;
 
         public bool IsLeftSide { get; }
@@ -82,14 +90,23 @@ namespace Chroma.Input.GameControllers.Drivers
         public SwitchJoyConControllerDriver(ControllerInfo info) : base(info)
         {
             IsLeftSide = info.ProductInfo.ProductId == 0x2006;
+            UseXboxButtonLayout = false;
         }
 
-        public override short GetRawAxisValue(ControllerAxis axis)
+        public override int GetRawAxisValue(ControllerAxis axis)
         {
             if (UseInputRemapping)
             {
                 if (TryRemapAxis(axis, out var remappedAxis))
-                    return base.GetRawAxisValue(remappedAxis);
+                {
+                    var axisValue = base.GetRawAxisValue(remappedAxis);
+                    
+                    if(IsLeftSide && remappedAxis == ControllerAxis.LeftStickX
+                        || IsRightSide && remappedAxis == ControllerAxis.RightStickY)
+                        axisValue = -axisValue;
+
+                    return axisValue;
+                }
                 else if (IgnoreMissingMappings)
                     return 0;
             }
@@ -176,7 +193,10 @@ namespace Chroma.Input.GameControllers.Drivers
             if (UseInputRemapping)
             {
                 if (TryRemapAxis(e.Axis, out var remappedAxis))
+                {
+                    
                     e.Axis = remappedAxis;
+                }
                 else if (IgnoreMissingMappings)
                     return;
             }
@@ -220,6 +240,48 @@ namespace Chroma.Input.GameControllers.Drivers
             return false;
         }
 
+        private void UnmapActionButtons()
+        {
+            _rightButtonRemappings.Remove(ControllerButton.Y);
+            _rightButtonRemappings.Remove(ControllerButton.X);
+            _rightButtonRemappings.Remove(ControllerButton.B);
+            _rightButtonRemappings.Remove(ControllerButton.A);
+            
+            _leftButtonRemappings.Remove(ControllerButton.DpadUp);
+            _leftButtonRemappings.Remove(ControllerButton.DpadDown);
+            _leftButtonRemappings.Remove(ControllerButton.DpadLeft);
+            _leftButtonRemappings.Remove(ControllerButton.DpadRight);
+        }
+
+        private void SetXboxActionButtonLayout()
+        {
+            UnmapActionButtons();
+            
+            _rightButtonRemappings.Add(ControllerButton.Y, ControllerButton.Y);
+            _rightButtonRemappings.Add(ControllerButton.X, ControllerButton.B);
+            _rightButtonRemappings.Add(ControllerButton.B, ControllerButton.X);
+            _rightButtonRemappings.Add(ControllerButton.A, ControllerButton.A);
+            
+            _leftButtonRemappings.Add(ControllerButton.DpadUp, ControllerButton.X);
+            _leftButtonRemappings.Add(ControllerButton.DpadDown, ControllerButton.B);
+            _leftButtonRemappings.Add(ControllerButton.DpadLeft, ControllerButton.A);
+            _leftButtonRemappings.Add(ControllerButton.DpadRight, ControllerButton.Y);
+        }
+
+        private void SetNintendoActionButtonLayout()
+        {
+            UnmapActionButtons();
+            
+            _rightButtonRemappings[ControllerButton.Y] = ControllerButton.X;
+            _rightButtonRemappings[ControllerButton.X] = ControllerButton.A;
+            _rightButtonRemappings[ControllerButton.B] = ControllerButton.Y;
+            _rightButtonRemappings[ControllerButton.A] = ControllerButton.B;
+            
+            _leftButtonRemappings.Add(ControllerButton.DpadUp, ControllerButton.Y);
+            _leftButtonRemappings.Add(ControllerButton.DpadDown, ControllerButton.A);
+            _leftButtonRemappings.Add(ControllerButton.DpadLeft, ControllerButton.B);
+            _leftButtonRemappings.Add(ControllerButton.DpadRight, ControllerButton.X);
+        }
 
         void IGyroscopeEnabled.OnGyroscopeStateChanged(float x, float y, float z)
         {

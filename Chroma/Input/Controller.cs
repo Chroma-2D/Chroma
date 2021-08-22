@@ -55,7 +55,7 @@ namespace Chroma.Input
             return driver.CanIgnoreAxisMotion(axis, axisValue);
         }
 
-        public static short GetRawAxisValue(int playerIndex, ControllerAxis axis)
+        public static int GetRawAxisValue(int playerIndex, ControllerAxis axis)
         {
             var driver = Get(playerIndex);
 
@@ -75,7 +75,7 @@ namespace Chroma.Input
             return driver.GetRawAxisValueNormalized(axis);
         }
 
-        public static short GetAxisValue(int playerIndex, ControllerAxis axis)
+        public static int GetAxisValue(int playerIndex, ControllerAxis axis)
         {
             var driver = Get(playerIndex);
 

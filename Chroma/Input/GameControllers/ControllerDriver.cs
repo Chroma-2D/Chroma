@@ -62,29 +62,27 @@ namespace Chroma.Input.GameControllers
             SetDeadZone(ControllerAxis.RightTrigger, value);
         }
 
-        public virtual bool CanIgnoreAxisMotion(ControllerAxis axis, short axisValue)
+        public virtual bool CanIgnoreAxisMotion(ControllerAxis axis, int axisValue)
         {
             return _deadZones.ContainsKey(axis)
-                   && Math.Abs((int)axisValue) < _deadZones[axis];
+                   && Math.Abs(axisValue) < _deadZones[axis];
         }
 
-        public virtual short GetRawAxisValue(ControllerAxis axis)
+        public virtual int GetRawAxisValue(ControllerAxis axis)
         {
             if (Info == null || Info.InstancePointer == IntPtr.Zero)
                 return 0;
 
-            var axisValue = SDL2.SDL_GameControllerGetAxis(
+            return SDL2.SDL_GameControllerGetAxis(
                 Info.InstancePointer,
                 (SDL2.SDL_GameControllerAxis)axis
             );
-
-            return axisValue;
         }
 
         public virtual float GetRawAxisValueNormalized(ControllerAxis axis)
             => GetRawAxisValue(axis) / 32768f;
 
-        public virtual short GetAxisValue(ControllerAxis axis)
+        public virtual int GetAxisValue(ControllerAxis axis)
         {
             var axisValue = GetRawAxisValue(axis);
 

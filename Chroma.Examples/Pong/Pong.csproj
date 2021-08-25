@@ -33,7 +33,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Chroma.Audio.Sfxr" Version="1.0.0" />
+      <PackageReference Include="Chroma.Audio.Sfxr" Version="1.0.2" />
     </ItemGroup>
 
 </Project>

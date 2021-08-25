@@ -205,10 +205,16 @@ namespace MusicAndSounds
             if (format.SampleFormat != SampleFormat.F32)
             {
                 var shortSamples = MemoryMarshal.Cast<byte, short>(audioBufferData);
-                chunk = new float[shortSamples.Length];
+
+                chunk = new float[2048];
 
                 for (var i = 0; i < shortSamples.Length; i++)
+                {
+                    if (i >= chunk.Length)
+                        break;
+
                     chunk[i] = shortSamples[i] / 32767f;
+                }
             }
             else
             {

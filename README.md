@@ -8,7 +8,7 @@ Because MonoGame ~~is~~was so slow to add hassle-free shader compilation on Linu
 
 **Alright. What are its features?**  
 Oh I'm glad you asked! Features include, but are not limited to:  
-&nbsp; ▐ Cross-platform support - Windows and Linux. macOS support is suspended.  
+&nbsp; ▐ Cross-platform support - Windows, Linux and macOS!  
 &nbsp; ▐ Hassle-free framework bring-up allowing you to prototype fast and without bullshit boilerplate.  
 &nbsp; ▐ Supports GLSL shaders on any platform. No shader pre-compilation - plain old .frag and .vert.  
 &nbsp; ▐ MIT licensed! Do whatever you want to/with it, I want my name on Chroma, though.  
@@ -21,11 +21,11 @@ Oh I'm glad you asked! Features include, but are not limited to:
 &nbsp; ▐ FreeType-based TTF and BMFont bitmap font format support.  
 &nbsp; ▐ Integrates well with .NET ecosystem more often than not.  
 &nbsp; ▐ Easy-to-understand rendering controls.  
-&nbsp; ▐ Robust Xbox Controller support.  
-&nbsp; ▐ Flexible audio system.  
+&nbsp; ▐ Support for Xbox One/Elite, Nintendo and PlayStation 4 controllers.  
+&nbsp; ▐ Flexible audio input and output system.  
 
 **Mobile platform support?**  
-Not even considered at the moment. You're free to use [Love2D](https://love2d.org/) though. I really dig its robustness and ease-of-use.
+Maybe? Until that happens you're free to use [Love2D](https://love2d.org/). I really dig its robustness and ease-of-use.
 
 **You got a roadmap or something?**  
 Where we're going we don't need a roadmap.  

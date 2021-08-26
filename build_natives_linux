@@ -137,10 +137,11 @@ git clone https://github.com/Chroma-2D/SDL_nmix  $SDL_NMIX_PATH
                     -DFT_WITH_HARFBUZZ=0                                              \
                      && cd $FT_BUILDROOT && $MAKE -j$THREADCOUNT                      \
                      && mv $FT_SOPATH $ARTIFACT_DIR/$FT_ARTIFACT                      \
-                     && rm -rf $FT_BUILDROOT                                          \
                                                                                       \
 && $CMAKE $CMAKE_FLAGS -B $HB_BUILDROOT $HB_PATH -G "$CMAKE_GENERATOR"                \
                     -DCMAKE_BUILD_TYPE=$HB_BUILD_TYPE                                 \
+                    -DCMAKE_CXX_FLAGS=-fPIC                                           \
+                    -DCMAKE_C_FLAGS=-fPIC                                             \
                     -DHB_BUILD_SUBSET=0                                               \
                     -DHB_HAVE_FREETYPE=1                                              \
                     -DFREETYPE_FOUND=1                                                \
@@ -148,6 +149,7 @@ git clone https://github.com/Chroma-2D/SDL_nmix  $SDL_NMIX_PATH
                     -DFREETYPE_LIBRARY=$ARTIFACT_DIR/$FT_ARTIFACT                     \
                      && cd $HB_BUILDROOT && $MAKE -j$THREADCOUNT                      \
                      && mv $HB_ARPATH $ARTIFACT_DIR/$HB_ARTIFACT                      \
+                     && rm -rf $FT_BUILDROOT                                          \
                                                                                       \
 && $CMAKE $CMAKE_FLAGS -B $FT_BUILDROOT $FT_PATH -G "$CMAKE_GENERATOR"                \
                     -DCMAKE_BUILD_TYPE=$FT_BUILD_TYPE                                 \
@@ -165,7 +167,6 @@ git clone https://github.com/Chroma-2D/SDL_nmix  $SDL_NMIX_PATH
                     -DSDL_STATIC=0                                                    \
                      && cd $SDL_BUILDROOT && $MAKE -j$THREADCOUNT                     \
                      && mv $SDL_SOPATH $ARTIFACT_DIR/$SDL_ARTIFACT                    \
-                     && mv $SDLMAIN_ARPATH $ARTIFACT_DIR/$SDLMAIN_ARTIFACT            \
                                                                                       \
 && $CMAKE $CMAKE_FLAGS -B $SDL_GPU_BUILDROOT $SDL_GPU_PATH -G "$CMAKE_GENERATOR"      \
                     -DCMAKE_BUILD_TYPE=$SDL_GPU_BUILD_TYPE                            \
@@ -176,7 +177,6 @@ git clone https://github.com/Chroma-2D/SDL_nmix  $SDL_NMIX_PATH
                     -DBUILD_DEMOS=0                                                   \
                     -DSDL2_INCLUDE_DIR=$SDL_PATH/include                              \
                     -DSDL2_LIBRARY=$ARTIFACT_DIR/$SDL_ARTIFACT                        \
-                    -DSDL2MAIN_LIBRARY=$ARTIFACT_DIR/$SDLMAIN_ARTIFACT                \
                      && cd $SDL_GPU_BUILDROOT && $MAKE -j$THREADCOUNT                 \
                      && mv $SDL_GPU_SOPATH $ARTIFACT_DIR/$SDL_GPU_ARTIFACT            \
                                                                                       \
@@ -188,7 +188,6 @@ git clone https://github.com/Chroma-2D/SDL_nmix  $SDL_NMIX_PATH
                     -DSDL2_INCLUDE_DIRS=$SDL_PATH/include                             \
                     -DSDL2_INCLUDE_DIR=$SDL_PATH/include                              \
                     -DSDL2_LIBRARY=$ARTIFACT_DIR/$SDL_ARTIFACT                        \
-                    -DSDL2MAIN_LIBRARY=$ARTIFACT_DIR/$SDLMAIN_ARTIFACT                \
                     -DSDL2_LIBRARIES=$ARTIFACT_DIR/$SDL_ARTIFACT                      \
                      && cd $SDL_SOUND_BUILDROOT && $MAKE -j$THREADCOUNT               \
                      && mv $SDL_SOUND_SOPATH $ARTIFACT_DIR/$SDL_SOUND_ARTIFACT        \

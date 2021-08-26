@@ -54,7 +54,7 @@ namespace Chroma.Natives.Boot
             }
 
             throw new NativeLoaderException(
-                "Failed to find any provided file name variat at the provided lookup paths!");
+                "Failed to find any provided file name variant at the provided lookup paths!");
         }
 
         public NativeLibrary Retrieve(string fileName)

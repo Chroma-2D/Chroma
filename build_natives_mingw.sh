@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# pacman -S coreutils base-devel cmake
-
 THREADCOUNT=8
 CMAKE_GENERATOR="Unix Makefiles"
 CMAKE=cmake
@@ -28,37 +26,39 @@ HB_ARTIFACT=libharfbuzz.a
 FT=freetype
 FT_PATH=$SOURCES_DIR/$FT
 FT_BUILDROOT=$BUILDROOT_DIR/$FT
-FT_SOPATH=$FT_BUILDROOT/libfreetype.so.6.18.0
+FT_SOPATH=$FT_BUILDROOT/libfreetype.dll
 FT_BUILD_TYPE=Release
-FT_ARTIFACT=libfreetype.so
+FT_ARTIFACT=freetype.dll
 
 SDL=SDL
 SDL_PATH=$SOURCES_DIR/$SDL
 SDL_BUILDROOT=$BUILDROOT_DIR/$SDL
-SDL_SOPATH=$SDL_BUILDROOT/libSDL2-2.0.so.0.16.0
+SDL_SOPATH=$SDL_BUILDROOT/SDL2.dll
 SDL_BUILD_TYPE=Release
-SDL_ARTIFACT=libSDL2.so
+SDL_ARTIFACT=SDL2.dll
+SDLMAIN_ARPATH=$SDL_BUILDROOT/libSDL2main.a
+SDLMAIN_ARTIFACT=libSDL2main.a
 
 SDL_gpu=SDL_gpu
 SDL_GPU_PATH=$SOURCES_DIR/$SDL_gpu
 SDL_GPU_BUILDROOT=$BUILDROOT_DIR/$SDL_gpu
-SDL_GPU_SOPATH=$SDL_GPU_BUILDROOT/SDL_gpu/lib/libSDL2_gpu.so
+SDL_GPU_SOPATH=$SDL_GPU_BUILDROOT/SDL_gpu-MINGW/bin/libSDL2_gpu.dll
 SDL_GPU_BUILD_TYPE=Release
-SDL_GPU_ARTIFACT=libSDL2_gpu.so
+SDL_GPU_ARTIFACT=SDL2_gpu.dll
 
 SDL_sound=SDL_sound
 SDL_SOUND_PATH=$SOURCES_DIR/$SDL_sound
 SDL_SOUND_BUILDROOT=$BUILDROOT_DIR/$SDL_sound
-SDL_SOUND_SOPATH=$SDL_SOUND_BUILDROOT/libSDL2_sound.so.2.0.0
+SDL_SOUND_SOPATH=$SDL_SOUND_BUILDROOT/SDL2_sound.dll
 SDL_SOUND_BUILD_TYPE=Release
-SDL_SOUND_ARTIFACT=libSDL2_sound.so
+SDL_SOUND_ARTIFACT=SDL2_sound.dll
 
 SDL_nmix=SDL_nmix
 SDL_NMIX_PATH=$SOURCES_DIR/$SDL_nmix
 SDL_NMIX_BUILDROOT=$BUILDROOT_DIR/$SDL_nmix
-SDL_NMIX_SOPATH=$SDL_NMIX_BUILDROOT/libSDL2_nmix.so.1.1.0
+SDL_NMIX_SOPATH=$SDL_NMIX_BUILDROOT/SDL2_nmix.dll
 SDL_NMIX_BUILD_TYPE=Release
-SDL_NMIX_ARTIFACT=libSDL2_nmix.so
+SDL_NMIX_ARTIFACT=SDL2_nmix.dll
 
 for argument in "$@"
 do
@@ -146,6 +146,7 @@ git clone https://github.com/Chroma-2D/SDL_nmix  $SDL_NMIX_PATH
                     -DSDL_STATIC=0                                                    \
                      && cd $SDL_BUILDROOT && $MAKE -j$THREADCOUNT                     \
                      && mv $SDL_SOPATH $ARTIFACT_DIR/$SDL_ARTIFACT                    \
+                     && mv $SDLMAIN_ARPATH $ARTIFACT_DIR/$SDLMAIN_ARTIFACT            \
                                                                                       \
 && $CMAKE $CMAKE_FLAGS -B $SDL_GPU_BUILDROOT $SDL_GPU_PATH -G "$CMAKE_GENERATOR"      \
                     -DCMAKE_BUILD_TYPE=$SDL_GPU_BUILD_TYPE                            \
@@ -156,6 +157,7 @@ git clone https://github.com/Chroma-2D/SDL_nmix  $SDL_NMIX_PATH
                     -DBUILD_DEMOS=0                                                   \
                     -DSDL2_INCLUDE_DIR=$SDL_PATH/include                              \
                     -DSDL2_LIBRARY=$ARTIFACT_DIR/$SDL_ARTIFACT                        \
+                    -DSDL2MAIN_LIBRARY=$ARTIFACT_DIR/$SDLMAIN_ARTIFACT                \
                      && cd $SDL_GPU_BUILDROOT && $MAKE -j$THREADCOUNT                 \
                      && mv $SDL_GPU_SOPATH $ARTIFACT_DIR/$SDL_GPU_ARTIFACT            \
                                                                                       \
@@ -167,6 +169,7 @@ git clone https://github.com/Chroma-2D/SDL_nmix  $SDL_NMIX_PATH
                     -DSDL2_INCLUDE_DIRS=$SDL_PATH/include                             \
                     -DSDL2_INCLUDE_DIR=$SDL_PATH/include                              \
                     -DSDL2_LIBRARY=$ARTIFACT_DIR/$SDL_ARTIFACT                        \
+                    -DSDL2MAIN_LIBRARY=$ARTIFACT_DIR/$SDLMAIN_ARTIFACT                \
                     -DSDL2_LIBRARIES=$ARTIFACT_DIR/$SDL_ARTIFACT                      \
                      && cd $SDL_SOUND_BUILDROOT && $MAKE -j$THREADCOUNT               \
                      && mv $SDL_SOUND_SOPATH $ARTIFACT_DIR/$SDL_SOUND_ARTIFACT        \
@@ -183,13 +186,13 @@ git clone https://github.com/Chroma-2D/SDL_nmix  $SDL_NMIX_PATH
                      && mv $SDL_NMIX_SOPATH $ARTIFACT_DIR/$SDL_NMIX_ARTIFACT          \
                                                                                       \
 && cd $ARTIFACT_DIR                                                                   \
-&& bzip2 *.so                                                                         \
+&& bzip2 *.dll                                                                        \
 && chmod 644 *.bz2                                                                    \
-&& mv $FT_ARTIFACT.bz2 libfreetype.bz2                                                \
-&& mv $SDL_ARTIFACT.bz2 libSDL2.bz2                                                   \
-&& mv $SDL_GPU_ARTIFACT.bz2 libSDL2_gpu.bz2                                           \
-&& mv $SDL_SOUND_ARTIFACT.bz2 libSDL2_sound.bz2                                       \
-&& mv $SDL_NMIX_ARTIFACT.bz2 libSDL2_nmix.bz2
+&& mv $FT_ARTIFACT.bz2 freetype.bz2                                                   \
+&& mv $SDL_ARTIFACT.bz2 SDL2.bz2                                                      \
+&& mv $SDL_GPU_ARTIFACT.bz2 SDL2_gpu.bz2                                              \
+&& mv $SDL_SOUND_ARTIFACT.bz2 SDL2_sound.bz2                                          \
+&& mv $SDL_NMIX_ARTIFACT.bz2 SDL2_nmix.bz2
 
 echo "Done. Natives:"
 find $ARTIFACT_DIR -name "*.bz2"

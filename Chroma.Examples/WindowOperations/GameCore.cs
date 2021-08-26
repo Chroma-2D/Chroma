@@ -23,6 +23,12 @@ namespace WindowOperations
         {
             var sb = new StringBuilder();
 
+            var exts = Graphics.GlExtensions;
+            for (var i = 0; i < exts.Count; i++)
+            {
+                _log.Info(exts[i]);
+            }
+            
             var displays = Graphics.GetDisplayList();
 
             for (var i = 0; i < displays.Count; i++)

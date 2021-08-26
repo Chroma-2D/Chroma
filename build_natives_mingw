@@ -128,24 +128,37 @@ git clone https://github.com/Chroma-2D/SDL_nmix  $SDL_NMIX_PATH
 && cd $FT_PATH && git checkout $FT_TAG                                                \
 && cd $SDL_PATH && git checkout $SDL_TAG                                              \
                                                                                       \
+&& $CMAKE $CMAKE_FLAGS -B $FT_BUILDROOT $FT_PATH -G "$CMAKE_GENERATOR"                \
+                    -DCMAKE_BUILD_TYPE=$FT_BUILD_TYPE                                 \
+                    -DCMAKE_DISABLE_FIND_PACKAGE_HarfBuzz=1                           \
+                    -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=1                               \
+                    -DBUILD_SHARED_LIBS=1                                             \
+                    -DFT_WITH_ZLIB=0                                                  \
+                    -DFT_WITH_HARFBUZZ=0                                              \
+                     && cd $FT_BUILDROOT && $MAKE -j$THREADCOUNT                      \
+                     && mv $FT_SOPATH $ARTIFACT_DIR/$FT_ARTIFACT                      \
+                     && rm -rf $FT_BUILDROOT                                          \
+                                                                                      \
 && $CMAKE $CMAKE_FLAGS -B $HB_BUILDROOT $HB_PATH -G "$CMAKE_GENERATOR"                \
                     -DCMAKE_BUILD_TYPE=$HB_BUILD_TYPE                                 \
-                    -DHB_HAVE_FREETYPE=1                                              \
                     -DHB_BUILD_SUBSET=0                                               \
+                    -DHB_HAVE_FREETYPE=1                                              \
+                    -DFREETYPE_FOUND=1                                                \
                     -DFREETYPE_INCLUDE_DIRS=$FT_PATH/include                          \
+                    -DFREETYPE_LIBRARY=$ARTIFACT_DIR/$FT_ARTIFACT                     \
                      && cd $HB_BUILDROOT && $MAKE -j$THREADCOUNT                      \
                      && mv $HB_ARPATH $ARTIFACT_DIR/$HB_ARTIFACT                      \
                                                                                       \
 && $CMAKE $CMAKE_FLAGS -B $FT_BUILDROOT $FT_PATH -G "$CMAKE_GENERATOR"                \
                     -DCMAKE_BUILD_TYPE=$FT_BUILD_TYPE                                 \
+                    -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=1                               \
                     -DBUILD_SHARED_LIBS=1                                             \
-                    -DFT_REQUIRE_HARFBUZZ=1                                           \
-                    -DHARFBUZZ_INCLUDE_DIRS=$HB_PATH/include                          \
-                    -DHARFBUZZ_LIBRARY=$ARTIFACT_DIR/$HB_ARTIFACT                     \
-                    -DFT_DISABLE_ZLIB=1                                               \
+                    -DFT_WITH_HARFBUZZ=1                                              \
+                    -DFT_WITH_ZLIB=0                                                  \
+                    -DHarfBuzz_INCLUDE_DIR=$HB_PATH/src                               \
+                    -DHarfBuzz_LIBRARY=$ARTIFACT_DIR/$HB_ARTIFACT                     \
                      && cd $FT_BUILDROOT && $MAKE -j$THREADCOUNT                      \
                      && mv $FT_SOPATH $ARTIFACT_DIR/$FT_ARTIFACT                      \
-                                                                                      \
                                                                                       \
 && $CMAKE $CMAKE_FLAGS -B $SDL_BUILDROOT $SDL_PATH -G "$CMAKE_GENERATOR"              \
                     -DCMAKE_BUILD_TYPE=$SDL_BUILD_TYPE                                \

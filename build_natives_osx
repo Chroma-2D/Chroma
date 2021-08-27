@@ -16,7 +16,7 @@ CMAKE_FRAMEWORKS="-lc++ -framework CoreFoundation -framework CoreText -framework
 CMAKE_BUILD_TYPE=Release
 MAKE=make
 
-FT_TAG=VER-2-10-2
+FT_TAG=VER-2-11-0
 HB_TAG=2.9.0
 SDL_TAG=release-2.0.16
 
@@ -36,7 +36,7 @@ HB_ARTIFACT=libharfbuzz.a
 FT=freetype
 FT_PATH=$SOURCES_DIR/$FT
 FT_BUILDROOT=$BUILDROOT_DIR/$FT
-FT_SOPATH=$FT_BUILDROOT/libfreetype.6.17.2.dylib
+FT_SOPATH=$FT_BUILDROOT/libfreetype.6.18.0.dylib
 FT_BUILD_TYPE=Release
 FT_ARTIFACT=libfreetype.dylib
 

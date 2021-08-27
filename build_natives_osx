@@ -12,13 +12,15 @@ THREADCOUNT=8
 CMAKE_GENERATOR="Unix Makefiles"
 CMAKE=cmake
 CMAKE_FLAGS=-Wno-dev
+CMAKE_FRAMEWORKS="-lc++ -framework CoreFoundation -framework CoreText -framework CoreGraphics"
 CMAKE_BUILD_TYPE=Release
 MAKE=make
 
- FT_TAG=VER-2-11-0
- HB_TAG=2.9.0
+FT_TAG=VER-2-11-0
+HB_TAG=2.9.0
 SDL_TAG=release-2.0.16
 
+ROOT_DIR=$(pwd)
 NATIVES_DIR=$(pwd)/.natives
 SOURCES_DIR=$NATIVES_DIR/sources
 BUILDROOT_DIR=$NATIVES_DIR/buildroot
@@ -122,11 +124,52 @@ git clone https://github.com/freetype/freetype   $FT_PATH
 git clone https://github.com/libsdl-org/SDL      $SDL_PATH
 git clone https://github.com/Chroma-2D/SDL-gpu   $SDL_GPU_PATH
 git clone https://github.com/Chroma-2D/SDL_sound $SDL_SOUND_PATH
-git clone https://github.com/Chroma-2D/SDL_nmix  $SDL_NMIX_PATH 
+git clone https://github.com/Chroma-2D/SDL_nmix  $SDL_NMIX_PATH
 
    cd $HB_PATH && git checkout $HB_TAG                                                \
 && cd $FT_PATH && git checkout $FT_TAG                                                \
-&& cd $SDL_PATH && git checkout $SDL_TAG                                              \
+&& cd $SDL_PATH && git checkout $SDL_TAG
+
+# Apply patches
+cp $ROOT_DIR/SDL_sound.patch $SDL_SOUND_PATH/SDL_sound.patch
+cd $SDL_SOUND_PATH && git apply --verbose SDL_sound.patch
+
+$CMAKE $CMAKE_FLAGS -B $FT_BUILDROOT $FT_PATH -G "$CMAKE_GENERATOR"                   \
+                    -DCMAKE_BUILD_TYPE=$FT_BUILD_TYPE                                 \
+                    -DCMAKE_DISABLE_FIND_PACKAGE_HarfBuzz=1                           \
+                    -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=1                               \
+                    -DBUILD_SHARED_LIBS=1                                             \
+                    -DFT_WITH_ZLIB=0                                                  \
+                    -DFT_WITH_HARFBUZZ=0                                              \
+                     && cd $FT_BUILDROOT && $MAKE -j$THREADCOUNT                      \
+                     && mv $FT_SOPATH $ARTIFACT_DIR/$FT_ARTIFACT                      \
+                                                                                      \
+&& $CMAKE $CMAKE_FLAGS -B $HB_BUILDROOT $HB_PATH -G "$CMAKE_GENERATOR"                \
+                    -DCMAKE_BUILD_TYPE=$HB_BUILD_TYPE                                 \
+                    -DCMAKE_CXX_FLAGS=-fPIC                                           \
+                    -DCMAKE_C_FLAGS=-fPIC                                             \
+                    -DHB_BUILD_SUBSET=0                                               \
+                    -DHB_HAVE_FREETYPE=1                                              \
+                    -DFREETYPE_FOUND=1                                                \
+                    -DFREETYPE_INCLUDE_DIRS=$FT_PATH/include                          \
+                    -DFREETYPE_LIBRARY=$ARTIFACT_DIR/$FT_ARTIFACT                     \
+                     && cd $HB_BUILDROOT && $MAKE -j$THREADCOUNT                      \
+                     && mv $HB_ARPATH $ARTIFACT_DIR/$HB_ARTIFACT                      \
+                     && rm -rf $FT_BUILDROOT                                          \
+                                                                                      \
+&& $CMAKE $CMAKE_FLAGS -B $FT_BUILDROOT $FT_PATH -G "$CMAKE_GENERATOR"                \
+                    -DCMAKE_SHARED_LINKER_FLAGS="$CMAKE_FRAMEWORKS"                   \
+                    -DCMAKE_BUILD_TYPE=$FT_BUILD_TYPE                                 \
+                    -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=1                               \
+                    -DCMAKE_SKIP_RPATH=0                                              \
+                    -DBUILD_SHARED_LIBS=1                                             \
+                    -DFT_WITH_HARFBUZZ=1                                              \
+                    -DFT_DISABLE_HARFBUZZ=0                                           \
+                    -DFT_WITH_ZLIB=0                                                  \
+                    -DHARFBUZZ_INCLUDE_DIRS=$HB_PATH/src                              \
+                    -DHARFBUZZ_LIBRARIES=$ARTIFACT_DIR/$HB_ARTIFACT                   \
+                     && cd $FT_BUILDROOT && $MAKE -j$THREADCOUNT                      \
+                     && mv $FT_SOPATH $ARTIFACT_DIR/$FT_ARTIFACT                      \
                                                                                       \
 && $CMAKE $CMAKE_FLAGS -B $SDL_BUILDROOT $SDL_PATH -G "$CMAKE_GENERATOR"              \
                     -DCMAKE_BUILD_TYPE=$SDL_BUILD_TYPE                                \
@@ -172,10 +215,9 @@ git clone https://github.com/Chroma-2D/SDL_nmix  $SDL_NMIX_PATH
                      && mv $SDL_NMIX_SOPATH $ARTIFACT_DIR/$SDL_NMIX_ARTIFACT          \
                                                                                       \
 && cd $ARTIFACT_DIR                                                                   \
-&& install_name_tool -id @rpath/libSDL2_sound.2.dylib libSDL2_sound.dylib             \
-&& install_name_tool -change libSDL2_sound.2.dylib @rpath/libSDL2_sound.2.dylib libSDL2_nmix.dylib                                                                \
 && bzip2 *.dylib                                                                      \
 && chmod 644 *.bz2                                                                    \
+&& mv $FT_ARTIFACT.bz2 libfreetype.bz2                                                \
 && mv $SDL_ARTIFACT.bz2 libSDL2.bz2                                                   \
 && mv $SDL_GPU_ARTIFACT.bz2 libSDL2_gpu.bz2                                           \
 && mv $SDL_SOUND_ARTIFACT.bz2 libSDL2_sound.bz2                                       \

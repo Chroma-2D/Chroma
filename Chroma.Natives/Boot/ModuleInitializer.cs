@@ -106,7 +106,7 @@ namespace Chroma.Natives.Boot
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 Console.WriteLine("Warning! Your platform support is currently *untested*.\n" +
-                                  "Things can (and probably will) explode!");
+                                  "Things can (but probably won't) explode!");
                 
                 Platform = new MacPlatform();
             }

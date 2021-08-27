@@ -79,6 +79,11 @@ namespace Chroma.Extensibility
             {
                 asm = Assembly.LoadFrom(filePath);
             }
+            catch (BadImageFormatException)
+            {
+                // Don't log messages about invalid images.
+                return false;
+            }
             catch (Exception ex)
             {
                 _log.Exception(ex);

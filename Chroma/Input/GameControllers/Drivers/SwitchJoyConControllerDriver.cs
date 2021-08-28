@@ -5,7 +5,7 @@ using Chroma.Natives.SDL;
 
 namespace Chroma.Input.GameControllers.Drivers
 {
-    public class SwitchJoyConControllerDriver : NintendoControllerDriver, IGyroscopeEnabled, IAccelerometerEnabled
+    public sealed class SwitchJoyConControllerDriver : NintendoControllerDriver, IGyroscopeEnabled, IAccelerometerEnabled
     {
         private Dictionary<ControllerButton, ControllerButton> _leftButtonRemappings = new()
         {

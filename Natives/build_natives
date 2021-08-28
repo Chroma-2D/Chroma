@@ -1,22 +1,105 @@
 #!/bin/bash
 
-case $($(command -v uname) | tr '[:upper:]' '[:lower:]') in
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+source $SCRIPT_DIR/lib/buildvars.sh
+
+init_repositories() {
+    cd $NATIVES_DIR
+
+    git clone https://github.com/harfbuzz/harfbuzz   $HB_PATH
+    git clone https://github.com/freetype/freetype   $FT_PATH
+    git clone https://github.com/libsdl-org/SDL      $SDL_PATH
+    git clone https://github.com/Chroma-2D/SDL_gpu   $SDL_GPU_PATH
+    git clone https://github.com/Chroma-2D/SDL_sound $SDL_SOUND_PATH
+    git clone https://github.com/Chroma-2D/SDL_nmix  $SDL_NMIX_PATH
+
+    cd $HB_PATH && git checkout $HB_TAG                                            \
+    && cd $FT_PATH && git checkout $FT_TAG                                         \
+    && cd $SDL_PATH && git checkout $SDL_TAG
+}
+
+pack_artifacts() {
+    cd $ARTIFACT_DIR                                                               \
+    && mv $FT_ARTIFACT.bz2 libfreetype.bz2                                         \
+    && mv $SDL_ARTIFACT.bz2 libSDL2.bz2                                            \
+    && mv $SDL_GPU_ARTIFACT.bz2 libSDL2_gpu.bz2                                    \
+    && mv $SDL_SOUND_ARTIFACT.bz2 libSDL2_sound.bz2                                \
+    && mv $SDL_NMIX_ARTIFACT.bz2 libSDL2_nmix.bz2                                  \
+    && chmod 644 *.bz2                                                             \
+    && find $ARTIFACT_DIR -name "*.bz2"
+}
+
+for argument in "$@"
+do
+  case $argument in
+    --clean-artifacts)
+        rm -rf $ARTIFACT_DIR
+        ;;
+
+    --clean-buildroot)
+        rm -rf $BUILDROOT_DIR
+        ;;
+
+    --rebuild-nmix)
+        rm -rf $BUILDROOT_DIR/$SDL_nmix
+        ;;
+
+    --rebuild-sound)
+        rm -rf $BUILDROOT_DIR/$SDL_sound
+        ;;
+
+    --rebuild-gpu)
+        rm -rf $BUILDROOT_DIR/$SDL_gpu
+        ;;
+
+    --rebuild-sdl)
+        rm -rf $BUILDROOT_DIR/$SDL
+        ;;
+
+    --rebuild-ft)
+        rm -rf $BUILDROOT_DIR/$FT
+        ;;
+
+    --rebuild-hb)
+        rm -rf $BUILDROOT_DIR/$HB
+        ;;
+  esac
+done
+
+if [ ! -d "$NATIVES_DIR" ]; then
+    mkdir -p $NATIVES_DIR
+fi
+
+if [ ! -d "$BUILDROOT_DIR" ]; then
+    mkdir -p $BUILDROOT_DIR
+fi
+
+if [ ! -d "$ARTIFACT_DIR" ]; then
+    mkdir -p $ARTIFACT_DIR
+fi;
+
+case $PLATFORM in
     linux*)
         echo "Building for Linux"
-        ./build_natives_linux $@
+        BUILDSCRIPT=$SCRIPT_DIR/build_natives_linux
         ;;
 
     darwin*)
         echo "Building for OS X"
-        ./build_natives_osx $@
+        BUILDSCRIPT=$SCRIPT_DIR/build_natives_osx
         ;;
 
     msys*|mingw*)
         echo "Building for Win64 MinGW"
-        ./build_natives_mingw $@
+        BUILDSCRIPT=$SCRIPT_DIR/build_natives_mingw
         ;;
 
     *)
         echo "Your platform is not supported."
+        exit
     ;;
 esac
+
+init_repositories
+source $BUILDSCRIPT $@
+pack_artifacts

@@ -5,7 +5,6 @@ using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Diagnostics;
 using Chroma.Diagnostics.Logging;
-using Chroma.Extensibility;
 using Chroma.Graphics;
 using Chroma.Input;
 using Chroma.Input.GameControllers;
@@ -298,7 +297,7 @@ namespace Chroma
         private void FinishBoot()
         {
             Content = InitializeContentPipeline();
-            ExtensionRegistry.FindAndLoadExtensions(this);
+            // Initialize extensions after re-write.
 
             LoadContent();
         }

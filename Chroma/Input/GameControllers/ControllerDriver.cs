@@ -33,7 +33,7 @@ namespace Chroma.Input.GameControllers
             }
         }
 
-        public ControllerDriver(ControllerInfo info)
+        internal ControllerDriver(ControllerInfo info)
         {
             Info = info;
         }

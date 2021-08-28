@@ -5,7 +5,7 @@ using Chroma.Natives.SDL;
 
 namespace Chroma.Input.GameControllers.Drivers
 {
-    public class SwitchProControllerDriver  : NintendoControllerDriver, IGyroscopeEnabled, IAccelerometerEnabled
+    public sealed class SwitchProControllerDriver  : NintendoControllerDriver, IGyroscopeEnabled, IAccelerometerEnabled
     {
         private Vector3 _gyroscopeState;
         private Vector3 _accelerometerState;

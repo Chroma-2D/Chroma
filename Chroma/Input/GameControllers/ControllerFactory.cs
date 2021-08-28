@@ -6,7 +6,7 @@ using Chroma.Natives.SDL;
 
 namespace Chroma.Input.GameControllers
 {
-    public static class ControllerFactory
+    internal static class ControllerFactory
     {
         public delegate ControllerDriver ControllerFactoryDelegate(ControllerInfo info);
 

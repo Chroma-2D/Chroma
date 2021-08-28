@@ -61,8 +61,8 @@ cd $SDL_SOUND_PATH && git apply --verbose SDL_sound.patch
                     -DFT_WITH_HARFBUZZ=1                                              \
                     -DFT_DISABLE_HARFBUZZ=0                                           \
                     -DFT_WITH_ZLIB=0                                                  \
-                    -DHARFBUZZ_INCLUDE_DIRS=$HB_PATH/src                              \
-                    -DHARFBUZZ_LIBRARIES=$ARTIFACT_DIR/$HB_ARTIFACT                   \
+                    -DHarfBuzz_INCLUDE_DIR=$HB_PATH/src                              \
+                    -DHarfBuzz_LIBRARY=$ARTIFACT_DIR/$HB_ARTIFACT                   \
                      && cd $FT_BUILDROOT && $MAKE -j$THREADCOUNT                      \
                      && mv $FT_SOPATH $ARTIFACT_DIR/$FT_ARTIFACT                      \
                                                                                       \
@@ -91,6 +91,7 @@ cd $SDL_SOUND_PATH && git apply --verbose SDL_sound.patch
                     -DSDLSOUND_BUILD_STATIC=0                                         \
                     -DSDLSOUND_BUILD_SHARED=1                                         \
                     -DSDLSOUND_BUILD_TEST=0                                           \
+                    -DCMAKE_MODULE_PATH=$CMAKE_SCRIPT_DIR                             \
                     -DSDL2_INCLUDE_DIRS=$SDL_PATH/include                             \
                     -DSDL2_INCLUDE_DIR=$SDL_PATH/include                              \
                     -DSDL2_LIBRARY=$ARTIFACT_DIR/$SDL_ARTIFACT                        \
@@ -100,6 +101,7 @@ cd $SDL_SOUND_PATH && git apply --verbose SDL_sound.patch
                                                                                       \
 && $CMAKE $CMAKE_FLAGS -B $SDL_NMIX_BUILDROOT $SDL_NMIX_PATH -G "$CMAKE_GENERATOR"    \
                     -DCMAKE_BUILD_TYPE=$SDL_NMIX_BUILD_TYPE                           \
+                    -DCMAKE_MODULE_PATH=$CMAKE_SCRIPT_DIR                             \
                     -DSDL_SOUND_INCLUDE_DIR=$SDL_SOUND_PATH/src                       \
                     -DSDL_SOUND_LIBRARY=$ARTIFACT_DIR/$SDL_SOUND_ARTIFACT             \
                     -DSDL_SOUND_LIBRARIES=$ARTIFACT_DIR/$SDL_SOUND_ARTIFACT           \

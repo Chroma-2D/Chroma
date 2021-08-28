@@ -20,14 +20,18 @@
   
   <PropertyGroup>
     <Title>Chroma Framework</Title>
-    <Description>2D Game Framework which *doesn't* try so hard to resemble XNA</Description>
+    
+    <Description>
+      Cross-platform 2D Game Framework with focus on quick bring-up and hassle-free prototyping.
+    </Description>
+    
     <PackageId>Chroma</PackageId>
-    <Version>0.48.0</Version>
+    <Version>0.49.0</Version>
     <Author>Ciastex</Author>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Ciastex/Chroma</RepositoryUrl>
     <PackageIcon>nugeticon.png</PackageIcon>
-    <PackageTags>gamedev;engine;2d;chroma;framework;sdl;opengl;game;xna;netcore</PackageTags>
+    <PackageTags>cross-platform;gamedev;engine;2d;chroma;framework;sdl;opengl;game;xna;netcore;</PackageTags>
   </PropertyGroup>
   
   <ItemGroup>

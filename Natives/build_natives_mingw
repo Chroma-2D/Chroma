@@ -1,11 +1,5 @@
 #!/bin/bash
 
-if [[ "mingw" != *"$PLATFORM"* ]]; then
-  echo "This platform is not MinGW."
-  echo "Use build_natives to build for a supported platform."
-  exit
-fi
-
 CMAKE_GENERATOR="MinGW Makefiles"
 MAKE=mingw32-make
 

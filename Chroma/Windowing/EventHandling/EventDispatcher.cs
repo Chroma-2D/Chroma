@@ -4,7 +4,7 @@ using Chroma.Natives.SDL;
 
 namespace Chroma.Windowing.EventHandling
 {
-    public sealed class EventDispatcher
+    internal sealed class EventDispatcher
     {
         private Window Owner { get; }
         private Log Log => LogManager.GetForCurrentAssembly();
@@ -58,7 +58,7 @@ namespace Chroma.Windowing.EventHandling
                 Log.Debug($"Unsupported generic event: {ev.type}.");
             }
         }
-
+        
         internal void RegisterWindowEventHandler(SDL2.SDL_WindowEventID eventId, WindowEventHandler handler)
         {
             if (WindowEventHandlers.ContainsKey(eventId))

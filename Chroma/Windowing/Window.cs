@@ -9,6 +9,7 @@ using Chroma.Graphics;
 using Chroma.MemoryManagement;
 using Chroma.Natives.SDL;
 using Chroma.Threading;
+using Chroma.Windowing.DragDrop;
 using Chroma.Windowing.EventHandling;
 using Chroma.Windowing.EventHandling.Specialized;
 
@@ -21,6 +22,7 @@ namespace Chroma.Windowing
         private readonly PerformanceCounter _performanceCounter;
         private readonly RenderContext _renderContext;
 
+        private bool _dragDropEnabled;
         private string _title = "Chroma Framework";
         private Size _size = new(800, 600);
         private Vector2 _position = new(SDL2.SDL_WINDOWPOS_CENTERED);
@@ -38,6 +40,7 @@ namespace Chroma.Windowing
 
         internal Game Game { get; }
         internal EventDispatcher EventDispatcher { get; private set; }
+        internal DragDropManager DragDropManager { get; } 
 
         internal IntPtr RenderTargetHandle { get; }
 
@@ -295,6 +298,21 @@ namespace Chroma.Windowing
             }
         }
 
+        public bool DragDropEnabled
+        {
+            get => _dragDropEnabled;
+            set
+            {
+                _dragDropEnabled = value;
+                var state = _dragDropEnabled ? SDL2.SDL_ENABLE : SDL2.SDL_DISABLE;
+                
+                SDL2.SDL_EventState(SDL2.SDL_EventType.SDL_DROPFILE, state);
+                SDL2.SDL_EventState(SDL2.SDL_EventType.SDL_DROPTEXT, state);
+                SDL2.SDL_EventState(SDL2.SDL_EventType.SDL_DROPBEGIN, state);
+                SDL2.SDL_EventState(SDL2.SDL_EventType.SDL_DROPCOMPLETE, state);
+            }
+        }
+
         public event EventHandler Closed;
         public event EventHandler Hidden;
         public event EventHandler Shown;
@@ -308,6 +326,8 @@ namespace Chroma.Windowing
         public event EventHandler<WindowSizeEventArgs> SizeChanged;
         public event EventHandler<WindowSizeEventArgs> Resized;
         public event EventHandler<CancelEventArgs> QuitRequested;
+        public event EventHandler<FileDragDropEventArgs> FilesDropped;
+        public event EventHandler<TextDragDropEventArgs> TextDropped;
 
         internal Window(Game game)
         {
@@ -324,6 +344,9 @@ namespace Chroma.Windowing
 
             MaximumSize = Size.Empty;
             MinimumSize = Size.Empty;
+
+            DragDropManager = new DragDropManager(this);
+            DragDropEnabled = true;
 
             _performanceCounter = new PerformanceCounter();
             _renderContext = new RenderContext(this);
@@ -535,6 +558,15 @@ namespace Chroma.Windowing
             if (!e.Cancel)
                 Exists = false;
         }
+
+        // both OnFileDropped and OnTextDropped are
+        // called from DragDropManager instead of WindowEventHandlers
+        // to provide atomic drop operation guarantee
+        internal void OnFilesDropped(FileDragDropEventArgs e)
+            => FilesDropped?.Invoke(this, e);
+
+        internal void OnTextDropped(TextDragDropEventArgs e)
+            => TextDropped?.Invoke(this, e);
 
         private void DoTick(float delta)
         {

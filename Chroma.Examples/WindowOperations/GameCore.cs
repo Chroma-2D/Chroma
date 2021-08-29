@@ -8,6 +8,7 @@ using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.Input;
 using Chroma.Windowing;
+using Chroma.Windowing.DragDrop;
 using Color = Chroma.Graphics.Color;
 
 namespace WindowOperations
@@ -19,8 +20,14 @@ namespace WindowOperations
         private bool _drawCenterVector;
         private int _lastResult;
 
+        private string _lastDroppedText;
+        private string _lastDroppedFileList;
+
         public GameCore() : base(new(false, false))
         {
+            Window.FilesDropped += WindowOnFilesDropped;
+            Window.TextDropped += WindowOnTextDropped;
+            
             var sb = new StringBuilder();
 
             var exts = Graphics.GlExtensions;
@@ -28,7 +35,7 @@ namespace WindowOperations
             {
                 _log.Info(exts[i]);
             }
-            
+
             var displays = Graphics.GetDisplayList();
 
             for (var i = 0; i < displays.Count; i++)
@@ -45,6 +52,18 @@ namespace WindowOperations
             }
 
             _log.Info(sb.ToString());
+        }
+
+        private void WindowOnTextDropped(object sender, TextDragDropEventArgs e)
+        {
+            _lastDroppedText = e.Text;
+            _log.Info($"Text has been dropped onto the game window:\n{e.Text}.");
+        }
+
+        private void WindowOnFilesDropped(object sender, FileDragDropEventArgs e)
+        {
+            _lastDroppedFileList = string.Join('\n', e.Files);
+            _log.Info($"Files have been dropped onto the game window:\n{_lastDroppedFileList}.");
         }
 
         protected override void Draw(RenderContext context)
@@ -75,7 +94,9 @@ namespace WindowOperations
                 $"Maximum screen dimensions: {Window.MaximumSize.Width}x{Window.MaximumSize.Height}\n" +
                 $"Minimum screen dimensions: {Window.MinimumSize.Width}x{Window.MinimumSize.Height}\n" +
                 $"Has keyboard focus: {Window.HasKeyboardFocus}\n" +
-                $"Is mouse over: {Window.IsMouseOver}",
+                $"Is mouse over: {Window.IsMouseOver}\n" +
+                $"Last dropped file: {_lastDroppedFileList}\n" +
+                $"Last dropped text: {_lastDroppedText}\n",
                 new Vector2(8)
             );
         }

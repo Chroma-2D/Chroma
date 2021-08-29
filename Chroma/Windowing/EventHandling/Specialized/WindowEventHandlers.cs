@@ -27,6 +27,11 @@ namespace Chroma.Windowing.EventHandling.Specialized
             Dispatcher.RegisterWindowEventHandler(SDL2.SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_LOST, Unfocused);
             Dispatcher.RegisterWindowEventHandler(SDL2.SDL_WindowEventID.SDL_WINDOWEVENT_CLOSE, Closed);
             Dispatcher.RegisterWindowEventHandler(SDL2.SDL_WindowEventID.SDL_WINDOWEVENT_TAKE_FOCUS, FocusOffered);
+
+            Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_DROPBEGIN, DropStarted);
+            Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_DROPCOMPLETE, DropFinished);
+            Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_DROPFILE, FileDropped);
+            Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_DROPTEXT, TextDropped);
         }
 
         private void Minimized(Window owner, SDL2.SDL_WindowEvent ev)
@@ -73,5 +78,18 @@ namespace Chroma.Windowing.EventHandling.Specialized
 
         private void Resized(Window owner, SDL2.SDL_WindowEvent ev)
             => owner.OnResized(new WindowSizeEventArgs(new Size(ev.data1, ev.data2)));
+
+        private void DropStarted(Window owner, SDL2.SDL_Event ev)
+            => owner.DragDropManager.BeginDrop();
+
+        private void DropFinished(Window owner, SDL2.SDL_Event ev)
+            => owner.DragDropManager.FinishDrop();
+        
+        // ev.drop.file on events below is freed in DragDropManager after buffering the data
+        private void FileDropped(Window owner, SDL2.SDL_Event ev)
+            => owner.DragDropManager.OnFileDropped(ev.drop.file);
+
+        private void TextDropped(Window owner, SDL2.SDL_Event ev)
+            => owner.DragDropManager.OnTextDropped(ev.drop.file);
     }
 }

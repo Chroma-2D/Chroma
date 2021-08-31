@@ -120,7 +120,7 @@ namespace Textures
                     var mod = x / (y + 1);
 
                     if (y > 127)
-                        mod = x * y;
+                        mod = (x / 2) * (y / 2);
 
                     if (x > 127)
                         mod = (x + y) / 2;
@@ -128,7 +128,7 @@ namespace Textures
                     if (x > 127 && y < 127)
                         mod = (int)(Math.Abs(x / 2 - y / 2) + (5 * MathF.Sin(_wave)));
 
-                    _dynTex[x, y] = _colors[((int)PerformanceCounter.LifetimeFrames + mod) % _colors.Length];
+                    _dynTex[x, y] = _colors[Math.Abs(((int)PerformanceCounter.LifetimeFrames + mod) % _colors.Length)];
                 }
             }
         }

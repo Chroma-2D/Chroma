@@ -59,7 +59,7 @@ namespace Chroma.Input.GameControllers
                     return new GenericControllerDriver(info);
 
                 default:
-                    throw new NotSupportedException("Unrecognized controller type.");
+                    throw new InvalidOperationException("Unrecognized controller type.");
             }
         }
         
@@ -77,7 +77,7 @@ namespace Chroma.Input.GameControllers
                     return new SwitchProControllerDriver(info);
             }
 
-            throw new NotSupportedException("Unsupported product ID.");
+            throw new InvalidOperationException("Unsupported product ID.");
         }
     }
 }

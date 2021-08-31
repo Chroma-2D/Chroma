@@ -41,7 +41,7 @@ namespace Chroma.Input
         public Cursor(Texture texture, Vector2 hotSpot)
         {
             if (texture.Disposed)
-                throw new InvalidOperationException("The texture you provided was previously disposed.");
+                throw new ArgumentException("The texture provided was previously disposed.");
 
             Texture = new Texture(texture);
             HotSpot = hotSpot;

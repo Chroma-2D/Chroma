@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace Chroma.ContentManagement
+﻿namespace Chroma.ContentManagement
 {
-    public class ContentNotLoadedException : Exception
+    public class ContentNotLoadedException : ContentException
     {
         public ContentNotLoadedException(string message)
             : base(message)

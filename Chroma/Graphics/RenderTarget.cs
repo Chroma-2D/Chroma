@@ -8,7 +8,7 @@ namespace Chroma.Graphics
 {
     public class RenderTarget : Texture
     {
-        private Log Log { get; } = LogManager.GetForCurrentAssembly();
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
         
         internal IntPtr TargetHandle { get; }
 
@@ -21,8 +21,9 @@ namespace Chroma.Graphics
             if (ImageHandle == IntPtr.Zero)
             {
                 var msg = $"Failed to create texture handle: {SDL2.SDL_GetError()}";
-                Log.Error(msg);
-                throw new Exception(msg);
+                _log.Error(msg);
+                
+                throw new GraphicsException(msg);
             }
             
             TargetHandle = SDL_gpu.GPU_LoadTarget(ImageHandle);
@@ -31,8 +32,8 @@ namespace Chroma.Graphics
             {
                 var msg = $"Failed to create render target handle: {SDL2.SDL_GetError()}";
                 
-                Log.Error(msg);
-                throw new Exception(msg);
+                _log.Error(msg);
+                throw new GraphicsException(msg);
             }
         }
 

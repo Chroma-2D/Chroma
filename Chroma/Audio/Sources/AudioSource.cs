@@ -114,12 +114,12 @@ namespace Chroma.Audio.Sources
         }
 
         public virtual void Stop()
-            => throw new NotSupportedException("This audio source does not support stopping.");
+            => throw new AudioException("This audio source does not support stopping.");
 
         protected void EnsureHandleValid()
         {
             if (Handle == IntPtr.Zero)
-                throw new InvalidOperationException("Audio source handle is not valid.");
+                throw new AudioException("Audio source handle is not valid.");
         }
 
         protected override void FreeNativeResources()

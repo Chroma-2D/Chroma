@@ -237,7 +237,7 @@ namespace Chroma.Audio.Sources
                 SeekOrigin.Begin => seconds,
                 SeekOrigin.Current => Position + seconds,
                 SeekOrigin.End => Duration - seconds,
-                _ => throw new ArgumentException("Unsupported seek origin.")
+                _ => throw new AudioException("Invalid seek origin.")
             };
 
             if (targetPosition >= Duration)
@@ -276,10 +276,10 @@ namespace Chroma.Audio.Sources
         private void EnsureFileSourceHandleValid()
         {
             if (RwOpsHandle == IntPtr.Zero)
-                throw new InvalidOperationException("RWops handle is invalid.");
+                throw new AudioException("RWops handle is invalid.");
 
             if (FileSourceHandle == IntPtr.Zero)
-                throw new InvalidOperationException("File source handle is invalid.");
+                throw new AudioException("File source handle is invalid.");
         }
 
         private void HookSourceCallback()

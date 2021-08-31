@@ -159,7 +159,7 @@ namespace Chroma.Graphics
             if (renderTargetHandle == IntPtr.Zero)
             {
                 if (renderTargetHandle == IntPtr.Zero)
-                    throw new FrameworkException("Failed to initialize the renderer.", true);
+                    throw new GraphicsException($"Failed to initialize the renderer: {SDL2.SDL_GetError()}");
             }
             
             SDL_gpu.GPU_SetDefaultAnchor(0, 0);
@@ -185,8 +185,10 @@ namespace Chroma.Graphics
 
             if (registeredRenderers.Length == 0)
             {
-                throw new NotSupportedException("None of Chroma's Rendering APIs are supported on this computer. " +
-                                                "Make sure you have support for at least OpenGL 3.");
+                throw new GraphicsException(
+                    "No renderers have been found." +
+                    "Make sure SDL_gpu was built with at least 1 renderer available."
+                );
             }
 
             return registeredRenderers.ToList();
@@ -267,8 +269,9 @@ namespace Chroma.Graphics
 
                     if (context == IntPtr.Zero)
                         continue;
-                    
-                    SDL2.SDL_GL_MakeCurrent(window, context);
+
+                    if (SDL2.SDL_GL_MakeCurrent(window, context) < 0)
+                        continue;
                 }
 
                 probeLogic();
@@ -279,8 +282,8 @@ namespace Chroma.Graphics
                 SDL2.SDL_DestroyWindow(window);
                 return;
             }
-
-            throw new FrameworkException("Failed to initialize all the supported GL context versions.");
+            
+            throw new GraphicsException($"GL context initialization has failed: {SDL2.SDL_GetError()}");
         }
     }
 }

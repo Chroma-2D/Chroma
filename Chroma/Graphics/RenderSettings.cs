@@ -92,7 +92,7 @@ namespace Chroma.Graphics
         static RenderSettings()
         {
             if (!Game.WasConstructed)
-                throw new InvalidOperationException("You need to initialize the engine first.");
+                throw new InvalidOperationException("Construct your application first.");
             
             AutoClearEnabled = true;
             AutoClearColor = Color.Transparent;

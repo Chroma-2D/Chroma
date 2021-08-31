@@ -20,7 +20,7 @@ namespace Chroma.Audio
         public IReadOnlyList<AudioDevice> Devices => _devices;
 
         public AudioDevice DefaultDevice => 
-            _devices.FirstOrDefault() ?? throw new InvalidOperationException("No audio input devices found.");
+            _devices.FirstOrDefault() ?? throw new AudioException("No audio input devices found.");
 
         private AudioInput()
         {

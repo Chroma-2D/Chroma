@@ -1,12 +1,11 @@
-﻿using System;
-
-namespace Chroma.ContentManagement
+﻿namespace Chroma.ContentManagement
 {
-    public class UnsupportedContentException : Exception
+    public class UnsupportedContentException : ContentException
     {
         public string TargetPath { get; }
 
-        public UnsupportedContentException(string message, string targetPath) : base(message)
+        public UnsupportedContentException(string message, string targetPath) 
+            : base(message)
         {
             TargetPath = targetPath;
         }

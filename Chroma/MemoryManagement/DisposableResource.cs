@@ -45,7 +45,7 @@ namespace Chroma.MemoryManagement
         protected void EnsureNotDisposed()
         {
             if (Disposed)
-                throw new InvalidOperationException("This object has already been disposed.");
+                throw new ObjectDisposedException("This object has already been disposed.");
         }
     }
 }

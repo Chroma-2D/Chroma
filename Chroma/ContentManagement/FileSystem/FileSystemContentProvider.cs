@@ -95,19 +95,29 @@ namespace Chroma.ContentManagement.FileSystem
 
         public void RegisterImporter<T>(Func<string, object[], object> importer) where T : DisposableResource
         {
-            if (_importers.ContainsKey(typeof(T)))
-                throw new InvalidOperationException($"An importer for type {typeof(T).Name} was already registered.");
+            var contentType = typeof(T);
+            
+            if (_importers.ContainsKey(contentType))
+            {
+                throw new InvalidOperationException(
+                    $"An importer for type {contentType.Name} was already registered."
+                );
+            }
 
-            _importers.Add(typeof(T), importer);
+            _importers.Add(contentType, importer);
         }
 
         public void UnregisterImporter<T>() where T : DisposableResource
         {
-            if (!_importers.ContainsKey(typeof(T)))
-                throw new InvalidOperationException(
-                    $"An importer for type {typeof(T).Name} was never registered, thus it cannot be unregistered.");
+            var contentType = typeof(T);
 
-            _importers.Remove(typeof(T));
+            if (!_importers.ContainsKey(contentType))
+            {
+                throw new InvalidOperationException(
+                    $"An importer for type {contentType.Name} was never registered, thus it cannot be unregistered.");
+            }
+
+            _importers.Remove(contentType);
         }
 
         public bool IsImporterPresent<T>() where T : DisposableResource

@@ -184,7 +184,7 @@ namespace Chroma.Diagnostics.Logging
         private void EnsureNotClosed()
         {
             if (HasBeenClosed)
-                throw new InvalidOperationException("This log has already been closed!");
+                throw new InvalidOperationException("This log has already been closed.");
         }
 
         private bool SinkExists(Type type)

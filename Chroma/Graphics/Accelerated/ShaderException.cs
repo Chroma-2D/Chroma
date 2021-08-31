@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace Chroma.Graphics.Accelerated
 {
-    public class ShaderException : Exception
+    public class ShaderException : GraphicsException
     {
         public List<string> GlslErrors { get; }
 
-        internal ShaderException(string message, string rawGlslError) : base(message)
+        internal ShaderException(string message, string rawGlslError) 
+            : base(message)
         {
             GlslErrors = rawGlslError.Split('\n').ToList();
             GlslErrors.RemoveAll(string.IsNullOrWhiteSpace);

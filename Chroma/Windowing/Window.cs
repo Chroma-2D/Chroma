@@ -337,7 +337,7 @@ namespace Chroma.Windowing
             InternalHandle = Handle;
 
             if (Handle == IntPtr.Zero)
-                throw new FrameworkException("Failed to initialize the window.", true);
+                throw new FrameworkException($"Failed to initialize the window: {SDL2.SDL_GetError()}.");
 
             Title = _title;
             Position = _position;
@@ -406,7 +406,7 @@ namespace Chroma.Windowing
         public void SetIcon(Texture texture)
         {
             if (texture.Disposed)
-                throw new InvalidOperationException("The texture provided was already disposed.");
+                throw new ArgumentException("The texture provided was already disposed.");
 
             if (_currentIconPtr != IntPtr.Zero)
                 SDL2.SDL_FreeSurface(_currentIconPtr);

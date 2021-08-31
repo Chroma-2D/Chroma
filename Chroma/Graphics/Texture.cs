@@ -371,13 +371,19 @@ namespace Chroma.Graphics
         {
             EnsureOnMainThread();
 
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream), "Stream cannot be null.");
+
             var result = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
 
             if (result == null)
             {
-                throw new FormatException("Image format not supported.");
+                throw new GraphicsException(
+                    "Failed to load the texture from the provided stream. " +
+                    "It's likely the image format is not supported."
+                );
             }
-            
+
             CreateEmpty(
                 result.Width,
                 result.Height,
@@ -399,7 +405,7 @@ namespace Chroma.Graphics
         public Texture(Texture other)
         {
             if (other == null)
-                throw new ArgumentNullException(nameof(other), "The other texture is null.");
+                throw new ArgumentNullException(nameof(other), "The source texture cannot be null.");
             
             if (other.Disposed)
                 throw new InvalidOperationException("The source texture has been disposed.");
@@ -514,7 +520,12 @@ namespace Chroma.Graphics
             var pixelCount = Width * Height;
 
             if (colors.Length != Width * Height)
-                throw new InvalidOperationException("The pixel array must be the same size as texture's.");
+            {
+                throw new ArgumentOutOfRangeException(
+                    "Texture length mismatch. " +
+                    "The amount of colors provided in the array must match the count of pixels in the texture."
+                );
+            }
 
             for (var i = 0; i < pixelCount; i++)
                 WritePixel(i * BytesPerPixel, colors[i]);
@@ -525,7 +536,12 @@ namespace Chroma.Graphics
             EnsureNotDisposed();
 
             if (data.Length != _pixelData.Length)
-                throw new InvalidOperationException("The byte array must be the same size as texture's.");
+            {
+                throw new ArgumentOutOfRangeException(
+                    "Data size mismatch. " +
+                    "Both the texture's and the provided array sizes must be the same length."
+                );
+            }
 
             data.CopyTo(_pixelData, 0);
         }
@@ -735,7 +751,8 @@ namespace Chroma.Graphics
                     c.A = _pixelData[i + 0];
                     break;
 
-                default: throw new InvalidOperationException("Unsupported pixel format.");
+                default: 
+                    throw new InvalidOperationException("Unsupported pixel format.");
             }
 
             return c;
@@ -778,7 +795,8 @@ namespace Chroma.Graphics
                     _pixelData[i + 3] = c.A;
                     break;
 
-                default: throw new InvalidOperationException("Unsupported pixel format.");
+                default: 
+                    throw new InvalidOperationException("Unsupported pixel format.");
             }
         }
 
@@ -788,8 +806,11 @@ namespace Chroma.Graphics
         protected void EnsureOnMainThread()
         {
             if (!Dispatcher.IsMainThread)
+            {
                 throw new InvalidOperationException(
-                    "This operation is not thread-safe and must be scheduled to run on main thread.");
+                    "This operation is not thread-safe and must be scheduled to run on main thread."
+                );
+            }
         }
 
         protected override void FreeNativeResources()

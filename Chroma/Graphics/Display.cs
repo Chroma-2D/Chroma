@@ -134,13 +134,7 @@ namespace Chroma.Graphics
                 refresh_rate = refreshRate
             };
 
-            var ret = SDL2.SDL_GetClosestDisplayMode(
-                Index,
-                ref mode,
-                out var closest
-            );
-
-            if (ret == IntPtr.Zero)
+            if (SDL2.SDL_GetClosestDisplayMode(Index, ref mode, out var closest) == IntPtr.Zero)
             {
                 Log.Error($"Failed to retrieve a closest display mode for {width}x{height}");
                 return DisplayMode.Invalid;

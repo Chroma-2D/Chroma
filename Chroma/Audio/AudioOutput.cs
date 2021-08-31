@@ -78,7 +78,7 @@ namespace Chroma.Audio
             EnumerateDecoders();
 
             device = device ?? _devices.FirstOrDefault()
-                ?? throw new InvalidOperationException("No output devices found.");
+                ?? throw new AudioException("No output devices found.");
 
             if (SDL2_nmix.NMIX_OpenAudio(device.Name, Frequency, SampleCount) < 0)
             {

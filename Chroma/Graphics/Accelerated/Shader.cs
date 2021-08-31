@@ -135,6 +135,9 @@ namespace Chroma.Graphics.Accelerated
         {
             EnsureNotDisposed();
 
+            if (value == null)
+                throw new ArgumentNullException(nameof(value), "Texture cannot be null.");
+
             if (value.Disposed)
                 throw new ArgumentException("Texture provided was already diposed.");
 

@@ -23,7 +23,7 @@ namespace Chroma.Input
                 SDL2.SDL_BUTTON_MIDDLE => MouseButton.Middle,
                 SDL2.SDL_BUTTON_X1 => MouseButton.X1,
                 SDL2.SDL_BUTTON_X2 => MouseButton.X2,
-                _ => throw new Exception("Unexpected mouse button constant.")
+                _ => throw new ArgumentException("Unexpected mouse button constant.")
             };
 
             Pressed = state == SDL2.SDL_PRESSED;

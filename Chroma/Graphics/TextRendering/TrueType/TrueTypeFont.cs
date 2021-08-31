@@ -407,7 +407,8 @@ namespace Chroma.Graphics.TextRendering.TrueType
                                 renderMode = FT_Render_Mode.FT_RENDER_MODE_MONO;
                                 break;
 
-                            default: throw new InvalidOperationException("Unsupported hinting mode.");
+                            default: 
+                                throw new InvalidOperationException("Unsupported hinting mode.");
                         }
                     }
                     else

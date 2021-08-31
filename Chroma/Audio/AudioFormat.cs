@@ -59,7 +59,7 @@ namespace Chroma.Audio
                     SampleFormat.U16 => 16,
                     SampleFormat.U8 => 8,
                     SampleFormat.S8 => 8,
-                    _ => throw new InvalidOperationException($"Sample format '{SampleFormat}' is not supported.")
+                    _ => throw new AudioException($"Sample format '{SampleFormat}' is not supported.")
                 };
             }
         }
@@ -85,7 +85,7 @@ namespace Chroma.Audio
                     ByteOrder.Native => SdlFormatSYS[SampleFormat],
                     ByteOrder.BigEndian => SdlFormatBE[SampleFormat],
                     ByteOrder.LittleEndian => SdlFormatLE[SampleFormat],
-                    _ => throw new FormatException("Unknown byte order specified."),
+                    _ => throw new AudioException("Unknown byte order specified."),
                 };
             }
         }
@@ -130,7 +130,7 @@ namespace Chroma.Audio
                 case SDL2.AUDIO_F32MSB:
                     return (SampleFormat.F32, ByteOrder.BigEndian);
              
-                default: throw new NotSupportedException("Unsupported SDL audio format.");
+                default: throw new AudioException("Unsupported SDL audio format.");
             }
         }
     }

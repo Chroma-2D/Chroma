@@ -32,6 +32,8 @@ namespace Chroma.Natives.GL
         internal const uint GL_LINE_SMOOTH_HINT = 0x0C52;
         internal const uint GL_POLYGON_SMOOTH_HINT = 0x0C53;
 
+        internal const uint GL_DEPTH_TEST = 0x0B71;
+        
         internal const uint GL_NO_ERROR = 0;
         internal const uint GL_INVALID_ENUM = 0x500;
         internal const uint GL_INVALID_VALUE = 0x501;

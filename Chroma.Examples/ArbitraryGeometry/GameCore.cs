@@ -57,7 +57,7 @@ namespace ArbitraryGeometry
             0.25f, -0.25f, 0.25f,
         };
 
-        public GameCore() : base(new(false, false))
+        public GameCore() : base(new(false, true, 4))
         {
             RenderSettings.MultiSamplingEnabled = true;
         }

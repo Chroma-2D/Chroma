@@ -10,6 +10,7 @@ namespace Chroma.Graphics
         private static float _lineThickness;
         private static bool _multiSamplingEnabled;
         private static bool _shapeBlendingEnabled;
+        private static bool _depthTestingEnabled;
         private static Rectangle _scissor = Rectangle.Empty;
 
         public static bool AutoClearEnabled { get; set; }
@@ -41,6 +42,24 @@ namespace Chroma.Graphics
                 else
                 {
                     Gl.Disable(Gl.GL_MULTISAMPLE);
+                }
+            }
+        }
+
+        public static bool DepthTestingEnabled
+        {
+            get => _depthTestingEnabled;
+            set
+            {
+                _depthTestingEnabled = value;
+
+                if (_depthTestingEnabled)
+                {
+                    Gl.Enable(Gl.GL_DEPTH_TEST);
+                }
+                else
+                {
+                    Gl.Disable(Gl.GL_DEPTH_TEST);
                 }
             }
         }

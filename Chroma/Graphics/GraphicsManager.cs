@@ -142,7 +142,7 @@ namespace Chroma.Graphics
             while (renderers.Any())
             {
                 var rendererId = renderers.Dequeue();
-                
+
                 renderTargetHandle = SDL_gpu.GPU_InitRendererByID(
                     rendererId,
                     (ushort)window.Size.Width,

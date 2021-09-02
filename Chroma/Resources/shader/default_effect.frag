@@ -1,5 +1,7 @@
 ﻿#version 330 core
 
+layout (location = 0) out vec4 _FragColor;
+
 uniform sampler2D cr_Screen;
 
 in vec3 cr_VertexPosition;
@@ -11,7 +13,7 @@ in float cr_Time;
 vec4 effect(in vec4 pixel, in vec2 tex_coords);
 
 void main(void) {
-    gl_FragColor = effect(
+    _FragColor = effect(
         texture2D(cr_Screen, cr_TexCoord),
         cr_TexCoord
     );

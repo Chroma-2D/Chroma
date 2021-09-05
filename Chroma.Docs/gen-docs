@@ -1,0 +1,5 @@
+#!/bin/bash
+doxygen
+cp navtree.js site/html/navtree.js
+cp folder.png site/html/folder.png
+cp source.png site/html/source.png

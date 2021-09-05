@@ -713,6 +713,7 @@ html.dark-mode iframe#MSearchResults {
     font-size: 45%;
     vertical-align: middle;
     margin-right: 2px;
+    margin-top: -4px;
     font-family: serif;
     height: auto;
     text-align: right;
@@ -1206,7 +1207,7 @@ dl.reflist dt, dl.reflist dd {
 dl.reflist dt {
     font-weight: 500;
     border-radius: 0;
-    background: var(--code-background);
+        background: var(--code-background);
     border-bottom: 1px solid var(--separator-color);
     color: var(--page-foreground-color)
 }
@@ -1453,6 +1454,20 @@ li.navelem:first-child:before {
 
 .navpath li.navelem a:hover {
     color: var(--primary-color);
+}
+
+.folder-item > div > .label:before {
+    content: url("folder.png");
+    position: relative;
+}
+
+.class-item > div > .label:before {
+    content: url("source.png");
+    position: relative;
+}
+
+.class-item > ul > .class-item > div > .label:before {
+    content: none;
 }
 
 /*

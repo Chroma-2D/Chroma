@@ -64,16 +64,27 @@ namespace Chroma.Audio
         public void Open(AudioDevice device = null, int frequency = 44100, int sampleCount = 1024)
         {
             Close();
+
+            if (SDL2.SDL_WasInit(SDL2.SDL_INIT_AUDIO) == 0)
+            {
+                if (SDL2.SDL_AudioInit(null) < 0)
+                {
+                    _log.Error($"Failed to initialize SDL audio sub-system: {SDL2.SDL_GetError()}");
+                    return;
+                }
+            }
+
             EnumerateDevices();
 
             Frequency = frequency;
             SampleCount = sampleCount;
-
+            
             if (SDL2_sound.Sound_Init() < 0)
             {
                 _log.Error($"Failed to initialize audio backend: {SDL2.SDL_GetError()}");
                 return;
             }
+            
             _backendInitialized = true;
             EnumerateDecoders();
 
@@ -118,6 +129,8 @@ namespace Chroma.Audio
             {
                 _devices.First(x => x.OpenIndex == device).Unlock();
             }
+
+            _devices.Clear();
         }
 
         private void EnumerateDevices()

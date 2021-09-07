@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using Chroma;
 using Chroma.Audio;
 using Chroma.Audio.Sources;
@@ -35,6 +37,11 @@ namespace MusicAndSounds
                     $"Connected {(e.Device.IsCapture ? "input" : "output")} device {e.Device.Index}: '{e.Device.Name}'.");
             };
 
+            Audio.DeviceDisconnected += (_, e) =>
+            {
+                _log.Info($"Disconnected: {e.Device.Index}");
+            };
+
             foreach (var e in Audio.Output.Decoders)
             {
                 _log.Info($"Decoder: {string.Join(',', e.SupportedFormats)}");
@@ -53,7 +60,6 @@ namespace MusicAndSounds
         protected override void LoadContent()
         {
             _doomShotgun = Content.Load<Sound>("Sounds/doomsg.wav");
-
             _elysiumMod = Content.Load<Music>("Music/elysium.mod");
 
             _waveform = new Waveform(
@@ -194,6 +200,23 @@ namespace MusicAndSounds
                         _waveform.Pause();
                     else
                         _waveform.Play();
+                    break;
+                
+                case KeyCode.F8:
+                    _doomShotgun.Stop();
+                    Content.Unload(_doomShotgun);
+                    
+                    _elysiumMod.Stop();
+                    Content.Unload(_elysiumMod);
+                    
+                    _waveform.Pause();
+                    _waveform.Dispose();
+                    
+                    Audio.Output.Close();
+                    Audio.Output.Open();
+                    
+                    LoadContent();
+                    
                     break;
             }
         }

@@ -13,7 +13,6 @@ namespace Chroma.Audio.Sources
         private SDL2_nmix.NMIX_SourceCallback _internalSourceCallback;
 
         internal IntPtr FileSourceHandle { get; private set; }
-        internal IntPtr RwOpsHandle { get; private set; }
 
         internal unsafe SDL2_nmix.NMIX_FileSource* FileSource
             => (SDL2_nmix.NMIX_FileSource*)FileSourceHandle.ToPointer();
@@ -63,16 +62,16 @@ namespace Chroma.Audio.Sources
 
         internal FileBasedAudioSource(string filePath, bool decodeWhole)
         {
-            RwOpsHandle = SDL2.SDL_RWFromFile(filePath, "rb");
+            var rwOps = SDL2.SDL_RWFromFile(filePath, "rb");
 
-            if (RwOpsHandle == IntPtr.Zero)
+            if (rwOps == IntPtr.Zero)
             {
                 _log.Error($"Failed to initialize RWops from file: {SDL2.SDL_GetError()}");
                 return;
             }
 
             FileSourceHandle = SDL2_nmix.NMIX_NewFileSource(
-                RwOpsHandle,
+                rwOps,
                 Path.GetExtension(filePath).TrimStart('.'),
                 decodeWhole
             );
@@ -102,12 +101,12 @@ namespace Chroma.Audio.Sources
                 {
                     fixed (byte* b = &arr[0])
                     {
-                        RwOpsHandle = SDL2.SDL_RWFromConstMem(
+                        var rwOps = SDL2.SDL_RWFromConstMem(
                             new IntPtr(b),
                             arr.Length
                         );
 
-                        if (RwOpsHandle == IntPtr.Zero)
+                        if (rwOps == IntPtr.Zero)
                         {
                             _log.Error($"Failed to initialize RWops from stream: {SDL2.SDL_GetError()}");
                             return;
@@ -117,8 +116,8 @@ namespace Chroma.Audio.Sources
                         {
                             foreach (var format in decoder.SupportedFormats)
                             {
-                                SDL2.SDL_RWseek(RwOpsHandle, 0, SDL2.RW_SEEK_SET);
-                                FileSourceHandle = SDL2_nmix.NMIX_NewFileSource(RwOpsHandle, format, decodeWhole);
+                                SDL2.SDL_RWseek(rwOps, 0, SDL2.RW_SEEK_SET);
+                                FileSourceHandle = SDL2_nmix.NMIX_NewFileSource(rwOps, format, decodeWhole);
 
                                 if (FileSourceHandle != IntPtr.Zero)
                                     break;
@@ -262,22 +261,17 @@ namespace Chroma.Audio.Sources
         {
             if (FileSourceHandle != IntPtr.Zero)
             {
-                SDL2_nmix.NMIX_FreeFileSource(Handle);
+                SDL2_nmix.NMIX_FreeFileSource(FileSourceHandle);
                 FileSourceHandle = IntPtr.Zero;
             }
 
-            if (RwOpsHandle != IntPtr.Zero)
-            {
-                SDL2.SDL_FreeRW(RwOpsHandle);
-                RwOpsHandle = IntPtr.Zero;
-            }
+            // SDL_sound closes RWops after initializing audio samples from file.
+
+            Handle = IntPtr.Zero;
         }
 
         private void EnsureFileSourceHandleValid()
         {
-            if (RwOpsHandle == IntPtr.Zero)
-                throw new AudioException("RWops handle is invalid.");
-
             if (FileSourceHandle == IntPtr.Zero)
                 throw new AudioException("File source handle is invalid.");
         }

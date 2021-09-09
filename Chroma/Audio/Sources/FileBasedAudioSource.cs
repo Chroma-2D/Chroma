@@ -6,7 +6,7 @@ using Chroma.Natives.SDL;
 
 namespace Chroma.Audio.Sources
 {
-    public class FileBasedAudioSource : AudioSource
+    public abstract class FileBasedAudioSource : AudioSource
     {
         private readonly Log _log = LogManager.GetForCurrentAssembly();
         private SDL2_nmix.NMIX_SourceCallback _originalSourceCallback;
@@ -95,7 +95,7 @@ namespace Chroma.Audio.Sources
             using (var ms = new MemoryStream())
             {
                 stream.CopyTo(ms);
-                var arr = ms.ToArray();
+                var arr = ms.GetBuffer();
 
                 unsafe
                 {
@@ -134,6 +134,7 @@ namespace Chroma.Audio.Sources
                     }
                 }
             }
+            
             HookSourceCallback();
         }
 

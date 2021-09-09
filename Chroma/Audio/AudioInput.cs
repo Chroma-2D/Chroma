@@ -101,7 +101,7 @@ namespace Chroma.Audio
             var numberOfInputDevices = SDL2.SDL_GetNumAudioDevices(1);
 
             for (var i = 0; i < numberOfInputDevices; i++)
-                _devices.Add(new AudioDevice(i, true));
+                _devices.Add(new AudioDevice(i, true, SDL2.SDL_GetAudioDeviceName(i, true)));
         }
     }
 }

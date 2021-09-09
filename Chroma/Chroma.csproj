@@ -26,7 +26,7 @@
     </Description>
     
     <PackageId>Chroma</PackageId>
-    <Version>0.49.3</Version>
+    <Version>0.49.4</Version>
     <Author>Ciastex</Author>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Ciastex/Chroma</RepositoryUrl>

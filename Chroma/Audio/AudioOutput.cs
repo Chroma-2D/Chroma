@@ -49,7 +49,7 @@ namespace Chroma.Audio
         }
 
         public AudioDevice CurrentOutputDevice => _devices.FirstOrDefault(
-            x => x.Index == SDL2_nmix.NMIX_GetAudioDevice()
+            x => x.OpenIndex == SDL2_nmix.NMIX_GetAudioDevice()
         );
 
         private AudioOutput()
@@ -89,16 +89,19 @@ namespace Chroma.Audio
             _backendInitialized = true;
             EnumerateDecoders();
 
-            device = device ?? _devices.FirstOrDefault()
-                ?? throw new AudioException("No output devices found.");
-
-            if (SDL2_nmix.NMIX_OpenAudio(device.Name, Frequency, SampleCount) < 0)
+            if (SDL2_nmix.NMIX_OpenAudio(device?.Name, Frequency, SampleCount) < 0)
             {
                 _log.Error($"Failed to initialize audio mixer: {SDL2.SDL_GetError()}");
                 return;
             }
 
             _mixerInitialized = true;
+
+            if (device == null)
+            {
+                device = AudioDevice.DefaultOutput;
+            }
+            
             device.Lock(SDL2_nmix.NMIX_GetAudioDevice());
         }
 
@@ -185,8 +188,10 @@ namespace Chroma.Audio
             var numberOfOutputDevices = SDL2.SDL_GetNumAudioDevices(0);
             for (var i = 0; i < numberOfOutputDevices; i++)
             {
-                _devices.Add(new AudioDevice(i, false));
+                _devices.Add(new AudioDevice(i, false, SDL2.SDL_GetAudioDeviceName(i, false)));
             }
+            
+            _devices.Add(AudioDevice.DefaultOutput);
         }
 
         private void EnumerateDecoders()

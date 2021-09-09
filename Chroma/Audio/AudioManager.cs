@@ -49,7 +49,7 @@ namespace Chroma.Audio
             DeviceConnected?.Invoke(
                 this,
                 new AudioDeviceEventArgs(
-                    new AudioDevice((int)index, isCapture)
+                    new AudioDevice((int)index, isCapture, SDL2.SDL_GetAudioDeviceName((int)index, isCapture))
                 )
             );
         }
@@ -59,7 +59,7 @@ namespace Chroma.Audio
             DeviceDisconnected?.Invoke(
                 this,
                 new AudioDeviceEventArgs(
-                    new AudioDevice((int)index, isCapture)
+                    new AudioDevice((int)index, isCapture, SDL2.SDL_GetAudioDeviceName((int)index, isCapture))
                 )
             );
         }

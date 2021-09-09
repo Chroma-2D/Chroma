@@ -148,11 +148,7 @@ namespace Chroma.Audio.Sources
         public virtual void Pause()
         {
             EnsureHandleValid();
-            
-            if (SDL2_nmix.NMIX_Pause(Handle) < 0)
-            {
-                _log.Error($"Failed to pause the audio source: {SDL2.SDL_GetError()}");
-            }
+            SDL2_nmix.NMIX_Pause(Handle);
         }
 
         public virtual void Stop()

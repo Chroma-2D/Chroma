@@ -1,21 +1,27 @@
-﻿using Chroma.Natives.SDL;
-
-namespace Chroma.Audio
+﻿namespace Chroma.Audio
 {
     public class AudioDevice
     {
+        public static AudioDevice DefaultOutput { get; }
+
         internal uint OpenIndex { get; private set; }
         public int Index { get; }
         
         public bool IsCapture { get; }
         public bool IsCurrentlyInUse => OpenIndex != 0;
 
-        public string Name => SDL2.SDL_GetAudioDeviceName(Index, IsCapture);
+        public string Name { get; }
 
-        internal AudioDevice(int index, bool isCapture)
+        static AudioDevice()
+        {
+            DefaultOutput = new AudioDevice(-666, false, "[System Default]");
+        }
+
+        internal AudioDevice(int index, bool isCapture, string name)
         {
             Index = index;
             IsCapture = isCapture;
+            Name = name;
         }
         
         internal void Lock(uint openIndex)

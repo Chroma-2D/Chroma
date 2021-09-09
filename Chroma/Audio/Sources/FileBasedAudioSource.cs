@@ -134,7 +134,7 @@ namespace Chroma.Audio.Sources
                     }
                 }
             }
-            
+
             HookSourceCallback();
         }
 
@@ -144,11 +144,7 @@ namespace Chroma.Audio.Sources
 
             if (Status == PlaybackStatus.Playing)
             {
-                if (SDL2_nmix.NMIX_Pause(Handle) < 0)
-                {
-                    _log.Error($"Failed to play the audio source [pause]: {SDL2.SDL_GetError()}");
-                    return;
-                }
+                SDL2_nmix.NMIX_Pause(Handle);
 
                 if (SDL2_nmix.NMIX_Rewind(FileSourceHandle) < 0)
                 {
@@ -187,11 +183,7 @@ namespace Chroma.Audio.Sources
             EnsureHandleValid();
             EnsureFileSourceHandleValid();
 
-            if (SDL2_nmix.NMIX_Pause(Handle) < 0)
-            {
-                _log.Error($"Failed to stop the audio source [pause]: {SDL2.SDL_GetError()}");
-                return;
-            }
+            SDL2_nmix.NMIX_Pause(Handle);
 
             if (SDL2_nmix.NMIX_Rewind(FileSourceHandle) < 0)
             {
@@ -248,7 +240,7 @@ namespace Chroma.Audio.Sources
             {
                 targetPosition = Duration + targetPosition;
             }
-            
+
             if (SDL2_nmix.NMIX_Seek(FileSourceHandle, (int)(targetPosition * 1000)) < 0)
             {
                 _log.Error($"Failed to seek to {seconds}: {SDL2.SDL_GetError()}");

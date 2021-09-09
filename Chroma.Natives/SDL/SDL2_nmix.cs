@@ -86,7 +86,7 @@ namespace Chroma.Natives.SDL
         internal static extern int NMIX_Play(IntPtr source);
 
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int NMIX_Pause(IntPtr source);
+        internal static extern void NMIX_Pause(IntPtr source);
 
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern bool NMIX_IsPlaying(IntPtr source);
@@ -101,7 +101,7 @@ namespace Chroma.Natives.SDL
         internal static extern float NMIX_GetGain(IntPtr source);
 
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern float NMIX_SetGain(IntPtr source, float gain);
+        internal static extern void NMIX_SetGain(IntPtr source, float gain);
         
         // NMIX_FileSource*
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]

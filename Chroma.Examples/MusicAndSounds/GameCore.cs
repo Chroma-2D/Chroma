@@ -203,15 +203,6 @@ namespace MusicAndSounds
                     break;
                 
                 case KeyCode.F8:
-                    _doomShotgun.Stop();
-                    Content.Unload(_doomShotgun);
-                    
-                    _elysiumMod.Stop();
-                    Content.Unload(_elysiumMod);
-                    
-                    _waveform.Pause();
-                    _waveform.Dispose();
-                    
                     Audio.Output.Close();
                     Audio.Output.Open();
                     

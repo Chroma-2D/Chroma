@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
 using Chroma.Natives.SDL;
 
@@ -9,6 +10,8 @@ namespace Chroma.Audio.Sources
     {
         public delegate void AudioStreamDelegate(Span<byte> audioBufferData, AudioFormat format);
 
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
+
         protected IntPtr Handle { get; set; }
 
         internal unsafe SDL2_nmix.NMIX_Source* Source
@@ -16,13 +19,29 @@ namespace Chroma.Audio.Sources
 
         public virtual PlaybackStatus Status { get; set; }
 
-        public bool IsPlaying => SDL2_nmix.NMIX_IsPlaying(Handle);
+        public bool IsValid => Handle != IntPtr.Zero;
+
+        public bool IsPlaying
+        {
+            get
+            {
+                EnsureHandleValid();
+                return SDL2_nmix.NMIX_IsPlaying(Handle);
+            }
+        }
 
         public float Panning
         {
-            get => SDL2_nmix.NMIX_GetPan(Handle);
+            get
+            {
+                EnsureHandleValid();
+                return SDL2_nmix.NMIX_GetPan(Handle);
+            }
+
             set
             {
+                EnsureHandleValid();
+
                 var pan = value;
 
                 if (pan < -1.0f)
@@ -37,10 +56,17 @@ namespace Chroma.Audio.Sources
 
         public float Volume
         {
-            get => SDL2_nmix.NMIX_GetGain(Handle);
+            get
+            {
+                EnsureHandleValid();
+
+                return SDL2_nmix.NMIX_GetGain(Handle);
+            }
 
             set
             {
+                EnsureHandleValid();
+
                 var vol = value;
 
                 if (vol < 0f)
@@ -57,6 +83,8 @@ namespace Chroma.Audio.Sources
         {
             get
             {
+                EnsureHandleValid();
+
                 unsafe
                 {
                     return AudioFormat.FromSdlFormat(
@@ -70,17 +98,21 @@ namespace Chroma.Audio.Sources
         {
             get
             {
+                EnsureHandleValid();
+
                 unsafe
                 {
                     return Source->channels;
                 }
             }
         }
-        
+
         public Span<byte> InBuffer
         {
             get
             {
+                EnsureHandleValid();
+
                 unsafe
                 {
                     return new Span<byte>(Source->in_buffer.ToPointer(), Source->in_buffer_size);
@@ -92,6 +124,8 @@ namespace Chroma.Audio.Sources
         {
             get
             {
+                EnsureHandleValid();
+
                 unsafe
                 {
                     return new Span<byte>(Source->out_buffer.ToPointer(), Source->out_buffer_size);
@@ -104,27 +138,38 @@ namespace Chroma.Audio.Sources
         public virtual void Play()
         {
             EnsureHandleValid();
-            SDL2_nmix.NMIX_Play(Handle);
+            
+            if (SDL2_nmix.NMIX_Play(Handle) < 0)
+            {
+                _log.Error($"Failed to play the audio source: {SDL2.SDL_GetError()}");
+            }
         }
 
         public virtual void Pause()
         {
             EnsureHandleValid();
-            SDL2_nmix.NMIX_Pause(Handle);
+            
+            if (SDL2_nmix.NMIX_Pause(Handle) < 0)
+            {
+                _log.Error($"Failed to pause the audio source: {SDL2.SDL_GetError()}");
+            }
         }
 
         public virtual void Stop()
             => throw new AudioException("This audio source does not support stopping.");
 
+        protected void NotifyInitializationFinished()
+            => AudioOutput.Instance.OnAudioSourceCreated(this);
+
         protected void EnsureHandleValid()
         {
-            if (Handle == IntPtr.Zero)
+            if (!IsValid)
                 throw new AudioException("Audio source handle is not valid.");
         }
 
         protected override void FreeNativeResources()
         {
-            if (Handle != IntPtr.Zero)
+            if (IsValid)
             {
                 SDL2_nmix.NMIX_FreeSource(Handle);
                 Handle = IntPtr.Zero;

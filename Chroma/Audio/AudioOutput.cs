@@ -17,6 +17,7 @@ namespace Chroma.Audio
 
         private List<AudioDevice> _devices = new();
         private List<Decoder> _decoders = new();
+        private HashSet<AudioSource> _sources = new();
 
         private bool _mixerInitialized;
         private bool _backendInitialized;
@@ -78,13 +79,13 @@ namespace Chroma.Audio
 
             Frequency = frequency;
             SampleCount = sampleCount;
-            
+
             if (SDL2_sound.Sound_Init() < 0)
             {
                 _log.Error($"Failed to initialize audio backend: {SDL2.SDL_GetError()}");
                 return;
             }
-            
+
             _backendInitialized = true;
             EnumerateDecoders();
 
@@ -96,7 +97,7 @@ namespace Chroma.Audio
                 _log.Error($"Failed to initialize audio mixer: {SDL2.SDL_GetError()}");
                 return;
             }
-            
+
             _mixerInitialized = true;
             device.Lock(SDL2_nmix.NMIX_GetAudioDevice());
         }
@@ -107,11 +108,18 @@ namespace Chroma.Audio
 
             if (_mixerInitialized)
             {
+                foreach (var source in _sources)
+                {
+                    if (!source.Disposed)
+                        source.Dispose();
+                }
+
                 if (SDL2_nmix.NMIX_CloseAudio() < 0)
                 {
                     _log.Error($"Failed to stop the audio mixer: {SDL2.SDL_GetError()}");
                     return;
                 }
+
                 _mixerInitialized = false;
             }
 
@@ -122,6 +130,7 @@ namespace Chroma.Audio
                     _log.Error($"Failed to stop the audio backend: {SDL2.SDL_GetError()}");
                     return;
                 }
+
                 _backendInitialized = false;
             }
 
@@ -131,6 +140,42 @@ namespace Chroma.Audio
             }
 
             _devices.Clear();
+        }
+
+        public void OnAudioSourceFinished(AudioSource audioSource, bool isLooping)
+        {
+            if (!_backendInitialized || !_mixerInitialized)
+                return;
+
+            AudioSourceFinished?.Invoke(
+                this,
+                new AudioSourceEventArgs(audioSource, isLooping)
+            );
+        }
+
+        internal void OnAudioSourceCreated(AudioSource audioSource)
+        {
+            if (!_backendInitialized || !_mixerInitialized)
+                return;
+
+            _sources.Add(audioSource);
+            audioSource.Disposing += OnAudioSourceDisposing;
+        }
+
+        internal void Initialize()
+        {
+            Open();
+        }
+
+        private void OnAudioSourceDisposing(object sender, EventArgs e)
+        {
+            if (sender is AudioSource audioSource)
+            {
+                audioSource.Pause();
+                audioSource.Disposing -= OnAudioSourceDisposing;
+                
+                _sources.Remove(audioSource);
+            }
         }
 
         private void EnumerateDevices()
@@ -150,26 +195,26 @@ namespace Chroma.Audio
 
             unsafe
             {
-                var p = (SDL2_sound.Sound_DecoderInfo**)SDL2_sound.Sound_AvailableDecoders();
+                var decoderList = (SDL2_sound.Sound_DecoderInfo**)SDL2_sound.Sound_AvailableDecoders();
 
-                if (p == null)
+                if (decoderList == null)
                     return;
 
                 for (var i = 0;; i++)
                 {
-                    if (p[i] == null)
+                    if (decoderList[i] == null)
                         break;
 
-                    var decoder = Marshal.PtrToStructure<SDL2_sound.Sound_DecoderInfo>(new IntPtr(p[i]));
-                    var p2 = (byte**)decoder.extensions;
+                    var decoder = Marshal.PtrToStructure<SDL2_sound.Sound_DecoderInfo>(new IntPtr(decoderList[i]));
+                    var extensionList = (byte**)decoder.extensions;
 
                     var fmts = new List<string>();
 
-                    if (p2 != null)
+                    if (extensionList != null)
                     {
                         for (var j = 0;; j++)
                         {
-                            var ext = Marshal.PtrToStringAnsi(new IntPtr(p2[j]));
+                            var ext = Marshal.PtrToStringAnsi(new IntPtr(extensionList[j]));
 
                             if (ext == null)
                                 break;
@@ -180,26 +225,13 @@ namespace Chroma.Audio
 
                     _decoders.Add(
                         new Decoder(
-                            Marshal.PtrToStringAnsi(p[i]->description),
-                            Marshal.PtrToStringUTF8(p[i]->author),
-                            Marshal.PtrToStringAnsi(p[i]->url)
-                        ) {SupportedFormats = fmts}
+                            Marshal.PtrToStringAnsi(decoderList[i]->description),
+                            Marshal.PtrToStringUTF8(decoderList[i]->author),
+                            Marshal.PtrToStringAnsi(decoderList[i]->url)
+                        ) { SupportedFormats = fmts }
                     );
                 }
             }
-        }
-
-        public void OnAudioSourceFinished(AudioSource s, bool isLooping)
-        {
-            AudioSourceFinished?.Invoke(
-                this,
-                new AudioSourceEventArgs(s, isLooping)
-            );
-        }
-
-        internal void Initialize()
-        {
-            Open();
         }
     }
 }

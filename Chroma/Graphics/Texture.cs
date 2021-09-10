@@ -26,6 +26,7 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
 
                 unsafe
                 {
@@ -39,6 +40,7 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
 
                 unsafe
                 {
@@ -52,6 +54,7 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
+                
                 return new Vector2(Width / 2f, Height / 2f);
             }
         }
@@ -61,6 +64,7 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
 
                 if (VirtualResolution.HasValue && IsVirtualized)
                 {
@@ -78,6 +82,7 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
 
                 unsafe
                 {
@@ -91,6 +96,7 @@ namespace Chroma.Graphics
             set
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
 
                 SDL_gpu.GPU_SetAnchor(
                     ImageHandle,
@@ -105,6 +111,7 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
 
                 unsafe
                 {
@@ -115,6 +122,7 @@ namespace Chroma.Graphics
             set
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
 
                 unsafe
                 {
@@ -132,6 +140,7 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
 
                 unsafe
                 {
@@ -142,6 +151,7 @@ namespace Chroma.Graphics
             set
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
 
                 unsafe
                 {
@@ -159,6 +169,7 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
 
                 unsafe
                 {
@@ -178,6 +189,7 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
 
                 unsafe
                 {
@@ -191,6 +203,7 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
 
                 unsafe
                 {
@@ -204,6 +217,7 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
 
                 unsafe
                 {
@@ -217,6 +231,7 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
 
                 unsafe
                 {
@@ -230,6 +245,7 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
 
                 unsafe
                 {
@@ -243,6 +259,7 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
 
                 unsafe
                 {
@@ -258,6 +275,7 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
 
                 unsafe
                 {
@@ -268,6 +286,8 @@ namespace Chroma.Graphics
             set
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
+
                 SDL_gpu.GPU_SetImageFilter(ImageHandle, (SDL_gpu.GPU_FilterEnum)value);
             }
         }
@@ -277,6 +297,7 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
 
                 unsafe
                 {
@@ -287,6 +308,8 @@ namespace Chroma.Graphics
             set
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
+
                 SDL_gpu.GPU_SetSnapMode(ImageHandle, (SDL_gpu.GPU_SnapEnum)value);
             }
         }
@@ -296,6 +319,7 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
 
                 unsafe
                 {
@@ -306,6 +330,8 @@ namespace Chroma.Graphics
             set
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
+
                 SDL_gpu.GPU_SetColor(ImageHandle, Color.ToSdlColor(value));
             }
         }
@@ -329,6 +355,7 @@ namespace Chroma.Graphics
             set
             {
                 EnsureNotDisposed();
+                EnsureHandleValid();
 
                 if (value == null)
                 {
@@ -390,11 +417,13 @@ namespace Chroma.Graphics
                 PixelFormat.RGBA,
                 true
             );
+            
+            EnsureHandleValid();
 
             result.Data.CopyTo(_pixelData, 0);
             Flush();
 
-            SnappingMode = TextureSnappingMode.None;
+            SetDefaultProperties();
         }
 
         public Texture(string filePath)
@@ -418,11 +447,12 @@ namespace Chroma.Graphics
                 other.Format,
                 true
             );
-
+            
+            EnsureHandleValid();
             CopyDataFrom(other);
             Flush();
 
-            SnappingMode = TextureSnappingMode.None;
+            SetDefaultProperties();
         }
 
         public Texture(int width, int height, PixelFormat pixelFormat = PixelFormat.RGBA)
@@ -441,9 +471,11 @@ namespace Chroma.Graphics
                 pixelFormat,
                 true
             );
+
+            EnsureHandleValid();
             Flush();
 
-            SnappingMode = TextureSnappingMode.None;
+            SetDefaultProperties();
         }
 
         public Texture(int width, int height, byte[] data, PixelFormat pixelFormat = PixelFormat.RGBA)
@@ -465,32 +497,40 @@ namespace Chroma.Graphics
                 pixelFormat,
                 true
             );
+            
+            EnsureHandleValid();
 
             data.CopyTo(_pixelData, 0);
             Flush();
             
-            SnappingMode = TextureSnappingMode.None;
+            SetDefaultProperties();
         }
 
         internal Texture(IntPtr gpuImageHandle)
         {
             EnsureOnMainThread();
 
-            if (gpuImageHandle == IntPtr.Zero)
-                throw new ArgumentException("Invalid image handle.", nameof(gpuImageHandle));
-
             ImageHandle = gpuImageHandle;
 
+            EnsureHandleValid();
+            
             InitializeWithSurface(
                 SDL_gpu.GPU_CopySurfaceFromImage(gpuImageHandle)
             );
 
+            SetDefaultProperties();
+        }
+
+        private void SetDefaultProperties()
+        {
             SnappingMode = TextureSnappingMode.None;
+            FilteringMode = TextureFilteringMode.NearestNeighbor;
         }
 
         public void SetBlendingEquations(BlendingEquation colorBlend, BlendingEquation alphaBlend)
         {
             EnsureNotDisposed();
+            EnsureHandleValid();
 
             SDL_gpu.GPU_SetBlendEquation(
                 ImageHandle,
@@ -503,6 +543,7 @@ namespace Chroma.Graphics
             BlendingFunction destinationColorBlend, BlendingFunction destinationAlphaBlend)
         {
             EnsureNotDisposed();
+            EnsureHandleValid();
 
             SDL_gpu.GPU_SetBlendFunction(
                 ImageHandle,
@@ -516,6 +557,7 @@ namespace Chroma.Graphics
         public void SetPixelData(Color[] colors)
         {
             EnsureNotDisposed();
+            EnsureHandleValid();
 
             var pixelCount = Width * Height;
 
@@ -534,6 +576,7 @@ namespace Chroma.Graphics
         public void SetPixelData(byte[] data)
         {
             EnsureNotDisposed();
+            EnsureHandleValid();
 
             if (data.Length != _pixelData.Length)
             {
@@ -549,6 +592,7 @@ namespace Chroma.Graphics
         public void SetPixel(int x, int y, Color color)
         {
             EnsureNotDisposed();
+            EnsureHandleValid();
 
             if (x < 0 || y < 0 || x >= Width || y >= Height)
             {
@@ -563,6 +607,7 @@ namespace Chroma.Graphics
         public Color GetPixel(int x, int y)
         {
             EnsureNotDisposed();
+            EnsureHandleValid();
 
             if (x < 0 || y < 0 || x >= Width || y >= Height)
             {
@@ -578,6 +623,7 @@ namespace Chroma.Graphics
         {
             EnsureOnMainThread();
             EnsureNotDisposed();
+            EnsureHandleValid();
 
             if (_pixelData.Length < Width * Height * BytesPerPixel)
             {
@@ -604,6 +650,7 @@ namespace Chroma.Graphics
         public void SaveToFile(string filePath, ImageFileFormat format)
         {
             EnsureNotDisposed();
+            EnsureHandleValid();
 
             if (!SDL_gpu.GPU_SaveImage(ImageHandle, filePath, (SDL_gpu.GPU_FileFormatEnum)format))
             {
@@ -614,6 +661,7 @@ namespace Chroma.Graphics
         public void SaveToArray(byte[] buffer, ImageFileFormat format)
         {
             EnsureNotDisposed();
+            EnsureHandleValid();
 
             unsafe
             {
@@ -631,6 +679,7 @@ namespace Chroma.Graphics
         public void SetBlendingMode(BlendingPreset preset)
         {
             EnsureNotDisposed();
+            EnsureHandleValid();
 
             SDL_gpu.GPU_SetBlendMode(
                 ImageHandle,
@@ -641,6 +690,8 @@ namespace Chroma.Graphics
         public void GenerateMipMaps()
         {
             EnsureNotDisposed();
+            EnsureHandleValid();
+            
             SDL_gpu.GPU_GenerateMipmaps(ImageHandle);
         }
 
@@ -813,7 +864,17 @@ namespace Chroma.Graphics
             }
         }
 
+        protected void EnsureHandleValid()
+        {
+            if (ImageHandle == IntPtr.Zero)
+                throw new InvalidOperationException("Texture handle is not valid.");
+        }
+
         protected override void FreeNativeResources()
-            => SDL_gpu.GPU_FreeImage(ImageHandle);
+        {
+            SDL_gpu.GPU_FreeImage(ImageHandle);
+            
+            ImageHandle = IntPtr.Zero;
+        }
     }
 }

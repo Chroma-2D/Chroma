@@ -4,7 +4,7 @@ using Chroma.Natives.SDL;
 
 namespace Chroma.Audio.Sources
 {
-    public sealed class Waveform : AudioSource
+    public class Waveform : AudioSource
     {
         private static readonly Log _log = LogManager.GetForCurrentAssembly();
         private SDL2_nmix.NMIX_SourceCallback _internalCallback; // Needs to be a class field to avoid GC collection.
@@ -35,11 +35,7 @@ namespace Chroma.Audio.Sources
             {
                 _log.Error($"Failed to create a new audio source: {SDL2.SDL_GetError()}");
                 _internalCallback = null;
-
-                return;
             }
-
-            NotifyInitializationFinished();
         }
 
         private void AudioCallback(IntPtr userData, IntPtr samples, int bufferSize)

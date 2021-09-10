@@ -17,7 +17,6 @@ namespace Chroma.Audio
 
         private List<AudioDevice> _devices = new();
         private List<Decoder> _decoders = new();
-        private HashSet<AudioSource> _sources = new();
 
         private bool _mixerInitialized;
         private bool _backendInitialized;
@@ -111,12 +110,6 @@ namespace Chroma.Audio
 
             if (_mixerInitialized)
             {
-                foreach (var source in _sources)
-                {
-                    if (!source.Disposed)
-                        source.Dispose();
-                }
-
                 if (SDL2_nmix.NMIX_CloseAudio() < 0)
                 {
                     _log.Error($"Failed to stop the audio mixer: {SDL2.SDL_GetError()}");
@@ -156,29 +149,9 @@ namespace Chroma.Audio
             );
         }
 
-        internal void OnAudioSourceCreated(AudioSource audioSource)
-        {
-            if (!_backendInitialized || !_mixerInitialized)
-                return;
-
-            _sources.Add(audioSource);
-            audioSource.Disposing += OnAudioSourceDisposing;
-        }
-
         internal void Initialize()
         {
             Open();
-        }
-
-        private void OnAudioSourceDisposing(object sender, EventArgs e)
-        {
-            if (sender is AudioSource audioSource)
-            {
-                audioSource.Pause();
-                audioSource.Disposing -= OnAudioSourceDisposing;
-                
-                _sources.Remove(audioSource);
-            }
         }
 
         private void EnumerateDevices()

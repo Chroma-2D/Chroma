@@ -203,11 +203,19 @@ namespace MusicAndSounds
                     break;
                 
                 case KeyCode.F8:
+                    _waveform.Dispose();
+                    _doomShotgun.Dispose();
+                    _elysiumMod.Dispose();
+                    
                     Audio.Output.Close();
                     Audio.Output.Open();
                     
                     LoadContent();
                     
+                    break;
+                
+                case KeyCode.F9:
+                    _waveform.Dispose();
                     break;
             }
         }

@@ -154,9 +154,6 @@ namespace Chroma.Audio.Sources
         public virtual void Stop()
             => throw new AudioException("This audio source does not support stopping.");
 
-        protected void NotifyInitializationFinished()
-            => AudioOutput.Instance.OnAudioSourceCreated(this);
-
         protected void EnsureHandleValid()
         {
             if (!IsValid)

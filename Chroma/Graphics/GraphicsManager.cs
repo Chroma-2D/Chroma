@@ -83,10 +83,10 @@ namespace Chroma.Graphics
             );
         }
 
-        public List<string> GetRendererNames()
-            => GetRegisteredRenderers().Select(x => $"{x.name} ({x.major_version}.{x.minor_version})").ToList();
+        public IEnumerable<string> GetRendererNames()
+            => GetRegisteredRenderers().Select(x => $"{x.name} ({x.major_version}.{x.minor_version})");
 
-        public List<Display> GetDisplayList()
+        public IEnumerable<Display> GetDisplayList()
         {
             var displays = new List<Display>();
             var count = SDL2.SDL_GetNumVideoDisplays();
@@ -112,7 +112,7 @@ namespace Chroma.Graphics
         }
 
         internal IntPtr InitializeRenderer(Window window, out IntPtr windowHandle)
-        {           
+        {
             SDL_gpu.GPU_SetRequiredFeatures(
                 SDL_gpu.GPU_FeatureEnum.GPU_FEATURE_BASIC_SHADERS
                 | SDL_gpu.GPU_FeatureEnum.GPU_FEATURE_RENDER_TARGETS
@@ -131,10 +131,12 @@ namespace Chroma.Graphics
 
                     msaaSamples = MaximumMSAA;
                 }
-                
+
                 SDL2.SDL_GL_SetAttribute(SDL2.SDL_GLattr.SDL_GL_MULTISAMPLEBUFFERS, 1);
                 SDL2.SDL_GL_SetAttribute(SDL2.SDL_GLattr.SDL_GL_MULTISAMPLESAMPLES, msaaSamples);
             }
+
+            SDL2.SDL_GL_SetAttribute(SDL2.SDL_GLattr.SDL_GL_ACCELERATED_VISUAL, 1);
 
             var renderers = FetchRendererQueue();
             var renderTargetHandle = IntPtr.Zero;
@@ -161,9 +163,9 @@ namespace Chroma.Graphics
                 if (renderTargetHandle == IntPtr.Zero)
                     throw new GraphicsException($"Failed to initialize the renderer: {SDL2.SDL_GetError()}");
             }
-            
+
             SDL_gpu.GPU_SetDefaultAnchor(0, 0);
-            
+
             _log.Info($"{OpenGlVendorString} {OpenGlRendererString} v{OpenGlVersionString}");
 
             _log.Info(" Available displays:");
@@ -227,7 +229,7 @@ namespace Chroma.Graphics
             while (renderers.Any())
             {
                 var rendererId = renderers.Dequeue();
-                
+
                 _log.WarningWhenFails(
                     $"Failed to set OpenGL major version for probe",
                     () => SDL2.SDL_GL_SetAttribute(
@@ -282,7 +284,7 @@ namespace Chroma.Graphics
                 SDL2.SDL_DestroyWindow(window);
                 return;
             }
-            
+
             throw new GraphicsException($"GL context initialization has failed: {SDL2.SDL_GetError()}");
         }
     }

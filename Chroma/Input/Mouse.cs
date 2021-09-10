@@ -19,7 +19,7 @@ namespace Chroma.Input
 
         public static bool IsCaptured
         {
-            get => SDL2.SDL_GetWindowMouseGrab(Window.InternalHandle);
+            get => SDL2.SDL_GetWindowMouseGrab(Window.Instance.Handle);
 
             set
             {
@@ -65,7 +65,7 @@ namespace Chroma.Input
             }
             else
             {
-                SDL2.SDL_WarpMouseInWindow(Window.InternalHandle, x, y);
+                SDL2.SDL_WarpMouseInWindow(Window.Instance.Handle, x, y);
             }
         }
 
@@ -81,10 +81,10 @@ namespace Chroma.Input
             => !IsButtonDown(button);
 
         public static void Capture()
-            => SDL2.SDL_SetWindowMouseGrab(Window.InternalHandle, true);
+            => SDL2.SDL_SetWindowMouseGrab(Window.Instance.Handle, true);
         
         public static void Release()
-            => SDL2.SDL_SetWindowMouseGrab(Window.InternalHandle, false);
+            => SDL2.SDL_SetWindowMouseGrab(Window.Instance.Handle, false);
 
         internal static void OnButtonPressed(Game game, MouseButtonEventArgs e)
         {

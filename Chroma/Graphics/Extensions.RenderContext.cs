@@ -1,18 +1,23 @@
 using System.Drawing;
 using System.Numerics;
-using Chroma.Graphics;
 using Chroma.Graphics.TextRendering;
-using Color = Chroma.Graphics.Color;
 
-namespace Chroma
+namespace Chroma.Graphics
 {
-    public static partial class Extensions
+    public static class Extensions
     {
         public static void Clear(
             this RenderContext context,
             Color color
         ) => context.Clear(color.R, color.G, color.B, color.A);
 
+        public static void Clear(
+            this RenderContext context,
+            byte r,
+            byte g,
+            byte b
+        ) => context.Clear(r, g, b, 255);
+        
         public static void Arc(
             this RenderContext context,
             ShapeMode mode,
@@ -160,6 +165,14 @@ namespace Chroma
             float y,
             GlyphTransform perCharTransform = null
         ) => context.DrawString(EmbeddedAssets.DefaultFont, text, x, y, perCharTransform);
+        
+        public static void DrawString(
+            this RenderContext context,
+            string text,
+            float x,
+            float y,
+            Color color
+        ) => context.DrawString(EmbeddedAssets.DefaultFont, text, x, y, (_, _, p) => new(p) {Color = color});
         
         public static void DrawString(
             this RenderContext context,

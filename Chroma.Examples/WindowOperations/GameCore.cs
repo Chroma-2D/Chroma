@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 using System.Text;
 using Chroma;
@@ -36,9 +37,9 @@ namespace WindowOperations
                 _log.Info(exts[i]);
             }
 
-            var displays = Graphics.GetDisplayList();
+            var displays = Graphics.GetDisplayList().ToArray();
 
-            for (var i = 0; i < displays.Count; i++)
+            for (var i = 0; i < displays.Length; i++)
             {
                 sb.AppendLine($"Display {i} DPI: {displays[i].DPI}");
                 sb.AppendLine($"Display {i} Bounds: {displays[i].Bounds}");

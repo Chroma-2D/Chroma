@@ -28,10 +28,10 @@ namespace Chroma.Windowing
         private Vector2 _position = new(SDL2.SDL_WINDOWPOS_CENTERED);
         private WindowState _state = WindowState.Normal;
 
+        private IntPtr _windowHandle;
         private IntPtr _currentIconPtr;
 
         internal delegate void StateUpdateDelegate(float delta);
-
         internal delegate void DrawDelegate(RenderContext context);
 
         internal StateUpdateDelegate FixedUpdate;
@@ -42,14 +42,11 @@ namespace Chroma.Windowing
         internal EventDispatcher EventDispatcher { get; private set; }
         internal DragDropManager DragDropManager { get; } 
 
-        internal IntPtr RenderTargetHandle { get; }
+        internal IntPtr RenderTargetHandle { get; private set; }
 
-        // Chroma does not support multiple windows,
-        // so it's safe to assume there will always be
-        // just one.
-        internal static IntPtr InternalHandle;
+        internal static Window Instance { get; private set; }
 
-        public readonly IntPtr Handle;
+        public IntPtr Handle => _windowHandle;
 
         public bool Exists { get; private set; }
 
@@ -268,7 +265,15 @@ namespace Chroma.Windowing
                     return Display.Invalid;
                 }
 
-                return Game.Graphics.GetDisplayList()[index];
+                var display = Game.Graphics.GetDisplayList().ElementAtOrDefault(index);
+
+                if (display == null)
+                {
+                    _log.Error($"Failed to retrieve the display at index {index}. This should never happen.");
+                    return Display.Invalid;
+                }
+                
+                return display;
             }
         }
 
@@ -333,8 +338,7 @@ namespace Chroma.Windowing
         {
             Game = game;
 
-            RenderTargetHandle = Game.Graphics.InitializeRenderer(this, out Handle);
-            InternalHandle = Handle;
+            RenderTargetHandle = Game.Graphics.InitializeRenderer(this, out _windowHandle);
 
             if (Handle == IntPtr.Zero)
                 throw new FrameworkException($"Failed to initialize the window: {SDL2.SDL_GetError()}.");
@@ -350,6 +354,8 @@ namespace Chroma.Windowing
 
             _performanceCounter = new PerformanceCounter();
             _renderContext = new RenderContext(this);
+
+            Instance = this;
         }
 
         public void Show()
@@ -599,10 +605,17 @@ namespace Chroma.Windowing
 
         protected override void FreeNativeResources()
         {
-            SDL_gpu.GPU_FreeTarget(RenderTargetHandle);
-            SDL2.SDL_DestroyWindow(Handle);
+            if (RenderTargetHandle != IntPtr.Zero)
+            {
+                SDL_gpu.GPU_FreeTarget(RenderTargetHandle);
+                RenderTargetHandle = IntPtr.Zero;
+            }
 
-            InternalHandle = IntPtr.Zero;
+            if (_windowHandle != IntPtr.Zero)
+            {
+                SDL2.SDL_DestroyWindow(_windowHandle);
+                _windowHandle = IntPtr.Zero;
+            }
         }
     }
 }

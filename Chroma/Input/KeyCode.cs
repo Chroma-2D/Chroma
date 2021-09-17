@@ -48,6 +48,7 @@ namespace Chroma.Input
         Caret = SDL_Keycode.SDLK_CARET,
         Underscore = SDL_Keycode.SDLK_UNDERSCORE,
         Grave = SDL_Keycode.SDLK_BACKQUOTE,
+        Tilde = SDL_Keycode.SDLK_BACKQUOTE,
         A = SDL_Keycode.SDLK_a,
         B = SDL_Keycode.SDLK_b,
         C = SDL_Keycode.SDLK_c,

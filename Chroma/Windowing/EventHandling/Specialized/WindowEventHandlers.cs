@@ -11,6 +11,10 @@ namespace Chroma.Windowing.EventHandling.Specialized
         internal WindowEventHandlers(EventDispatcher dispatcher)
         {
             Dispatcher = dispatcher;
+            
+            // Implicit discard.
+            // Redo this if there is more than 1 window event to discard.
+            Dispatcher.RegisterWindowEventHandler(SDL2.SDL_WindowEventID.SDL_WINDOWEVENT_HIT_TEST, (_, _) => { });
 
             Dispatcher.RegisterWindowEventHandler(SDL2.SDL_WindowEventID.SDL_WINDOWEVENT_SHOWN, Shown);
             Dispatcher.RegisterWindowEventHandler(SDL2.SDL_WindowEventID.SDL_WINDOWEVENT_HIDDEN, Hidden);
@@ -84,7 +88,7 @@ namespace Chroma.Windowing.EventHandling.Specialized
 
         private void DropFinished(Window owner, SDL2.SDL_Event ev)
             => owner.DragDropManager.FinishDrop();
-        
+
         // ev.drop.file on events below is freed in DragDropManager after buffering the data
         private void FileDropped(Window owner, SDL2.SDL_Event ev)
             => owner.DragDropManager.OnFileDropped(ev.drop.file);

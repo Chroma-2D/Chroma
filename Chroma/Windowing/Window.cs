@@ -18,20 +18,25 @@ namespace Chroma.Windowing
     public sealed class Window : DisposableResource
     {
         private readonly Log _log = LogManager.GetForCurrentAssembly();
+        
+        // Prevents delegate garbage collection.
+        private readonly SDL2.SDL_HitTest _internalHitTestCallback;
 
         private readonly PerformanceCounter _performanceCounter;
         private readonly RenderContext _renderContext;
 
-        private bool _dragDropEnabled;
         private string _title = "Chroma Framework";
         private Size _size = new(800, 600);
         private Vector2 _position = new(SDL2.SDL_WINDOWPOS_CENTERED);
         private WindowState _state = WindowState.Normal;
+        private bool _enableDragDrop;
+        private WindowHitTestDelegate _hitTestDelegate;
 
         private IntPtr _windowHandle;
         private IntPtr _currentIconPtr;
 
         internal delegate void StateUpdateDelegate(float delta);
+
         internal delegate void DrawDelegate(RenderContext context);
 
         internal StateUpdateDelegate FixedUpdate;
@@ -40,11 +45,13 @@ namespace Chroma.Windowing
 
         internal Game Game { get; }
         internal EventDispatcher EventDispatcher { get; private set; }
-        internal DragDropManager DragDropManager { get; } 
+        internal DragDropManager DragDropManager { get; }
 
         internal IntPtr RenderTargetHandle { get; private set; }
 
         internal static Window Instance { get; private set; }
+
+        public delegate WindowHitTestResult WindowHitTestDelegate(Window window, Point point);
 
         public IntPtr Handle => _windowHandle;
 
@@ -232,26 +239,16 @@ namespace Chroma.Windowing
             }
         }
 
-        public bool EnableBorder
-        {
-            get
-            {
-                var flags = SDL2.SDL_GetWindowFlags(Handle);
-                return !flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_BORDERLESS);
-            }
-            set => SDL2.SDL_SetWindowBordered(Handle, value);
-        }
+        public bool IsExclusiveFullScreen
+            => SDL2.SDL_GetWindowFlags(Handle)
+                .HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN);
 
-        public bool IsFullScreen
-        {
-            get
-            {
-                var flags = SDL2.SDL_GetWindowFlags(Handle);
+        public bool IsBorderlessFullScreen
+            => SDL2.SDL_GetWindowFlags(Handle)
+                .HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP);
 
-                return flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN)
-                       || flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP);
-            }
-        }
+        public bool IsFullScreen 
+            => IsExclusiveFullScreen || IsBorderlessFullScreen;
 
         public Display CurrentDisplay
         {
@@ -272,7 +269,7 @@ namespace Chroma.Windowing
                     _log.Error($"Failed to retrieve the display at index {index}. This should never happen.");
                     return Display.Invalid;
                 }
-                
+
                 return display;
             }
         }
@@ -302,21 +299,54 @@ namespace Chroma.Windowing
                 );
             }
         }
-
-        public bool DragDropEnabled
+        
+        public bool EnableBorder
         {
-            get => _dragDropEnabled;
+            get
+            {
+                var flags = SDL2.SDL_GetWindowFlags(Handle);
+                return !flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_BORDERLESS);
+            }
+            set => SDL2.SDL_SetWindowBordered(Handle, value);
+        }
+
+        public bool EnableDragDrop
+        {
+            get => _enableDragDrop;
             set
             {
-                _dragDropEnabled = value;
-                var state = _dragDropEnabled ? SDL2.SDL_ENABLE : SDL2.SDL_DISABLE;
-                
+                _enableDragDrop = value;
+                var state = _enableDragDrop ? SDL2.SDL_ENABLE : SDL2.SDL_DISABLE;
+
                 SDL2.SDL_EventState(SDL2.SDL_EventType.SDL_DROPFILE, state);
                 SDL2.SDL_EventState(SDL2.SDL_EventType.SDL_DROPTEXT, state);
                 SDL2.SDL_EventState(SDL2.SDL_EventType.SDL_DROPBEGIN, state);
                 SDL2.SDL_EventState(SDL2.SDL_EventType.SDL_DROPCOMPLETE, state);
             }
         }
+
+        public WindowHitTestDelegate HitTest
+        {
+            get => _hitTestDelegate;
+            set
+            {
+                if (Handle == IntPtr.Zero)
+                    return;
+
+                _hitTestDelegate = value;
+
+                if (IsHitTestEnabled)
+                {
+                    SDL2.SDL_SetWindowHitTest(Handle, _internalHitTestCallback, IntPtr.Zero);
+                }
+                else
+                {
+                    SDL2.SDL_SetWindowHitTest(Handle, null, IntPtr.Zero);
+                }
+            }
+        }
+
+        public bool IsHitTestEnabled => _hitTestDelegate != null;
 
         public event EventHandler Closed;
         public event EventHandler Hidden;
@@ -350,8 +380,9 @@ namespace Chroma.Windowing
             MinimumSize = Size.Empty;
 
             DragDropManager = new DragDropManager(this);
-            DragDropEnabled = true;
+            EnableDragDrop = true;
 
+            _internalHitTestCallback = HitTestCallback;
             _performanceCounter = new PerformanceCounter();
             _renderContext = new RenderContext(this);
 
@@ -387,7 +418,11 @@ namespace Chroma.Windowing
             if (exclusive)
                 flag = (uint)SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN;
 
-            SDL2.SDL_SetWindowFullscreen(Handle, flag);
+            if (SDL2.SDL_SetWindowFullscreen(Handle, flag) < 0)
+            {
+                _log.Error($"Failed to switch into full-screen mode: {SDL2.SDL_GetError()}");
+                return;
+            }
 
             Size = new Size(
                 CurrentDisplay.DesktopMode.Width,
@@ -601,6 +636,23 @@ namespace Chroma.Windowing
                 FixedUpdate?.Invoke(delta);
                 PerformanceCounter.Lag -= PerformanceCounter.FixedDelta;
             }
+        }
+
+        private SDL2.SDL_HitTestResult HitTestCallback(IntPtr win, IntPtr area, IntPtr data)
+        {           
+            if (_hitTestDelegate != null)
+            {
+                SDL2.SDL_Point point;
+
+                unsafe
+                {
+                    point = *(SDL2.SDL_Point*)area.ToPointer();
+                }
+
+                return (SDL2.SDL_HitTestResult)_hitTestDelegate(this, new Point(point.x, point.y));
+            }
+
+            return SDL2.SDL_HitTestResult.SDL_HITTEST_NORMAL;
         }
 
         protected override void FreeNativeResources()

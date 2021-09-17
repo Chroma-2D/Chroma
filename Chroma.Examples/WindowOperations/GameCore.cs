@@ -82,7 +82,7 @@ namespace WindowOperations
                 $"Use <F1> to toggle window resizable status ({Window.CanResize}).\n" +
                 "Use <F2> to switch into exclusive fullscreen mode with native resolution\n" +
                 "Use <F3> to switch into borderless fullscreen mode with native resolution\n" +
-                "Use <F4> to switch into 1024x600 windowed mode - hold <Lshift> to center the window afterwards.\n" +
+                "Use <F4> to switch into 1024x600 windowed mode - hold any <Shift> to center the window afterwards.\n" +
                 "Use <F5> toggle always-on-top status of the window.\n" +
                 $"Use <F6> to toggle window border ({Window.EnableBorder}).\n" +
                 "Use <F7> to set maximum window size to 800x600.\n" +
@@ -90,7 +90,8 @@ namespace WindowOperations
                 "Use <F9> to reset minimum and maximum window sizes.\n" +
                 $"Use <F10> to cycle between display synchronization modes ({Graphics.VerticalSyncMode}).\n" +
                 $"Use <F11> to show a cross-platform message box (last result: {_lastResult}).\n" +
-                "Use <space> to toggle the center vector on/off.\n\n" +
+                "Use <space> to toggle the center vector on/off.\n" +
+                $"Use <~> to toggle window hit testing ({Window.IsHitTestEnabled}).\n\n" +
                 $"Current viewport resolution: {Window.Size.Width}x{Window.Size.Height}\n" +
                 $"Maximum screen dimensions: {Window.MaximumSize.Width}x{Window.MaximumSize.Height}\n" +
                 $"Minimum screen dimensions: {Window.MinimumSize.Width}x{Window.MinimumSize.Height}\n" +
@@ -127,7 +128,7 @@ namespace WindowOperations
             {
                 Window.GoWindowed(
                     new Size(1024, 600),
-                    e.Modifiers.HasFlag(KeyModifiers.LeftShift)
+                    e.IsAnyShiftPressed
                 );
             }
             else if (e.KeyCode == KeyCode.F5)
@@ -189,6 +190,18 @@ namespace WindowOperations
                     Window
                 );
             }
+            else if (e.KeyCode == KeyCode.Tilde)
+            {
+                if (Window.IsHitTestEnabled)
+                    Window.HitTest = null;
+                else
+                    Window.HitTest = HitTest;
+            }
+        }
+
+        private WindowHitTestResult HitTest(Window window, Point point)
+        {
+            return WindowHitTestResult.Draggable;
         }
     }
 }

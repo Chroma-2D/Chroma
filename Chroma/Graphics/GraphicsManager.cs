@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using Chroma.Diagnostics.Logging;
 using Chroma.Natives.GL;
 using Chroma.Natives.SDL;
@@ -86,7 +87,7 @@ namespace Chroma.Graphics
         public IEnumerable<string> GetRendererNames()
             => GetRegisteredRenderers().Select(x => $"{x.name} ({x.major_version}.{x.minor_version})");
 
-        public IEnumerable<Display> GetDisplayList()
+        public IList<Display> GetDisplayList()
         {
             var displays = new List<Display>();
             var count = SDL2.SDL_GetNumVideoDisplays();
@@ -140,7 +141,8 @@ namespace Chroma.Graphics
 
             var renderers = FetchRendererQueue();
             var renderTargetHandle = IntPtr.Zero;
-
+            var errorSb = new StringBuilder();
+            
             while (renderers.Any())
             {
                 var rendererId = renderers.Dequeue();
@@ -156,12 +158,21 @@ namespace Chroma.Graphics
 
                 if (renderTargetHandle != IntPtr.Zero)
                     break;
+
+                var errorCode = SDL_gpu.GPU_PopErrorCode();
+                errorSb.Append("  ");
+                errorSb.Append(rendererId.name.Value);
+                errorSb.Append(": ");
+                errorSb.Append(errorCode.error.ToString());
+                errorSb.Append(" (");
+                errorSb.Append(errorCode.details.Value);
+                errorSb.AppendLine(")");
             }
 
             if (renderTargetHandle == IntPtr.Zero)
             {
                 if (renderTargetHandle == IntPtr.Zero)
-                    throw new GraphicsException($"Failed to initialize the renderer: {SDL2.SDL_GetError()}");
+                    throw new GraphicsException($"Failed to initialize all available renderers.\n{errorSb}");
             }
 
             SDL_gpu.GPU_SetDefaultAnchor(0, 0);
@@ -169,10 +180,16 @@ namespace Chroma.Graphics
             _log.Info($"{OpenGlVendorString} {OpenGlRendererString} v{OpenGlVersionString}");
 
             _log.Info(" Available displays:");
-            foreach (var d in GetDisplayList())
+
+            var displays = GetDisplayList();
+            for (var i = 0; i < displays.Count; i++)
+            {
+                var d = displays[i];
                 _log.Info($"  Display {d.Index} ({d.Name}) [{d.Bounds.Width}x{d.Bounds.Height}], mode {d.DesktopMode}");
+            }
 
             windowHandle = SDL2.SDL_GL_GetCurrentWindow();
+            
             return renderTargetHandle;
         }
 
@@ -188,7 +205,7 @@ namespace Chroma.Graphics
             if (registeredRenderers.Length == 0)
             {
                 throw new GraphicsException(
-                    "No renderers have been found." +
+                    $"No renderers have been found: {SDL_gpu.GPU_PopErrorCode().details}" +
                     "Make sure SDL_gpu was built with at least 1 renderer available."
                 );
             }

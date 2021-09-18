@@ -37,9 +37,9 @@ namespace WindowOperations
                 _log.Info(exts[i]);
             }
 
-            var displays = Graphics.GetDisplayList().ToArray();
+            var displays = Graphics.GetDisplayList();
 
-            for (var i = 0; i < displays.Length; i++)
+            for (var i = 0; i < displays.Count; i++)
             {
                 sb.AppendLine($"Display {i} DPI: {displays[i].DPI}");
                 sb.AppendLine($"Display {i} Bounds: {displays[i].Bounds}");

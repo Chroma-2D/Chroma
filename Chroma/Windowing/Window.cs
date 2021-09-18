@@ -90,6 +90,9 @@ namespace Chroma.Windowing
             }
         }
 
+        public int Width => Size.Width;
+        public int Height => Size.Height;
+
         public Vector2 Position
         {
             get
@@ -218,6 +221,9 @@ namespace Chroma.Windowing
             }
         }
 
+        public int MaximumWidth => MaximumSize.Width;
+        public int MaximumHeight => MaximumSize.Height;
+
         public Size MinimumSize
         {
             get
@@ -238,6 +244,9 @@ namespace Chroma.Windowing
                 }
             }
         }
+
+        public int MinimumWidth => MinimumSize.Width;
+        public int MinimumHeight => MinimumSize.Height;
 
         public bool IsExclusiveFullScreen
             => SDL2.SDL_GetWindowFlags(Handle)

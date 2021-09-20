@@ -131,8 +131,25 @@ namespace Chroma.Natives.Boot
                 var handle = Windows.LoadLibrary(fileName);
 
                 if (handle == IntPtr.Zero)
-                    throw new NativeLoaderException(
-                        $"Failed to load '{absoluteFilePath}'. LoadLibrary: {Windows.GetLastError():X8}");
+                {
+                    var error = Windows.GetLastError();
+
+                    if (error == 0x000000C1 || error == 0x0000007E)
+                    {
+                        throw new NativeLoaderException(
+                            $"Failed to load '{absoluteFilePath}'. " +
+                            $"Make sure your system has VC/VC++ runtime redistributables installed."
+                        );
+                    }
+                    else
+                    {
+                        throw new NativeLoaderException(
+                            $"Failed to load '{absoluteFilePath}' - " +
+                            $"LoadLibrary returned HRESULT 0x{error:X8}. " +
+                            $"If you feel adventurous you can look it up using your favorite search engine."
+                        );
+                    }
+                }
 
                 symbolLookup = Windows.GetProcAddress;
                 return handle;

@@ -61,8 +61,8 @@ cd $SDL_SOUND_PATH && git apply --verbose SDL_sound.patch
                     -DFT_WITH_HARFBUZZ=1                                              \
                     -DFT_DISABLE_HARFBUZZ=0                                           \
                     -DFT_WITH_ZLIB=0                                                  \
-                    -DHarfBuzz_INCLUDE_DIR=$HB_PATH/src                              \
-                    -DHarfBuzz_LIBRARY=$ARTIFACT_DIR/$HB_ARTIFACT                   \
+                    -DHarfBuzz_INCLUDE_DIR=$HB_PATH/src                               \
+                    -DHarfBuzz_LIBRARY=$ARTIFACT_DIR/$HB_ARTIFACT                     \
                      && cd $FT_BUILDROOT && $MAKE -j$THREADCOUNT                      \
                      && mv $FT_SOPATH $ARTIFACT_DIR/$FT_ARTIFACT                      \
                                                                                       \
@@ -74,14 +74,16 @@ cd $SDL_SOUND_PATH && git apply --verbose SDL_sound.patch
                                                                                       \
 && $CMAKE $CMAKE_FLAGS -B $SDL_GPU_BUILDROOT $SDL_GPU_PATH -G "$CMAKE_GENERATOR"      \
                     -DCMAKE_BUILD_TYPE=$SDL_GPU_BUILD_TYPE                            \
+                    -DSDL2_INCLUDE_DIR=$SDL_PATH/include                              \
+                    -DSDL2_LIBRARY=$ARTIFACT_DIR/$SDL_ARTIFACT                        \
+                                                                                      \
+&& $CMAKE $CMAKE_FLAGS -B $SDL_GPU_BUILDROOT $SDL_GPU_PATH -G "$CMAKE_GENERATOR"      \
                     -DDISABLE_OPENGL_1_BASE=1                                         \
                     -DDISABLE_OPENGL_1=1                                              \
                     -DDISABLE_OPENGL_2=1                                              \
                     -DBUILD_STATIC=0                                                  \
                     -DBUILD_DEMOS=0                                                   \
                     -DBUILD_FRAMEWORK=0                                               \
-                    -DSDL2_INCLUDE_DIR=$SDL_PATH/include                              \
-                    -DSDL2_LIBRARY=$ARTIFACT_DIR/$SDL_ARTIFACT                        \
                      && cd $SDL_GPU_BUILDROOT && $MAKE -j$THREADCOUNT                 \
                      && mv $SDL_GPU_SOPATH $ARTIFACT_DIR/$SDL_GPU_ARTIFACT            \
                                                                                       \

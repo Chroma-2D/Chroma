@@ -134,7 +134,7 @@ namespace Chroma.Graphics
             {
                 var rendererId = renderers.Dequeue();
                 
-                _log.Info($"Attempting to initialize '{rendererId.name}'...");
+                _log.Info($"Attempting to initialize renderer '{rendererId.name}'...");
 
                 if (ProbeGlLimits(rendererId, QueryProperties))
                 {

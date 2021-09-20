@@ -13,9 +13,10 @@ namespace Chroma.Graphics
     public class GraphicsManager
     {
         private readonly Log _log = LogManager.GetForCurrentAssembly();
+        private SDL_gpu.GPU_RendererID? _successfullyQueriedRendererId;
 
         private VerticalSyncMode _verticalSyncMode;
-        private Game _game;
+        private GameStartupOptions _startupOptions;
 
         public bool ViewportAutoResize { get; set; } = true;
         public bool LimitFramerate { get; set; } = true;
@@ -61,27 +62,14 @@ namespace Chroma.Graphics
 
         public bool IsAdaptiveVSyncSupported { get; private set; }
 
-        public float ScreenGamma
-        {
-            get => SDL2.SDL_GetWindowBrightness(_game.Window.Handle);
-            set => SDL2.SDL_SetWindowBrightness(_game.Window.Handle, value);
-        }
-
         public List<string> GlExtensions { get; } = new();
 
-        internal GraphicsManager(Game game)
+        public bool IsValidOpenGlContextPresent
+            => SDL2.SDL_GL_GetCurrentContext() != IntPtr.Zero;
+
+        internal GraphicsManager(GameStartupOptions startupOptions)
         {
-            _game = game;
-
-            ProbeGlLimits(
-                () =>
-                {
-                    EnumerateGlExtensions();
-
-                    Gl.GetIntegerV(Gl.GL_MAX_SAMPLES, out var maxMsaa);
-                    MaximumMSAA = maxMsaa;
-                }
-            );
+            _startupOptions = startupOptions;
         }
 
         public IEnumerable<string> GetRendererNames()
@@ -112,15 +100,48 @@ namespace Chroma.Graphics
             return null;
         }
 
+        internal bool QueryOpenGl()
+        {
+            void QueryProperties()
+            {
+                EnumerateGlExtensions();
+
+                Gl.GetIntegerV(Gl.GL_MAX_SAMPLES, out var maxMsaa);
+                MaximumMSAA = maxMsaa;
+            }
+
+            var renderers = FetchRendererQueue();
+
+            while (renderers.Any())
+            {
+                var rendererId = renderers.Dequeue();
+
+                if (ProbeGlLimits(rendererId, QueryProperties))
+                {
+                    _successfullyQueriedRendererId = rendererId;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         internal IntPtr InitializeRenderer(Window window, out IntPtr windowHandle)
         {
+            if (_successfullyQueriedRendererId == null)
+            {
+                throw new GraphicsException(
+                    "OpenGL has not been not queried yet or this method was called after a query has failed."
+                );
+            }
+            
             SDL_gpu.GPU_SetRequiredFeatures(
                 SDL_gpu.GPU_FeatureEnum.GPU_FEATURE_BASIC_SHADERS
                 | SDL_gpu.GPU_FeatureEnum.GPU_FEATURE_RENDER_TARGETS
                 | SDL_gpu.GPU_FeatureEnum.GPU_FEATURE_BLEND_EQUATIONS
             );
 
-            var msaaSamples = _game.StartupOptions.MsaaSamples;
+            var msaaSamples = _startupOptions.MsaaSamples;
             if (msaaSamples > 0)
             {
                 if (msaaSamples > MaximumMSAA)
@@ -133,52 +154,56 @@ namespace Chroma.Graphics
                     msaaSamples = MaximumMSAA;
                 }
 
-                SDL2.SDL_GL_SetAttribute(SDL2.SDL_GLattr.SDL_GL_MULTISAMPLEBUFFERS, 1);
-                SDL2.SDL_GL_SetAttribute(SDL2.SDL_GLattr.SDL_GL_MULTISAMPLESAMPLES, msaaSamples);
+                if (SDL2.SDL_GL_SetAttribute(SDL2.SDL_GLattr.SDL_GL_MULTISAMPLEBUFFERS, 1) < 0)
+                {
+                    _log.Error($"Failed to enable MSAA buffer: {SDL2.SDL_GetError()}");
+                }
+
+                if (SDL2.SDL_GL_SetAttribute(SDL2.SDL_GLattr.SDL_GL_MULTISAMPLESAMPLES, msaaSamples) < 0)
+                {
+                    _log.Error($"Failed to set MSAA samples to {msaaSamples}: {SDL2.SDL_GetError()}");
+                }
             }
 
-            SDL2.SDL_GL_SetAttribute(SDL2.SDL_GLattr.SDL_GL_ACCELERATED_VISUAL, 1);
-
-            var renderers = FetchRendererQueue();
-            var renderTargetHandle = IntPtr.Zero;
-            var errorSb = new StringBuilder();
-            
-            while (renderers.Any())
+            if (SDL2.SDL_GL_SetAttribute(SDL2.SDL_GLattr.SDL_GL_ACCELERATED_VISUAL, 1) < 0)
             {
-                var rendererId = renderers.Dequeue();
+                _log.Error($"Failed to force hardware-accelerated visuals: {SDL2.SDL_GetError()} " +
+                           $"Performance might be degraded.");
+            }
 
-                renderTargetHandle = SDL_gpu.GPU_InitRendererByID(
-                    rendererId,
-                    (ushort)window.Size.Width,
-                    (ushort)window.Size.Height,
-                    SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL
-                    | SDL2.SDL_WindowFlags.SDL_WINDOW_ALLOW_HIGHDPI
-                    | SDL2.SDL_WindowFlags.SDL_WINDOW_SHOWN
-                );
+            var renderTargetHandle = SDL_gpu.GPU_InitRendererByID(
+                _successfullyQueriedRendererId.Value,
+                (ushort)window.Size.Width,
+                (ushort)window.Size.Height,
+                SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL
+                | SDL2.SDL_WindowFlags.SDL_WINDOW_ALLOW_HIGHDPI
+                | SDL2.SDL_WindowFlags.SDL_WINDOW_SHOWN
+            );
 
-                if (renderTargetHandle != IntPtr.Zero)
-                    break;
-
+            if (renderTargetHandle == IntPtr.Zero)
+            {
+                var errorSb = new StringBuilder();
                 var errorCode = SDL_gpu.GPU_PopErrorCode();
+                
                 errorSb.Append("  ");
-                errorSb.Append(rendererId.name.Value);
+                errorSb.Append(_successfullyQueriedRendererId.Value.name.Value);
                 errorSb.Append(": ");
                 errorSb.Append(errorCode.error.ToString());
                 errorSb.Append(" (");
                 errorSb.Append(errorCode.details.Value);
                 errorSb.AppendLine(")");
-            }
 
-            if (renderTargetHandle == IntPtr.Zero)
-            {
                 if (renderTargetHandle == IntPtr.Zero)
-                    throw new GraphicsException($"Failed to initialize all available renderers.\n{errorSb}");
+                {
+                    throw new GraphicsException(
+                        $"Failed to initialize the renderer '{_successfullyQueriedRendererId}: \n{errorSb}"
+                    );
+                }
             }
 
             SDL_gpu.GPU_SetDefaultAnchor(0, 0);
 
             _log.Info($"{OpenGlVendorString} {OpenGlRendererString} v{OpenGlVersionString}");
-
             _log.Info(" Available displays:");
 
             var displays = GetDisplayList();
@@ -189,7 +214,6 @@ namespace Chroma.Graphics
             }
 
             windowHandle = SDL2.SDL_GL_GetCurrentWindow();
-            
             return renderTargetHandle;
         }
 
@@ -226,83 +250,79 @@ namespace Chroma.Graphics
 
                     GlExtensions.Add(str);
                 }
+
+                IsAdaptiveVSyncSupported = GlExtensions.Intersect(new[]
+                {
+                    "GLX_EXT_swap_control_tear",
+                    "WGL_EXT_swap_control_tear"
+                }).Any();
             }
             else
             {
                 _log.Info("Couldn't retrieve OpenGL extension list.");
             }
-
-            IsAdaptiveVSyncSupported = GlExtensions.Intersect(new[]
-            {
-                "GLX_EXT_swap_control_tear",
-                "WGL_EXT_swap_control_tear"
-            }).Any();
         }
 
-        private void ProbeGlLimits(Action probeLogic)
+        private bool ProbeGlLimits(SDL_gpu.GPU_RendererID rendererId, Action probeLogic)
         {
-            var renderers = FetchRendererQueue();
-
-            while (renderers.Any())
+            if (SDL2.SDL_GL_SetAttribute(
+                SDL2.SDL_GLattr.SDL_GL_CONTEXT_MAJOR_VERSION, rendererId.major_version) < 0)
             {
-                var rendererId = renderers.Dequeue();
-
-                _log.WarningWhenFails(
-                    $"Failed to set OpenGL major version for probe",
-                    () => SDL2.SDL_GL_SetAttribute(
-                        SDL2.SDL_GLattr.SDL_GL_CONTEXT_MAJOR_VERSION,
-                        rendererId.major_version
-                    )
-                );
-
-                _log.WarningWhenFails(
-                    $"Failed to set OpenGL minor version for probe",
-                    () => SDL2.SDL_GL_SetAttribute(
-                        SDL2.SDL_GLattr.SDL_GL_CONTEXT_MINOR_VERSION,
-                        rendererId.minor_version
-                    )
-                );
-
-                _log.WarningWhenFails(
-                    $"Failed to set OpenGL core profile for probe",
-                    () => SDL2.SDL_GL_SetAttribute(
-                        SDL2.SDL_GLattr.SDL_GL_CONTEXT_PROFILE_MASK,
-                        SDL2.SDL_GLprofile.SDL_GL_CONTEXT_PROFILE_CORE
-                    )
-                );
-
-                var window = SDL2.SDL_CreateWindow(
-                    "Chroma Probe Window",
-                    0, 0, 0, 0,
-                    SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL
-                    | SDL2.SDL_WindowFlags.SDL_WINDOW_BORDERLESS
-                );
-
-                var context = SDL2.SDL_GL_GetCurrentContext();
-                var destroyContextAfter = false;
-
-                if (context == IntPtr.Zero) // can and will happen on windows
-                {
-                    destroyContextAfter = true;
-                    context = SDL2.SDL_GL_CreateContext(window);
-
-                    if (context == IntPtr.Zero)
-                        continue;
-
-                    if (SDL2.SDL_GL_MakeCurrent(window, context) < 0)
-                        continue;
-                }
-
-                probeLogic();
-
-                if (destroyContextAfter)
-                    SDL2.SDL_GL_DeleteContext(context);
-
-                SDL2.SDL_DestroyWindow(window);
-                return;
+                _log.Error($"Failed to set probe-time OpenGL major version attribute: {SDL2.SDL_GetError()}");
+                return false;
             }
 
-            throw new GraphicsException($"GL context initialization has failed: {SDL2.SDL_GetError()}");
+            if (SDL2.SDL_GL_SetAttribute(
+                SDL2.SDL_GLattr.SDL_GL_CONTEXT_MINOR_VERSION, rendererId.minor_version) < 0)
+            {
+                _log.Error($"Failed to set probe-time OpenGL minor version attribute: {SDL2.SDL_GetError()}");
+                return false;
+            }
+
+            if (SDL2.SDL_GL_SetAttribute(
+                SDL2.SDL_GLattr.SDL_GL_CONTEXT_PROFILE_MASK, SDL2.SDL_GLprofile.SDL_GL_CONTEXT_PROFILE_CORE) < 0)
+            {
+                _log.Error($"Failed to set probe-time OpenGL core profile preference: {SDL2.SDL_GetError()}");
+                return false;
+            }
+
+            var window = SDL2.SDL_CreateWindow(
+                "Chroma Probe Window",
+                0, 0, 0, 0,
+                SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL
+                | SDL2.SDL_WindowFlags.SDL_WINDOW_BORDERLESS
+                | SDL2.SDL_WindowFlags.SDL_WINDOW_HIDDEN
+            );
+
+            var context = SDL2.SDL_GL_GetCurrentContext();
+            var destroyContextAfter = false;
+
+            if (context == IntPtr.Zero) // can and will happen on windows
+            {
+                destroyContextAfter = true;
+                context = SDL2.SDL_GL_CreateContext(window);
+
+                if (context == IntPtr.Zero)
+                {
+                    _log.Error($"Failed to create probe-time OpenGL context: {SDL2.SDL_GetError()}");
+                    return false;
+                }
+
+                if (SDL2.SDL_GL_MakeCurrent(window, context) < 0)
+                {
+                    _log.Error($"Failed to set probe-time OpenGL context: {SDL2.SDL_GetError()}");
+                    return false;
+                }
+            }
+
+            probeLogic();
+
+            SDL2.SDL_DestroyWindow(window);
+
+            if (destroyContextAfter)
+                SDL2.SDL_GL_DeleteContext(context);
+
+            return true;
         }
     }
 }

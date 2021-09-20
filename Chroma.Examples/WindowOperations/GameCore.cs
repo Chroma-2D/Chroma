@@ -21,6 +21,8 @@ namespace WindowOperations
         private bool _drawCenterVector;
         private int _lastResult;
 
+        private string _diagText;
+        
         private string _lastDroppedText;
         private string _lastDroppedFileList;
 
@@ -79,12 +81,12 @@ namespace WindowOperations
             }
 
             context.DrawString(
-                $"Use <F1> to toggle window resizable status ({Window.CanResize}).\n" +
-                "Use <F2> to switch into exclusive fullscreen mode with native resolution\n" +
-                "Use <F3> to switch into borderless fullscreen mode with native resolution\n" +
+                $"Use <F1> to toggle window resizable status ({(Window.CanResize ? "resizable" : "fixed")}).\n" +
+                $"Use <F2> to switch into exclusive fullscreen mode with native resolution: {Window.IsFullScreen}\n" +
+                $"Use <F3> to switch into borderless fullscreen mode with native resolution: {Window.IsBorderlessFullScreen}\n" +
                 "Use <F4> to switch into 1024x600 windowed mode - hold any <Shift> to center the window afterwards.\n" +
                 "Use <F5> toggle always-on-top status of the window.\n" +
-                $"Use <F6> to toggle window border ({Window.EnableBorder}).\n" +
+                $"Use <F6> to toggle window border ({(Window.EnableBorder ? "enabled" : "disabled")}).\n" +
                 "Use <F7> to set maximum window size to 800x600.\n" +
                 "Use <F8> to set minimum window size to 320x240.\n" +
                 "Use <F9> to reset minimum and maximum window sizes.\n" +
@@ -92,21 +94,22 @@ namespace WindowOperations
                 $"Use <F11> to show a cross-platform message box (last result: {_lastResult}).\n" +
                 "Use <space> to toggle the center vector on/off.\n" +
                 $"Use <~> to toggle window hit testing ({Window.IsHitTestEnabled}).\n\n" +
-                $"Current viewport resolution: {Window.Size.Width}x{Window.Size.Height}\n" +
-                $"Maximum screen dimensions: {Window.MaximumSize.Width}x{Window.MaximumSize.Height}\n" +
-                $"Minimum screen dimensions: {Window.MinimumSize.Width}x{Window.MinimumSize.Height}\n" +
+                $"Current screen position: {Window.Position}\n" +
+                $"Current viewport resolution: {Window.Width}x{Window.Height}\n" +
+                $"Maximum screen dimensions: {Window.MaximumWidth}x{Window.MaximumHeight}\n" +
+                $"Minimum screen dimensions: {Window.MinimumWidth}x{Window.MinimumHeight}\n" +
                 $"Has keyboard focus: {Window.HasKeyboardFocus}\n" +
                 $"Is mouse over: {Window.IsMouseOver}\n" +
                 $"Last dropped file: {_lastDroppedFileList}\n" +
-                $"Last dropped text: {_lastDroppedText}\n",
+                $"Last dropped text: {_lastDroppedText}\n" +
+                $"{_diagText}",
                 new Vector2(8)
             );
         }
 
         protected override void Update(float delta)
         {
-            Window.Title =
-                $"FPS: {PerformanceCounter.FPS}, frame {PerformanceCounter.LifetimeFrames}. On display: {Window.CurrentDisplay.Index}";
+            _diagText = $"FPS: {PerformanceCounter.FPS}, frame {PerformanceCounter.LifetimeFrames}. On display: {Window.CurrentDisplay.Index}";
         }
 
         protected override void KeyPressed(KeyEventArgs e)
@@ -117,16 +120,15 @@ namespace WindowOperations
             }
             else if (e.KeyCode == KeyCode.F2)
             {
-                Window.GoFullscreen(true);
+                Window.Mode.SetExclusiveFullScreen(Window.CurrentDisplay.DesktopMode);
             }
             else if (e.KeyCode == KeyCode.F3)
             {
-                Window.GoFullscreen(false); // alternatively don't pass any parameters
-                // because they're optional for borderless native fullscreen
+                Window.Mode.SetBorderlessFullScreen();
             }
             else if (e.KeyCode == KeyCode.F4)
             {
-                Window.GoWindowed(
+                Window.Mode.SetWindowed(
                     new Size(1024, 600),
                     e.IsAnyShiftPressed
                 );

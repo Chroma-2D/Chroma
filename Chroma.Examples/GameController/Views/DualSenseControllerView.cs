@@ -14,7 +14,7 @@ namespace GameController.Views
 
         public override Vector2 PositionOnScreen => new(
             0,
-            _window.Size.Height / 2f
+            _window.Height / 2f
         );
 
         public override List<ControllerType> AcceptedControllers { get; } = new()

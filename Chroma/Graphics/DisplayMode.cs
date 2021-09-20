@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics
 {
@@ -19,6 +20,17 @@ namespace Chroma.Graphics
             Width = width;
             Height = height;
             RefreshRate = refreshRate;
+        }
+
+        internal SDL2.SDL_DisplayMode ToSdlDisplayMode()
+        {
+            var displayMode = new SDL2.SDL_DisplayMode();
+            
+            displayMode.w = Width;
+            displayMode.h = Height;
+            displayMode.refresh_rate = RefreshRate;
+
+            return displayMode;
         }
 
         public override string ToString()

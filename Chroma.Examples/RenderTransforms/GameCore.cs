@@ -34,8 +34,8 @@ namespace RenderTransforms
             RenderTransform.Orthographic(
                 0,
                 0,
-                Window.Size.Width,
-                Window.Size.Height,
+                Window.Width,
+                Window.Height,
                 1,
                 -1
             );

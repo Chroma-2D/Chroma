@@ -145,11 +145,11 @@ namespace TextInput
             }
             else if (e.KeyCode == KeyCode.F6)
             {
-                Window.GoFullscreen(false);
+                Window.Mode.SetBorderlessFullScreen();
             }
             else if (e.KeyCode == KeyCode.F7)
             {
-                Window.GoWindowed(new Size(800, 600), true);
+                Window.Mode.SetWindowed(new Size(800, 600), true);
             }
             else if (e.KeyCode == KeyCode.F8)
             {

@@ -30,7 +30,7 @@ namespace PixelShaders
             _log.Info(
                 $"GLSL {Shader.MinimumSupportedGlslVersion}-{Shader.MaximumSupportedGlslVersion} supported.");
             
-            Window.GoWindowed(new Size(1024, 600));
+            Window.Mode.SetWindowed(new Size(1024, 600));
             Window.CenterOnScreen();
         }
 
@@ -63,7 +63,7 @@ namespace PixelShaders
                 context.Clear(Color.Black);
 
                 _tintEffect.Activate();
-                _tintEffect.SetUniform("mouseLoc", Mouse.GetPosition() / Window.Size.Width);
+                _tintEffect.SetUniform("mouseLoc", Mouse.GetPosition() / Window.Width);
 
                 context.DrawTexture(
                     _burger,

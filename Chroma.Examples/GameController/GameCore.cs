@@ -17,7 +17,7 @@ namespace GameController
             Graphics.LimitFramerate = true;
             Graphics.VerticalSyncMode = VerticalSyncMode.None;
 
-            Window.GoWindowed(1024, 600, true);
+            Window.Mode.SetWindowed(1024, 600, true);
             RenderSettings.AutoClearColor = Color.DimGray;
 
             _views = new List<GenericControllerView>
@@ -75,8 +75,8 @@ namespace GameController
             for (var i = 0; i < _views.Count; i++)
                 _views[i].Draw(context);
 
-            context.Line(Window.Size.Width / 2, 0, Window.Size.Width / 2, Window.Size.Height, Color.DimGray);
-            context.Line(0, Window.Size.Height / 2, Window.Size.Width, Window.Size.Height / 2, Color.DimGray);
+            context.Line(Window.Width / 2f, 0, Window.Width / 2f, Window.Height / 2f, Color.DimGray);
+            context.Line(0, Window.Height / 2f, Window.Width / 2f, Window.Height / 2f, Color.DimGray);
         }
     }
 }

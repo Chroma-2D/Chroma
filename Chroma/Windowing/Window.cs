@@ -31,6 +31,7 @@ namespace Chroma.Windowing
         private WindowState _state = WindowState.Normal;
         private bool _enableDragDrop;
         private WindowHitTestDelegate _hitTestDelegate;
+        private WindowMode _mode;
 
         private IntPtr _windowHandle;
         private IntPtr _currentIconPtr;
@@ -248,16 +249,13 @@ namespace Chroma.Windowing
         public int MinimumWidth => MinimumSize.Width;
         public int MinimumHeight => MinimumSize.Height;
 
-        public bool IsExclusiveFullScreen
+        public bool IsFullScreen
             => SDL2.SDL_GetWindowFlags(Handle)
                 .HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN);
 
         public bool IsBorderlessFullScreen
             => SDL2.SDL_GetWindowFlags(Handle)
                 .HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP);
-
-        public bool IsFullScreen 
-            => IsExclusiveFullScreen || IsBorderlessFullScreen;
 
         public Display CurrentDisplay
         {
@@ -357,6 +355,8 @@ namespace Chroma.Windowing
 
         public bool IsHitTestEnabled => _hitTestDelegate != null;
 
+        public WindowMode Mode => _mode;
+
         public event EventHandler Closed;
         public event EventHandler Hidden;
         public event EventHandler Shown;
@@ -391,6 +391,7 @@ namespace Chroma.Windowing
             DragDropManager = new DragDropManager(this);
             EnableDragDrop = true;
 
+            _mode = new WindowMode(this);
             _internalHitTestCallback = HitTestCallback;
             _performanceCounter = new PerformanceCounter();
             _renderContext = new RenderContext(this);
@@ -419,39 +420,6 @@ namespace Chroma.Windowing
 
             Position = new Vector2(bounds.X + targetX, bounds.Y + targetY);
         }
-
-        public void GoFullscreen(bool exclusive = false)
-        {
-            var flag = (uint)SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP;
-
-            if (exclusive)
-                flag = (uint)SDL2.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN;
-
-            if (SDL2.SDL_SetWindowFullscreen(Handle, flag) < 0)
-            {
-                _log.Error($"Failed to switch into full-screen mode: {SDL2.SDL_GetError()}");
-                return;
-            }
-
-            Size = new Size(
-                CurrentDisplay.DesktopMode.Width,
-                CurrentDisplay.DesktopMode.Height
-            );
-        }
-
-        public void GoWindowed(ushort width, ushort height, bool centerOnScreen = false)
-        {
-            SDL2.SDL_SetWindowFullscreen(Handle, 0);
-            SDL_gpu.GPU_SetWindowResolution(width, height);
-
-            Size = new Size(width, height);
-
-            if (centerOnScreen)
-                CenterOnScreen();
-        }
-
-        public void GoWindowed(Size size, bool centerOnScreen = false)
-            => GoWindowed((ushort)size.Width, (ushort)size.Height, centerOnScreen);
 
         public void SetIcon(Texture texture)
         {

@@ -102,12 +102,24 @@ namespace Chroma.Graphics
 
         internal bool QueryOpenGl()
         {
-            void QueryProperties()
+            bool QueryProperties()
             {
-                EnumerateGlExtensions();
+                if (!IsValidOpenGlContextPresent)
+                {
+                    _log.Error("No valid OpenGL context was present at query time.");
+                    return false;
+                }
+
+                if (!EnumerateGlExtensions())
+                {
+                    _log.Error("OpenGL extension enumeration has failed.");
+                    return false;
+                }
 
                 Gl.GetIntegerV(Gl.GL_MAX_SAMPLES, out var maxMsaa);
                 MaximumMSAA = maxMsaa;
+
+                return true;
             }
 
             var renderers = FetchRendererQueue();
@@ -134,7 +146,7 @@ namespace Chroma.Graphics
                     "OpenGL has not been not queried yet or this method was called after a query has failed."
                 );
             }
-            
+
             SDL_gpu.GPU_SetRequiredFeatures(
                 SDL_gpu.GPU_FeatureEnum.GPU_FEATURE_BASIC_SHADERS
                 | SDL_gpu.GPU_FeatureEnum.GPU_FEATURE_RENDER_TARGETS
@@ -184,7 +196,7 @@ namespace Chroma.Graphics
             {
                 var errorSb = new StringBuilder();
                 var errorCode = SDL_gpu.GPU_PopErrorCode();
-                
+
                 errorSb.Append("  ");
                 errorSb.Append(_successfullyQueriedRendererId.Value.name.Value);
                 errorSb.Append(": ");
@@ -237,7 +249,7 @@ namespace Chroma.Graphics
             return registeredRenderers.ToList();
         }
 
-        private void EnumerateGlExtensions()
+        private bool EnumerateGlExtensions()
         {
             Gl.GetIntegerV(Gl.GL_NUM_EXTENSIONS, out var numExtensions);
 
@@ -256,14 +268,17 @@ namespace Chroma.Graphics
                     "GLX_EXT_swap_control_tear",
                     "WGL_EXT_swap_control_tear"
                 }).Any();
+
+                return true;
             }
             else
             {
-                _log.Info("Couldn't retrieve OpenGL extension list.");
+                _log.Warning("Couldn't retrieve OpenGL extension list.");
+                return false;
             }
         }
 
-        private bool ProbeGlLimits(SDL_gpu.GPU_RendererID rendererId, Action probeLogic)
+        private bool ProbeGlLimits(SDL_gpu.GPU_RendererID rendererId, Func<bool> probeLogic)
         {
             if (SDL2.SDL_GL_SetAttribute(
                 SDL2.SDL_GLattr.SDL_GL_CONTEXT_MAJOR_VERSION, rendererId.major_version) < 0)
@@ -297,7 +312,7 @@ namespace Chroma.Graphics
             var context = SDL2.SDL_GL_GetCurrentContext();
             var destroyContextAfter = false;
 
-            if (context == IntPtr.Zero) // can and will happen on windows
+            if (context == IntPtr.Zero)
             {
                 destroyContextAfter = true;
                 context = SDL2.SDL_GL_CreateContext(window);
@@ -315,14 +330,14 @@ namespace Chroma.Graphics
                 }
             }
 
-            probeLogic();
+            var probeResult = probeLogic();
 
             SDL2.SDL_DestroyWindow(window);
 
             if (destroyContextAfter)
                 SDL2.SDL_GL_DeleteContext(context);
 
-            return true;
+            return probeResult;
         }
     }
 }

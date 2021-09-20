@@ -118,7 +118,13 @@ namespace Chroma.Graphics
 
                 Gl.GetIntegerV(Gl.GL_MAX_SAMPLES, out var maxMsaa);
                 MaximumMSAA = maxMsaa;
-
+                
+                IsAdaptiveVSyncSupported = GlExtensions.Intersect(new[]
+                {
+                    "GLX_EXT_swap_control_tear",
+                    "WGL_EXT_swap_control_tear"
+                }).Any();
+                
                 return true;
             }
 
@@ -127,6 +133,8 @@ namespace Chroma.Graphics
             while (renderers.Any())
             {
                 var rendererId = renderers.Dequeue();
+                
+                _log.Info($"Attempting to initialize '{rendererId.name}'...");
 
                 if (ProbeGlLimits(rendererId, QueryProperties))
                 {
@@ -253,29 +261,18 @@ namespace Chroma.Graphics
         {
             Gl.GetIntegerV(Gl.GL_NUM_EXTENSIONS, out var numExtensions);
 
-            if (numExtensions > 0)
-            {
-                for (var i = 0; i < numExtensions; i++)
-                {
-                    var strPtr = Gl.GetStringI(Gl.GL_EXTENSIONS, (uint)i);
-                    var str = Marshal.PtrToStringAnsi(strPtr);
-
-                    GlExtensions.Add(str);
-                }
-
-                IsAdaptiveVSyncSupported = GlExtensions.Intersect(new[]
-                {
-                    "GLX_EXT_swap_control_tear",
-                    "WGL_EXT_swap_control_tear"
-                }).Any();
-
-                return true;
-            }
-            else
-            {
-                _log.Warning("Couldn't retrieve OpenGL extension list.");
+            if (numExtensions <= 0)
                 return false;
+
+            for (var i = 0; i < numExtensions; i++)
+            {
+                var strPtr = Gl.GetStringI(Gl.GL_EXTENSIONS, (uint)i);
+                var str = Marshal.PtrToStringAnsi(strPtr);
+
+                GlExtensions.Add(str);
             }
+
+            return true;
         }
 
         private bool ProbeGlLimits(SDL_gpu.GPU_RendererID rendererId, Func<bool> probeLogic)

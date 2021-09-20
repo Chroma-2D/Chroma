@@ -251,8 +251,10 @@ namespace Chroma
             
             if (!Graphics.QueryOpenGl())
             {
-                _log.Error("OpenGL initialization has failed. Please make sure your graphics drivers are installed properly.");
-                Environment.Exit(-1);
+                throw new FrameworkException(
+                    "OpenGL initialization failed. " +
+                    "Please make sure your drivers are installed and functional."
+                );
             }
             
             Window = new Window(this);

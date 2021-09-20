@@ -8,7 +8,7 @@ namespace Chroma.Windowing
 {
     public class MessageBox
     {
-        private static Log Log { get; } = LogManager.GetForCurrentAssembly();
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
 
         private MessageBoxSeverity Severity { get; }
         private List<MessageBoxButton> Buttons { get; }
@@ -78,7 +78,7 @@ namespace Chroma.Windowing
 
             if (SDL2.SDL_ShowMessageBox(ref msgBoxData, out var result) < 0)
             {
-                Log.Error($"Couldn't show message box: {SDL2.SDL_GetError()}");
+                _log.Error($"Couldn't show message box: {SDL2.SDL_GetError()}");
                 return 0x00DEAD00;
             }
 
@@ -105,7 +105,7 @@ namespace Chroma.Windowing
                 owner?.Handle ?? IntPtr.Zero
             ) < 0)
             {
-                Log.Error($"Couldn't show message box: {SDL2.SDL_GetError()}");
+                _log.Error($"Couldn't show message box: {SDL2.SDL_GetError()}");
             }
         }
     }

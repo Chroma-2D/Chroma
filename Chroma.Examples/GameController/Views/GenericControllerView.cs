@@ -45,8 +45,8 @@ namespace GameController.Views
         };
 
         public virtual Vector2 PositionOnScreen => new(
-            _window.Size.Width - _renderTarget.Width,
-            _window.Size.Height - _renderTarget.Height
+            _window.Width - _renderTarget.Width,
+            _window.Height - _renderTarget.Height
         );
 
         public GenericControllerView(Window window)

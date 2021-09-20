@@ -15,7 +15,7 @@ namespace GameController.Views
     public class NintendoControllerView : GenericControllerView
     {
         public override string ViewName { get; } = "Nintendo controllers";
-        public override Vector2 PositionOnScreen => new(_window.Size.Width / 2f, 0);
+        public override Vector2 PositionOnScreen => new(_window.Width / 2f, 0);
 
         public override List<ControllerType> AcceptedControllers { get; } = new()
         {

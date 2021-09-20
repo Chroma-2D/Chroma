@@ -36,7 +36,7 @@ namespace ParticleSystems
         //
         protected override void LoadContent()
         {
-            _target = new RenderTarget(Window.Size.Width, Window.Size.Height);
+            _target = new RenderTarget(Window.Width, Window.Height);
 
             _particle = Content.Load<Texture>("Textures/pentagram.png");
             _particle.FilteringMode = TextureFilteringMode.NearestNeighbor;

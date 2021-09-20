@@ -30,7 +30,7 @@ namespace MusicAndSounds
 
         public GameCore() : base(new(false, false))
         {
-            Window.GoWindowed(new Size(800, 600));
+            Window.Mode.SetWindowed(new Size(800, 600));
             Audio.DeviceConnected += (_, e) =>
             {
                 _log.Info(
@@ -124,11 +124,11 @@ namespace MusicAndSounds
                 context.Line(
                     new Vector2(
                         (2 + i) * (2 + RenderSettings.LineThickness - 1),
-                        Window.Size.Height
+                        Window.Height
                     ),
                     new Vector2(
                         (2 + i) * (2 + RenderSettings.LineThickness - 1),
-                        Window.Size.Height - 1 - (float)_frequencies[i] * 768
+                        Window.Height - 1 - (float)_frequencies[i] * 768
                     ),
                     new Color(
                         i / ((float)_frequencies.Length / 4), 

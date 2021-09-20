@@ -60,8 +60,8 @@ namespace TextInput
             ColSize = _ttf.Measure("A").Width;
             RowSize = _ttf.Height;
 
-            TotalCols = window.Size.Width / ColSize;
-            TotalRows = window.Size.Height / RowSize;
+            TotalCols = window.Width / ColSize;
+            TotalRows = window.Height / RowSize;
 
             Reset();
         }

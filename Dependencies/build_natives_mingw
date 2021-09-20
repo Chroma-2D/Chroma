@@ -61,14 +61,16 @@ SDL_NMIX_ARTIFACT=SDL2_nmix.dll
                                                                                       \
 && $CMAKE $CMAKE_FLAGS -B $SDL_GPU_BUILDROOT $SDL_GPU_PATH -G "$CMAKE_GENERATOR"      \
                     -DCMAKE_BUILD_TYPE=$SDL_GPU_BUILD_TYPE                            \
+                    -DSDL2_INCLUDE_DIR=$SDL_PATH/include                              \
+                    -DSDL2_LIBRARY=$ARTIFACT_DIR/$SDL_ARTIFACT                        \
+                    -DSDL2MAIN_LIBRARY=$ARTIFACT_DIR/$SDLMAIN_ARTIFACT                \
+                                                                                      \
+&& $CMAKE $CMAKE_FLAGS -B $SDL_GPU_BUILDROOT $SDL_GPU_PATH -G "$CMAKE_GENERATOR"      \
                     -DDISABLE_OPENGL_1_BASE=1                                         \
                     -DDISABLE_OPENGL_1=1                                              \
                     -DDISABLE_OPENGL_2=1                                              \
                     -DBUILD_STATIC=0                                                  \
                     -DBUILD_DEMOS=0                                                   \
-                    -DSDL2_INCLUDE_DIR=$SDL_PATH/include                              \
-                    -DSDL2_LIBRARY=$ARTIFACT_DIR/$SDL_ARTIFACT                        \
-                    -DSDL2MAIN_LIBRARY=$ARTIFACT_DIR/$SDLMAIN_ARTIFACT                \
                      && cd $SDL_GPU_BUILDROOT && $MAKE -j$THREADCOUNT                 \
                      && mv $SDL_GPU_SOPATH $ARTIFACT_DIR/$SDL_GPU_ARTIFACT            \
                                                                                       \

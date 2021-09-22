@@ -205,6 +205,12 @@ namespace Chroma.Graphics
 
             if (renderTargetHandle == IntPtr.Zero)
             {
+                var err = SDL_gpu.GPU_PopErrorCode();
+                while (err.error != SDL_gpu.GPU_ErrorEnum.GPU_ERROR_NONE)
+                {
+                    err = SDL_gpu.GPU_PopErrorCode();
+                }
+                
                 _rendererIdStack.Pop();
                 
                 canReQuery = _rendererIdStack.Any();

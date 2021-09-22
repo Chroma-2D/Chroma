@@ -18,7 +18,7 @@ namespace Chroma.Windowing
     public sealed class Window : DisposableResource
     {
         private readonly Log _log = LogManager.GetForCurrentAssembly();
-        
+
         // Prevents delegate garbage collection.
         private readonly SDL2.SDL_HitTest _internalHitTestCallback;
 
@@ -306,7 +306,7 @@ namespace Chroma.Windowing
                 );
             }
         }
-        
+
         public bool EnableBorder
         {
             get
@@ -377,7 +377,17 @@ namespace Chroma.Windowing
         {
             Game = game;
 
-            RenderTargetHandle = Game.Graphics.InitializeRenderer(this, out _windowHandle);
+            bool canReQuery;
+
+            do
+            {
+                RenderTargetHandle = Game.Graphics.InitializeRenderer(this, out _windowHandle, out canReQuery);
+            } while (RenderTargetHandle == IntPtr.Zero && canReQuery);
+
+            if (RenderTargetHandle == IntPtr.Zero)
+            {
+                throw new FrameworkException("Every available OpenGL renderer has failed to initialize.");
+            }
 
             if (Handle == IntPtr.Zero)
                 throw new FrameworkException($"Failed to initialize the window: {SDL2.SDL_GetError()}.");
@@ -616,7 +626,7 @@ namespace Chroma.Windowing
         }
 
         private SDL2.SDL_HitTestResult HitTestCallback(IntPtr win, IntPtr area, IntPtr data)
-        {           
+        {
             if (_hitTestDelegate != null)
             {
                 SDL2.SDL_Point point;

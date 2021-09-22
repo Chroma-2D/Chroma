@@ -13,7 +13,7 @@ namespace Chroma.Graphics
     public class GraphicsManager
     {
         private readonly Log _log = LogManager.GetForCurrentAssembly();
-        private SDL_gpu.GPU_RendererID? _successfullyQueriedRendererId;
+        private Stack<SDL_gpu.GPU_RendererID> _rendererIdStack;
 
         private VerticalSyncMode _verticalSyncMode;
         private GameStartupOptions _startupOptions;
@@ -118,40 +118,42 @@ namespace Chroma.Graphics
 
                 Gl.GetIntegerV(Gl.GL_MAX_SAMPLES, out var maxMsaa);
                 MaximumMSAA = maxMsaa;
-                
+
                 IsAdaptiveVSyncSupported = GlExtensions.Intersect(new[]
                 {
                     "GLX_EXT_swap_control_tear",
                     "WGL_EXT_swap_control_tear"
                 }).Any();
-                
+
                 return true;
             }
 
-            var renderers = FetchRendererQueue();
-
-            while (renderers.Any())
+            if (_rendererIdStack == null)
             {
-                var rendererId = renderers.Dequeue();
-                
-                _log.Info($"Attempting to initialize renderer '{rendererId.name}'...");
+                _rendererIdStack = new(GetRegisteredRenderers().OrderBy(x => x.major_version));
+            }
+
+            while (_rendererIdStack.Any())
+            {
+                var rendererId = _rendererIdStack.Peek();
+
+                _log.Info($"Querying OpenGL details for OpenGL {rendererId.major_version}.{rendererId.minor_version}...");
 
                 if (ProbeGlLimits(rendererId, QueryProperties))
-                {
-                    _successfullyQueriedRendererId = rendererId;
                     return true;
-                }
+                
+                _rendererIdStack.Pop();
             }
 
             return false;
         }
 
-        internal IntPtr InitializeRenderer(Window window, out IntPtr windowHandle)
+        internal IntPtr InitializeRenderer(Window window, out IntPtr windowHandle, out bool canReQuery)
         {
-            if (_successfullyQueriedRendererId == null)
+            if (!_rendererIdStack.Any())
             {
                 throw new GraphicsException(
-                    "OpenGL has not been not queried yet or this method was called after a query has failed."
+                    "No available OpenGL renderers have been successfully queried."
                 );
             }
 
@@ -191,8 +193,9 @@ namespace Chroma.Graphics
                            $"Performance might be degraded.");
             }
 
+            var rendererId = _rendererIdStack.Peek();
             var renderTargetHandle = SDL_gpu.GPU_InitRendererByID(
-                _successfullyQueriedRendererId.Value,
+                rendererId,
                 (ushort)window.Size.Width,
                 (ushort)window.Size.Height,
                 SDL2.SDL_WindowFlags.SDL_WINDOW_OPENGL
@@ -202,23 +205,12 @@ namespace Chroma.Graphics
 
             if (renderTargetHandle == IntPtr.Zero)
             {
-                var errorSb = new StringBuilder();
-                var errorCode = SDL_gpu.GPU_PopErrorCode();
-
-                errorSb.Append("  ");
-                errorSb.Append(_successfullyQueriedRendererId.Value.name.Value);
-                errorSb.Append(": ");
-                errorSb.Append(errorCode.error.ToString());
-                errorSb.Append(" (");
-                errorSb.Append(errorCode.details.Value);
-                errorSb.AppendLine(")");
-
-                if (renderTargetHandle == IntPtr.Zero)
-                {
-                    throw new GraphicsException(
-                        $"Failed to initialize the renderer '{_successfullyQueriedRendererId}: \n{errorSb}"
-                    );
-                }
+                _rendererIdStack.Pop();
+                
+                canReQuery = _rendererIdStack.Any();
+                windowHandle = IntPtr.Zero;
+                
+                return IntPtr.Zero;
             }
 
             SDL_gpu.GPU_SetDefaultAnchor(0, 0);
@@ -233,12 +225,11 @@ namespace Chroma.Graphics
                 _log.Info($"  Display {d.Index} ({d.Name}) [{d.Bounds.Width}x{d.Bounds.Height}], mode {d.DesktopMode}");
             }
 
+            canReQuery = false;
             windowHandle = SDL2.SDL_GL_GetCurrentWindow();
+            
             return renderTargetHandle;
         }
-
-        private Queue<SDL_gpu.GPU_RendererID> FetchRendererQueue()
-            => new(GetRegisteredRenderers().OrderByDescending(x => x.major_version));
 
         private List<SDL_gpu.GPU_RendererID> GetRegisteredRenderers()
         {

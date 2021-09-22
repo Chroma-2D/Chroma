@@ -387,7 +387,10 @@ namespace Chroma.Windowing
 
             if (RenderTargetHandle == IntPtr.Zero)
             {
-                throw new FrameworkException("Every available OpenGL renderer has failed to initialize.");
+                throw new FrameworkException(
+                    "Every available OpenGL renderer has failed to initialize." +
+                    "Enabling SDL_gpu debugging in boot.json might shed some more light on the problem."
+                );
             }
 
             if (Handle == IntPtr.Zero)

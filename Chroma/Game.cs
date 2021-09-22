@@ -248,15 +248,6 @@ namespace Chroma
         private void InitializeGraphics()
         {
             Graphics = new GraphicsManager(StartupOptions);
-            
-            if (!Graphics.QueryOpenGl())
-            {
-                throw new FrameworkException(
-                    "OpenGL initialization failed. " +
-                    "Please make sure your drivers are installed and functional."
-                );
-            }
-            
             Window = new Window(this);
 
             if (StartupOptions.UseBootSplash)

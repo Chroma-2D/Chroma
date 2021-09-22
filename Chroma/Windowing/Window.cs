@@ -377,12 +377,13 @@ namespace Chroma.Windowing
         {
             Game = game;
 
-            bool canReQuery;
-
             do
             {
-                RenderTargetHandle = Game.Graphics.InitializeRenderer(this, out _windowHandle, out canReQuery);
-            } while (RenderTargetHandle == IntPtr.Zero && canReQuery);
+                if (!Game.Graphics.QueryOpenGl())
+                    continue;
+
+                RenderTargetHandle = Game.Graphics.InitializeRenderer(this, out _windowHandle);
+            } while (RenderTargetHandle == IntPtr.Zero && Game.Graphics.AnyRenderersAvailable);
 
             if (RenderTargetHandle == IntPtr.Zero)
             {

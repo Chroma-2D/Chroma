@@ -14,7 +14,7 @@ vec4 effect(in vec4 pixel, in vec2 tex_coords);
 
 void main(void) {
     _FragColor = effect(
-        texture2D(cr_Screen, cr_TexCoord),
+        texture(cr_Screen, cr_TexCoord),
         cr_TexCoord
     );
 }

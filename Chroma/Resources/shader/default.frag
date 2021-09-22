@@ -9,5 +9,5 @@ in vec4 cr_VertexColor;
 in vec2 cr_TexCoord;
 
 void main(void) {
-    _FragColor = texture2D(cr_Screen, cr_TexCoord);
+    _FragColor = texture(cr_Screen, cr_TexCoord);
 }

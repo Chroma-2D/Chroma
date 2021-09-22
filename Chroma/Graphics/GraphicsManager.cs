@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using Chroma.Diagnostics.Logging;
 using Chroma.Natives.GL;
 using Chroma.Natives.SDL;
@@ -14,9 +13,11 @@ namespace Chroma.Graphics
     {
         private readonly Log _log = LogManager.GetForCurrentAssembly();
         private Stack<SDL_gpu.GPU_RendererID> _rendererIdStack;
-
+        
         private VerticalSyncMode _verticalSyncMode;
         private GameStartupOptions _startupOptions;
+        
+        internal bool AnyRenderersAvailable => _rendererIdStack != null && _rendererIdStack.Any();
 
         public bool ViewportAutoResize { get; set; } = true;
         public bool LimitFramerate { get; set; } = true;
@@ -133,7 +134,7 @@ namespace Chroma.Graphics
                 _rendererIdStack = new(GetRegisteredRenderers().OrderBy(x => x.major_version));
             }
 
-            while (_rendererIdStack.Any())
+            while (AnyRenderersAvailable)
             {
                 var rendererId = _rendererIdStack.Peek();
 
@@ -148,9 +149,9 @@ namespace Chroma.Graphics
             return false;
         }
 
-        internal IntPtr InitializeRenderer(Window window, out IntPtr windowHandle, out bool canReQuery)
+        internal IntPtr InitializeRenderer(Window window, out IntPtr windowHandle)
         {
-            if (!_rendererIdStack.Any())
+            if (!AnyRenderersAvailable)
             {
                 throw new GraphicsException(
                     "No available OpenGL renderers have been successfully queried."
@@ -212,8 +213,6 @@ namespace Chroma.Graphics
                 }
                 
                 _rendererIdStack.Pop();
-                
-                canReQuery = _rendererIdStack.Any();
                 windowHandle = IntPtr.Zero;
                 
                 return IntPtr.Zero;
@@ -230,10 +229,8 @@ namespace Chroma.Graphics
                 var d = displays[i];
                 _log.Info($"  Display {d.Index} ({d.Name}) [{d.Bounds.Width}x{d.Bounds.Height}], mode {d.DesktopMode}");
             }
-
-            canReQuery = false;
-            windowHandle = SDL2.SDL_GL_GetCurrentWindow();
             
+            windowHandle = SDL2.SDL_GL_GetCurrentWindow();           
             return renderTargetHandle;
         }
 

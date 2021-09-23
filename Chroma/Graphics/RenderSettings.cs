@@ -99,7 +99,10 @@ namespace Chroma.Graphics
                 }
             }
         }
-        
+
+        public static TextureFilteringMode DefaultTextureFilteringMode { get; set; } = TextureFilteringMode.Linear;
+        public static TextureSnappingMode DefaultTextureSnappingMode { get; set; } = TextureSnappingMode.None;
+
         public static BlendingFunction ShapeSourceColorBlendingFunction { get; private set; }
         public static BlendingFunction ShapeSourceAlphaBlendingFunction { get; private set; }
         public static BlendingFunction ShapeDestinationColorBlendingFunction { get; private set; }

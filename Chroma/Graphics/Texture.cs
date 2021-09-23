@@ -523,8 +523,8 @@ namespace Chroma.Graphics
 
         private void SetDefaultProperties()
         {
-            SnappingMode = TextureSnappingMode.None;
-            FilteringMode = TextureFilteringMode.NearestNeighbor;
+            SnappingMode = RenderSettings.DefaultTextureSnappingMode;
+            FilteringMode = RenderSettings.DefaultTextureFilteringMode;
         }
 
         public void SetBlendingEquations(BlendingEquation colorBlend, BlendingEquation alphaBlend)
@@ -646,7 +646,7 @@ namespace Chroma.Graphics
                 Stride
             );
         }
-
+        
         public void SaveToFile(string filePath, ImageFileFormat format)
         {
             EnsureNotDisposed();

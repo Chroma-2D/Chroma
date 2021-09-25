@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using Chroma.Diagnostics.Logging;
+using Chroma.MemoryManagement;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Audio.Sources
@@ -12,6 +13,7 @@ namespace Chroma.Audio.Sources
         private SDL2_nmix.NMIX_SourceCallback _originalSourceCallback;
         private SDL2_nmix.NMIX_SourceCallback _internalSourceCallback;
 
+        private SdlRwOps _sdlRwOps;
         internal IntPtr FileSourceHandle { get; private set; }
 
         internal unsafe SDL2_nmix.NMIX_FileSource* FileSource
@@ -61,78 +63,48 @@ namespace Chroma.Audio.Sources
         }
 
         internal FileBasedAudioSource(string filePath, bool decodeWhole)
-        {
-            var rwOps = SDL2.SDL_RWFromFile(filePath, "rb");
+            : this(new FileStream(filePath, FileMode.Open, FileAccess.Read), decodeWhole)
+        { 
+        }
 
-            if (rwOps == IntPtr.Zero)
+        internal FileBasedAudioSource(Stream stream, bool decodeWhole)
+        {
+            _sdlRwOps = new SdlRwOps(stream, true);
+
+            if (_sdlRwOps.RwOpsHandle == IntPtr.Zero)
             {
-                _log.Error($"Failed to initialize RWops from file: {SDL2.SDL_GetError()}");
+                _log.Error($"Failed to initialize RWops from stream: {SDL2.SDL_GetError()}");
                 return;
             }
 
-            FileSourceHandle = SDL2_nmix.NMIX_NewFileSource(
-                rwOps,
-                Path.GetExtension(filePath).TrimStart('.'),
-                decodeWhole
-            );
+            var found = false;
+            foreach (var decoder in AudioOutput.Instance.Decoders)
+            {
+                foreach (var format in decoder.SupportedFormats)
+                {
+                    SDL2.SDL_RWseek(_sdlRwOps.RwOpsHandle, 0, SDL2.RW_SEEK_SET);
+                    FileSourceHandle = SDL2_nmix.NMIX_NewFileSource(_sdlRwOps.RwOpsHandle, format, decodeWhole);
+
+                    if (FileSourceHandle != IntPtr.Zero)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found)
+                    break;
+            }
 
             if (FileSourceHandle == IntPtr.Zero)
             {
-                _log.Error($"Failed to initialize audio source from file: {SDL2.SDL_GetError()}");
+                _log.Error($"Failed to initialize audio source from stream: {SDL2.SDL_GetError()}");
                 return;
             }
 
             unsafe
             {
                 Handle = FileSource->source;
-            }
-
-            HookSourceCallback();
-        }
-
-        internal FileBasedAudioSource(Stream stream, bool decodeWhole)
-        {
-            using (var ms = new MemoryStream())
-            {
-                stream.CopyTo(ms);
-                var arr = ms.GetBuffer();
-
-                unsafe
-                {
-                    fixed (byte* b = &arr[0])
-                    {
-                        var rwOps = SDL2.SDL_RWFromConstMem(
-                            new IntPtr(b),
-                            arr.Length
-                        );
-
-                        if (rwOps == IntPtr.Zero)
-                        {
-                            _log.Error($"Failed to initialize RWops from stream: {SDL2.SDL_GetError()}");
-                            return;
-                        }
-
-                        foreach (var decoder in AudioOutput.Instance.Decoders)
-                        {
-                            foreach (var format in decoder.SupportedFormats)
-                            {
-                                SDL2.SDL_RWseek(rwOps, 0, SDL2.RW_SEEK_SET);
-                                FileSourceHandle = SDL2_nmix.NMIX_NewFileSource(rwOps, format, decodeWhole);
-
-                                if (FileSourceHandle != IntPtr.Zero)
-                                    break;
-                            }
-                        }
-
-                        if (FileSourceHandle == IntPtr.Zero)
-                        {
-                            _log.Error($"Failed to initialize audio source from stream: {SDL2.SDL_GetError()}");
-                            return;
-                        }
-
-                        Handle = FileSource->source;
-                    }
-                }
             }
 
             HookSourceCallback();
@@ -248,6 +220,11 @@ namespace Chroma.Audio.Sources
             }
 
             Position = targetPosition;
+        }
+
+        protected override void FreeManagedResources()
+        {
+            _sdlRwOps.Dispose();
         }
 
         protected override void FreeNativeResources()

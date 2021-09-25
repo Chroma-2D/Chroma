@@ -54,7 +54,7 @@ namespace Chroma.Graphics
             get
             {
                 EnsureNotDisposed();
-                
+
                 return new Vector2(Width / 2f, Height / 2f);
             }
         }
@@ -417,7 +417,7 @@ namespace Chroma.Graphics
                 PixelFormat.RGBA,
                 true
             );
-            
+
             EnsureHandleValid();
 
             result.Data.CopyTo(_pixelData, 0);
@@ -435,10 +435,10 @@ namespace Chroma.Graphics
         {
             if (other == null)
                 throw new ArgumentNullException(nameof(other), "The source texture cannot be null.");
-            
+
             if (other.Disposed)
                 throw new InvalidOperationException("The source texture has been disposed.");
-            
+
             EnsureOnMainThread();
 
             CreateEmpty(
@@ -447,7 +447,7 @@ namespace Chroma.Graphics
                 other.Format,
                 true
             );
-            
+
             EnsureHandleValid();
             CopyDataFrom(other);
             Flush();
@@ -462,7 +462,7 @@ namespace Chroma.Graphics
 
             if (height < 0)
                 throw new ArgumentOutOfRangeException(nameof(height), "Height cannot be negative.");
-            
+
             EnsureOnMainThread();
 
             CreateEmpty(
@@ -488,21 +488,21 @@ namespace Chroma.Graphics
 
             if (data == null)
                 throw new ArgumentNullException(nameof(data), "Pixel data is null.");
-            
+
             EnsureOnMainThread();
-            
+
             CreateEmpty(
                 (ushort)width,
                 (ushort)height,
                 pixelFormat,
                 true
             );
-            
+
             EnsureHandleValid();
 
             data.CopyTo(_pixelData, 0);
             Flush();
-            
+
             SetDefaultProperties();
         }
 
@@ -513,7 +513,7 @@ namespace Chroma.Graphics
             ImageHandle = gpuImageHandle;
 
             EnsureHandleValid();
-            
+
             InitializeWithSurface(
                 SDL_gpu.GPU_CopySurfaceFromImage(gpuImageHandle)
             );
@@ -646,34 +646,32 @@ namespace Chroma.Graphics
                 Stride
             );
         }
-        
-        public void SaveToFile(string filePath, ImageFileFormat format)
+
+        public bool Save(string filePath, ImageFileFormat format)
         {
             EnsureNotDisposed();
             EnsureHandleValid();
 
-            if (!SDL_gpu.GPU_SaveImage(ImageHandle, filePath, (SDL_gpu.GPU_FileFormatEnum)format))
+            using (var fileStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
             {
-                _log.Error($"Saving texture to file failed: {SDL2.SDL_GetError()}");
+                return Save(fileStream, format);
             }
         }
 
-        public void SaveToArray(byte[] buffer, ImageFileFormat format)
+        public bool Save(Stream stream, ImageFileFormat format)
         {
             EnsureNotDisposed();
             EnsureHandleValid();
 
-            unsafe
+            var rwOps = new SdlRwOps(stream);
+
+            if (!SDL_gpu.GPU_SaveImage_RW(ImageHandle, rwOps.RwOpsHandle, true, (SDL_gpu.GPU_FileFormatEnum)format))
             {
-                fixed (byte* ptr = &buffer[0])
-                {
-                    var rwops = SDL2.SDL_RWFromMem(new IntPtr(ptr), buffer.Length);
-                    if (!SDL_gpu.GPU_SaveImage_RW(ImageHandle, rwops, true, (SDL_gpu.GPU_FileFormatEnum)format))
-                    {
-                        _log.Error($"Writing texture to memory failed: {SDL2.SDL_GetError()}");
-                    }
-                }
+                _log.Error($"Failed to write texture to stream: {SDL2.SDL_GetError()}");
+                return false;
             }
+
+            return true;
         }
 
         public void SetBlendingMode(BlendingPreset preset)
@@ -691,7 +689,7 @@ namespace Chroma.Graphics
         {
             EnsureNotDisposed();
             EnsureHandleValid();
-            
+
             SDL_gpu.GPU_GenerateMipmaps(ImageHandle);
         }
 
@@ -765,7 +763,7 @@ namespace Chroma.Graphics
 
         private Color ReadPixel(int i)
         {
-            var c = new Color {A = 255};
+            var c = new Color { A = 255 };
 
             switch (Format)
             {
@@ -802,7 +800,7 @@ namespace Chroma.Graphics
                     c.A = _pixelData[i + 0];
                     break;
 
-                default: 
+                default:
                     throw new InvalidOperationException("Unsupported pixel format.");
             }
 
@@ -846,7 +844,7 @@ namespace Chroma.Graphics
                     _pixelData[i + 3] = c.A;
                     break;
 
-                default: 
+                default:
                     throw new InvalidOperationException("Unsupported pixel format.");
             }
         }
@@ -873,7 +871,7 @@ namespace Chroma.Graphics
         protected override void FreeNativeResources()
         {
             SDL_gpu.GPU_FreeImage(ImageHandle);
-            
+
             ImageHandle = IntPtr.Zero;
         }
     }

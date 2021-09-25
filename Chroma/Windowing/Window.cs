@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
@@ -31,7 +32,6 @@ namespace Chroma.Windowing
         private WindowState _state = WindowState.Normal;
         private bool _enableDragDrop;
         private WindowHitTestDelegate _hitTestDelegate;
-        private WindowMode _mode;
 
         private IntPtr _windowHandle;
         private IntPtr _currentIconPtr;
@@ -355,7 +355,7 @@ namespace Chroma.Windowing
 
         public bool IsHitTestEnabled => _hitTestDelegate != null;
 
-        public WindowMode Mode => _mode;
+        public WindowMode Mode { get; }
 
         public event EventHandler Closed;
         public event EventHandler Hidden;
@@ -405,7 +405,7 @@ namespace Chroma.Windowing
             DragDropManager = new DragDropManager(this);
             EnableDragDrop = true;
 
-            _mode = new WindowMode(this);
+            Mode = new WindowMode(this);
             _internalHitTestCallback = HitTestCallback;
             _performanceCounter = new PerformanceCounter();
             _renderContext = new RenderContext(this);
@@ -451,15 +451,56 @@ namespace Chroma.Windowing
             );
         }
 
-        public void SaveScreenshot(string path)
+        public void SaveScreenshot(Stream outputStream, PixelFormat format = PixelFormat.RGB)
         {
             EnsureNotDisposed();
 
+            var rwOpsIo = new SdlRwOps(outputStream);
+            
+            var created = false;
+            var locked = false;
+
             var surface = SDL_gpu.GPU_CopySurfaceFromTarget(RenderTargetHandle);
-            SDL2.SDL_LockSurface(surface);
-            SDL2.SDL_SaveBMP(surface, path);
-            SDL2.SDL_UnlockSurface(surface);
-            SDL2.SDL_FreeSurface(surface);
+
+            if (surface == IntPtr.Zero)
+            {
+                _log.Error($"Failed to copy window render target to SDL surface: {SDL2.SDL_GetError()}");
+                goto __exit;
+            }
+            created = true;
+
+            // original is freed by ConvertSurfaceToFormat
+            surface = PixelFormatConverter.ConvertSurfaceToFormat(surface, PixelFormat.RGB);
+
+            if (surface == IntPtr.Zero)
+                goto __exit;
+            
+            if (SDL2.SDL_LockSurface(surface) < 0)
+            {
+                _log.Error($"Failed to lock the created SDL surface: {SDL2.SDL_GetError()}");
+                goto __exit;
+            }
+            locked = true;
+
+            if (SDL2.SDL_SaveBMP_RW(surface, rwOpsIo.RwOpsHandle, true) < 0)
+            {
+                _log.Error($"Failed to save the BMP screenshot to stream: {SDL2.SDL_GetError()}");
+            }
+
+            __exit:
+            if (locked)
+                SDL2.SDL_UnlockSurface(surface);
+
+            if (created)
+                SDL2.SDL_FreeSurface(surface);
+        }
+
+        public void SaveScreenshot(string filePath)
+        {
+            using (var stream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+            {
+                SaveScreenshot(stream);
+            }
         }
 
         internal void InitializeEventDispatcher()

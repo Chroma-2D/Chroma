@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
@@ -109,7 +110,7 @@ namespace WindowOperations
 
         protected override void Update(float delta)
         {
-            _diagText = $"FPS: {PerformanceCounter.FPS}, frame {PerformanceCounter.LifetimeFrames}. On display: {Window.CurrentDisplay.Index}";
+            _diagText = $"FPS: {PerformanceCounter.FPS}, frame {PerformanceCounter.LifetimeFrames}. On display: {Window.CurrentDisplay.Index} : total memory usage: {Process.GetCurrentProcess().PrivateMemorySize64} bytes";
         }
 
         protected override void KeyPressed(KeyEventArgs e)
@@ -198,6 +199,10 @@ namespace WindowOperations
                     Window.HitTest = null;
                 else
                     Window.HitTest = HitTest;
+            }
+            else if (e.KeyCode == KeyCode.LeftBracket)
+            {
+                Window.SaveScreenshot("screenshot.bmp");
             }
         }
 

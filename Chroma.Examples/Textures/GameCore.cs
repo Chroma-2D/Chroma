@@ -187,6 +187,10 @@ namespace Textures
             {
                 _burger.SetBlendingMode(BlendingPreset.Normal);
             }
+            else if (e.KeyCode == KeyCode.F6)
+            {
+                _dynTex.Save("dyntex.png", ImageFileFormat.PNG);
+            }
         }
     }
 }

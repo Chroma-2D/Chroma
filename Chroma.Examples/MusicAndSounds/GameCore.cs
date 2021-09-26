@@ -62,15 +62,20 @@ namespace MusicAndSounds
             _doomShotgun = Content.Load<Sound>("Sounds/doomsg.wav");
             _elysiumMod = Content.Load<Music>("Music/elysium.mod");
 
+            var time = 0;
             _waveform = new Waveform(
                 new AudioFormat(SampleFormat.F32),
-                (s, _) =>
+                (s, e) =>
                 {
                     var floats = MemoryMarshal.Cast<byte, float>(s);
-
+                    
+                    var freq = 120;
+                    var amp = 0.6f;
+                    var angle = MathF.PI * 2 * freq / _waveform.Frequency;
+                    
                     for (var i = 0; i < floats.Length; i++)
                     {
-                        floats[i] = MathF.Sin(2 * MathF.PI * 13f * (i / (float)floats.Length));
+                        floats[i] = amp * MathF.Sin(angle * time++);
                     }
                 }, ChannelMode.Mono
             );

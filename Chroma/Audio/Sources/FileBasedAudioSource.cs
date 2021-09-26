@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
@@ -76,11 +75,16 @@ namespace Chroma.Audio.Sources
 
             if (_sdlRwOps.RwOpsHandle == IntPtr.Zero)
             {
-                _log.Error($"Failed to initialize RWops from stream: {SDL2.SDL_GetError()}");
-                return;
+                throw new AudioException($"Failed to initialize RWops from stream: {SDL2.SDL_GetError()}");
             }
 
-            if (string.IsNullOrEmpty(fileFormat))
+            if (!string.IsNullOrEmpty(fileFormat))
+            {
+                SDL2.SDL_RWseek(_sdlRwOps.RwOpsHandle, 0, SDL2.RW_SEEK_SET);
+                FileSourceHandle = SDL2_nmix.NMIX_NewFileSource(_sdlRwOps.RwOpsHandle, fileFormat, decodeWhole);
+            }
+
+            if (FileSourceHandle == IntPtr.Zero)
             {
                 var found = false;
                 foreach (var decoder in AudioOutput.Instance.Decoders)
@@ -101,16 +105,10 @@ namespace Chroma.Audio.Sources
                         break;
                 }
             }
-            else
-            {
-                SDL2.SDL_RWseek(_sdlRwOps.RwOpsHandle, 0, SDL2.RW_SEEK_SET);
-                FileSourceHandle = SDL2_nmix.NMIX_NewFileSource(_sdlRwOps.RwOpsHandle, fileFormat, decodeWhole);
-            }
 
             if (FileSourceHandle == IntPtr.Zero)
             {
-                _log.Error($"Failed to initialize audio source from stream: {SDL2.SDL_GetError()}");
-                return;
+                throw new AudioException($"Failed to initialize audio source from stream: {SDL2.SDL_GetError()}");
             }
 
             unsafe

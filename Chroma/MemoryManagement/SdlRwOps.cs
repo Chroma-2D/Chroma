@@ -47,7 +47,7 @@ namespace Chroma.MemoryManagement
             _stream = stream;
 
             KeepOpen = keepOpen;
-            
+
             unsafe
             {
                 _rwOps = (SDL2.SDL_RWops*)SDL2.SDL_AllocRW();
@@ -116,14 +116,7 @@ namespace Chroma.MemoryManagement
 
             try
             {
-                var dataRead = _stream.Read(data);
-
-                if (dataRead > 0)
-                {
-                    return (ulong)MathF.Ceiling((float)dataRead / intSize);
-                }
-                
-                return 0;
+                return (ulong)(_stream.Read(data) / intSize);
             }
             catch
             {
@@ -152,7 +145,7 @@ namespace Chroma.MemoryManagement
         {
             if (KeepOpen)
                 return 0;
-            
+
             if (RwOpsHandle == IntPtr.Zero)
             {
                 SDL2.SDL_SetError("Attempted to free a null RWops handle.");
@@ -171,7 +164,7 @@ namespace Chroma.MemoryManagement
             _read = null;
             _write = null;
             _close = null;
-            
+
             _stream.Dispose();
         }
 

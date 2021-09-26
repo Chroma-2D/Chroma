@@ -74,12 +74,6 @@ namespace Chroma.MemoryManagement
 
         private long Size(IntPtr context)
         {
-            if (context != RwOpsHandle)
-            {
-                SDL2.SDL_SetError($"RWops context mismatch: {RwOpsHandle} != {context}");
-                return -1;
-            }
-
             long length = -1;
 
             try
@@ -97,12 +91,6 @@ namespace Chroma.MemoryManagement
 
         private long Seek(IntPtr context, long offset, int whence)
         {
-            if (context != RwOpsHandle)
-            {
-                SDL2.SDL_SetError($"RWops context mismatch: {RwOpsHandle} != {context}");
-                return -1;
-            }
-
             if (!_stream.CanSeek)
             {
                 SDL2.SDL_SetError("This does not support seeking.");
@@ -115,12 +103,6 @@ namespace Chroma.MemoryManagement
 
         private unsafe ulong Read(IntPtr context, void* ptr, ulong size, ulong maxnum)
         {
-            if (context != RwOpsHandle)
-            {
-                SDL2.SDL_SetError($"RWops context mismatch: {RwOpsHandle} != {context}");
-                return 0;
-            }
-
             if (!_stream.CanRead)
             {
                 SDL2.SDL_SetError($"Attempted to read from a write-only stream.");
@@ -131,22 +113,26 @@ namespace Chroma.MemoryManagement
             var intMaxnum = (int)maxnum;
 
             var data = new Span<byte>(ptr, intSize * intMaxnum);
-            var dataRead = _stream.Read(data);
 
-            if (dataRead > 0)
-                return (ulong)(dataRead / intSize);
+            try
+            {
+                var dataRead = _stream.Read(data);
 
-            return 0;
+                if (dataRead > 0)
+                {
+                    return (ulong)MathF.Ceiling((float)dataRead / intSize);
+                }
+                
+                return 0;
+            }
+            catch
+            {
+                return 0;
+            }
         }
 
         private unsafe ulong Write(IntPtr context, void* ptr, ulong size, ulong maxnum)
         {
-            if (context != RwOpsHandle)
-            {
-                SDL2.SDL_SetError($"RWops context mismatch: {RwOpsHandle} != {context}");
-                return 0;
-            }
-
             if (!_stream.CanWrite)
             {
                 SDL2.SDL_SetError("Attempted to write to a read-only stream.");
@@ -166,12 +152,6 @@ namespace Chroma.MemoryManagement
         {
             if (KeepOpen)
                 return 0;
-            
-            if (context != RwOpsHandle)
-            {
-                SDL2.SDL_SetError($"RWops context mismatch: {RwOpsHandle} != {context}");
-                return -1;
-            }
             
             if (RwOpsHandle == IntPtr.Zero)
             {

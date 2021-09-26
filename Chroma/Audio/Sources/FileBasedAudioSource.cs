@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
@@ -31,7 +32,8 @@ namespace Chroma.Audio.Sources
                 unsafe
                 {
                     EnsureFileSourceHandleValid();
-                    return SoundSample->flags.HasFlag(SDL2_sound.Sound_SampleFlags.SOUND_SAMPLEFLAG_CANSEEK);
+                    return SoundSample->flags.HasFlag(SDL2_sound.Sound_SampleFlags.SOUND_SAMPLEFLAG_CANSEEK) &&
+                           Duration > 0;
                 }
             }
         }
@@ -63,11 +65,12 @@ namespace Chroma.Audio.Sources
         }
 
         internal FileBasedAudioSource(string filePath, bool decodeWhole)
-            : this(new FileStream(filePath, FileMode.Open, FileAccess.Read), decodeWhole)
+            : this(new FileStream(filePath, FileMode.Open, FileAccess.Read), decodeWhole,
+                Path.GetExtension(filePath).Replace(".", ""))
         { 
         }
 
-        internal FileBasedAudioSource(Stream stream, bool decodeWhole)
+        internal FileBasedAudioSource(Stream stream, bool decodeWhole, string fileFormat = null)
         {
             _sdlRwOps = new SdlRwOps(stream, true);
 
@@ -77,23 +80,31 @@ namespace Chroma.Audio.Sources
                 return;
             }
 
-            var found = false;
-            foreach (var decoder in AudioOutput.Instance.Decoders)
+            if (string.IsNullOrEmpty(fileFormat))
             {
-                foreach (var format in decoder.SupportedFormats)
+                var found = false;
+                foreach (var decoder in AudioOutput.Instance.Decoders)
                 {
-                    SDL2.SDL_RWseek(_sdlRwOps.RwOpsHandle, 0, SDL2.RW_SEEK_SET);
-                    FileSourceHandle = SDL2_nmix.NMIX_NewFileSource(_sdlRwOps.RwOpsHandle, format, decodeWhole);
-
-                    if (FileSourceHandle != IntPtr.Zero)
+                    foreach (var format in decoder.SupportedFormats)
                     {
-                        found = true;
-                        break;
-                    }
-                }
+                        SDL2.SDL_RWseek(_sdlRwOps.RwOpsHandle, 0, SDL2.RW_SEEK_SET);
+                        FileSourceHandle = SDL2_nmix.NMIX_NewFileSource(_sdlRwOps.RwOpsHandle, format, decodeWhole);
 
-                if (found)
-                    break;
+                        if (FileSourceHandle != IntPtr.Zero)
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (found)
+                        break;
+                }
+            }
+            else
+            {
+                SDL2.SDL_RWseek(_sdlRwOps.RwOpsHandle, 0, SDL2.RW_SEEK_SET);
+                FileSourceHandle = SDL2_nmix.NMIX_NewFileSource(_sdlRwOps.RwOpsHandle, fileFormat, decodeWhole);
             }
 
             if (FileSourceHandle == IntPtr.Zero)
@@ -212,12 +223,16 @@ namespace Chroma.Audio.Sources
             {
                 targetPosition = Duration + targetPosition;
             }
+            
+            Pause();
 
             if (SDL2_nmix.NMIX_Seek(FileSourceHandle, (int)(targetPosition * 1000)) < 0)
             {
                 _log.Error($"Failed to seek to {seconds}: {SDL2.SDL_GetError()}");
                 return;
             }
+            
+            Play();
 
             Position = targetPosition;
         }
@@ -270,7 +285,7 @@ namespace Chroma.Audio.Sources
                     SoundSample->buffer.ToPointer(),
                     (int)SoundSample->buffer_size
                 );
-
+                
                 var actualAudioFormat = AudioFormat.FromSdlFormat(SoundSample->actual.format);
 
                 for (var i = 0; i < Filters.Count; i++)

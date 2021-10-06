@@ -140,7 +140,13 @@ namespace Chroma.Graphics
             float x,
             float y,
             Color color
-        ) => context.DrawString(font, text, x, y, (_, _, p) => new(p) {Color = color});
+        ) => context.DrawString(font, text, x, y, 
+            (d, _, _, p) =>
+            {
+                d.Position = p;
+                d.Color = color;
+            }
+        );
         
         public static void DrawString(
             this RenderContext context,
@@ -156,7 +162,13 @@ namespace Chroma.Graphics
             string text,
             Vector2 position,
             Color color
-        ) => context.DrawString(font, text, position.X, position.Y, (_, _, p) => new(p) {Color = color});
+        ) => context.DrawString(font, text, position.X, position.Y, 
+            (d, _, _, p) =>
+            {
+                d.Position = p;
+                d.Color = color;
+            }
+        );
 
         public static void DrawString(
             this RenderContext context,
@@ -172,7 +184,18 @@ namespace Chroma.Graphics
             float x,
             float y,
             Color color
-        ) => context.DrawString(EmbeddedAssets.DefaultFont, text, x, y, (_, _, p) => new(p) {Color = color});
+        ) => context.DrawString(
+            EmbeddedAssets.DefaultFont, 
+            text, 
+            x, 
+            y,            
+            (d, _, _, p) =>
+            {
+                d.Position = p;
+                d.Color = color;
+            }
+        );
+
         
         public static void DrawString(
             this RenderContext context,
@@ -186,6 +209,16 @@ namespace Chroma.Graphics
             string text,
             Vector2 position,
             Color color
-        ) => context.DrawString(EmbeddedAssets.DefaultFont, text, position.X, position.Y, (_, _, p) => new(p) {Color = color});
+        ) => context.DrawString(
+            EmbeddedAssets.DefaultFont, 
+            text, 
+            position.X, 
+            position.Y,
+            (d, _, _, p) =>
+            {
+                d.Position = p;
+                d.Color = color;
+            }
+        );
     }
 }

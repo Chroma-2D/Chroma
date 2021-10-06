@@ -11,18 +11,15 @@ namespace Chroma.Graphics.TextRendering
         public float Rotation { get; set; }
 
         public GlyphTransformData()
-            : this(Vector2.Zero)
-        {
-        }
+            => Clear(Vector2.Zero);
 
-        public GlyphTransformData(Vector2 basePosition)
+        internal void Clear(Vector2 basePosition)
         {
             Position = basePosition;
             Scale = Vector2.One;
             Origin = Vector2.Zero;
-
             Color = Color.White;
-            Rotation = 0f;
+            Rotation = 0;
         }
     }
 }

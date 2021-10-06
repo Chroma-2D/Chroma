@@ -221,13 +221,10 @@ namespace ArbitraryGeometry
                     Window.Center.X - (measure.Width / 2),
                     Window.Center.Y
                 ),
-                (_, i, p) =>
+                (d, _, i, p) =>
                 {
-                    return new GlyphTransformData(p)
-                    {
-                        Color = Color.Orange,
-                        Position = p + new Vector2(0, MathF.Sin(_t * 4 + i) * 4)
-                    };
+                    d.Color = Color.Orange;
+                    d.Position = p + new Vector2(0, MathF.Sin(_t * 4 + i) * 4);
                 }
             );
         }

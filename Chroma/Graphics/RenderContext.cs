@@ -11,7 +11,8 @@ namespace Chroma.Graphics
 {
     public class RenderContext
     {
-
+        private GlyphTransformData _transformData = new();
+        
         internal Window Owner { get; }
         internal IntPtr CurrentRenderTarget => TargetStack.Peek();
 
@@ -344,7 +345,7 @@ namespace Chroma.Graphics
             }
             SDL_gpu.GPU_SetCamera(CurrentRenderTarget, IntPtr.Zero);
         }
-
+        
         public void DrawString(IFontProvider font, string text, float x, float y, GlyphTransform glyphTransform = null)
         {
             if (font == null)
@@ -403,23 +404,24 @@ namespace Chroma.Graphics
                 }
 
                 var pos = new Vector2(xPos, yPos);
-                var transform = new GlyphTransformData(pos);
-
+                
+                _transformData.Clear(pos);
+                
                 if (glyphTransform != null)
-                    transform = glyphTransform(c, i, pos);
+                    glyphTransform(_transformData, c, i, pos);
 
-                SDL_gpu.GPU_SetColor(texture.ImageHandle, Color.ToSdlColor(transform.Color));
+                SDL_gpu.GPU_SetColor(texture.ImageHandle, Color.ToSdlColor(_transformData.Color));
                 SDL_gpu.GPU_BlitTransformX(
                     texture.ImageHandle,
                     ref srcRect,
                     CurrentRenderTarget,
-                    transform.Position.X,
-                    transform.Position.Y,
-                    transform.Origin.X,
-                    transform.Origin.Y,
-                    transform.Rotation,
-                    transform.Scale.X,
-                    transform.Scale.Y
+                    _transformData.Position.X,
+                    _transformData.Position.Y,
+                    _transformData.Origin.X,
+                    _transformData.Origin.Y,
+                    _transformData.Rotation,
+                    _transformData.Scale.X,
+                    _transformData.Scale.Y
                 );
                 SDL_gpu.GPU_SetColor(texture.ImageHandle, Color.ToSdlColor(Color.White));
 

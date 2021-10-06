@@ -44,7 +44,7 @@ namespace Chroma
 
             context.DrawString(
                 _welcomeMessage,
-                new Vector2(8), (_, i, p) =>
+                new Vector2(8), (d, _, i, p) =>
                 {
                     var color = Color.White;
                     var yOff = 0f;
@@ -58,11 +58,8 @@ namespace Chroma
                         }
                     }
 
-                    return new GlyphTransformData
-                    {
-                        Position = p + new Vector2(0, yOff),
-                        Color = color
-                    };
+                    d.Position = p + new Vector2(0, yOff);
+                    d.Color = color;
                 }
             );
 

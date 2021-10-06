@@ -372,7 +372,7 @@ namespace Chroma.Windowing
         public event EventHandler<CancelEventArgs> QuitRequested;
         public event EventHandler<FileDragDropEventArgs> FilesDropped;
         public event EventHandler<TextDragDropEventArgs> TextDropped;
-
+        
         internal Window(Game game)
         {
             Game = game;
@@ -643,7 +643,10 @@ namespace Chroma.Windowing
 
         private void DoTick(float delta)
         {
-            Update?.Invoke(delta);
+            if (Update == null)
+                return;
+                    
+            Update(delta);
 
             while (Dispatcher.ActionQueue.Any())
             {

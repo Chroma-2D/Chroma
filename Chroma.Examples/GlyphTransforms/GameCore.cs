@@ -40,33 +40,27 @@ namespace GlyphTransforms
             context.DrawString(
                 "This text should be colored like a rainbow UwU",
                 new Vector2(8),
-                (_, i, p) =>
+                (d, _, i, p) =>
                 {
-                    return new GlyphTransformData
-                    {
-                        Position = p,
-                        Color = _colors[i % _colors.Count]
-                    };
+                    d.Position = p;
+                    d.Color = _colors[i % _colors.Count];
                 }
             );
 
             context.DrawString(
                 "This text should be wavy!",
                 new Vector2(64),
-                (_, i, p) =>
+                (d, _, i, p) =>
                 {
                     var offsetY = 3 * MathF.Sin(_angle + (i * 4));
-                    return new GlyphTransformData
-                    {
-                        Position = p + new Vector2(0, offsetY)
-                    };
+                    d.Position = p + new Vector2(0, offsetY);
                 }
             );
 
             context.DrawString(
                 "This text should be circley!",
                 new Vector2(200),
-                (_, i, _) =>
+                (d, _, i, _) =>
                 {
                     // this example uses Bezier nuget library
                     // it's excellent for geometry calculations.
@@ -79,19 +73,16 @@ namespace GlyphTransforms
                     var offsetY = 3 * MathF.Sin(_angle + (i * 4));
                     pointOnCircle.Y += offsetY;
 
-                    return new GlyphTransformData
-                    {
-                        Position = pointOnCircle + new Vector2(300),
-                        Rotation = _angle * 10,
-                        Color = _colors[i % _colors.Count]
-                    };
+                    d.Position = pointOnCircle + new Vector2(300);
+                    d.Rotation = _angle * 10;
+                    d.Color = _colors[i % _colors.Count];
                 }
             );
             
             context.DrawString(
                 "This text should be rotated 90 degrees right.",
                 new Vector2(120, 250),
-                (c, i, p) =>
+                (d, c, i, p) =>
                 {                   
                     var offsets = TrueTypeFont.Default.GetRenderOffsets(c);
                     var bounds = TrueTypeFont.Default.GetGlyphBounds(c);
@@ -102,12 +93,9 @@ namespace GlyphTransforms
                         out var yMin, 
                         out _
                     );
-                    
-                    return new GlyphTransformData
-                    {
-                        Position = new(p.Y - offsets.Y + bounds.Height + yMin, p.X),
-                        Rotation = 90
-                    };
+
+                    d.Position = new(p.Y - offsets.Y + bounds.Height + yMin, p.X);
+                    d.Rotation = 90;
                 }
             );
 

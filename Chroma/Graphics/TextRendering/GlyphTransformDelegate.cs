@@ -4,5 +4,5 @@ using Chroma.Graphics.TextRendering.TrueType;
 
 namespace Chroma.Graphics.TextRendering
 {
-    public delegate GlyphTransformData GlyphTransform(char c, int i, Vector2 p);
+    public delegate void GlyphTransform(GlyphTransformData d, char c, int i, Vector2 p);
 }

@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
-using System.Reflection;
 using Chroma.Audio.Sources;
 using Chroma.Graphics;
 using Chroma.Graphics.Accelerated;
-using Chroma.Graphics.TextRendering;
 using Chroma.Graphics.TextRendering.Bitmap;
 using Chroma.Graphics.TextRendering.TrueType;
 using Chroma.Input;
@@ -59,13 +57,13 @@ namespace Chroma.ContentManagement.FileSystem
             return resource;
         }
 
-        public void Unload<T>(T loadedResource) where T : DisposableResource
+        public void Unload<T>(T resource) where T : DisposableResource
         {
-            if (!_loadedResources.Contains(loadedResource))
+            if (!_loadedResources.Contains(resource))
                 throw new ContentNotLoadedException(
                     "The content you want to unload was never loaded in the first place.");
 
-            loadedResource.Dispose();
+            resource.Dispose();
         }
 
         public Stream Open(string relativePath)

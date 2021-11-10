@@ -6,8 +6,9 @@ namespace Chroma.Windowing.EventHandling
 {
     internal sealed class EventDispatcher
     {
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
+        
         private Window Owner { get; }
-        private Log Log => LogManager.GetForCurrentAssembly();
 
         internal delegate void SdlEventHandler(Window window, SDL2.SDL_Event ev);
         internal delegate void WindowEventHandler(Window window, SDL2.SDL_WindowEvent ev);
@@ -43,7 +44,7 @@ namespace Chroma.Windowing.EventHandling
             }
             else
             {
-                Log.Debug($"Unsupported window event: {ev.windowEvent}.");
+                _log.Debug($"Unsupported window event: {ev.windowEvent}.");
             }
         }
 
@@ -55,7 +56,7 @@ namespace Chroma.Windowing.EventHandling
             }
             else
             {
-                Log.Debug($"Unsupported generic event: {ev.type}.");
+                _log.Debug($"Unsupported generic event: {ev.type}.");
             }
         }
         
@@ -63,7 +64,7 @@ namespace Chroma.Windowing.EventHandling
         {
             if (WindowEventHandlers.ContainsKey(eventId))
             {
-                Log.Warning($"{eventId} handler is getting redefined.");
+                _log.Warning($"{eventId} handler is getting redefined.");
                 WindowEventHandlers[eventId] = handler;
             }
             else
@@ -76,7 +77,7 @@ namespace Chroma.Windowing.EventHandling
         {
             if (SdlEventHandlers.ContainsKey(type))
             {
-                Log.Warning($"{type} handler is getting redefined.");
+                _log.Warning($"{type} handler is getting redefined.");
                 SdlEventHandlers[type] = handler;
             }
             else
@@ -91,7 +92,7 @@ namespace Chroma.Windowing.EventHandling
             {
                 if (DiscardedEventTypes.ContainsKey(type))
                 {
-                    Log.Warning($"{type} handler is getting discarded yet another time. Ignoring.");
+                    _log.Warning($"{type} handler is getting discarded yet another time. Ignoring.");
                     continue;
                 }
 

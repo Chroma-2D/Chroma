@@ -12,7 +12,7 @@ namespace Chroma.Input.GameControllers.Drivers
         
         private readonly ControllerTouchPoint[] _touchPoints = new ControllerTouchPoint[2];
 
-        public override string Name { get; } = "Sony DualShock 4 Chroma Driver";
+        public override string Name => "Sony DualShock 4 Chroma Driver";
 
         public IReadOnlyCollection<ControllerTouchPoint> TouchPoints => _touchPoints;
 

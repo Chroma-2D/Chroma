@@ -10,7 +10,7 @@ namespace Chroma.Input.GameControllers.Drivers
         private Vector3 _gyroscopeState;
         private Vector3 _accelerometerState;
         
-        private Dictionary<ControllerButton, ControllerButton> _remappedXboxLayout = new()
+        private readonly Dictionary<ControllerButton, ControllerButton> _remappedXboxLayout = new()
         {
             {ControllerButton.X, ControllerButton.Y},
             {ControllerButton.Y, ControllerButton.X},
@@ -18,8 +18,8 @@ namespace Chroma.Input.GameControllers.Drivers
             {ControllerButton.A, ControllerButton.B}
         };
         
-        public override string Name { get; } = "Nintendo Pro Controller Chroma Driver";
-        
+        public override string Name => "Nintendo Pro Controller Chroma Driver";
+
         public override bool UseXboxButtonLayout { get; set; }
         
         public Vector3 Gyroscope => _gyroscopeState;

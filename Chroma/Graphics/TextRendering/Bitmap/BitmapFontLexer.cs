@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Chroma.Graphics.TextRendering.Bitmap
+﻿namespace Chroma.Graphics.TextRendering.Bitmap
 {
     internal class BitmapFontLexer
     {
@@ -62,14 +60,14 @@ namespace Chroma.Graphics.TextRendering.Bitmap
             while (CurrentChar != '"')
             {
                 if (IsEOL)
-                    throw new Exception("Unterminated string.");
+                    throw new BitmapFontException("Unterminated string.");
 
                 if (CurrentChar == '\\')
                 {
                     Position++;
 
                     if (IsEOL)
-                        throw new Exception("Broken escape sequence.");
+                        throw new BitmapFontException("Broken escape sequence.");
 
                     str += CurrentChar;
                     Position++;

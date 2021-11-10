@@ -5,7 +5,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
 {
     internal class BitmapFontPage
     {
-        private Log Log => LogManager.GetForCurrentAssembly();
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
 
         public int ID { get; }
         public string FileName { get; }
@@ -22,7 +22,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
             }
             else
             {
-                Log.Warning($"Page {ID} texture file does not exist.");
+                _log.Warning($"Page {ID} texture file does not exist.");
             }
         }
     }

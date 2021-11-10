@@ -11,7 +11,7 @@ namespace Chroma.Graphics
 {
     public class RenderContext
     {
-        private GlyphTransformData _transformData = new();
+        private readonly GlyphTransformData _transformData = new();
         
         internal Window Owner { get; }
         internal IntPtr CurrentRenderTarget => TargetStack.Peek();
@@ -187,8 +187,8 @@ namespace Chroma.Graphics
                 Line(
                     vertices[0].X,
                     vertices[0].Y,
-                    vertices[vertices.Count - 1].X,
-                    vertices[vertices.Count - 1].Y,
+                    vertices[^1].X,
+                    vertices[^1].Y,
                     color
                 );
             }
@@ -353,7 +353,7 @@ namespace Chroma.Graphics
                 throw new ArgumentNullException(nameof(font), "Font cannot be null.");
             }
 
-            text = text ?? string.Empty;
+            text ??= string.Empty;
 
             var tx = x;
             var ty = y;

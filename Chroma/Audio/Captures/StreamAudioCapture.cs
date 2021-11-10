@@ -4,7 +4,7 @@ namespace Chroma.Audio.Captures
 {
     public class StreamAudioCapture : AudioCapture
     {
-        private Stream _stream;
+        private readonly Stream _stream;
         
         public StreamAudioCapture(
             Stream stream,

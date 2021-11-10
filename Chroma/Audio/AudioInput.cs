@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Chroma.Audio.Captures;
@@ -9,13 +8,13 @@ namespace Chroma.Audio
 {
     public class AudioInput
     {
-        private readonly Log _log = LogManager.GetForCurrentAssembly();
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
+        
+        private readonly List<AudioDevice> _devices = new();
+        private readonly List<AudioCapture> _activeCaptures = new();
         
         private static AudioInput _instance;
-        internal static AudioInput Instance => _instance ?? (_instance = new());
-
-        private List<AudioDevice> _devices = new();
-        private List<AudioCapture> _activeCaptures = new();
+        internal static AudioInput Instance => _instance ??= new();
 
         public IReadOnlyList<AudioDevice> Devices => _devices;
 

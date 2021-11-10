@@ -8,7 +8,7 @@ namespace Chroma.Audio.Captures
 {
     public abstract class AudioCapture : DisposableResource
     {
-        private readonly Log _log = LogManager.GetForCurrentAssembly();
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
         private CancellationTokenSource _finishTokenSource;
 
         private uint _deviceId;
@@ -22,7 +22,7 @@ namespace Chroma.Audio.Captures
         public CaptureStatus Status { get; protected set; } = CaptureStatus.Stopped;
         public ulong TotalSize { get; private set; }
 
-        public AudioCapture(
+        protected AudioCapture(
             AudioDevice device = null, 
             AudioFormat format = null, 
             ChannelMode channelMode = ChannelMode.Mono, 

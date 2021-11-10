@@ -8,7 +8,7 @@ namespace Chroma.Graphics
 {
     public class Display
     {
-        private Log Log { get; } = LogManager.GetForCurrentAssembly();
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
 
         public static readonly Display Invalid = new(-1);
 
@@ -24,7 +24,7 @@ namespace Chroma.Graphics
 
                 if (name == null)
                 {
-                    Log.Error($"Failed to retrieve display {Index} name: {SDL2.SDL_GetError()}");
+                    _log.Error($"Failed to retrieve display {Index} name: {SDL2.SDL_GetError()}");
                     return string.Empty;
                 }
                 
@@ -40,7 +40,7 @@ namespace Chroma.Graphics
 
                 if (SDL2.SDL_GetDisplayBounds(Index, out var rect) < 0)
                 {
-                    Log.Error($"Failed to retrieve display {Index} bounds: {SDL2.SDL_GetError()}");
+                    _log.Error($"Failed to retrieve display {Index} bounds: {SDL2.SDL_GetError()}");
                     return Rectangle.Empty;
                 }
                 
@@ -61,7 +61,7 @@ namespace Chroma.Graphics
 
                 if (SDL2.SDL_GetDisplayUsableBounds(Index, out var rect) < 0)
                 {
-                    Log.Error($"Failed to retrieve display {Index} desktop bounds: {SDL2.SDL_GetError()}");
+                    _log.Error($"Failed to retrieve display {Index} desktop bounds: {SDL2.SDL_GetError()}");
                     return Rectangle.Empty;
                 }
                 
@@ -82,7 +82,7 @@ namespace Chroma.Graphics
 
                 if (SDL2.SDL_GetDisplayDPI(Index, out var d, out var h, out var v) < 0)
                 {
-                    Log.Error($"Failed to retrieve display {Index} DPI info: {SDL2.SDL_GetError()}");
+                    _log.Error($"Failed to retrieve display {Index} DPI info: {SDL2.SDL_GetError()}");
                     return DisplayDpi.None;
                 }
 
@@ -98,7 +98,7 @@ namespace Chroma.Graphics
 
                 if (SDL2.SDL_GetDesktopDisplayMode(Index, out var mode) < 0)
                 {
-                    Log.Error($"Failed to retrieve desktop display mode: {SDL2.SDL_GetError()}");
+                    _log.Error($"Failed to retrieve desktop display mode: {SDL2.SDL_GetError()}");
                     return DisplayMode.Invalid;
                 }
 
@@ -118,7 +118,14 @@ namespace Chroma.Graphics
 
             for (var i = 0; i < displayModeCount; i++)
             {
-                SDL2.SDL_GetDisplayMode(Index, i, out var mode);
+                if (SDL2.SDL_GetDisplayMode(Index, i, out var mode) < 0)
+                {
+                    _log.Error(
+                        $"Failed to retrieve display mode for display {Index}, mode index {i}: {SDL2.SDL_GetError()}"
+                    );
+                    continue;
+                }
+                
                 ret.Add(new DisplayMode(mode.w, mode.h, mode.refresh_rate));
             }
 
@@ -136,7 +143,7 @@ namespace Chroma.Graphics
 
             if (SDL2.SDL_GetClosestDisplayMode(Index, ref mode, out var closest) == IntPtr.Zero)
             {
-                Log.Error($"Failed to retrieve a closest display mode for {width}x{height}");
+                _log.Error($"Failed to retrieve a closest display mode for {width}x{height}");
                 return DisplayMode.Invalid;
             }
 

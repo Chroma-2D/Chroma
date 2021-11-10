@@ -13,7 +13,8 @@ namespace Asynchronicity
 {
     public class GameCore : Game
     {
-        private readonly Log _log = LogManager.GetForCurrentAssembly();
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
+        
         private RenderTarget _target;
 
         public GameCore() : base(new(false, false))

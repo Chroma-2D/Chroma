@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 
 namespace Chroma.Hardware
 {
@@ -17,9 +18,9 @@ namespace Chroma.Hardware
         {
             var sb = new StringBuilder();
             
-            sb.Append(VendorId.ToString("X4"));
-            sb.Append(":");
-            sb.Append(ProductId.ToString("X4"));
+            sb.Append(VendorId.ToString("X4", CultureInfo.InvariantCulture));
+            sb.Append(':');
+            sb.Append(ProductId.ToString("X4", CultureInfo.InvariantCulture));
 
             return sb.ToString();
         }

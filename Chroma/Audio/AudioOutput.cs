@@ -10,13 +10,13 @@ namespace Chroma.Audio
 {
     public class AudioOutput
     {
-        private readonly Log _log = LogManager.GetForCurrentAssembly();
-
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
+        
+        private readonly List<AudioDevice> _devices = new();
+        private readonly List<Decoder> _decoders = new();
+        
         private static AudioOutput _instance;
-        internal static AudioOutput Instance => _instance ?? (_instance = new());
-
-        private List<AudioDevice> _devices = new();
-        private List<Decoder> _decoders = new();
+        internal static AudioOutput Instance => _instance ??= new();
 
         private bool _mixerInitialized;
         private bool _backendInitialized;
@@ -96,11 +96,7 @@ namespace Chroma.Audio
 
             _mixerInitialized = true;
 
-            if (device == null)
-            {
-                device = AudioDevice.DefaultOutput;
-            }
-            
+            device ??= AudioDevice.DefaultOutput;
             device.Lock(SDL2_nmix.NMIX_GetAudioDevice());
         }
 

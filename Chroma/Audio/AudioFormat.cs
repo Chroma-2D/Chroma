@@ -44,8 +44,8 @@ namespace Chroma.Audio
             ? new AudioFormat(SampleFormat.F32, ByteOrder.LittleEndian)
             : new AudioFormat(SampleFormat.F32, ByteOrder.BigEndian);
 
-        public SampleFormat SampleFormat { get; private set; }
-        public ByteOrder ByteOrder { get; private set; }
+        public SampleFormat SampleFormat { get; }
+        public ByteOrder ByteOrder { get; }
         
         public byte BitsPerSample
         {

@@ -9,19 +9,24 @@ namespace Chroma.Input
 {
     public class Cursor : DisposableResource
     {
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
+        
         private static bool _isVisible = true;
         private IntPtr _cursorHandle;
         private IntPtr _sdlTextureHandle;
-
-        private Log Log { get; } = LogManager.GetForCurrentAssembly();
 
         public static bool IsVisible
         {
             get => _isVisible;
             set
             {
+                if (SDL2.SDL_ShowCursor(value ? 1 : 0) < 0)
+                {
+                    _log.Error($"Failed to {(value ? "show" : "hide")} the cursor: {SDL2.SDL_GetError()}");
+                    return;
+                }
+                
                 _isVisible = value;
-                SDL2.SDL_ShowCursor(_isVisible ? 1 : 0);
             }
         }
 
@@ -81,7 +86,7 @@ namespace Chroma.Input
             );
 
             if (_cursorHandle == IntPtr.Zero)
-                Log.Error($"Failed to load the cursor: {SDL2.SDL_GetError()}");
+                _log.Error($"Failed to load the cursor: {SDL2.SDL_GetError()}");
         }
     }
 }

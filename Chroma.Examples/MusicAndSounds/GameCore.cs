@@ -20,7 +20,7 @@ namespace MusicAndSounds
 {
     public class GameCore : Game
     {
-        private readonly Log _log = LogManager.GetForCurrentAssembly();
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
 
         private Sound _doomShotgun;
         private Music _elysiumMod;

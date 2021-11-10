@@ -17,7 +17,7 @@ namespace WindowOperations
 {
     public class GameCore : Game
     {
-        private readonly Log _log = LogManager.GetForCurrentAssembly();
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
 
         private bool _drawCenterVector;
         private int _lastResult;

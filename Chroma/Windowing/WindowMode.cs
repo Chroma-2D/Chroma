@@ -8,8 +8,9 @@ namespace Chroma.Windowing
 {
     public class WindowMode
     {
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
+        
         private readonly Window _owner;
-        private readonly Log _log = LogManager.GetForCurrentAssembly();
         
         internal WindowMode(Window owner)
         {

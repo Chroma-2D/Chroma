@@ -30,7 +30,7 @@ namespace Chroma.Diagnostics.Logging.Sinks
 
         public void Dispose()
         {
-            StreamWriter.Dispose();
+            StreamWriter?.Dispose();
         }
     }
 }

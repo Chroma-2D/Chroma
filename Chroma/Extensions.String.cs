@@ -12,8 +12,9 @@ namespace Chroma
         {
             var ranges = new List<Range>();
 
-            foreach (var highlight in highlights)
+            for (var i = 0; i < highlights.Length; i++)
             {
+                var highlight = highlights[i];
                 var index = str.IndexOf(highlight, StringComparison.Ordinal);
 
                 if (index >= 0)

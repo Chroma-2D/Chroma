@@ -19,10 +19,10 @@ namespace Chroma.Graphics
             set => SDL_gpu.GPU_LoadMatrix(value.ToFloatArray());
         }
 
-        public static void Frustum(float left, float top, float right, float bottom, float z_near, float z_far)
+        public static void Frustum(float left, float top, float right, float bottom, float zNear, float zFar)
         {
             var mtx = Matrix.ToFloatArray();
-            SDL_gpu.GPU_MatrixFrustum(mtx, left, right, bottom, top, z_near, z_far);
+            SDL_gpu.GPU_MatrixFrustum(mtx, left, right, bottom, top, zNear, zFar);
 
             LoadMatrixByFloatPointer(mtx);
         }
@@ -87,10 +87,10 @@ namespace Chroma.Graphics
         public static void LoadIdentity()
             => SDL_gpu.GPU_LoadIdentity();
 
-        public static void Orthographic(float left, float top, float right, float bottom, float z_near, float z_far)
+        public static void Orthographic(float left, float top, float right, float bottom, float zNear, float zFar)
         {
             var mtx = Matrix.ToFloatArray();
-            SDL_gpu.GPU_MatrixOrtho(mtx, left, right, bottom, top, z_near, z_far);
+            SDL_gpu.GPU_MatrixOrtho(mtx, left, right, bottom, top, zNear, zFar);
 
             LoadMatrixByFloatPointer(mtx);
         }

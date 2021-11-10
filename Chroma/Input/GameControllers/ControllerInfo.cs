@@ -7,8 +7,8 @@ namespace Chroma.Input.GameControllers
 {
     public class ControllerInfo
     {
-        private Dictionary<ControllerAxis, bool> _supportedAxes;
-        private Dictionary<ControllerButton, bool> _supportedButtons;
+        private readonly Dictionary<ControllerAxis, bool> _supportedAxes;
+        private readonly Dictionary<ControllerButton, bool> _supportedButtons;
 
         internal IntPtr JoystickPointer { get; }
         internal IntPtr InstancePointer { get; }
@@ -83,14 +83,14 @@ namespace Chroma.Input.GameControllers
             sb.AppendLine($"  Touchpad count: {TouchpadCount}");
             sb.AppendLine("  Supported axes {");
 
-            foreach (var kvp in _supportedAxes)
-                sb.AppendLine($"    {kvp.Key}: {kvp.Value}");
+            foreach (var (axis, isSupported) in _supportedAxes)
+                sb.AppendLine($"    {axis}: {isSupported}");
 
             sb.AppendLine("  }");
 
             sb.AppendLine("  Supported buttons {");
-            foreach (var kvp in _supportedButtons)
-                sb.AppendLine($"    {kvp.Key}: {kvp.Value}");
+            foreach (var (button, isSupported) in _supportedButtons)
+                sb.AppendLine($"    {button}: {isSupported}");
 
             sb.AppendLine("  }");
             sb.AppendLine("}");

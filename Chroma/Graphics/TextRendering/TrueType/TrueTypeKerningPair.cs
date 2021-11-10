@@ -1,6 +1,6 @@
 namespace Chroma.Graphics.TextRendering.TrueType
 {
-    internal struct TrueTypeKerningPair
+    internal readonly struct TrueTypeKerningPair
     {
         public char Left { get; }
         public char Right { get; }

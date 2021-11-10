@@ -7,7 +7,7 @@ namespace Chroma.MemoryManagement
 {
     internal class SdlRwOps : DisposableResource
     {
-        private Stream _stream;
+        private readonly Stream _stream;
         private unsafe SDL2.SDL_RWops* _rwOps;
 
         private delegate long SdlRwOpsSizeDelegate(IntPtr context);
@@ -41,10 +41,7 @@ namespace Chroma.MemoryManagement
 
         internal SdlRwOps(Stream stream, bool keepOpen = false)
         {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream), "The underlying stream cannot be null.");
-
-            _stream = stream;
+            _stream = stream ?? throw new ArgumentNullException(nameof(stream), "The underlying stream cannot be null.");
 
             KeepOpen = keepOpen;
 
@@ -74,7 +71,7 @@ namespace Chroma.MemoryManagement
 
         private long Size(IntPtr context)
         {
-            long length = -1;
+            long length;
 
             try
             {
@@ -105,7 +102,7 @@ namespace Chroma.MemoryManagement
         {
             if (!_stream.CanRead)
             {
-                SDL2.SDL_SetError($"Attempted to read from a write-only stream.");
+                SDL2.SDL_SetError("Attempted to read from a write-only stream.");
                 return 0;
             }
 

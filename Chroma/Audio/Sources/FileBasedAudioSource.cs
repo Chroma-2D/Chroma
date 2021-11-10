@@ -9,11 +9,13 @@ namespace Chroma.Audio.Sources
 {
     public abstract class FileBasedAudioSource : AudioSource
     {
-        private readonly Log _log = LogManager.GetForCurrentAssembly();
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
+        
+        private readonly SdlRwOps _sdlRwOps;
+        
         private SDL2_nmix.NMIX_SourceCallback _originalSourceCallback;
         private SDL2_nmix.NMIX_SourceCallback _internalSourceCallback;
 
-        private SdlRwOps _sdlRwOps;
         internal IntPtr FileSourceHandle { get; private set; }
 
         internal unsafe SDL2_nmix.NMIX_FileSource* FileSource

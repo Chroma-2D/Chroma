@@ -7,7 +7,7 @@ namespace Chroma.Windowing.DragDrop
     {
         public List<string> Files { get; }
 
-        internal FileDragDropEventArgs(List<string> files)
+        internal FileDragDropEventArgs(IEnumerable<string> files)
         {
             Files = new List<string>(files);
         }

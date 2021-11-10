@@ -7,8 +7,9 @@ namespace Chroma.Audio
 {
     public class AudioManager
     {
-        private List<string> _audioDrivers = new();
-        private readonly Log _log = LogManager.GetForCurrentAssembly();
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
+        
+        private readonly List<string> _audioDrivers = new();
 
         public AudioInput Input => AudioInput.Instance;
         public AudioOutput Output => AudioOutput.Instance;

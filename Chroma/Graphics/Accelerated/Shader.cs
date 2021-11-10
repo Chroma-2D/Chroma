@@ -10,7 +10,7 @@ namespace Chroma.Graphics.Accelerated
 {
     public abstract class Shader : DisposableResource
     {
-        private readonly Log _log = LogManager.GetForCurrentAssembly();
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
 
         internal uint ProgramHandle;
         internal uint VertexShaderObjectHandle;
@@ -124,7 +124,7 @@ namespace Chroma.Graphics.Accelerated
 
             if (ProgramHandle == 0)
             {
-                _log.Warning($"Refusing to activate invalid shader.");
+                _log.Warning("Refusing to activate invalid shader.");
                 return;
             }
             

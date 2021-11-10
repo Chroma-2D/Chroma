@@ -15,7 +15,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
 {
     public class TrueTypeFont : DisposableResource, IFontProvider
     {
-        private readonly Log _log = LogManager.GetForCurrentAssembly();
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
         private static readonly FreeTypeLibrary _library;
 
         private unsafe FT_FaceRec* _face;
@@ -28,9 +28,10 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
         private int _maxBearing;
 
+        private readonly Dictionary<char, TrueTypeGlyph> _glyphs = new();
+        private readonly Dictionary<int, int> _kernings = new();
+        
         private byte[] _ttfData;
-        private Dictionary<char, TrueTypeGlyph> _glyphs = new();
-        private Dictionary<int, int> _kernings = new();
         private Texture _atlas;
 
         public static TrueTypeFont Default => EmbeddedAssets.DefaultFont;
@@ -228,9 +229,9 @@ namespace Chroma.Graphics.TextRendering.TrueType
             );
         }
 
-        public int GetKerning(char left, char right)
+        public int GetKerning(char first, char second)
         {
-            var key = (left << 16) | right;
+            var key = (first << 16) | second;
             
             _kernings.TryGetValue(key, out var kerning);
             return kerning;
@@ -273,10 +274,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
         private void CreateAlphabetIfNeeded()
         {
-            if (Alphabet == null)
-            {
-                Alphabet = GenerateAlphabet(1..512);
-            }
+            Alphabet ??= GenerateAlphabet(1..512);
         }
 
         private unsafe void UnloadTtf()
@@ -547,7 +545,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
         {
             InvalidateFont();
             
-            if (_ttfData != null && _ttfData.Length > 0)
+            if (_ttfData is { Length: > 0 })
                 _ttfData = null;
         }
     }

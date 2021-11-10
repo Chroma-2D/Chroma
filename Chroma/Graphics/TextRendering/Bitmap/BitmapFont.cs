@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Numerics;
@@ -11,7 +12,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
 {
     public class BitmapFont : DisposableResource, IFontProvider
     {
-        private readonly Log _log = LogManager.GetForCurrentAssembly();
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
 
         private readonly List<string> _lines;
         private readonly Dictionary<string, Action> _parsers;
@@ -62,15 +63,15 @@ namespace Chroma.Graphics.TextRendering.Bitmap
         public int GetKerning(char first, char second)
             => Kernings.FirstOrDefault(x => x.First == first && x.Second == second).Amount;
 
-        public Size Measure(string s)
+        public Size Measure(string text)
         {
             var maxWidth = 0;
             var width = 0;
             var height = LineSpacing;
 
-            for (var i = 0; i < s.Length; i++)
+            for (var i = 0; i < text.Length; i++)
             {
-                var c = s[i];
+                var c = text[i];
 
                 if (c == '\n')
                 {
@@ -167,7 +168,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
                     continue;
 
                 var words = line.Trim().Split(' ').ToList();
-                words.RemoveAll(x => string.IsNullOrWhiteSpace(x));
+                words.RemoveAll(string.IsNullOrWhiteSpace);
 
                 var verb = words[0];
                 var arguments = string.Join(' ', words.Skip(1));
@@ -485,17 +486,17 @@ namespace Chroma.Graphics.TextRendering.Bitmap
             => value != "0";
 
         private int GetInteger(string value)
-            => int.Parse(value);
+            => int.Parse(value, CultureInfo.InvariantCulture);
 
         private Vector4 GetPadding(string value)
         {
-            var values = value.Split(',').Select(x => int.Parse(x)).ToArray();
+            var values = value.Split(',').Select(x => int.Parse(x, CultureInfo.InvariantCulture)).ToArray();
             return new Vector4(values[0], values[1], values[2], values[3]);
         }
 
         private Vector2 GetSpacing(string value)
         {
-            var values = value.Split(',').Select(x => int.Parse(x)).ToArray();
+            var values = value.Split(',').Select(x => int.Parse(x, CultureInfo.InvariantCulture)).ToArray();
             return new Vector2(values[0], values[1]);
         }
     }

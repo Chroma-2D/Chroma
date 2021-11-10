@@ -6,8 +6,9 @@ namespace Chroma
 {
     internal class BootScene
     {
+        private const int FrameCount = 301;
+        
         private readonly Game _game;
-        private readonly int _frameCount = 301;
         private readonly Vector2 _bootTextTextureOffset = new(0, 270);
 
         private int _currentFrame;
@@ -34,12 +35,12 @@ namespace Chroma
             EmbeddedAssets.BootLogoTexture.ColorMask = new Color(1f, 1f, 1f, CurrentBootLogoProperties.Opacity);
             EmbeddedAssets.BootTextTexture.ColorMask = new Color(1f, 1f, 1f, CurrentBootTextProperties.Opacity);
 
-            if (_currentFrame >= _frameCount)
+            if (_currentFrame >= FrameCount)
                 return;
 
             _currentFrame++;
 
-            if (_currentFrame >= _frameCount)
+            if (_currentFrame >= FrameCount)
                 Finished?.Invoke(this, EventArgs.Empty);
         }
 

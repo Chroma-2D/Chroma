@@ -18,7 +18,7 @@ namespace Chroma.Windowing
 {
     public sealed class Window : DisposableResource
     {
-        private readonly Log _log = LogManager.GetForCurrentAssembly();
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
 
         // Prevents delegate garbage collection.
         private readonly SDL2.SDL_HitTest _internalHitTestCallback;
@@ -192,11 +192,8 @@ namespace Chroma.Windowing
 
         public bool CanResize
         {
-            get
-            {
-                var flags = SDL2.SDL_GetWindowFlags(Handle);
-                return flags.HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_RESIZABLE);
-            }
+            get => SDL2.SDL_GetWindowFlags(Handle)
+                    .HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_RESIZABLE);
 
             set => SDL2.SDL_SetWindowResizable(Handle, value);
         }
@@ -342,13 +339,15 @@ namespace Chroma.Windowing
 
                 _hitTestDelegate = value;
 
-                if (IsHitTestEnabled)
+                if (SDL2.SDL_SetWindowHitTest(
+                    Handle,
+                    IsHitTestEnabled
+                        ? _internalHitTestCallback
+                        : null,
+                    IntPtr.Zero
+                ) < 0)
                 {
-                    SDL2.SDL_SetWindowHitTest(Handle, _internalHitTestCallback, IntPtr.Zero);
-                }
-                else
-                {
-                    SDL2.SDL_SetWindowHitTest(Handle, null, IntPtr.Zero);
+                    _log.Error($"Failed to set the window hit testing delegate: {SDL2.SDL_GetError()}");
                 }
             }
         }
@@ -372,7 +371,7 @@ namespace Chroma.Windowing
         public event EventHandler<CancelEventArgs> QuitRequested;
         public event EventHandler<FileDragDropEventArgs> FilesDropped;
         public event EventHandler<TextDragDropEventArgs> TextDropped;
-        
+
         internal Window(Game game)
         {
             Game = game;
@@ -420,10 +419,20 @@ namespace Chroma.Windowing
             => SDL2.SDL_HideWindow(Handle);
 
         public void Flash(WindowFlash flash)
-            => SDL2.SDL_FlashWindow(Handle, (SDL2.SDL_FlashOperation)flash);
+        {
+            if (SDL2.SDL_FlashWindow(Handle, (SDL2.SDL_FlashOperation)flash) < 0)
+            {
+                _log.Error($"Failed to flash the window using {flash}: {SDL2.SDL_GetError()}");
+            }
+        }
 
         public void StopFlashing()
-            => SDL2.SDL_FlashWindow(Handle, SDL2.SDL_FlashOperation.SDL_FLASH_CANCEL);
+        {
+            if (SDL2.SDL_FlashWindow(Handle, SDL2.SDL_FlashOperation.SDL_FLASH_CANCEL) < 0)
+            {
+                _log.Error($"Failed to stop flashing the window: {SDL2.SDL_GetError()}");
+            }
+        }
 
         public void CenterOnScreen()
         {
@@ -456,7 +465,7 @@ namespace Chroma.Windowing
             EnsureNotDisposed();
 
             var rwOpsIo = new SdlRwOps(outputStream);
-            
+
             var created = false;
             var locked = false;
 
@@ -474,7 +483,7 @@ namespace Chroma.Windowing
 
             if (surface == IntPtr.Zero)
                 goto __exit;
-            
+
             if (SDL2.SDL_LockSurface(surface) < 0)
             {
                 _log.Error($"Failed to lock the created SDL surface: {SDL2.SDL_GetError()}");
@@ -588,7 +597,7 @@ namespace Chroma.Windowing
 
         internal void OnFocusOffered()
         {
-            SDL2.SDL_SetWindowInputFocus(Handle);
+            SDL2.SDL_RaiseWindow(Handle);
         }
 
         internal void OnFocused()
@@ -645,7 +654,7 @@ namespace Chroma.Windowing
         {
             if (Update == null)
                 return;
-                    
+
             Update(delta);
 
             while (Dispatcher.ActionQueue.Any())

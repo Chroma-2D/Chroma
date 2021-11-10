@@ -24,11 +24,12 @@ namespace Chroma.Graphics
 
         internal SDL2.SDL_DisplayMode ToSdlDisplayMode()
         {
-            var displayMode = new SDL2.SDL_DisplayMode();
-            
-            displayMode.w = Width;
-            displayMode.h = Height;
-            displayMode.refresh_rate = RefreshRate;
+            var displayMode = new SDL2.SDL_DisplayMode
+            {
+                w = Width,
+                h = Height,
+                refresh_rate = RefreshRate
+            };
 
             return displayMode;
         }
@@ -38,9 +39,9 @@ namespace Chroma.Graphics
             var sb = new StringBuilder();
 
             sb.Append(Width);
-            sb.Append("x");
+            sb.Append('x');
             sb.Append(Height);
-            sb.Append("@");
+            sb.Append('@');
             sb.Append(RefreshRate);
             sb.Append("Hz");
 

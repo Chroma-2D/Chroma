@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Chroma.Hardware;
 using Chroma.Input.GameControllers.Drivers;
-using Chroma.Natives.SDL;
 
 namespace Chroma.Input.GameControllers
 {
@@ -10,7 +9,7 @@ namespace Chroma.Input.GameControllers
     {
         public delegate ControllerDriver ControllerFactoryDelegate(ControllerInfo info);
 
-        private static Dictionary<ProductInfo, ControllerFactoryDelegate> _factoryDelegateLookup = new();
+        private static readonly Dictionary<ProductInfo, ControllerFactoryDelegate> _factoryDelegateLookup = new();
 
         public static bool IsDriverPresent(ProductInfo info)
             => _factoryDelegateLookup.ContainsKey(info);
@@ -32,7 +31,7 @@ namespace Chroma.Input.GameControllers
             _factoryDelegateLookup.Remove(info);
             return true;
         }
-        
+
         internal static ControllerDriver Create(ControllerInfo info)
         {
             var type = info.Type;
@@ -56,13 +55,15 @@ namespace Chroma.Input.GameControllers
                 case ControllerType.PlayStation3:
                 case ControllerType.Virtual:
                 case ControllerType.Unknown:
+                case ControllerType.AmazonLuna:
+                case ControllerType.GoogleStadia:
                     return new GenericControllerDriver(info);
 
                 default:
                     throw new InvalidOperationException("Unrecognized controller type.");
             }
         }
-        
+
         private static ControllerDriver CreateNintendoDriverInstance(ControllerInfo info)
         {
             if (info.ProductInfo.VendorId != 0x057E)

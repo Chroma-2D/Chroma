@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
+using Chroma.Diagnostics.Logging;
 using Chroma.Natives.SDL;
 using Chroma.Windowing;
 
@@ -7,6 +8,7 @@ namespace Chroma.Input
 {
     public static class Mouse
     {
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
         private static readonly HashSet<MouseButton> _buttonStates = new();
 
         public static IReadOnlySet<MouseButton> ActiveButtons => _buttonStates;
@@ -14,7 +16,16 @@ namespace Chroma.Input
         public static bool IsRelativeModeEnabled
         {
             get => SDL2.SDL_GetRelativeMouseMode();
-            set => SDL2.SDL_SetRelativeMouseMode(value);
+            set
+            {
+                if (SDL2.SDL_SetRelativeMouseMode(value) < 0)
+                {
+                    _log.Error(
+                        $"Failed to {(value ? "enable" : "disable")} relative mouse mode: {SDL2.SDL_GetError()}"
+                    );
+                }
+                
+            }
         }
 
         public static bool IsCaptured
@@ -61,7 +72,10 @@ namespace Chroma.Input
         {
             if (screenSpace)
             {
-                SDL2.SDL_WarpMouseGlobal(x, y);
+                if (SDL2.SDL_WarpMouseGlobal(x, y) < 0)
+                {
+                    _log.Error($"Failed to warp mouse to screen-space coordinates ({x}, {y}): {SDL2.SDL_GetError()}");
+                }
             }
             else
             {

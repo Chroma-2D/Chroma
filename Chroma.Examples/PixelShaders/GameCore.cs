@@ -17,7 +17,7 @@ namespace PixelShaders
 {
     public class GameCore : Game
     {
-        private readonly Log _log = LogManager.GetForCurrentAssembly();
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
 
         private RenderTarget _target;
         private Effect _tintEffect;

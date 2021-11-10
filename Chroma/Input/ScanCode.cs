@@ -196,6 +196,6 @@ namespace Chroma.Input
         Eject = SDL_Scancode.SDL_SCANCODE_EJECT,
         Sleep = SDL_Scancode.SDL_SCANCODE_SLEEP,
         Application1 = SDL_Scancode.SDL_SCANCODE_APP1,
-        Application2 = SDL_Scancode.SDL_SCANCODE_APP2,
+        Application2 = SDL_Scancode.SDL_SCANCODE_APP2
     }
 }

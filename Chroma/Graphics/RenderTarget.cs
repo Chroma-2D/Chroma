@@ -2,7 +2,6 @@
 using System.Drawing;
 using Chroma.Diagnostics.Logging;
 using Chroma.Natives.SDL;
-using Chroma.Threading;
 
 namespace Chroma.Graphics
 {

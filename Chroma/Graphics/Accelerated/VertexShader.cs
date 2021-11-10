@@ -1,6 +1,4 @@
 ﻿using System.IO;
-using System.Numerics;
-using Chroma.Diagnostics.Logging;
 using Chroma.Natives.SDL;
 
 namespace Chroma.Graphics.Accelerated

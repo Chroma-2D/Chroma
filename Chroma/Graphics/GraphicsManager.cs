@@ -11,12 +11,13 @@ namespace Chroma.Graphics
 {
     public class GraphicsManager
     {
-        private readonly Log _log = LogManager.GetForCurrentAssembly();
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
+        private readonly GameStartupOptions _startupOptions;
+
         private Stack<SDL_gpu.GPU_RendererID> _rendererIdStack;
-        
+
         private VerticalSyncMode _verticalSyncMode;
-        private GameStartupOptions _startupOptions;
-        
+
         internal bool AnyRenderersAvailable => _rendererIdStack != null && _rendererIdStack.Any();
 
         public bool ViewportAutoResize { get; set; } = true;
@@ -29,20 +30,24 @@ namespace Chroma.Graphics
             get => _verticalSyncMode;
             set
             {
-                _verticalSyncMode = value;
-
-                var result = SDL2.SDL_GL_SetSwapInterval((int)_verticalSyncMode);
-
-                if (result < 0)
+                if (SDL2.SDL_GL_SetSwapInterval((int)value) < 0)
                 {
-                    _verticalSyncMode = VerticalSyncMode.Retrace;
-                    SDL2.SDL_GL_SetSwapInterval(1);
-
                     _log.Warning(
                         $"Failed to set the requested display synchronization mode: {SDL2.SDL_GetError()}. " +
-                        "Defaulting to vertical retrace."
+                        "Attempting to default to vertical retrace."
                     );
+
+                    if (SDL2.SDL_GL_SetSwapInterval(1) < 0)
+                    {
+                        _log.Error($"Failed to set the fallback vertical retrace synchronization mode: {SDL2.SDL_GetError()}.");
+                        return;
+                    }
+                    
+                    _verticalSyncMode = VerticalSyncMode.Retrace;
+                    return;
                 }
+                
+                _verticalSyncMode = value;
             }
         }
 
@@ -129,20 +134,18 @@ namespace Chroma.Graphics
                 return true;
             }
 
-            if (_rendererIdStack == null)
-            {
-                _rendererIdStack = new(GetRegisteredRenderers().OrderBy(x => x.major_version));
-            }
+            _rendererIdStack ??= new(GetRegisteredRenderers().OrderBy(x => x.major_version));
 
             while (AnyRenderersAvailable)
             {
                 var rendererId = _rendererIdStack.Peek();
 
-                _log.Info($"Querying OpenGL details for OpenGL {rendererId.major_version}.{rendererId.minor_version}...");
+                _log.Info(
+                    $"Querying OpenGL details for OpenGL {rendererId.major_version}.{rendererId.minor_version}...");
 
                 if (ProbeGlLimits(rendererId, QueryProperties))
                     return true;
-                
+
                 _rendererIdStack.Pop();
             }
 
@@ -191,7 +194,7 @@ namespace Chroma.Graphics
             if (SDL2.SDL_GL_SetAttribute(SDL2.SDL_GLattr.SDL_GL_ACCELERATED_VISUAL, 1) < 0)
             {
                 _log.Error($"Failed to force hardware-accelerated visuals: {SDL2.SDL_GetError()} " +
-                           $"Performance might be degraded.");
+                           "Performance might be degraded.");
             }
 
             var rendererId = _rendererIdStack.Peek();
@@ -211,10 +214,10 @@ namespace Chroma.Graphics
                 {
                     err = SDL_gpu.GPU_PopErrorCode();
                 }
-                
+
                 _rendererIdStack.Pop();
                 windowHandle = IntPtr.Zero;
-                
+
                 return IntPtr.Zero;
             }
 
@@ -229,12 +232,12 @@ namespace Chroma.Graphics
                 var d = displays[i];
                 _log.Info($"  Display {d.Index} ({d.Name}) [{d.Bounds.Width}x{d.Bounds.Height}], mode {d.DesktopMode}");
             }
-            
-            windowHandle = SDL2.SDL_GL_GetCurrentWindow();           
+
+            windowHandle = SDL2.SDL_GL_GetCurrentWindow();
             return renderTargetHandle;
         }
 
-        private List<SDL_gpu.GPU_RendererID> GetRegisteredRenderers()
+        private static IEnumerable<SDL_gpu.GPU_RendererID> GetRegisteredRenderers()
         {
             var renderers = SDL_gpu.GPU_GetNumRegisteredRenderers();
             var registeredRenderers = new SDL_gpu.GPU_RendererID[renderers];

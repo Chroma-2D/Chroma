@@ -13,9 +13,9 @@ namespace Chroma.Graphics.TextRendering
         bool IsKerningEnabled { get; set; }
         
         bool HasGlyph(char c);
-        Size Measure(string s);
+        Size Measure(string text);
 
-        int GetKerning(char left, char right);
+        int GetKerning(char first, char second);
         int GetHorizontalAdvance(char c);
         
         Texture GetTexture(char c = (char)0);

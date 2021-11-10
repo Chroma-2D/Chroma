@@ -12,7 +12,7 @@ namespace Chroma.Graphics
 {
     public class Texture : DisposableResource
     {
-        private readonly Log _log = LogManager.GetForCurrentAssembly();
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
 
         internal IntPtr ImageHandle { get; private set; }
         internal unsafe SDL_gpu.GPU_Image* Image => (SDL_gpu.GPU_Image*)ImageHandle.ToPointer();
@@ -344,12 +344,7 @@ namespace Chroma.Graphics
             {
                 EnsureNotDisposed();
 
-                if (!_virtualResolution.HasValue)
-                {
-                    _virtualResolution = new Size(Width, Height);
-                }
-
-                return _virtualResolution;
+                return _virtualResolution ??= new Size(Width, Height);
             }
 
             set

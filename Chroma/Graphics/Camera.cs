@@ -88,8 +88,10 @@ namespace Chroma.Graphics
         {
             get
             {
-                var c = new Camera();
-                c.GpuCamera = SDL_gpu.GPU_GetDefaultCamera();
+                var c = new Camera
+                {
+                    GpuCamera = SDL_gpu.GPU_GetDefaultCamera()
+                };
 
                 return c;
             }

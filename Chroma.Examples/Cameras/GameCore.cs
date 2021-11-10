@@ -4,6 +4,7 @@ using System.Numerics;
 using Chroma;
 using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
+using Chroma.Diagnostics;
 using Chroma.Graphics;
 using Chroma.Input;
 
@@ -29,30 +30,35 @@ namespace Cameras
 
         protected override void LoadContent()
         {
-            _cam = new Camera();
-            _cam.UseCenteredOrigin = true;
+            _cam = new Camera
+            {
+                UseCenteredOrigin = true
+            };
+            
             _grid = Content.Load<Texture>("Textures/grid.png");
             _burg = Content.Load<Texture>("Textures/burg.png");
         }
 
         protected override void Update(float delta)
         {
+            Window.Title = $"{PerformanceCounter.FPS} | {PerformanceCounter.Delta}";
+            
             if (Keyboard.IsKeyDown(KeyCode.W))
             {
-                _cam.Y += (int)(100 * delta);
+                _cam.Y += (int)(500 * delta);
             }
             else if (Keyboard.IsKeyDown(KeyCode.S))
             {
-                _cam.Y -= (int)(100 * delta);
+                _cam.Y -= (int)(500 * delta);
             }
 
             if (Keyboard.IsKeyDown(KeyCode.A))
             {
-                _cam.X -= (int)(100 * delta);
+                _cam.X -= (int)(500 * delta);
             }
             else if (Keyboard.IsKeyDown(KeyCode.D))
             {
-                _cam.X += (int)(100 * delta);
+                _cam.X += (int)(500 * delta);
             }
 
             if (Keyboard.IsKeyDown(KeyCode.Up))

@@ -13,7 +13,7 @@ namespace Chroma.Graphics
             if (surface == IntPtr.Zero)
                 throw new FrameworkException("Surface pointer cannot be null.");
             
-            uint sdlFormat = 0;
+            uint sdlFormat;
 
             sdlFormat = format switch
             {

@@ -20,7 +20,7 @@ namespace Chroma
         private static BootScene _bootScene;
         private int _fixedTimeStepTarget;
 
-        private readonly Log _log = LogManager.GetForCurrentAssembly();
+        private static readonly Log _log = LogManager.GetForCurrentAssembly();
 
         internal static bool WasConstructed { get; private set; }
 
@@ -51,8 +51,7 @@ namespace Chroma
                 );
             }
 
-            if (options == null)
-                options = new GameStartupOptions();
+            options ??= new GameStartupOptions();
 
             StartupOptions = options;
             WasConstructed = true;
@@ -242,7 +241,7 @@ namespace Chroma
 
         private void InitializeThreading()
         {
-            Dispatcher.MainThreadId = Thread.CurrentThread.ManagedThreadId;
+            Dispatcher.MainThreadId = Environment.CurrentManagedThreadId;
         }
 
         private void InitializeGraphics()

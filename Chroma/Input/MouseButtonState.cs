@@ -2,7 +2,7 @@
 
 namespace Chroma.Input
 {
-    public struct MouseButtonState
+    public readonly struct MouseButtonState
     {
         public bool Left { get; }
         public bool Right { get; }

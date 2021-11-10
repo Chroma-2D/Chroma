@@ -8,7 +8,7 @@ namespace Chroma.Windowing.DragDrop
 {
     internal class DragDropManager
     {
-        private Window _owner;
+        private readonly Window _owner;
 
         private bool? _isFileDrop;
 
@@ -33,8 +33,7 @@ namespace Chroma.Windowing.DragDrop
             if (stringPtr == IntPtr.Zero)
                 return;
 
-            if (_isFileDrop == null)
-                _isFileDrop = true;
+            _isFileDrop ??= true;
 
             if (_isFileDrop != true)
                 throw new FrameworkException("Unexpected operation type change during a drop operation.");
@@ -48,8 +47,7 @@ namespace Chroma.Windowing.DragDrop
             if (stringPtr == IntPtr.Zero)
                 return;
 
-            if (_isFileDrop == null)
-                _isFileDrop = false;
+            _isFileDrop ??= false;
 
             if (_isFileDrop != false)
                 throw new FrameworkException("Unexpected operation type change during a drop operation.");

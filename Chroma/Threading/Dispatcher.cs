@@ -12,7 +12,7 @@ namespace Chroma.Threading
         public static int MainThreadId { get; internal set; }
 
         public static bool IsMainThread
-            => Thread.CurrentThread.ManagedThreadId == MainThreadId;
+            => Environment.CurrentManagedThreadId == MainThreadId;
         
         public static Task RunOnMainThread(Action action)
         {

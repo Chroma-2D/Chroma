@@ -22,8 +22,8 @@ namespace Chroma.Diagnostics.Logging.Decorators
         {
             return Mode switch
             {
-                DisplayMode.TimeString24h => DateTime.Now.ToString("HH:mm:ss"),
-                DisplayMode.TimeString12h => DateTime.Now.ToString("hh:mm:ss tt"),
+                DisplayMode.TimeString24h => DateTime.Now.ToString("HH:mm:ss", CultureInfo.InvariantCulture),
+                DisplayMode.TimeString12h => DateTime.Now.ToString("hh:mm:ss tt", CultureInfo.InvariantCulture),
                 DisplayMode.DefaultDateTimeString => DateTime.Now.ToString(CultureInfo.InvariantCulture),
 
                 _ => "??:??:??"

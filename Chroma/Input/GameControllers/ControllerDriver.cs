@@ -10,7 +10,7 @@ namespace Chroma.Input.GameControllers
 {
     public abstract class ControllerDriver
     {
-        protected static Log _log = LogManager.GetForCurrentAssembly();
+        protected static readonly Log _log = LogManager.GetForCurrentAssembly();
 
         protected Dictionary<ControllerAxis, ushort> _deadZones = new();
         protected HashSet<ControllerButton> _buttonStates = new();
@@ -106,12 +106,15 @@ namespace Chroma.Input.GameControllers
             if (Info == null || Info.InstancePointer == IntPtr.Zero)
                 return;
 
-            SDL2.SDL_GameControllerRumble(
+            if (SDL2.SDL_GameControllerRumble(
                 Info.InstancePointer,
                 leftIntensity,
                 rightIntensity,
                 duration
-            );
+            ) < 0)
+            {
+                _log.Error($"Failed to rumble controller at player index {Info.PlayerIndex}, '{Info.Name}': {SDL2.SDL_GetError()}");
+            }
         }
 
         public virtual string RetrieveMapping()

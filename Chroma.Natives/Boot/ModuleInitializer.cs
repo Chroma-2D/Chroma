@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Chroma.Natives.Boot.Config;
 using Chroma.Natives.Boot.PlatformSpecific;
 using Chroma.Natives.SDL;
@@ -83,7 +84,7 @@ namespace Chroma.Natives.Boot
                     JsonSerializer.Serialize(BootConfig, new JsonSerializerOptions
                     {
                         WriteIndented = true,
-                        IgnoreNullValues = true,
+                        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                         IgnoreReadOnlyProperties = false
                     })
                 );

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Reflection;
 using Chroma.Graphics;
-using Chroma.Graphics.TextRendering;
 
 namespace Chroma
 {

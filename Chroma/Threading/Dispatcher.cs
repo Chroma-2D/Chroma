@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Chroma.Threading
@@ -20,7 +19,7 @@ namespace Chroma.Threading
             
             ActionQueue.Enqueue(scheduledAction);
 
-            return new Task(async () =>
+            return new(async () =>
             {
                 while (!scheduledAction.Completed)
                     await Task.Delay(1);

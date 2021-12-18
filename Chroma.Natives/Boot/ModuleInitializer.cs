@@ -125,7 +125,7 @@ namespace Chroma.Natives.Boot
             {
                 foreach (var kvp in BootConfig.SdlInitializationHints)
                 {
-                    if (!SDL2.SDL_SetHint(kvp.Key, kvp.Value))
+                    if (SDL2.SDL_SetHint(kvp.Key, kvp.Value))
                     {
                         Console.WriteLine($"Failed to set '{kvp.Key}' to '{kvp.Value}': {SDL2.SDL_GetError()}");
                     }

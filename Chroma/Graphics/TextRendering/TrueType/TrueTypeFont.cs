@@ -373,7 +373,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
                     if (HasGlyph(character))
                     {
                         _log.Warning(
-                            $"The font {FamilyName} has already generated the glyph for \\u{(int)character:X4}");
+                            $"The font {FamilyName} has already generated the glyph for \\u{character:X4}");
                         continue;
                     }
 

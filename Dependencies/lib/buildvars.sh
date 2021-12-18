@@ -11,7 +11,8 @@ MAKE=make
 
 FT_TAG=VER-2-11-0
 HB_TAG=2.9.0
-SDL_TAG=release-2.0.16
+SDL_VER=0.18
+SDL_TAG=release-2.$SDL_VER
 
 NATIVES_DIR=$SCRIPT_DIR/build_env
 PATCH_DIR=$SCRIPT_DIR/patches

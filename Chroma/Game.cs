@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using Chroma.Audio;
 using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;

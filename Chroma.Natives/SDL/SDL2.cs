@@ -443,6 +443,7 @@ namespace Chroma.Natives.SDL
 
 		#region SDL_hints.h
 
+
 		public const string SDL_HINT_FRAMEBUFFER_ACCELERATION =
 			"SDL_FRAMEBUFFER_ACCELERATION";
 		public const string SDL_HINT_RENDER_DRIVER =
@@ -691,6 +692,24 @@ namespace Chroma.Natives.SDL
 			"SDL_AUDIO_INCLUDE_MONITORS";
 		public const string SDL_HINT_VIDEO_WAYLAND_ALLOW_LIBDECOR =
 			"SDL_VIDEO_WAYLAND_ALLOW_LIBDECOR";
+
+		/* Only available in 2.0.18 or higher. */
+		public const string SDL_HINT_VIDEO_EGL_ALLOW_TRANSPARENCY =
+			"SDL_VIDEO_EGL_ALLOW_TRANSPARENCY";
+		public const string SDL_HINT_APP_NAME =
+			"SDL_APP_NAME";
+		public const string SDL_HINT_SCREENSAVER_INHIBIT_ACTIVITY_NAME =
+			"SDL_SCREENSAVER_INHIBIT_ACTIVITY_NAME";
+		public const string SDL_HINT_IME_SHOW_UI =
+			"SDL_IME_SHOW_UI";
+		public const string SDL_HINT_WINDOW_NO_ACTIVATION_WHEN_SHOWN =
+			"SDL_WINDOW_NO_ACTIVATION_WHEN_SHOWN";
+		public const string SDL_HINT_POLL_SENTINEL =
+			"SDL_POLL_SENTINEL";
+		public const string SDL_HINT_JOYSTICK_DEVICE =
+			"SDL_JOYSTICK_DEVICE";
+		public const string SDL_HINT_LINUX_JOYSTICK_CLASSIC =
+			"SDL_LINUX_JOYSTICK_CLASSIC";
 
 		public enum SDL_HintPriority
 		{
@@ -1382,7 +1401,10 @@ namespace Chroma.Natives.SDL
 			SDL_WINDOWEVENT_CLOSE,
 			/* Only available in 2.0.5 or higher. */
 			SDL_WINDOWEVENT_TAKE_FOCUS,
-			SDL_WINDOWEVENT_HIT_TEST
+			SDL_WINDOWEVENT_HIT_TEST,
+			/* Only available in 2.0.18 or higher. */
+			SDL_WINDOWEVENT_ICCPROF_CHANGED,
+			SDL_WINDOWEVENT_DISPLAY_CHANGED
 		}
 
 		public enum SDL_DisplayEventID : byte
@@ -1747,6 +1769,17 @@ namespace Chroma.Natives.SDL
 		public static extern int SDL_GetWindowDisplayMode(
 			IntPtr window,
 			out SDL_DisplayMode mode
+		);
+		
+		/* IntPtr refers to a void*
+		 * window refers to an SDL_Window*
+		 * mode refers to a size_t*
+		 * Only available in 2.0.18 or higher.
+		 */
+		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+		public static extern IntPtr SDL_GetWindowICCProfile(
+			IntPtr window,
+			out IntPtr mode
 		);
 
 		/* window refers to an SDL_Window* */
@@ -2215,6 +2248,35 @@ namespace Chroma.Natives.SDL
 		public static extern IntPtr SDL_GetGrabbedWindow();
 
 		/* window refers to an SDL_Window*
+		 * Only available in 2.0.18 or higher.
+		 */
+		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+		public static extern int SDL_SetWindowMouseRect(
+			IntPtr window,
+			ref SDL_Rect rect
+		);
+		
+		/* window refers to an SDL_Window*
+		 * rect refers to an SDL_Rect*
+		 * This overload allows for IntPtr.Zero (null) to be passed for rect.
+		 * Only available in 2.0.18 or higher.
+		 */
+		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+		public static extern int SDL_SetWindowMouseRect(
+			IntPtr window,
+			IntPtr rect
+		);
+		
+		/* window refers to an SDL_Window*
+		 * IntPtr refers to an SDL_Rect*
+		 * Only available in 2.0.18 or higher.
+		 */
+		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+		public static extern IntPtr SDL_GetWindowMouseRect(
+			IntPtr window
+		);
+		
+		/* window refers to an SDL_Window*
 	    * Only available in 2.0.16 or higher.
 	    */
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
@@ -2429,6 +2491,15 @@ namespace Chroma.Natives.SDL
 			SDL_ScaleModeLinear,
 			SDL_ScaleModeBest
 		}
+		
+		/* Only available in 2.0.18 or higher. */
+		[StructLayout(LayoutKind.Sequential)]
+		public struct SDL_Vertex
+		{
+			public SDL_FPoint position;
+			public SDL_Color color;
+			public SDL_FPoint tex_coord;
+		}
 
 		/* IntPtr refers to an SDL_Renderer*, window to an SDL_Window* */
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
@@ -2497,6 +2568,22 @@ namespace Chroma.Natives.SDL
 			IntPtr texture,
 			out SDL_ScaleMode scaleMode
 		);
+		
+		/* texture refers to an SDL_Texture*
+		 * userdata refers to a void*
+		 * Only available in 2.0.18 or higher.
+		 */
+		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+		public static extern int SDL_SetTextureUserData(
+			IntPtr texture,
+			IntPtr userdata
+		);
+		
+		/* IntPtr refers to a void*, texture refers to an SDL_Texture*
+		 * Only available in 2.0.18 or higher.
+		 */
+		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+		public static extern IntPtr SDL_GetTextureUserData(IntPtr texture);
 
 		/* renderer refers to an SDL_Renderer* */
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
@@ -2968,6 +3055,41 @@ namespace Chroma.Natives.SDL
 			ref SDL_FPoint center,
 			SDL_RendererFlip flip
 		);
+		
+		/* renderer refers to an SDL_Renderer*
+		 * texture refers to an SDL_Texture*
+		 * Only available in 2.0.18 or higher.
+		 */
+		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+		public static extern int SDL_RenderGeometry(
+			IntPtr renderer,
+			IntPtr texture,
+			[In] SDL_Vertex[] vertices,
+			int num_vertices,
+			[In] int[] indices,
+			int num_indices
+		);
+		
+		/* renderer refers to an SDL_Renderer*
+		 * texture refers to an SDL_Texture*
+		 * indices refers to a void*
+		 * Only available in 2.0.18 or higher.
+		 */
+		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+		public static extern int SDL_RenderGeometryRaw(
+			IntPtr renderer,
+			IntPtr texture,
+			[In] float[] xy,
+			int xy_stride,
+			[In] int[] color,
+			int color_stride,
+			[In] float[] uv,
+			int uv_stride,
+			int num_vertices,
+			IntPtr indices,
+			int num_indices,
+			int size_indices
+		);
 
 		/* renderer refers to an SDL_Renderer*, texture to an SDL_Texture*.
 	    * Internally, this function contains logic to use default values when
@@ -3158,6 +3280,30 @@ namespace Chroma.Natives.SDL
 			IntPtr renderer,
 			out float scaleX,
 			out float scaleY
+		);
+		
+		/* renderer refers to an SDL_Renderer*
+		 * Only available in 2.0.18 or higher.
+		 */
+		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+		public static extern void SDL_RenderWindowToLogical(
+			IntPtr renderer,
+			int windowX,
+			int windowY,
+			out float logicalX,
+			out float logicalY
+		);
+		
+		/* renderer refers to an SDL_Renderer*
+		 * Only available in 2.0.18 or higher.
+		 */
+		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+		public static extern void SDL_RenderLogicalToWindow(
+			IntPtr renderer,
+			float logicalX,
+			float logicalY,
+			out int windowX,
+			out int windowY
 		);
 
 		/* renderer refers to an SDL_Renderer* */
@@ -3352,6 +3498,12 @@ namespace Chroma.Natives.SDL
 		public static extern IntPtr SDL_RenderGetMetalCommandEncoder(
 			IntPtr renderer
 		);
+		
+		/* renderer refers to an SDL_Renderer*
+		 * Only available in 2.0.18 or higher.
+		 */
+		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+		public static extern int SDL_RenderSetVSync(IntPtr renderer, int vsync);
 
 		/* renderer refers to an SDL_Renderer*
 	    * Only available in 2.0.4 or higher.
@@ -4217,6 +4369,21 @@ namespace Chroma.Natives.SDL
 			IntPtr dst,
 			int dst_pitch
 		);
+		
+		/* src and dst are void* pointers
+		 * Only available in 2.0.18 or higher.
+		 */
+		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+		public static extern int SDL_PremultiplyAlpha(
+			int width,
+			int height,
+			uint src_format,
+			IntPtr src,
+			int src_pitch,
+			uint dst_format,
+			IntPtr dst,
+			int dst_pitch
+		);
 
 		/* IntPtr refers to an SDL_Surface*
 	    * src refers to an SDL_Surface*
@@ -4657,6 +4824,10 @@ namespace Chroma.Natives.SDL
 			SDL_RENDER_TARGETS_RESET =	0x2000,
 			/* Only available in SDL 2.0.4 or higher. */
 			SDL_RENDER_DEVICE_RESET,
+			
+			/* Internal events */
+			/* Only available in 2.0.18 or higher. */
+			SDL_POLLSENTINEL =		0x7F00,
 
 			/* Events SDL_USEREVENT through SDL_LASTEVENT are for
 		    * your use, and should be allocated with
@@ -4805,6 +4976,8 @@ namespace Chroma.Natives.SDL
 			public Int32 x; /* amount scrolled horizontally */
 			public Int32 y; /* amount scrolled vertically */
 			public UInt32 direction; /* Set to one of the SDL_MOUSEWHEEL_* defines */
+			public float preciseX; /* Requires >= 2.0.18 */
+			public float preciseY; /* Requires >= 2.0.18 */
 		}
 
 // Ignore private members used for padding in this struct
@@ -6557,6 +6730,19 @@ namespace Chroma.Natives.SDL
 		public static extern bool SDL_JoystickHasLED(IntPtr joystick);
 
 		/* IntPtr refers to an SDL_Joystick*.
+		 * Only available in 2.0.18 or higher.
+		 */
+		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+		public static extern bool SDL_JoystickHasRumble(IntPtr joystick);
+		
+		/* IntPtr refers to an SDL_Joystick*.
+		 * Only available in 2.0.18 or higher.
+		 */
+		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+		public static extern bool SDL_JoystickHasRumbleTriggers(IntPtr joystick);
+
+		
+		/* IntPtr refers to an SDL_Joystick*.
 	    * Only available in 2.0.14 or higher.
 	    */
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
@@ -8038,6 +8224,12 @@ namespace Chroma.Natives.SDL
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern UInt32 SDL_GetTicks();
 
+		/* Returns the milliseconds that have passed since SDL was initialized
+		 * Only available in 2.0.18 or higher.
+		 */
+		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+		public static extern UInt64 SDL_GetTicks64();
+		
 		/* Get the current value of the high resolution counter */
 		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 		public static extern UInt64 SDL_GetPerformanceCounter();
@@ -8299,6 +8491,7 @@ namespace Chroma.Natives.SDL
 			public IntPtr shell_surface; // Refers to a wl_shell_surface*
 			public IntPtr egl_window; // Refers to an egl_window*, requires >= 2.0.16
 			public IntPtr xdg_surface; // Refers to an xdg_surface*, requires >= 2.0.16
+			public IntPtr xdg_toplevel; // Referes to an xdg_toplevel*, requires >= 2.0.18
 		}
 
 		[StructLayout(LayoutKind.Sequential)]

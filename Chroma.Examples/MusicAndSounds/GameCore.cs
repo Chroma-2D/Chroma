@@ -68,8 +68,8 @@ namespace MusicAndSounds
                 (s, e) =>
                 {
                     var floats = MemoryMarshal.Cast<byte, float>(s);
-                    
-                    var freq = 120;
+                       
+                    var freq = 554.365f;
                     var amp = 0.6f;
                     var angle = MathF.PI * 2 * freq / _waveform.Frequency;
                     

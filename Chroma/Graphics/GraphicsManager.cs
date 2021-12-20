@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Chroma.Diagnostics.Logging;
@@ -24,6 +25,20 @@ namespace Chroma.Graphics
         public bool LimitFramerate { get; set; } = true;
 
         public int MaximumMSAA { get; private set; }
+
+        public Size DrawableSize
+        {
+            get
+            {
+                SDL2.SDL_GL_GetDrawableSize(
+                    Window.Instance.Handle, 
+                    out var w, 
+                    out var h
+                );
+
+                return new Size(w, h);
+            }
+        }
 
         public VerticalSyncMode VerticalSyncMode
         {

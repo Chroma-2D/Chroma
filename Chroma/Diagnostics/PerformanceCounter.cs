@@ -4,8 +4,8 @@ namespace Chroma.Diagnostics
 {
     public class PerformanceCounter
     {
-        private uint _lastFpsUpdateTime = SDL2.SDL_GetTicks();
-        private uint _lastLagMeasureTime = SDL2.SDL_GetTicks();
+        private ulong _lastFpsUpdateTime = SDL2.SDL_GetTicks64();
+        private ulong _lastLagMeasureTime = SDL2.SDL_GetTicks64();
 
         private ulong _framesThisCycle;
 
@@ -22,7 +22,7 @@ namespace Chroma.Diagnostics
 
         internal void Update()
         {
-            var currentTime = SDL2.SDL_GetTicks();
+            var currentTime = SDL2.SDL_GetTicks64();
 
             _lastFrameTime = _nowFrameTime;
             _nowFrameTime = SDL2.SDL_GetPerformanceCounter();
@@ -45,7 +45,7 @@ namespace Chroma.Diagnostics
 
         internal void FixedUpdate()
         {
-            var currentTime = SDL2.SDL_GetTicks();
+            var currentTime = SDL2.SDL_GetTicks64();
 
             Lag += (currentTime - _lastLagMeasureTime) / 1000f;
             _lastLagMeasureTime = currentTime;

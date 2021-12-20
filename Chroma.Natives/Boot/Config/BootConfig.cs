@@ -16,7 +16,10 @@ namespace Chroma.Natives.Boot.Config
 
         [JsonPropertyName("enable_sdlgpu_debug")]
         public bool EnableSdlGpuDebugging { get; set; }
-        
+
+        [JsonPropertyName("hook_sdl_log")]
+        public bool HookSdlLog { get; set; }
+
         [JsonPropertyName("sdl_modules")]
         public SdlModuleConfig SdlModules { get; set; } = new();
 

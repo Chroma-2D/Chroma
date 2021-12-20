@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Chroma.Natives.SDL;
 
 namespace Chroma.Input
 {
@@ -20,6 +21,9 @@ namespace Chroma.Input
 
         public static bool IsKeyUp(ScanCode scanCode)
             => !IsKeyDown(scanCode);
+
+        public static string GetKeyName(KeyCode keyCode)
+            => SDL2.SDL_GetKeyName((SDL2.SDL_Keycode)keyCode);
 
         internal static void OnKeyReleased(Game game, KeyEventArgs e)
         {

@@ -100,20 +100,6 @@ namespace Chroma.Natives.SDL
 				ptr++;
 			}
 
-			/* TODO: This #ifdef is only here because the equivalent
-		    * .NET 2.0 constructor appears to be less efficient?
-		    * Here's the pretty version, maybe steal this instead:
-		    *
-			string result = new string(
-				(sbyte*) s, // Also, why sbyte???
-				0,
-				(int) (ptr - (byte*) s),
-				System.Text.Encoding.UTF8
-			);
-		    * See the CoreCLR source for more info.
-		    * -flibit
-		    */
-			/* Modern C# lets you just send the byte*, nice! */
 			var result = Encoding.UTF8.GetString(
 				(byte*)s,
 				(int)(ptr - (byte*)s)
@@ -4405,8 +4391,12 @@ namespace Chroma.Natives.SDL
 				gamecontroller,
 				axis
 			);
-			SDL_GameControllerButtonBind result = new SDL_GameControllerButtonBind();
-			result.bindType = (SDL_GameControllerBindType) dumb.bindType;
+			
+			SDL_GameControllerButtonBind result = new SDL_GameControllerButtonBind
+			{
+				bindType = (SDL_GameControllerBindType) dumb.bindType
+			};
+			
 			result.value.hat.hat = dumb.unionVal0;
 			result.value.hat.hat_mask = dumb.unionVal1;
 			return result;
@@ -4460,8 +4450,12 @@ namespace Chroma.Natives.SDL
 				gamecontroller,
 				button
 			);
-			SDL_GameControllerButtonBind result = new SDL_GameControllerButtonBind();
-			result.bindType = (SDL_GameControllerBindType) dumb.bindType;
+			
+			SDL_GameControllerButtonBind result = new SDL_GameControllerButtonBind
+			{
+				bindType = (SDL_GameControllerBindType) dumb.bindType
+			};
+			
 			result.value.hat.hat = dumb.unionVal0;
 			result.value.hat.hat_mask = dumb.unionVal1;
 			return result;

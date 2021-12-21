@@ -8,10 +8,10 @@ namespace Chroma.Natives.SDL.Interop
     {
         public const string LeaveAllocated = "LeaveAllocated";
 
-        private bool _leaveAllocated;
+        private readonly bool _leaveAllocated;
 
         private static readonly ICustomMarshaler _leaveAllocatedInstance = new LpUtf8StrMarshaler(true);
-        private static ICustomMarshaler _defaultInstance = new LpUtf8StrMarshaler(true);
+        private static readonly ICustomMarshaler _defaultInstance = new LpUtf8StrMarshaler(true);
 
         public static ICustomMarshaler GetInstance(string cookie)
         {

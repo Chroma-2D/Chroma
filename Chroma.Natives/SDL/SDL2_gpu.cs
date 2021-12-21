@@ -776,7 +776,7 @@ namespace Chroma.Natives.SDL
         public static extern GPU_Rect GPU_MakeRect(float x, float y, float w, float h);
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SDL_Color GPU_MakerColor(byte r, byte g, byte b, byte a);
+        public static extern SDL_Color GPU_MakeColor(byte r, byte g, byte b, byte a);
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void GPU_SetViewport(IntPtr target, GPU_Rect viewport);

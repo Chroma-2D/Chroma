@@ -56,7 +56,7 @@ namespace Chroma
             // right now.
             if (ModuleInitializer.BootConfig.HookSdlLog)
             {
-                SdlLog.Enable();
+                SdlLogHook.Enable();
             }
 
             options ??= new GameStartupOptions();

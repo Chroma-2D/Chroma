@@ -150,7 +150,7 @@ namespace Chroma.Natives.Boot
             if (BootConfig.EnableSdlGpuDebugging)
             {
                 BootLog.Info("Enabling SDL_gpu debugging...");
-                SDL_gpu.GPU_SetDebugLevel(SDL_gpu.GPU_DebugLevelEnum.GPU_DEBUG_LEVEL_3);
+                SDL_gpu.GPU_SetDebugLevel(SDL_gpu.GPU_DebugLevelEnum.GPU_DEBUG_LEVEL_MAX);
             }
             
             BootLog.Info("Handing over to the core. " +

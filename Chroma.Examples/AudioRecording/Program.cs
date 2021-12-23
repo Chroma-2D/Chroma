@@ -1,10 +1,3 @@
-﻿using System;
+﻿using AudioRecording;
 
-namespace AudioRecording
-{
-    class Program
-    {
-        static void Main(string[] args)
-            => new GameCore().Run();
-    }
-}
+new GameCore().Run();

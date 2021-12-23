@@ -1,10 +1,3 @@
-﻿namespace CustomContentProvider
-{
-    internal class Program
-    {
-        internal static void Main(string[] args)
-        {
-            new GameCore().Run();
-        }
-    }
-}
+﻿using CustomContentProvider;
+
+new GameCore().Run();

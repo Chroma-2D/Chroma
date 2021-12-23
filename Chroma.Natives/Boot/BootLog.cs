@@ -21,16 +21,22 @@ namespace Chroma.Natives.Boot
 
             try
             {
-                _streamWriter = new StreamWriter("crboot.log") { AutoFlush = true };
+                var logDir = Path.Combine(AppContext.BaseDirectory, "Logs");
+
+                if (!Directory.Exists(logDir))
+                    Directory.CreateDirectory(logDir);
+
+                var logPath = Path.Combine(logDir, "crboot.log");
+                _streamWriter = new StreamWriter(logPath) { AutoFlush = true };
             }
             catch (Exception e)
             {
                 Console.WriteLine(
                     $"Failed to open a file for early boot log: {e.Message} " +
-                    "Log will only be available in console."
+                    "Log will only be available in the console."
                 );
             }
-            
+
             _enabled = true;
         }
 
@@ -65,7 +71,7 @@ namespace Chroma.Natives.Boot
         {
             if (!_enabled)
                 return;
-            
+
             SDL2.SDL_LogSetOutputFunction(_defaultLogOutputFunction, IntPtr.Zero);
             _defaultLogOutputFunction = null;
 
@@ -73,7 +79,7 @@ namespace Chroma.Natives.Boot
             _streamWriter = null;
         }
 
-        internal static void SdlLogOutputFunction(
+        private static void SdlLogOutputFunction(
             IntPtr userdata,
             int category,
             SDL2.SDL_LogPriority priority,
@@ -86,16 +92,16 @@ namespace Chroma.Natives.Boot
                 case SDL2.SDL_LogPriority.SDL_LOG_PRIORITY_INFO:
                     Info(messageString);
                     break;
-                
+
                 case SDL2.SDL_LogPriority.SDL_LOG_PRIORITY_WARN:
                     Warning(messageString);
                     break;
-                
+
                 case SDL2.SDL_LogPriority.SDL_LOG_PRIORITY_ERROR:
                 case SDL2.SDL_LogPriority.SDL_LOG_PRIORITY_CRITICAL:
                     Error(messageString);
                     break;
-                
+
                 case SDL2.SDL_LogPriority.SDL_LOG_PRIORITY_DEBUG:
                 case SDL2.SDL_LogPriority.SDL_LOG_PRIORITY_VERBOSE:
                     Debug(messageString);

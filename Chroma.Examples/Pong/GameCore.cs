@@ -1,5 +1,4 @@
 using Chroma;
-using Chroma.Audio.Sfxr;
 using Chroma.Graphics;
 
 namespace Pong

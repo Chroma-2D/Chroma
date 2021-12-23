@@ -1,7 +1,3 @@
-﻿namespace MusicAndSounds
-{
-    internal class Program
-    {
-        internal static void Main(string[] args) => new GameCore().Run();
-    }
-}
+﻿using MusicAndSounds;
+
+new GameCore().Run();

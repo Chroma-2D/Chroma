@@ -23,3 +23,6 @@
  * Ethan "flibitijibibo" Lee <flibitijibibo@flibitijibibo.com>
  *
  */
+
+// SDL2-CS has been heavily modified for use with Chroma Framework.
+// You're probably better off using the official release.

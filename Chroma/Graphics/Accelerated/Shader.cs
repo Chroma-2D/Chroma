@@ -158,6 +158,21 @@ namespace Chroma.Graphics.Accelerated
             SDL_gpu.GPU_SetShaderImage(value.ImageHandle, loc, textureUnit);
         }
 
+        public void SetUniform(string name, bool value)
+        {
+            EnsureNotDisposed();
+
+            var loc = SDL_gpu.GPU_GetUniformLocation(ProgramHandle, name);
+
+            if (loc == -1)
+            {
+                _log.Warning($"Boolean uniform '{name}' does not exist.");
+                return;
+            }
+            
+            SDL_gpu.GPU_SetUniformi(loc, value ? 1 : 0);
+        }
+
         public void SetUniform(string name, float value)
         {
             EnsureNotDisposed();

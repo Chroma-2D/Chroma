@@ -1,3 +1,3 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using KeyboardInput;
 
-Console.WriteLine("Hello, World!");
+new GameCore().Run();

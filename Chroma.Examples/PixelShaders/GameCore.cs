@@ -93,7 +93,7 @@ namespace PixelShaders
                 _tintEffect.SetUniform("overlay", _overlay, 1);
                 _tintEffect.SetUniform("border_color", Color.Yellow);
 
-                _tintEffect.SetUniform("show_border", _showEdge);
+                _tintEffect.SetUniform("show_edge", _showEdge);
                 _tintEffect.SetUniform("show_overlay", _showOverlay);
                 _tintEffect.SetUniform("show_tweak", _showTweak);
 

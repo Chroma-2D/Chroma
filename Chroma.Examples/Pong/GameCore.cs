@@ -1,4 +1,5 @@
 using Chroma;
+using Chroma.Audio.Sfxr;
 using Chroma.Graphics;
 
 namespace Pong
@@ -14,7 +15,9 @@ namespace Pong
 
         protected override void LoadContent()
         {
+            Sfxr.Initialize(this);
             Assets.Load(Content);
+            
             _board = new Board(Window.Size);
         }
 

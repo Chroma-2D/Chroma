@@ -15,7 +15,9 @@ namespace Chroma.Windowing.EventHandling
 
         internal Dictionary<SDL2.SDL_EventType, SdlEventHandler> SdlEventHandlers { get; } = new();
         internal Dictionary<SDL2.SDL_WindowEventID, WindowEventHandler> WindowEventHandlers { get; } = new();
-        internal Dictionary<SDL2.SDL_EventType, bool> DiscardedEventTypes { get; } = new();
+        
+        internal HashSet<SDL2.SDL_EventType> DiscardedEventTypes { get; } = new();
+        internal HashSet<SDL2.SDL_WindowEventID> DiscardedWindowEventHandlers { get; } = new();
 
         internal EventDispatcher(Window owner)
         {
@@ -24,7 +26,7 @@ namespace Chroma.Windowing.EventHandling
 
         internal void Dispatch(SDL2.SDL_Event ev)
         {
-            if (DiscardedEventTypes.ContainsKey(ev.type))
+            if (DiscardedEventTypes.Contains(ev.type))
                 return;
 
             if (ev.type == SDL2.SDL_EventType.SDL_WINDOWEVENT)
@@ -38,6 +40,9 @@ namespace Chroma.Windowing.EventHandling
 
         internal void DispatchWindowEvent(SDL2.SDL_WindowEvent ev)
         {
+            if (DiscardedWindowEventHandlers.Contains(ev.windowEvent))
+                return;
+            
             if (WindowEventHandlers.ContainsKey(ev.windowEvent))
             {
                 WindowEventHandlers[ev.windowEvent]?.Invoke(Owner, ev);
@@ -88,15 +93,23 @@ namespace Chroma.Windowing.EventHandling
 
         internal void Discard(params SDL2.SDL_EventType[] types)
         {
-            foreach (var type in types)
+            for (var i = 0; i < types.Length; i++)
             {
-                if (DiscardedEventTypes.ContainsKey(type))
+                if (!DiscardedEventTypes.Add(types[i]))
                 {
-                    _log.Warning($"{type} handler is getting discarded yet another time. Ignoring.");
-                    continue;
+                    _log.Warning($"{types[i]} handler is getting discarded yet another time. Ignoring.");
                 }
+            }
+        }
 
-                DiscardedEventTypes.Add(type, true);
+        internal void Discard(params SDL2.SDL_WindowEventID[] types)
+        {
+            for (var i = 0; i < types.Length; i++)
+            {
+                if (!DiscardedWindowEventHandlers.Add(types[i]))
+                {
+                    _log.Warning($"{types[i]} handler is getting discarded yet another time. Ignoring.");
+                }
             }
         }
     }

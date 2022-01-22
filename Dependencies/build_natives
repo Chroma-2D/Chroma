@@ -6,22 +6,29 @@ source $SCRIPT_DIR/lib/buildvars.sh
 init_repositories() {
     cd $NATIVES_DIR
 
+if [ "$SKIP_FT" -eq "0" ]; then
     git clone https://github.com/harfbuzz/harfbuzz   $HB_PATH
     git clone https://github.com/freetype/freetype   $FT_PATH
+fi
     git clone https://github.com/libsdl-org/SDL      $SDL_PATH
     git clone https://github.com/Chroma-2D/SDL_gpu   $SDL_GPU_PATH
     git clone https://github.com/Chroma-2D/SDL_sound $SDL_SOUND_PATH
     git clone https://github.com/Chroma-2D/SDL_nmix  $SDL_NMIX_PATH
 
+if [ "$SKIP_FT" -eq "0" ]; then
     cd $HB_PATH && git checkout $HB_TAG                                            \
-    && cd $FT_PATH && git checkout $FT_TAG                                         \
-    && cd $SDL_PATH && git checkout $SDL_TAG
+    && cd $FT_PATH && git checkout $FT_TAG
+fi
+    cd $SDL_PATH && git checkout $SDL_TAG
 }
 
 pack_artifacts() {
-    cd $ARTIFACT_DIR                                                               \
-    && mv $FT_ARTIFACT.bz2 libfreetype.bz2                                         \
-    && mv $SDL_ARTIFACT.bz2 libSDL2.bz2                                            \
+    cd $ARTIFACT_DIR
+
+if [ "$SKIP_FT" -eq "0" ]; then
+    mv $FT_ARTIFACT.bz2 libfreetype.bz2
+fi
+    mv $SDL_ARTIFACT.bz2 libSDL2.bz2                                               \
     && mv $SDL_GPU_ARTIFACT.bz2 libSDL2_gpu.bz2                                    \
     && mv $SDL_SOUND_ARTIFACT.bz2 libSDL2_sound.bz2                                \
     && mv $SDL_NMIX_ARTIFACT.bz2 libSDL2_nmix.bz2                                  \

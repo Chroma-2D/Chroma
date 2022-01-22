@@ -356,19 +356,21 @@ namespace Chroma.Windowing
 
         public WindowMode Mode { get; }
 
-        public event EventHandler Closed;
-        public event EventHandler Hidden;
         public event EventHandler Shown;
+        public event EventHandler Hidden;
         public event EventHandler Invalidated;
+        public event EventHandler<WindowMoveEventArgs> Moved;
+        public event EventHandler<WindowSizeEventArgs> Resized;
+        public event EventHandler<WindowSizeEventArgs> SizeChanged;
         public event EventHandler<WindowStateEventArgs> StateChanged;
         public event EventHandler MouseEntered;
         public event EventHandler MouseLeft;
         public event EventHandler Focused;
         public event EventHandler Unfocused;
-        public event EventHandler<WindowMoveEventArgs> Moved;
-        public event EventHandler<WindowSizeEventArgs> SizeChanged;
-        public event EventHandler<WindowSizeEventArgs> Resized;
+        public event EventHandler Closed;
+        public event EventHandler<DisplayChangedEventArgs> DisplayChanged;
         public event EventHandler<CancelEventArgs> QuitRequested;
+        
         public event EventHandler<FileDragDropEventArgs> FilesDropped;
         public event EventHandler<TextDragDropEventArgs> TextDropped;
 
@@ -552,6 +554,8 @@ namespace Chroma.Windowing
                 //
                 // This is a workaround for it until there's a better understanding of this bug.
                 //
+                // 22.01.2022: Guess it's going to stay like this for longer.
+                //
                 SDL_gpu.GPU_BlitTransformX(
                     EmbeddedAssets.DummyFixTexture.ImageHandle,
                     IntPtr.Zero,
@@ -567,59 +571,25 @@ namespace Chroma.Windowing
                     Thread.Sleep(1);
             }
         }
-
-        internal void OnClosed()
-            => Closed?.Invoke(this, EventArgs.Empty);
-
-        internal void OnHidden()
-            => Hidden?.Invoke(this, EventArgs.Empty);
-
+        
         internal void OnShown()
             => Shown?.Invoke(this, EventArgs.Empty);
 
+        internal void OnHidden()
+            => Hidden?.Invoke(this, EventArgs.Empty);
+        
         internal void OnInvalidated()
         {
             SDL_gpu.GPU_Flip(RenderTargetHandle);
             Invalidated?.Invoke(this, EventArgs.Empty);
         }
-
-        internal void OnStateChanged(WindowStateEventArgs e)
-        {
-            _state = e.State;
-            StateChanged?.Invoke(this, e);
-        }
-
-        internal void OnMouseEntered()
-            => MouseEntered?.Invoke(this, EventArgs.Empty);
-
-        internal void OnMouseLeft()
-            => MouseLeft?.Invoke(this, EventArgs.Empty);
-
-        internal void OnFocusOffered()
-        {
-            SDL2.SDL_RaiseWindow(Handle);
-        }
-
-        internal void OnFocused()
-            => Focused?.Invoke(this, EventArgs.Empty);
-
-        internal void OnUnfocused()
-            => Unfocused?.Invoke(this, EventArgs.Empty);
-
+        
         internal void OnMoved(WindowMoveEventArgs e)
         {
             _position = e.Position;
-
             Moved?.Invoke(this, e);
         }
-
-        internal void OnSizeChanged(WindowSizeEventArgs e)
-        {
-            _size = e.Size;
-
-            SizeChanged?.Invoke(this, e);
-        }
-
+        
         internal void OnResized(WindowSizeEventArgs e)
         {
             if (Game.Graphics.ViewportAutoResize)
@@ -632,6 +602,41 @@ namespace Chroma.Windowing
 
             Resized?.Invoke(this, e);
         }
+        
+        internal void OnSizeChanged(WindowSizeEventArgs e)
+        {
+            _size = e.Size;
+            SizeChanged?.Invoke(this, e);
+        }
+        
+        internal void OnStateChanged(WindowStateEventArgs e)
+        {
+            _state = e.State;
+            StateChanged?.Invoke(this, e);
+        }
+        
+        internal void OnMouseEntered()
+            => MouseEntered?.Invoke(this, EventArgs.Empty);
+
+        internal void OnMouseLeft()
+            => MouseLeft?.Invoke(this, EventArgs.Empty);
+        
+        internal void OnFocusOffered()
+        {
+            SDL2.SDL_RaiseWindow(Handle);
+        }
+        
+        internal void OnFocused()
+            => Focused?.Invoke(this, EventArgs.Empty);
+
+        internal void OnUnfocused()
+            => Unfocused?.Invoke(this, EventArgs.Empty);
+
+        internal void OnClosed()
+            => Closed?.Invoke(this, EventArgs.Empty);
+
+        internal void OnDisplayChanged(DisplayChangedEventArgs e)
+            => DisplayChanged?.Invoke(this, e);
 
         internal void OnQuitRequested(CancelEventArgs e)
         {

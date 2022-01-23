@@ -193,7 +193,7 @@ namespace Chroma.Windowing
         public bool CanResize
         {
             get => SDL2.SDL_GetWindowFlags(Handle)
-                    .HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_RESIZABLE);
+                .HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_RESIZABLE);
 
             set => SDL2.SDL_SetWindowResizable(Handle, value);
         }
@@ -340,12 +340,12 @@ namespace Chroma.Windowing
                 _hitTestDelegate = value;
 
                 if (SDL2.SDL_SetWindowHitTest(
-                    Handle,
-                    IsHitTestEnabled
-                        ? _internalHitTestCallback
-                        : null,
-                    IntPtr.Zero
-                ) < 0)
+                        Handle,
+                        IsHitTestEnabled
+                            ? _internalHitTestCallback
+                            : null,
+                        IntPtr.Zero
+                    ) < 0)
                 {
                     _log.Error($"Failed to set the window hit testing delegate: {SDL2.SDL_GetError()}");
                 }
@@ -370,7 +370,7 @@ namespace Chroma.Windowing
         public event EventHandler Closed;
         public event EventHandler<DisplayChangedEventArgs> DisplayChanged;
         public event EventHandler<CancelEventArgs> QuitRequested;
-        
+
         public event EventHandler<FileDragDropEventArgs> FilesDropped;
         public event EventHandler<TextDragDropEventArgs> TextDropped;
 
@@ -571,25 +571,25 @@ namespace Chroma.Windowing
                     Thread.Sleep(1);
             }
         }
-        
+
         internal void OnShown()
             => Shown?.Invoke(this, EventArgs.Empty);
 
         internal void OnHidden()
             => Hidden?.Invoke(this, EventArgs.Empty);
-        
+
         internal void OnInvalidated()
         {
             SDL_gpu.GPU_Flip(RenderTargetHandle);
             Invalidated?.Invoke(this, EventArgs.Empty);
         }
-        
+
         internal void OnMoved(WindowMoveEventArgs e)
         {
             _position = e.Position;
             Moved?.Invoke(this, e);
         }
-        
+
         internal void OnResized(WindowSizeEventArgs e)
         {
             if (Game.Graphics.ViewportAutoResize)
@@ -602,30 +602,30 @@ namespace Chroma.Windowing
 
             Resized?.Invoke(this, e);
         }
-        
+
         internal void OnSizeChanged(WindowSizeEventArgs e)
         {
             _size = e.Size;
             SizeChanged?.Invoke(this, e);
         }
-        
+
         internal void OnStateChanged(WindowStateEventArgs e)
         {
             _state = e.State;
             StateChanged?.Invoke(this, e);
         }
-        
+
         internal void OnMouseEntered()
             => MouseEntered?.Invoke(this, EventArgs.Empty);
 
         internal void OnMouseLeft()
             => MouseLeft?.Invoke(this, EventArgs.Empty);
-        
+
         internal void OnFocusOffered()
         {
             SDL2.SDL_RaiseWindow(Handle);
         }
-        
+
         internal void OnFocused()
             => Focused?.Invoke(this, EventArgs.Empty);
 
@@ -655,20 +655,16 @@ namespace Chroma.Windowing
         internal void OnTextDropped(TextDragDropEventArgs e)
             => TextDropped?.Invoke(this, e);
 
-        private void DoTick(float delta)
+        private void ExecuteScheduledActions()
         {
-            if (Update == null)
-                return;
-
-            Update(delta);
-
-            while (Dispatcher.ActionQueue.Any())
+            while (true)
             {
-                var scheduledAction = Dispatcher.ActionQueue.Dequeue();
+                if (!Dispatcher.ActionQueue.TryDequeue(out var scheduledAction))
+                    break;
 
                 try
                 {
-                    scheduledAction.Action?.Invoke();
+                    scheduledAction.Action.Invoke();
                     scheduledAction.Completed = true;
                 }
                 catch (Exception e)
@@ -676,6 +672,15 @@ namespace Chroma.Windowing
                     _log.Exception(e);
                 }
             }
+        }
+
+        private void DoTick(float delta)
+        {
+            if (Update == null)
+                return;
+
+            Update(delta);
+            ExecuteScheduledActions();
         }
 
         private void DoFixedTicks(float delta)

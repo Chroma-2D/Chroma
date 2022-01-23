@@ -14,7 +14,7 @@ namespace Asynchronicity
     public class GameCore : Game
     {
         private static readonly Log _log = LogManager.GetForCurrentAssembly();
-        
+
         private RenderTarget _target;
 
         public GameCore() : base(new(false, false))
@@ -28,9 +28,10 @@ namespace Asynchronicity
         protected override void Draw(RenderContext context)
         {
             context.DrawString(
-                "Press F1 to asynchronously dispose and recreate the render target\n" +
+                "Press <F1> to asynchronously dispose and recreate the render target\n" +
                 "causing an InvalidOperationException.\n\n" +
-                "Press F2 to asynchronously queue the render target creation for execution on the main thread.",
+                "Press <F2> to asynchronously queue the render target creation for execution on the main thread.\n" +
+                "Press <F3> to asynchronously queue render target destruction for execution on the main thread.",
                 new Vector2(8)
             );
 
@@ -81,8 +82,21 @@ namespace Asynchronicity
                         {
                             _target.Dispose();
                         }
-                        
+
                         _target = new RenderTarget(Window.Size);
+                    });
+                });
+            }
+            else if (e.KeyCode == KeyCode.F3)
+            {
+                Task.Run(async () =>
+                {
+                    await Dispatcher.RunOnMainThread(() =>
+                    {
+                        if (_target != null && !_target.Disposed)
+                        {
+                            _target.Dispose();
+                        }
                     });
                 });
             }

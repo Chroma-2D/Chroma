@@ -193,7 +193,7 @@ namespace Chroma.Windowing
         public bool CanResize
         {
             get => SDL2.SDL_GetWindowFlags(Handle)
-                    .HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_RESIZABLE);
+                .HasFlag(SDL2.SDL_WindowFlags.SDL_WINDOW_RESIZABLE);
 
             set => SDL2.SDL_SetWindowResizable(Handle, value);
         }
@@ -340,12 +340,12 @@ namespace Chroma.Windowing
                 _hitTestDelegate = value;
 
                 if (SDL2.SDL_SetWindowHitTest(
-                    Handle,
-                    IsHitTestEnabled
-                        ? _internalHitTestCallback
-                        : null,
-                    IntPtr.Zero
-                ) < 0)
+                        Handle,
+                        IsHitTestEnabled
+                            ? _internalHitTestCallback
+                            : null,
+                        IntPtr.Zero
+                    ) < 0)
                 {
                     _log.Error($"Failed to set the window hit testing delegate: {SDL2.SDL_GetError()}");
                 }
@@ -356,19 +356,21 @@ namespace Chroma.Windowing
 
         public WindowMode Mode { get; }
 
-        public event EventHandler Closed;
-        public event EventHandler Hidden;
         public event EventHandler Shown;
+        public event EventHandler Hidden;
         public event EventHandler Invalidated;
+        public event EventHandler<WindowMoveEventArgs> Moved;
+        public event EventHandler<WindowSizeEventArgs> Resized;
+        public event EventHandler<WindowSizeEventArgs> SizeChanged;
         public event EventHandler<WindowStateEventArgs> StateChanged;
         public event EventHandler MouseEntered;
         public event EventHandler MouseLeft;
         public event EventHandler Focused;
         public event EventHandler Unfocused;
-        public event EventHandler<WindowMoveEventArgs> Moved;
-        public event EventHandler<WindowSizeEventArgs> SizeChanged;
-        public event EventHandler<WindowSizeEventArgs> Resized;
+        public event EventHandler Closed;
+        public event EventHandler<DisplayChangedEventArgs> DisplayChanged;
         public event EventHandler<CancelEventArgs> QuitRequested;
+
         public event EventHandler<FileDragDropEventArgs> FilesDropped;
         public event EventHandler<TextDragDropEventArgs> TextDropped;
 
@@ -552,6 +554,8 @@ namespace Chroma.Windowing
                 //
                 // This is a workaround for it until there's a better understanding of this bug.
                 //
+                // 22.01.2022: Guess it's going to stay like this for longer.
+                //
                 SDL_gpu.GPU_BlitTransformX(
                     EmbeddedAssets.DummyFixTexture.ImageHandle,
                     IntPtr.Zero,
@@ -568,19 +572,41 @@ namespace Chroma.Windowing
             }
         }
 
-        internal void OnClosed()
-            => Closed?.Invoke(this, EventArgs.Empty);
+        internal void OnShown()
+            => Shown?.Invoke(this, EventArgs.Empty);
 
         internal void OnHidden()
             => Hidden?.Invoke(this, EventArgs.Empty);
-
-        internal void OnShown()
-            => Shown?.Invoke(this, EventArgs.Empty);
 
         internal void OnInvalidated()
         {
             SDL_gpu.GPU_Flip(RenderTargetHandle);
             Invalidated?.Invoke(this, EventArgs.Empty);
+        }
+
+        internal void OnMoved(WindowMoveEventArgs e)
+        {
+            _position = e.Position;
+            Moved?.Invoke(this, e);
+        }
+
+        internal void OnResized(WindowSizeEventArgs e)
+        {
+            if (Game.Graphics.ViewportAutoResize)
+            {
+                SDL_gpu.GPU_SetWindowResolution(
+                    (ushort)e.Size.Width,
+                    (ushort)e.Size.Height
+                );
+            }
+
+            Resized?.Invoke(this, e);
+        }
+
+        internal void OnSizeChanged(WindowSizeEventArgs e)
+        {
+            _size = e.Size;
+            SizeChanged?.Invoke(this, e);
         }
 
         internal void OnStateChanged(WindowStateEventArgs e)
@@ -606,32 +632,11 @@ namespace Chroma.Windowing
         internal void OnUnfocused()
             => Unfocused?.Invoke(this, EventArgs.Empty);
 
-        internal void OnMoved(WindowMoveEventArgs e)
-        {
-            _position = e.Position;
+        internal void OnClosed()
+            => Closed?.Invoke(this, EventArgs.Empty);
 
-            Moved?.Invoke(this, e);
-        }
-
-        internal void OnSizeChanged(WindowSizeEventArgs e)
-        {
-            _size = e.Size;
-
-            SizeChanged?.Invoke(this, e);
-        }
-
-        internal void OnResized(WindowSizeEventArgs e)
-        {
-            if (Game.Graphics.ViewportAutoResize)
-            {
-                SDL_gpu.GPU_SetWindowResolution(
-                    (ushort)e.Size.Width,
-                    (ushort)e.Size.Height
-                );
-            }
-
-            Resized?.Invoke(this, e);
-        }
+        internal void OnDisplayChanged(DisplayChangedEventArgs e)
+            => DisplayChanged?.Invoke(this, e);
 
         internal void OnQuitRequested(CancelEventArgs e)
         {
@@ -650,20 +655,16 @@ namespace Chroma.Windowing
         internal void OnTextDropped(TextDragDropEventArgs e)
             => TextDropped?.Invoke(this, e);
 
-        private void DoTick(float delta)
+        private void ExecuteScheduledActions()
         {
-            if (Update == null)
-                return;
-
-            Update(delta);
-
-            while (Dispatcher.ActionQueue.Any())
+            while (true)
             {
-                var scheduledAction = Dispatcher.ActionQueue.Dequeue();
+                if (!Dispatcher.ActionQueue.TryDequeue(out var scheduledAction))
+                    break;
 
                 try
                 {
-                    scheduledAction.Action?.Invoke();
+                    scheduledAction.Action.Invoke();
                     scheduledAction.Completed = true;
                 }
                 catch (Exception e)
@@ -671,6 +672,15 @@ namespace Chroma.Windowing
                     _log.Exception(e);
                 }
             }
+        }
+
+        private void DoTick(float delta)
+        {
+            if (Update == null)
+                return;
+
+            Update(delta);
+            ExecuteScheduledActions();
         }
 
         private void DoFixedTicks(float delta)

@@ -1,9 +1,3 @@
-﻿using System;
+﻿using Cameras;
 
-namespace Cameras
-{
-    internal class Program
-    {
-        internal static void Main(string[] args) => new GameCore().Run();
-    }
-}
+new GameCore().Run();

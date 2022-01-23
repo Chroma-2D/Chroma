@@ -15,7 +15,9 @@ namespace Pong
 
         protected override void LoadContent()
         {
+            Sfxr.Initialize(this);
             Assets.Load(Content);
+            
             _board = new Board(Window.Size);
         }
 

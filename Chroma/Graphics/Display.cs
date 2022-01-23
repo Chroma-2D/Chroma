@@ -106,6 +106,15 @@ namespace Chroma.Graphics
             }
         }
 
+        public DisplayOrientation Orientation
+        {
+            get
+            {
+                EnsureValid();
+                return (DisplayOrientation)SDL2.SDL_GetDisplayOrientation(Index);
+            }
+        }
+
         internal Display(int index)
         {
             Index = index;

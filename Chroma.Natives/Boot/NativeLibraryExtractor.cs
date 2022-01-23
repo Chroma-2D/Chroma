@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
-using Chroma.Natives.Boot.Config;
 using Chroma.Natives.Compression;
 
 namespace Chroma.Natives.Boot
@@ -99,7 +97,7 @@ namespace Chroma.Natives.Boot
                         bzipStream.CopyTo(fs);
                 }
 
-                Console.WriteLine($"Extracting: {libraryPath}");
+                BootLog.Info($"Extracting: {libraryPath}");
                 bzipStream.Close();
             }
 

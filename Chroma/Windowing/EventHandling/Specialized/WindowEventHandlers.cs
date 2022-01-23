@@ -12,9 +12,8 @@ namespace Chroma.Windowing.EventHandling.Specialized
         {
             Dispatcher = dispatcher;
             
-            // Implicit discard.
-            // Redo this if there is more than 1 window event to discard.
-            Dispatcher.RegisterWindowEventHandler(SDL2.SDL_WindowEventID.SDL_WINDOWEVENT_HIT_TEST, (_, _) => { });
+            Dispatcher.Discard(SDL2.SDL_WindowEventID.SDL_WINDOWEVENT_HIT_TEST);
+            Dispatcher.Discard(SDL2.SDL_WindowEventID.SDL_WINDOWEVENT_ICCPROF_CHANGED);
 
             Dispatcher.RegisterWindowEventHandler(SDL2.SDL_WindowEventID.SDL_WINDOWEVENT_SHOWN, Shown);
             Dispatcher.RegisterWindowEventHandler(SDL2.SDL_WindowEventID.SDL_WINDOWEVENT_HIDDEN, Hidden);
@@ -27,10 +26,11 @@ namespace Chroma.Windowing.EventHandling.Specialized
             Dispatcher.RegisterWindowEventHandler(SDL2.SDL_WindowEventID.SDL_WINDOWEVENT_RESTORED, Restored);
             Dispatcher.RegisterWindowEventHandler(SDL2.SDL_WindowEventID.SDL_WINDOWEVENT_ENTER, MouseEntered);
             Dispatcher.RegisterWindowEventHandler(SDL2.SDL_WindowEventID.SDL_WINDOWEVENT_LEAVE, MouseLeft);
+            Dispatcher.RegisterWindowEventHandler(SDL2.SDL_WindowEventID.SDL_WINDOWEVENT_TAKE_FOCUS, FocusOffered);
             Dispatcher.RegisterWindowEventHandler(SDL2.SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_GAINED, Focused);
             Dispatcher.RegisterWindowEventHandler(SDL2.SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_LOST, Unfocused);
             Dispatcher.RegisterWindowEventHandler(SDL2.SDL_WindowEventID.SDL_WINDOWEVENT_CLOSE, Closed);
-            Dispatcher.RegisterWindowEventHandler(SDL2.SDL_WindowEventID.SDL_WINDOWEVENT_TAKE_FOCUS, FocusOffered);
+            Dispatcher.RegisterWindowEventHandler(SDL2.SDL_WindowEventID.SDL_WINDOWEVENT_DISPLAY_CHANGED, DisplayChanged);
 
             Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_DROPBEGIN, DropStarted);
             Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_DROPCOMPLETE, DropFinished);
@@ -38,6 +38,24 @@ namespace Chroma.Windowing.EventHandling.Specialized
             Dispatcher.RegisterEventHandler(SDL2.SDL_EventType.SDL_DROPTEXT, TextDropped);
         }
 
+        private void Shown(Window owner, SDL2.SDL_WindowEvent ev)
+            => owner.OnShown();
+        
+        private void Hidden(Window owner, SDL2.SDL_WindowEvent ev)
+            => owner.OnHidden();
+        
+        private void Invalidated(Window owner, SDL2.SDL_WindowEvent ev)
+            => owner.OnInvalidated();
+        
+        private void Moved(Window owner, SDL2.SDL_WindowEvent ev)
+            => owner.OnMoved(new WindowMoveEventArgs(new Vector2(ev.data1, ev.data2)));
+        
+        private void Resized(Window owner, SDL2.SDL_WindowEvent ev)
+            => owner.OnResized(new WindowSizeEventArgs(new Size(ev.data1, ev.data2)));
+
+        private void SizeChanged(Window owner, SDL2.SDL_WindowEvent ev)
+            => owner.OnSizeChanged(new WindowSizeEventArgs(new Size(ev.data1, ev.data2)));
+        
         private void Minimized(Window owner, SDL2.SDL_WindowEvent ev)
             => owner.OnStateChanged(new WindowStateEventArgs(WindowState.Minimized));
 
@@ -46,25 +64,13 @@ namespace Chroma.Windowing.EventHandling.Specialized
 
         private void Restored(Window owner, SDL2.SDL_WindowEvent ev)
             => owner.OnStateChanged(new WindowStateEventArgs(WindowState.Normal));
-
-        private void Closed(Window owner, SDL2.SDL_WindowEvent ev)
-            => owner.OnClosed();
-
-        private void Hidden(Window owner, SDL2.SDL_WindowEvent ev)
-            => owner.OnHidden();
-
-        private void Shown(Window owner, SDL2.SDL_WindowEvent ev)
-            => owner.OnShown();
-
-        private void Invalidated(Window owner, SDL2.SDL_WindowEvent ev)
-            => owner.OnInvalidated();
-
+        
         private void MouseEntered(Window owner, SDL2.SDL_WindowEvent ev)
             => owner.OnMouseEntered();
 
         private void MouseLeft(Window owner, SDL2.SDL_WindowEvent ev)
             => owner.OnMouseLeft();
-
+        
         private void FocusOffered(Window owner, SDL2.SDL_WindowEvent ev)
             => owner.OnFocusOffered();
 
@@ -74,14 +80,11 @@ namespace Chroma.Windowing.EventHandling.Specialized
         private void Unfocused(Window owner, SDL2.SDL_WindowEvent ev)
             => owner.OnUnfocused();
 
-        private void Moved(Window owner, SDL2.SDL_WindowEvent ev)
-            => owner.OnMoved(new WindowMoveEventArgs(new Vector2(ev.data1, ev.data2)));
+        private void Closed(Window owner, SDL2.SDL_WindowEvent ev)
+            => owner.OnClosed();
 
-        private void SizeChanged(Window owner, SDL2.SDL_WindowEvent ev)
-            => owner.OnSizeChanged(new WindowSizeEventArgs(new Size(ev.data1, ev.data2)));
-
-        private void Resized(Window owner, SDL2.SDL_WindowEvent ev)
-            => owner.OnResized(new WindowSizeEventArgs(new Size(ev.data1, ev.data2)));
+        private void DisplayChanged(Window owner, SDL2.SDL_WindowEvent ev)
+            => owner.OnDisplayChanged(new DisplayChangedEventArgs(ev.data1));
 
         private void DropStarted(Window owner, SDL2.SDL_Event ev)
             => owner.DragDropManager.BeginDrop();

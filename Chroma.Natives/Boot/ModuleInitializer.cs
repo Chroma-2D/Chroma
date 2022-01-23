@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -26,28 +27,38 @@ namespace Chroma.Natives.Boot
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 SetupConsoleMode();
 
-            ReadBootConfig();
-
-            try
+            BootLog.Begin();
             {
-                Console.WriteLine("Please wait. I'm trying to boot...");
+                BootLog.Info($"It is {DateTime.Now.ToString("MMM dd, yyyy", CultureInfo.InvariantCulture)}.");
+                BootLog.Info("Please wait. I'm trying to boot...");
+                
+                ReadBootConfig();
 
-                if (BootConfig.SkipChecksumVerification)
-                    Console.WriteLine("Checksum verification disabled. Living on the edge, huh?");
-                
-                LoadNatives();
+                try
+                {
+                    if (BootConfig.SkipChecksumVerification)
+                        BootLog.Warning("Checksum verification disabled. Living on the edge, huh?");
+
+                    LoadNatives();
+                }
+                catch (NativeExtractorException nee)
+                {
+                    BootLog.Error($"{nee.Message}. Inner exception: {nee.InnerException}");
+                    Console.WriteLine("Press any key to terminate...");
+                    Console.ReadKey();
+
+                    Environment.Exit(1);
+                }
+
+                if (BootConfig.HookSdlLog)
+                {
+                    BootLog.HookSdlLog();
+                }
+
+                SetSdlHints();
+                InitializeSdlSystems();
             }
-            catch (NativeExtractorException nee)
-            {
-                Console.WriteLine($"{nee.Message}. Inner exception: {nee.InnerException}");
-                Console.WriteLine("Press any key to terminate...");
-                Console.ReadKey();
-                
-                Environment.Exit(1);
-            }
-            
-            SetSdlHints();
-            InitializeSdlSystems();
+            BootLog.End();
         }
 
         private static void SetupConsoleMode()
@@ -75,7 +86,7 @@ namespace Chroma.Natives.Boot
             }
             catch (Exception e)
             {
-                Console.WriteLine($"No boot.json or it was invalid ({e.Message}) defaults created.");
+                BootLog.Warning($"No boot.json or it was invalid ({e.Message}) defaults created.");
 
                 BootConfig = new BootConfig();
 
@@ -106,15 +117,12 @@ namespace Chroma.Natives.Boot
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                Console.WriteLine("Warning! Your platform support is currently *untested*.\n" +
-                                  "Things can (but probably won't) explode!");
-                
                 Platform = new MacPlatform();
             }
 
             foreach (var libraryFileName in libraryFileNames)
             {
-                Console.WriteLine($"Now loading: {libraryFileName}");
+                BootLog.Info($"Now loading: {libraryFileName}");
                 Platform.Register(libraryFileName);
             }
         }
@@ -125,9 +133,9 @@ namespace Chroma.Natives.Boot
             {
                 foreach (var kvp in BootConfig.SdlInitializationHints)
                 {
-                    if (SDL2.SDL_SetHint(kvp.Key, kvp.Value))
+                    if (!SDL2.SDL_SetHint(kvp.Key, kvp.Value))
                     {
-                        Console.WriteLine($"Failed to set '{kvp.Key}' to '{kvp.Value}': {SDL2.SDL_GetError()}");
+                        BootLog.Error($"Failed to set '{kvp.Key}' to '{kvp.Value}': {SDL2.SDL_GetError()}");
                     }
                 }
             }
@@ -135,18 +143,19 @@ namespace Chroma.Natives.Boot
 
         private static void InitializeSdlSystems()
         {
-            Console.WriteLine("---");
-            
             SDL2.SDL_GetVersion(out var sdlVersion);
-            Console.WriteLine($"Initializing SDL {sdlVersion.major}.{sdlVersion.minor}.{sdlVersion.patch}");
-            
+            BootLog.Info($"Initializing SDL {sdlVersion.major}.{sdlVersion.minor}.{sdlVersion.patch}");
+
             SDL2.SDL_Init(BootConfig.SdlModules.SdlInitFlags);
-            
             if (BootConfig.EnableSdlGpuDebugging)
             {
-                Console.WriteLine("Enabling SDL_gpu debugging...");
+                BootLog.Info("Enabling SDL_gpu debugging...");
                 SDL_gpu.GPU_SetDebugLevel(SDL_gpu.GPU_DebugLevelEnum.GPU_DEBUG_LEVEL_MAX);
             }
+            
+            BootLog.Info("Handing over to the core. " +
+                         $"Its log will be located somewhere in {AppContext.BaseDirectory}Logs...");
+            Console.WriteLine("---");
         }
     }
 }

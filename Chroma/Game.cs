@@ -7,6 +7,7 @@ using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.Input;
 using Chroma.Input.GameControllers;
+using Chroma.Natives.Boot;
 using Chroma.Natives.SDL;
 using Chroma.Threading;
 using Chroma.Windowing;
@@ -48,6 +49,14 @@ namespace Chroma
                     "An instance of the Game class can only be constructed " +
                     "once in the entire application's lifetime."
                 );
+            }
+
+            // This breaks the architecture, but
+            // I don't see a better way of doing it
+            // right now.
+            if (ModuleInitializer.BootConfig.HookSdlLog)
+            {
+                SdlLogHook.Enable();
             }
 
             options ??= new GameStartupOptions();

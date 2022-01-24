@@ -789,10 +789,10 @@ namespace Chroma.Graphics
                     break;
 
                 case PixelFormat.RGBA:
-                    c.R = _pixelData[i + 3];
-                    c.G = _pixelData[i + 2];
-                    c.B = _pixelData[i + 1];
-                    c.A = _pixelData[i + 0];
+                    c.R = _pixelData[i + 0];
+                    c.G = _pixelData[i + 1];
+                    c.B = _pixelData[i + 2];
+                    c.A = _pixelData[i + 3];
                     break;
 
                 default:

@@ -866,7 +866,6 @@ namespace Chroma.Graphics
         protected override void FreeNativeResources()
         {
             SDL_gpu.GPU_FreeImage(ImageHandle);
-
             ImageHandle = IntPtr.Zero;
         }
     }

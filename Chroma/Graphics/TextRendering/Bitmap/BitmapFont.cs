@@ -98,17 +98,14 @@ namespace Chroma.Graphics.TextRendering.Bitmap
 
         public Texture GetTexture(char c)
         {
-            if (!Pages.Any())
+            if (Pages.Count == 0)
                 return null;
 
             if (!HasGlyph(c))
                 return null;
+
+            var glyph = Glyphs[c];
             
-            var glyph = Glyphs.FirstOrDefault(x => x.Key == c).Value;
-
-            if (glyph == null)
-                return null;
-
             return Pages[glyph.Page].Texture;
         }
 

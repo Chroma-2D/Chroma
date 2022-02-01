@@ -307,10 +307,7 @@ namespace Chroma.Graphics
         }
 
         public void RenderTo(RenderTarget target, Action drawingLogic)
-        {
-            if (drawingLogic == null)
-                return;
-            
+        {           
             if (target == null)
             {
                 throw new ArgumentNullException(
@@ -318,6 +315,9 @@ namespace Chroma.Graphics
                     "Render target cannot be null."
                 );
             }
+            
+            if (drawingLogic == null)
+                return;
 
             TargetStack.Push(target.TargetHandle);
             {
@@ -328,9 +328,6 @@ namespace Chroma.Graphics
 
         public void WithCamera(Camera camera, Action drawingLogic)
         {
-            if (drawingLogic == null)
-                return;
-            
             if (camera == null)
             {
                 throw new ArgumentNullException(
@@ -338,6 +335,9 @@ namespace Chroma.Graphics
                     "Camera cannot be null"
                 );
             }
+
+            if (drawingLogic == null)
+                return;
 
             SDL_gpu.GPU_SetCamera(CurrentRenderTarget, ref camera.GpuCamera);
             {
@@ -448,7 +448,7 @@ namespace Chroma.Graphics
         {
             if (drawAction == null)
                 return;
-            
+
             BatchBuffer.Add(
                 new BatchInfo
                 {

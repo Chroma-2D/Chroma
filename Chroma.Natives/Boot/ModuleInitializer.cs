@@ -106,6 +106,8 @@ namespace Chroma.Natives.Boot
         {
             var libraryFileNames = NativeLibraryExtractor.ExtractAll()
                 .Select(Path.GetFileName);
+            
+            Posix.DetectLibcEnvironment();
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {

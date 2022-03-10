@@ -3,7 +3,7 @@ using System.Numerics;
 using Chroma.Input.GameControllers.Drivers.Capabilities;
 using Chroma.Natives.SDL;
 
-namespace Chroma.Input.GameControllers.Drivers
+namespace Chroma.Input.GameControllers.Drivers.Nintendo
 {
     public sealed class SwitchProControllerDriver  : NintendoControllerDriver, IGyroscopeEnabled, IAccelerometerEnabled
     {

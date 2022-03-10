@@ -154,7 +154,7 @@ namespace GameController.Views
                 
                 if (kvp.Key.IsButtonDown(ControllerButton.Y))
                     playerView.Color = ButtonColors[ControllerButton.Y];
-                
+
                 kvp.Key.SetLedColor(playerView.Color);
             }
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Numerics;
 using Chroma.Graphics;
 using Chroma.Input.GameControllers;
-using Chroma.Input.GameControllers.Drivers;
+using Chroma.Input.GameControllers.Drivers.Sony;
 using Chroma.Windowing;
 
 namespace GameController.Views
@@ -40,17 +40,17 @@ namespace GameController.Views
 
             foreach (var kvp in _controllers)
             {
-                if (kvp.Key is DualShockControllerDriver ds4)
+                if (kvp.Key is SonyControllerDriver ds)
                 {
-                    if (ds4.AccelerometerEnabled)
-                        kvp.Value.Accelerometer = Vector3.Normalize(ds4.ReadAccelerometerSensor());
+                    if (ds.AccelerometerEnabled)
+                        kvp.Value.Accelerometer = Vector3.Normalize(ds.ReadAccelerometerSensor());
                     else kvp.Value.Accelerometer = Vector3.Zero;
 
-                    if (ds4.GyroscopeEnabled)
-                        kvp.Value.Gyroscope = Vector3.Normalize(ds4.ReadGyroscopeSensor());
+                    if (ds.GyroscopeEnabled)
+                        kvp.Value.Gyroscope = Vector3.Normalize(ds.ReadGyroscopeSensor());
                     else kvp.Value.Gyroscope = Vector3.Zero;
 
-                    kvp.Value.TouchPoints = ds4.TouchPoints.ToArray();
+                    kvp.Value.TouchPoints = ds.TouchPoints.ToArray();
                 }
             }
         }
@@ -98,7 +98,7 @@ namespace GameController.Views
         {
             if (e.Button == ControllerButton.Touchpad)
             {
-                var ds4 = e.Controller.As<DualShockControllerDriver>();
+                var ds4 = e.Controller.As<SonyControllerDriver>();
 
                 foreach (var tp in ds4.TouchPoints)
                 {

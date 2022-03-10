@@ -1,18 +1,17 @@
-using Chroma.Input.GameControllers.Drivers.Capabilities;
-using Chroma.Natives.SDL;
 using System.Collections.Generic;
 using System.Numerics;
+using Chroma.Input.GameControllers.Drivers.Capabilities;
+using Chroma.Natives.SDL;
 
-namespace Chroma.Input.GameControllers.Drivers
+namespace Chroma.Input.GameControllers.Drivers.Sony
 {
-    public sealed class DualShockControllerDriver : ControllerDriver, ITouchEnabled, IGyroscopeEnabled, IAccelerometerEnabled
+    public abstract class SonyControllerDriver : ControllerDriver, ITouchEnabled, IGyroscopeEnabled,
+        IAccelerometerEnabled
     {
         private Vector3 _gyroscopeState;
         private Vector3 _accelerometerState;
-        
-        private readonly ControllerTouchPoint[] _touchPoints = new ControllerTouchPoint[2];
 
-        public override string Name => "Sony DualShock 4 Chroma Driver";
+        private readonly ControllerTouchPoint[] _touchPoints = new ControllerTouchPoint[2];
 
         public IReadOnlyCollection<ControllerTouchPoint> TouchPoints => _touchPoints;
 
@@ -22,7 +21,8 @@ namespace Chroma.Input.GameControllers.Drivers
 
             set
             {
-                if (SDL2.SDL_GameControllerSetSensorEnabled(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_GYRO, value) < 0)
+                if (SDL2.SDL_GameControllerSetSensorEnabled(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_GYRO,
+                        value) < 0)
                     _log.Error($"Failed to enable gyroscope: {SDL2.SDL_GetError()}");
             }
         }
@@ -32,7 +32,8 @@ namespace Chroma.Input.GameControllers.Drivers
             get => SDL2.SDL_GameControllerIsSensorEnabled(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_ACCEL);
             set
             {
-                if (SDL2.SDL_GameControllerSetSensorEnabled(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_ACCEL, value) < 0)
+                if (SDL2.SDL_GameControllerSetSensorEnabled(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_ACCEL,
+                        value) < 0)
                     _log.Error($"Failed to enable accelerometer: {SDL2.SDL_GetError()}");
             }
         }
@@ -40,7 +41,7 @@ namespace Chroma.Input.GameControllers.Drivers
         public Vector3 Gyroscope => _gyroscopeState;
         public Vector3 Accelerometer => _accelerometerState;
 
-        internal DualShockControllerDriver(ControllerInfo info)
+        internal SonyControllerDriver(ControllerInfo info)
             : base(info)
         {
         }
@@ -53,7 +54,8 @@ namespace Chroma.Input.GameControllers.Drivers
             {
                 fixed (float* dataPtr = &data[0])
                 {
-                    if (SDL2.SDL_GameControllerGetSensorData(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_GYRO, dataPtr, 3) < 0)
+                    if (SDL2.SDL_GameControllerGetSensorData(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_GYRO,
+                            dataPtr, 3) < 0)
                     {
                         _log.Error($"Failed to retrieve gyroscope data: {SDL2.SDL_GetError()}");
                         return Vector3.Zero;
@@ -76,7 +78,8 @@ namespace Chroma.Input.GameControllers.Drivers
             {
                 fixed (float* dataPtr = &data[0])
                 {
-                    if (SDL2.SDL_GameControllerGetSensorData(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_ACCEL, dataPtr, 3) < 0)
+                    if (SDL2.SDL_GameControllerGetSensorData(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_ACCEL,
+                            dataPtr, 3) < 0)
                     {
                         _log.Error($"Failed to retrieve accelerometer data: {SDL2.SDL_GetError()}");
                         return Vector3.Zero;

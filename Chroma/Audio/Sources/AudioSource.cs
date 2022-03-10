@@ -115,7 +115,10 @@ namespace Chroma.Audio.Sources
 
                 unsafe
                 {
-                    return new Span<byte>(Source->in_buffer.ToPointer(), Source->in_buffer_size);
+                    return new Span<byte>(
+                        Source->in_buffer.ToPointer(),
+                        Source->in_buffer_size
+                    );
                 }
             }
         }
@@ -128,7 +131,10 @@ namespace Chroma.Audio.Sources
 
                 unsafe
                 {
-                    return new Span<byte>(Source->out_buffer.ToPointer(), Source->out_buffer_size);
+                    return new Span<byte>(
+                        Source->out_buffer.ToPointer(),
+                        Source->out_buffer_size
+                    );
                 }
             }
         }

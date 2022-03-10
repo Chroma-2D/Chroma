@@ -8,6 +8,7 @@ using Chroma.Graphics.TextRendering.TrueType;
 using Chroma.Input.GameControllers;
 using Chroma.Input.GameControllers.Drivers;
 using Chroma.Input.GameControllers.Drivers.Capabilities;
+using Chroma.Input.GameControllers.Drivers.Nintendo;
 using Chroma.Windowing;
 
 namespace GameController.Views

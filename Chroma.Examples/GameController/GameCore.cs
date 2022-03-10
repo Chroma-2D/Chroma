@@ -35,31 +35,46 @@ namespace GameController
         protected override void ControllerDisconnected(ControllerEventArgs e)
         {
             for (var i = 0; i < _views.Count; i++)
-                _views[i].OnDisconnected(e);
+            {
+                if (_views[i].AcceptedControllers.Contains(e.Controller.Info.Type))
+                    _views[i].OnDisconnected(e);
+            }
         }
 
         protected override void ControllerConnected(ControllerEventArgs e)
         {
             for (var i = 0; i < _views.Count; i++)
-                _views[i].OnConnected(e);
+            {
+                if (_views[i].AcceptedControllers.Contains(e.Controller.Info.Type))
+                    _views[i].OnConnected(e);
+            }
         }
 
         protected override void ControllerAxisMoved(ControllerAxisEventArgs e)
         {
             for (var i = 0; i < _views.Count; i++)
-                _views[i].OnAxisMoved(e);
+            {
+                if (_views[i].AcceptedControllers.Contains(e.Controller.Info.Type))
+                    _views[i].OnAxisMoved(e);
+            }
         }
 
         protected override void ControllerButtonPressed(ControllerButtonEventArgs e)
         {
             for (var i = 0; i < _views.Count; i++)
-                _views[i].OnButtonPressed(e);
+            {
+                if (_views[i].AcceptedControllers.Contains(e.Controller.Info.Type))
+                    _views[i].OnButtonPressed(e);
+            }
         }
 
         protected override void ControllerButtonReleased(ControllerButtonEventArgs e)
         {
             for (var i = 0; i < _views.Count; i++)
-                _views[i].OnButtonReleased(e);
+            {
+                if (_views[i].AcceptedControllers.Contains(e.Controller.Info.Type))
+                    _views[i].OnButtonReleased(e);
+            }
         }
 
         protected override void Update(float delta)

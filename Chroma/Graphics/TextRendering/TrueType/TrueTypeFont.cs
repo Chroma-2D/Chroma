@@ -30,7 +30,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
         private readonly Dictionary<char, TrueTypeGlyph> _glyphs = new();
         private readonly Dictionary<int, int> _kernings = new();
-        
+
         private byte[] _ttfData;
         private Texture _atlas;
 
@@ -145,16 +145,16 @@ namespace Chroma.Graphics.TextRendering.TrueType
         {
             xMin = 0;
             xMax = 0;
-            
+
             yMin = 0;
             yMax = 0;
-            
+
             if (!HasGlyph(c))
                 return;
 
             xMin = _glyphs[c].MinimumX;
             xMax = _glyphs[c].MaximumX;
-            
+
             yMin = _glyphs[c].MinimumY;
             yMax = _glyphs[c].MaximumY;
         }
@@ -226,7 +226,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
         public int GetKerning(char first, char second)
         {
             var key = (first << 16) | second;
-            
+
             _kernings.TryGetValue(key, out var kerning);
             return kerning;
         }
@@ -247,7 +247,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
         {
             _atlas?.Dispose();
             _atlas = null;
-            
+
             _glyphs.Clear();
             _kernings.Clear();
         }
@@ -264,13 +264,17 @@ namespace Chroma.Graphics.TextRendering.TrueType
                     out _face
                 );
             }
-            
+
             FamilyName = Marshal.PtrToStringAnsi(_face->family_name);
         }
 
         private void CreateAlphabetIfNeeded()
         {
-            Alphabet ??= GenerateAlphabet(1..512);
+            Alphabet ??= GenerateAlphabet(
+                UnicodeCharacterRanges.BasicLatin,
+                UnicodeCharacterRanges.Latin1Supplement,
+                UnicodeCharacterRanges.LatinExtendedA
+            );
         }
 
         private unsafe void UnloadTtf()
@@ -301,7 +305,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
                 var right = Alphabet.ElementAt(Alphabet.Count - i - 1);
 
                 var key = (left << 16) | right;
-                
+
                 var amount = GetTtfKerning(left, right);
                 _kernings.Add(key, amount);
             }
@@ -314,7 +318,15 @@ namespace Chroma.Graphics.TextRendering.TrueType
             foreach (var range in ranges)
             {
                 for (var c = (char)range.Start.Value; c < (char)range.End.Value; c++)
+                {
+                    if (!TtfContainsGlyph(c))
+                    {
+                        _log.Debug($"Font '{FamilyName}' does not contain a glyph for codepoint U+{(int)c:X4}");
+                        continue;
+                    }
+
                     glyphs.Add(c);
+                }
             }
 
             return glyphs;
@@ -382,7 +394,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
                         {
                             glyphFlags |= FT.FT_LOAD_FORCE_AUTOHINT;
                         }
-                        
+
                         switch (HintingMode)
                         {
                             case HintingMode.Normal:
@@ -401,7 +413,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
                                 renderMode = FT_Render_Mode.FT_RENDER_MODE_MONO;
                                 break;
 
-                            default: 
+                            default:
                                 throw new InvalidOperationException("Unsupported hinting mode.");
                         }
                     }
@@ -445,7 +457,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
                 FT_Glyph_BBox_Mode.FT_GLYPH_BBOX_PIXELS,
                 out var cbox
             );
-            
+
             return new()
             {
                 Position = new Vector2(penX, penY),
@@ -540,7 +552,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
         protected override void FreeManagedResources()
         {
             InvalidateFont();
-            
+
             if (_ttfData is { Length: > 0 })
                 _ttfData = null;
         }

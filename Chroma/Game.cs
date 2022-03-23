@@ -261,6 +261,18 @@ namespace Chroma
             Graphics = new GraphicsManager(StartupOptions);
             Window = new Window(this);
 
+            // This is a kludge.
+            // Do not touch or shit will break.
+            //
+            // What shit you wonder?
+            // Something related to texture initialization
+            // overwriting things in memory but it happens
+            // very early so I am not sure if it's FreeType
+            // fucking things up or SDL_gpu or whatever.
+            //
+            // This fixes it. So do not touch.
+            // - 23.03.2022
+            //
             EmbeddedAssets.LoadEmbeddedAssets();
 
             if (StartupOptions.UseBootSplash)

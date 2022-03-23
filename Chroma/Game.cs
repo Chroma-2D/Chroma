@@ -58,7 +58,7 @@ namespace Chroma
             {
                 SdlLogHook.Enable();
             }
-
+            
             options ??= new GameStartupOptions();
 
             StartupOptions = options;
@@ -68,7 +68,7 @@ namespace Chroma
                 _defaultScene = new DefaultScene(this);
 
             InitializeThreading();
-            InitializeGraphics();
+            InitializeGraphics();            
             InitializeAudio();
 
             AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
@@ -273,6 +273,9 @@ namespace Chroma
             }
 
             Graphics.VerticalSyncMode = VerticalSyncMode.Retrace;
+            
+            EmbeddedAssets.LoadEmbeddedAssets();
+            
             Window.SetIcon(EmbeddedAssets.DefaultIconTexture);
         }
 
@@ -304,6 +307,7 @@ namespace Chroma
         private void FinishBoot()
         {
             Content = InitializeContentPipeline();
+
             // Initialize extensions after re-write.
 
             LoadContent();

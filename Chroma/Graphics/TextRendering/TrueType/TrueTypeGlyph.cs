@@ -2,7 +2,7 @@
 
 namespace Chroma.Graphics.TextRendering.TrueType
 {
-    internal struct TrueTypeGlyph
+    internal class TrueTypeGlyph
     {
         public Vector2 Position { get; internal set; }
         public Vector2 Size { get; internal set; }

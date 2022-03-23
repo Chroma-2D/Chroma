@@ -43,6 +43,10 @@ namespace Chroma
 
         public Game(GameStartupOptions options = null)
         {
+#if !DEBUG
+            _log.LogLevel = LogLevel.Error;
+#endif
+
             if (WasConstructed)
             {
                 throw new InvalidOperationException(
@@ -58,7 +62,7 @@ namespace Chroma
             {
                 SdlLogHook.Enable();
             }
-            
+
             options ??= new GameStartupOptions();
 
             StartupOptions = options;
@@ -68,7 +72,7 @@ namespace Chroma
                 _defaultScene = new DefaultScene(this);
 
             InitializeThreading();
-            InitializeGraphics();            
+            InitializeGraphics();
             InitializeAudio();
 
             AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
@@ -257,6 +261,8 @@ namespace Chroma
             Graphics = new GraphicsManager(StartupOptions);
             Window = new Window(this);
 
+            EmbeddedAssets.LoadEmbeddedAssets();
+
             if (StartupOptions.UseBootSplash)
             {
                 FixedTimeStepTarget = 60;
@@ -269,17 +275,14 @@ namespace Chroma
             }
             else
             {
-                InitializeGraphicsDefault();
+                InitializeGraphicsDefaults();
             }
 
             Graphics.VerticalSyncMode = VerticalSyncMode.Retrace;
-            
-            EmbeddedAssets.LoadEmbeddedAssets();
-            
             Window.SetIcon(EmbeddedAssets.DefaultIconTexture);
         }
 
-        private void InitializeGraphicsDefault()
+        private void InitializeGraphicsDefaults()
         {
             FixedTimeStepTarget = 75;
 
@@ -301,7 +304,7 @@ namespace Chroma
 
             FinishBoot();
 
-            InitializeGraphicsDefault();
+            InitializeGraphicsDefaults();
         }
 
         private void FinishBoot()

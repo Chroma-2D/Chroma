@@ -36,16 +36,7 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
         public static TrueTypeFont Default => EmbeddedAssets.DefaultFont;
 
-        public string FamilyName
-        {
-            get
-            {
-                unsafe
-                {
-                    return Marshal.PtrToStringAnsi(_face->family_name);
-                }
-            }
-        }
+        public string FamilyName { get; private set; }
 
         public IReadOnlyCollection<char> Alphabet { get; private set; }
 
@@ -176,7 +167,8 @@ namespace Chroma.Graphics.TextRendering.TrueType
             var width = 0;
 
             var maxWidth = width;
-            var maxHeight = (text.Count(c => c == '\n') + 1) * LineSpacing;
+
+            var maxHeight = LineSpacing;
 
             foreach (var c in text)
             {
@@ -186,6 +178,8 @@ namespace Chroma.Graphics.TextRendering.TrueType
                         maxWidth = width;
 
                     width = 0;
+                    maxHeight += LineSpacing;
+
                     continue;
                 }
 
@@ -270,6 +264,8 @@ namespace Chroma.Graphics.TextRendering.TrueType
                     out _face
                 );
             }
+            
+            FamilyName = Marshal.PtrToStringAnsi(_face->family_name);
         }
 
         private void CreateAlphabetIfNeeded()

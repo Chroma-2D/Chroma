@@ -556,6 +556,8 @@ namespace Chroma.Windowing
                 //
                 // 22.01.2022: Guess it's going to stay like this for longer.
                 //
+                // 23.03.2022: Freetype. It's fucked. Badly.
+                //
                 SDL_gpu.GPU_BlitTransformX(
                     EmbeddedAssets.DummyFixTexture.ImageHandle,
                     IntPtr.Zero,

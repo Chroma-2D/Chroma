@@ -558,6 +558,8 @@ namespace Chroma.Windowing
                 //
                 // 23.03.2022: Freetype. It's fucked. Badly.
                 //
+                // 23.03.2022 (later that day): It's not Freetype? See Game.cs for details.
+                //
                 SDL_gpu.GPU_BlitTransformX(
                     EmbeddedAssets.DummyFixTexture.ImageHandle,
                     IntPtr.Zero,

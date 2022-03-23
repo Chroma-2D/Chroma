@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.InteropServices;
 using Chroma.Graphics;
 using Chroma.Input.GameControllers.Drivers.Sony.DualSense;
@@ -36,6 +35,7 @@ namespace Chroma.Input.GameControllers.Drivers.Sony
         {
             TriggerEffect = new TriggerEffect(this);
             MicrophoneLedMode = DualSenseMicrophoneLedMode.Off;
+            SetTouchpadLights(0);
         }
 
         public override void SetLedColor(Color color)

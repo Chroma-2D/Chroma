@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Reflection;
 using Chroma.Diagnostics;
-using Chroma.Natives.SDL;
+using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Graphics.Accelerated
 {

@@ -8,7 +8,7 @@ using Chroma.Diagnostics;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.MemoryManagement;
-using Chroma.Natives.SDL;
+using Chroma.Natives.Bindings.SDL;
 using Chroma.Threading;
 using Chroma.Windowing.DragDrop;
 using Chroma.Windowing.EventHandling;

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
 using Chroma.Input.GameControllers.Drivers.Capabilities;
-using Chroma.Natives.SDL;
+using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Input.GameControllers.Drivers.Nintendo
 {

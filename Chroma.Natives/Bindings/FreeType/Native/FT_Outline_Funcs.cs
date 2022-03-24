@@ -1,0 +1,17 @@
+using System;
+using System.Runtime.InteropServices;
+using FT_Pos = System.IntPtr;
+
+namespace Chroma.Natives.Bindings.FreeType.Native
+{
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct FT_Outline_Funcs
+    {
+        public IntPtr moveTo;
+        public IntPtr lineTo;
+        public IntPtr conicTo;
+        public IntPtr cubicTo;
+        public int shift;
+        public FT_Pos delta;
+    }
+}

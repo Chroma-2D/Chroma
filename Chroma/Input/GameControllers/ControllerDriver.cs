@@ -4,7 +4,7 @@ using System.Text;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.Hardware;
-using Chroma.Natives.SDL;
+using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Input.GameControllers
 {

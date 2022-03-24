@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 using System.Numerics;
-using Chroma.Natives.SDL;
+using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Windowing.EventHandling.Specialized
 {

@@ -9,13 +9,6 @@ namespace Chroma.Natives.Boot.PlatformSpecific
 
         public LinuxPlatform()
         {
-            // our root has to be at the end.
-            // on linux. why? fuck if i know,
-            // but it works that way. probably one
-            // of the natives fails to load, and
-            // the cascade results in renderer failing
-            // to initialize, but that's just my humble theory
-
             var paths = new List<string>
             {
                 "/lib",

@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
-using Chroma.Natives.SDL;
+using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Audio.Sources
 {

@@ -4,7 +4,7 @@ using System.Numerics;
 using System.Reflection;
 using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
-using Chroma.Natives.SDL;
+using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Graphics.Accelerated
 {

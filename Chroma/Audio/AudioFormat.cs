@@ -1,6 +1,6 @@
-﻿using Chroma.Natives.SDL;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Audio
 {

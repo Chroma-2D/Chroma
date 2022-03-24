@@ -1,6 +1,6 @@
 using System;
 using System.Text.Json.Serialization;
-using Chroma.Natives.SDL;
+using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Natives.Boot.Config
 {

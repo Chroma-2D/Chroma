@@ -1,4 +1,4 @@
-using Chroma.Natives.FreeType.Native;
+using Chroma.Natives.Bindings.FreeType.Native;
 
 namespace Chroma.Graphics.TextRendering.TrueType
 {

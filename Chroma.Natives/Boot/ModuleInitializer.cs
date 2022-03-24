@@ -6,9 +6,9 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Chroma.Natives.Bindings.SDL;
 using Chroma.Natives.Boot.Config;
 using Chroma.Natives.Boot.PlatformSpecific;
-using Chroma.Natives.SDL;
 using Chroma.Natives.Syscalls;
 
 namespace Chroma.Natives.Boot

@@ -7,9 +7,9 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
-using Chroma.Natives.FreeType;
-using Chroma.Natives.FreeType.Native;
-using Chroma.Natives.SDL;
+using Chroma.Natives.Bindings.FreeType;
+using Chroma.Natives.Bindings.FreeType.Native;
+using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Graphics.TextRendering.TrueType
 {

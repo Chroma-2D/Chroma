@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Numerics;
 using Chroma.Graphics.Batching;
 using Chroma.Graphics.TextRendering;
-using Chroma.Natives.SDL;
+using Chroma.Natives.Bindings.SDL;
 using Chroma.Windowing;
 
 namespace Chroma.Graphics

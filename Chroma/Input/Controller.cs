@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Chroma.Diagnostics.Logging;
 using Chroma.Input.GameControllers;
 using Chroma.Input.GameControllers.Drivers.Capabilities;
-using Chroma.Natives.SDL;
+using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Input
 {

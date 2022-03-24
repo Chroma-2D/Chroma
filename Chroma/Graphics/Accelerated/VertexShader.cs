@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using Chroma.Natives.SDL;
+using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Graphics.Accelerated
 {

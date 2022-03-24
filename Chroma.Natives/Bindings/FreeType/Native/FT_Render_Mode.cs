@@ -1,0 +1,13 @@
+﻿namespace Chroma.Natives.Bindings.FreeType.Native
+{
+    internal enum FT_Render_Mode
+    {
+        FT_RENDER_MODE_NORMAL,
+        FT_RENDER_MODE_LIGHT,
+        FT_RENDER_MODE_MONO,
+        FT_RENDER_MODE_LCD,
+        FT_RENDER_MODE_LCD_V,
+
+        FT_RENDER_MODE_MAX
+    }
+}

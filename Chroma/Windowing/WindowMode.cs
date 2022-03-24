@@ -2,7 +2,7 @@ using System.Drawing;
 using System.Linq;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
-using Chroma.Natives.SDL;
+using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Windowing
 {

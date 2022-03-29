@@ -99,6 +99,7 @@ namespace Chroma.Graphics
 
         public Camera()
         {
+            Zoom = Vector2.One;
         }
 
         public Camera(Camera other)

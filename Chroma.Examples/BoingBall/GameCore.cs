@@ -14,6 +14,13 @@ namespace BoingBall
 {
     public class GameCore : Game
     {
+        private enum EffectMode
+        {
+            Shadow,
+            Sphere,
+            Shade
+        }
+        
         private static readonly Vector2 _maxPos = new(175, 96);
         private Vector2 _pos = Vector2.Zero;
         private Vector2 _dir = Vector2.One;
@@ -23,6 +30,7 @@ namespace BoingBall
         private float _texshift;
         private RenderTarget _target;
         private Texture _texture;
+        private Texture _shade;
         private Cursor _cursor;
         private Effect _effect;
         
@@ -53,6 +61,9 @@ namespace BoingBall
             _texture.VerticalWrappingMode = TextureWrappingMode.Repeat;
             _texture.HorizontalWrappingMode = TextureWrappingMode.Repeat;
 
+            _shade = Content.Load<Texture>("Textures/shade.png");
+            _shade.FilteringMode = TextureFilteringMode.NearestNeighbor;
+
             _cursor = Content.Load<Cursor>("Cursors/ami13.png");
             _cursor.SetCurrent();
 
@@ -63,7 +74,7 @@ namespace BoingBall
 
         protected override void Update(float delta)
         {
-            _texshift += delta / 2.33f * _dir.X;
+            _texshift += delta / 1.66f * _dir.X;
             
             if (_dir.Y > 0)
             {
@@ -111,9 +122,9 @@ namespace BoingBall
 
         protected override void Draw(RenderContext context)
         {
-            var scale = new Vector2(4.2f, 4f);
+            var scale = new Vector2(4f);
             var basePosition = new Vector2(72, 47);
-            var shadowOffset = new Vector2(16, -8);
+            var shadowOffset = new Vector2(16, 4);
             var sphereTilt = 25f;
 
             context.RenderTo(_target, () =>
@@ -123,7 +134,7 @@ namespace BoingBall
                 DrawGrid(new(40, 16), context);
 
                 _effect.Activate();
-                _effect.SetUniform("shadow", true);
+                _effect.SetUniform("mode", (int)EffectMode.Shadow);
                 _texture.ColorMask = new(0, 0, 0, 127);
                 context.DrawTexture(
                     _texture, 
@@ -132,7 +143,7 @@ namespace BoingBall
                     _texture.AbsoluteCenter, 25f
                 );
                 
-                _effect.SetUniform("shadow", false);
+                _effect.SetUniform("mode", (int)EffectMode.Sphere);
                 _effect.SetUniform("texshift", _texshift);
                 context.DrawTexture(
                     _texture, 
@@ -141,7 +152,17 @@ namespace BoingBall
                     _texture.AbsoluteCenter,
                     sphereTilt
                 );
-
+                Shader.Deactivate();
+                
+                _effect.Activate();
+                _effect.SetUniform("mode", (int)EffectMode.Shade);
+                context.DrawTexture(
+                    _shade, 
+                    basePosition + _pos, 
+                    scale, 
+                    _shade.AbsoluteCenter,
+                    sphereTilt
+                );
                 Shader.Deactivate();
             });
 

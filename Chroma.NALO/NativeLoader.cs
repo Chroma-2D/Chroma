@@ -64,8 +64,13 @@ namespace Chroma.NALO
             }
             catch (Exception e)
             {
-                throw new NativeLoaderException("NALO has failed. This is an engine error. Contact the developer.\n",
-                    e);
+                throw new NativeLoaderException(
+                    "NALO has failed. This is an engine error. If you are:\n" +
+                    "  a) a user: contact the application developer\n" +
+                    "  b) a developer: if you believe this is Chroma's fault post an issue on our website\n" +
+                    "  c) cookie: you fucked up - better fix it quickly before anyone notices",
+                    e
+                );
             }
         }
     }

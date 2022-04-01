@@ -14,7 +14,6 @@ namespace Chroma.Natives.Boot
 {
     internal static class ModuleInitializer
     {
-        internal static readonly BootLog BootLog = new();
         internal static BootConfig BootConfig { get; private set; }
 
         [ModuleInitializer]
@@ -27,21 +26,21 @@ namespace Chroma.Natives.Boot
                 SetupConsoleMode();
 
             {
-                BootLog.Info($"It is {DateTime.Now.ToString("MMM dd, yyyy", CultureInfo.InvariantCulture)}.");
-                BootLog.Info("Please wait. I'm trying to boot...");
+                EarlyLog.Info($"It is {DateTime.Now.ToString("MMM dd, yyyy", CultureInfo.InvariantCulture)}.");
+                EarlyLog.Info("Please wait. I'm trying to boot...");
                 
                 ReadBootConfig();
 
                 try
                 {
                     if (BootConfig.SkipChecksumVerification)
-                        BootLog.Warning("Checksum verification disabled. Living on the edge, huh?");
+                        EarlyLog.Warning("Checksum verification disabled. Living on the edge, huh?");
 
                     NativeLoader.LoadNatives(BootConfig.SkipChecksumVerification);
                 }
                 catch (NativeLoaderException nle)
                 {
-                    BootLog.Error($"{nle.Message}. Inner exception: {nle.InnerException}");
+                    EarlyLog.Error($"{nle.Message}. Inner exception: {nle.InnerException}");
                     Console.WriteLine("Press any key to terminate...");
                     Console.ReadKey();
 
@@ -50,13 +49,14 @@ namespace Chroma.Natives.Boot
 
                 if (BootConfig.HookSdlLog)
                 {
-                    BootLog.HookSdlLog();
+                    SdlBootTimeHook.Hook();
                 }
 
                 SetSdlHints();
                 InitializeSdlSystems();
             }
-            BootLog.Dispose();
+
+            SdlBootTimeHook.UnHook();
         }
 
         private static void SetupConsoleMode()
@@ -84,7 +84,7 @@ namespace Chroma.Natives.Boot
             }
             catch (Exception e)
             {
-                BootLog.Warning($"No boot.json or it was invalid ({e.Message}) defaults created.");
+                EarlyLog.Warning($"No boot.json or it was invalid ({e.Message}) defaults created.");
 
                 BootConfig = new BootConfig();
 
@@ -108,7 +108,7 @@ namespace Chroma.Natives.Boot
                 {
                     if (!SDL2.SDL_SetHint(kvp.Key, kvp.Value))
                     {
-                        BootLog.Error($"Failed to set '{kvp.Key}' to '{kvp.Value}': {SDL2.SDL_GetError()}");
+                        EarlyLog.Error($"Failed to set '{kvp.Key}' to '{kvp.Value}': {SDL2.SDL_GetError()}");
                     }
                 }
             }
@@ -117,17 +117,17 @@ namespace Chroma.Natives.Boot
         private static void InitializeSdlSystems()
         {
             SDL2.SDL_GetVersion(out var sdlVersion);
-            BootLog.Info($"Initializing SDL {sdlVersion.major}.{sdlVersion.minor}.{sdlVersion.patch}");
+            EarlyLog.Info($"Initializing SDL {sdlVersion.major}.{sdlVersion.minor}.{sdlVersion.patch}");
 
             SDL2.SDL_Init(BootConfig.SdlModules.SdlInitFlags);
             if (BootConfig.EnableSdlGpuDebugging)
             {
-                BootLog.Info("Enabling SDL_gpu debugging...");
+                EarlyLog.Info("Enabling SDL_gpu debugging...");
                 SDL_gpu.GPU_SetDebugLevel(SDL_gpu.GPU_DebugLevelEnum.GPU_DEBUG_LEVEL_MAX);
             }
             
-            BootLog.Info("Handing over to the core. " +
-                         $"Its log will be located somewhere in {AppContext.BaseDirectory}Logs...");
+            EarlyLog.Info("Handing over to the core. " +
+                          $"Its log will be located somewhere in {AppContext.BaseDirectory}Logs...");
             Console.WriteLine("---");
         }
     }

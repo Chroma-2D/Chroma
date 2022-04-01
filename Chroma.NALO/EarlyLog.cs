@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Chroma.NALO
 {
-    public class EarlyLog : IDisposable
+    internal class EarlyLog : IDisposable
     {
         private StreamWriter _streamWriter;
 

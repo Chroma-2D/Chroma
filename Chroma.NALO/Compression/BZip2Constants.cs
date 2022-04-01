@@ -1,4 +1,4 @@
-namespace Chroma.Natives.Compression
+namespace Chroma.NALO.Compression
 {
     internal sealed class BZip2Constants
     {

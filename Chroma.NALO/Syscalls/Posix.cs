@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Chroma.Natives.Syscalls
+namespace Chroma.NALO.Syscalls
 {
     internal static class Posix
     {

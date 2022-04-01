@@ -1,6 +1,6 @@
 using System;
 
-namespace Chroma.Natives.Compression
+namespace Chroma.NALO.Compression
 {
     internal class BZip2Exception : NativeExtractorException
     {

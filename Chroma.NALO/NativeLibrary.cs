@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Chroma.Natives.Boot
+namespace Chroma.NALO
 {
     internal class NativeLibrary
     {

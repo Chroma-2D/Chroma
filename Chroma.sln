@@ -67,6 +67,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LerpingCameras", "Chroma.Ex
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoingBall", "Chroma.Examples\BoingBall\BoingBall.csproj", "{09A31FE2-2455-4E12-96A8-D72676497808}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chroma.NALO", "Chroma.NALO\Chroma.NALO.csproj", "{74BB0494-E450-4FF6-89EF-2325CCCB1AF9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -197,6 +199,10 @@ Global
 		{09A31FE2-2455-4E12-96A8-D72676497808}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09A31FE2-2455-4E12-96A8-D72676497808}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09A31FE2-2455-4E12-96A8-D72676497808}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74BB0494-E450-4FF6-89EF-2325CCCB1AF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74BB0494-E450-4FF6-89EF-2325CCCB1AF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74BB0494-E450-4FF6-89EF-2325CCCB1AF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74BB0494-E450-4FF6-89EF-2325CCCB1AF9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,9 +1,9 @@
 using System;
 using System.IO;
 
-namespace Chroma.Natives.Compression
+namespace Chroma.NALO.Compression
 {
-    internal class BZip2InputStream : Stream
+    public class BZip2InputStream : Stream
     {
         private const int START_BLOCK_STATE = 1;
         private const int RAND_PART_A_STATE = 2;

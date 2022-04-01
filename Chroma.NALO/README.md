@@ -32,4 +32,4 @@ what makes up a NALO-compliant library.
    > 
    > If you need an example of a valid directory structure consider visiting [Chroma.Natives](https://github.com/Chroma-2D/Chroma/tree/master/Chroma.Natives).
 
-4. > Your library must have a way of triggering the `NativeLoader.LoadNatives` method. The recommended way is a valid [ModuleInitializer](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.moduleinitializerattribute?view=net-6.0).
+4. > Your library must trigger `NativeLoader.LoadNatives()` from a valid [ModuleInitializer](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.moduleinitializerattribute?view=net-6.0). Any attempts to load natives from methods that are not a module initializer will fail.

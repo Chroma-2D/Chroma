@@ -1,17 +1,23 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 
 namespace Chroma.NALO
 {
-    internal class EarlyLog : IDisposable
+    public static class EarlyLog
     {
-        private StreamWriter _streamWriter;
+        private static Queue<string> _messages = new();
+        private static StreamWriter _streamWriter;
 
-        public bool Enabled { get; set; } = true;
+        public static bool Enabled { get; set; } = true;
 
-        public EarlyLog(string outFileName)
+        internal static void Begin(string outFileName)
         {
+            if (_streamWriter != null)
+                return;
+            
             try
             {
                 var logDir = Path.Combine(AppContext.BaseDirectory, "Logs");
@@ -31,47 +37,60 @@ namespace Chroma.NALO
             }
         }
 
-        public void Info(string message)
-        {
-            WriteToLog(message, "INF");
-        }
-
-        public void Warning(string message)
-        {
-            WriteToLog(message, "WRN");
-        }
-
-        public void Error(string message)
-        {
-            WriteToLog(message, "ERR");
-        }
-
-        public void Debug(string message)
-        {
-            WriteToLog(message, "DBG");
-        }
-        
-        public void Dispose()
+        internal static void End()
         {
             _streamWriter.Dispose();
-            Finish();
+            _streamWriter = null;
+        }
+        
+        public static void Info(string message)
+        {
+            _messages.Enqueue(FormatMessage(message, "INF"));
+            WriteToLog();
         }
 
-        protected virtual void Finish()
+        public static void Warning(string message)
         {
+            _messages.Enqueue(FormatMessage(message, "WRN"));
+            WriteToLog();
         }
 
-        private void WriteToLog(string message, string level)
+        public static void Error(string message)
         {
-            if (!Enabled)
-                return;
+            _messages.Enqueue(FormatMessage(message, "ERR"));
+            WriteToLog();
+        }
 
-            var msg = $"[{DateTime.Now.ToString("HH:mm:ss", CultureInfo.InvariantCulture)} {level}] {message}";
+        public static void Debug(string message)
+        {
+            _messages.Enqueue(FormatMessage(message, "DBG"));
+            WriteToLog();
+        }
+        
+        public static void Dispose()
+        {
+            _streamWriter.Dispose();
+        }
 
-            if (_streamWriter != null)
-                _streamWriter.WriteLine(msg);
+        private static string FormatMessage(string message, string level)
+        {
+            return $"[{DateTime.Now.ToString("HH:mm:ss", CultureInfo.InvariantCulture)} {level}] {message}";
+        }
 
-            Console.WriteLine(msg);
+        private static void WriteToLog()
+        {
+            while (_messages.Any())
+            {
+                var msg = _messages.Dequeue();
+
+                if (Enabled)
+                {
+                    if (_streamWriter != null)
+                        _streamWriter.WriteLine(msg);
+
+                    Console.WriteLine(msg);
+                }
+            }
         }
     }
 }

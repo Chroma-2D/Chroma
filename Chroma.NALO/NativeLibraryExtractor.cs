@@ -102,7 +102,7 @@ namespace Chroma.NALO
                         bzipStream.CopyTo(fs);
                 }
 
-                NativeLoader.EarlyLog.Info($"Extracting: {libraryPath}");
+                EarlyLog.Info($"Extracting: {libraryPath}");
                 bzipStream.Close();
             }
 

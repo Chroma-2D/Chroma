@@ -110,7 +110,10 @@ namespace Chroma.Audio.Sources
 
             if (FileSourceHandle == IntPtr.Zero)
             {
-                throw new AudioException($"Failed to initialize audio source from stream: {SDL2.SDL_GetError()}");
+                throw new AudioException(
+                    $"Failed to initialize audio source from stream: {SDL2.SDL_GetError()}\n" +
+                    $"Are you sure the data in the stream is valid and not you're not reading past the end of it?"
+                );
             }
 
             unsafe
@@ -237,11 +240,6 @@ namespace Chroma.Audio.Sources
             Position = targetPosition;
         }
 
-        protected override void FreeManagedResources()
-        {
-            _sdlRwOps.Dispose();
-        }
-
         protected override void FreeNativeResources()
         {
             if (FileSourceHandle != IntPtr.Zero)
@@ -250,8 +248,8 @@ namespace Chroma.Audio.Sources
                 FileSourceHandle = IntPtr.Zero;
             }
 
+            _sdlRwOps.Dispose();
             // SDL_sound closes RWops after initializing audio samples from file.
-
             Handle = IntPtr.Zero;
         }
 
@@ -303,11 +301,9 @@ namespace Chroma.Audio.Sources
                 {
                     if (!IsLooping)
                     {
-                        Pause();
                         Status = PlaybackStatus.Stopped;
                     }
-
-                    Rewind();
+                    
                     AudioOutput.Instance.OnAudioSourceFinished(this, IsLooping);
                 }
             }

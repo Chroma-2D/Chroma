@@ -7,7 +7,7 @@ namespace Chroma.MemoryManagement
 {
     internal class SdlRwOps : DisposableResource
     {
-        private readonly Stream _stream;
+        private Stream _stream;
         private unsafe SDL2.SDL_RWops* _rwOps;
 
         private delegate long SdlRwOpsSizeDelegate(IntPtr context);
@@ -150,8 +150,13 @@ namespace Chroma.MemoryManagement
             }
 
             Dispose();
-
             return 0;
+        }
+
+        internal void DisposeStream()
+        {
+            _stream?.Dispose();
+            _stream = null;
         }
 
         protected override void FreeManagedResources()
@@ -162,7 +167,7 @@ namespace Chroma.MemoryManagement
             _write = null;
             _close = null;
 
-            _stream.Dispose();
+            DisposeStream();
         }
 
         protected override void FreeNativeResources()

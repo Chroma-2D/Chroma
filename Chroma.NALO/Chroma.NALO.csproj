@@ -25,10 +25,4 @@
     <ItemGroup>
         <None Include="Resources\nugeticon.png" Pack="true" PackagePath="\" />
     </ItemGroup>
-
-    <ItemGroup>
-        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-            <_Parameter1>Chroma.Natives</_Parameter1>
-        </AssemblyAttribute>
-    </ItemGroup>
 </Project>

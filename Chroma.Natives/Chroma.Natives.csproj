@@ -45,4 +45,8 @@
     <ItemGroup>
       <Folder Include="Bindings" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Chroma.NALO\Chroma.NALO.csproj" />
+    </ItemGroup>
 </Project>

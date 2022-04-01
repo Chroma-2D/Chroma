@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace Chroma.Natives.Boot
+namespace Chroma.NALO
 {
     internal static class NativeIntegrity
     {

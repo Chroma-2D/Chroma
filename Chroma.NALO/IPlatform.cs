@@ -1,4 +1,4 @@
-﻿namespace Chroma.Natives.Boot
+﻿namespace Chroma.NALO
 {
     internal interface IPlatform
     {

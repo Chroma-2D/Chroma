@@ -2,30 +2,31 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
-using Chroma.Natives.Compression;
+using Chroma.NALO.Compression;
 
-namespace Chroma.Natives.Boot
+namespace Chroma.NALO
 {
     internal static class NativeLibraryExtractor
     {
         internal static string LibraryRoot { get; private set; }
 
-        internal static List<string> ExtractAll()
+        internal static List<string> ExtractAll(Assembly assembly, bool skipChecksumVerification)
         {
-            LibraryRoot = CreateLibraryDirectory();
+            LibraryRoot = CreateLibraryDirectory(true);
 
-            var resourceNames = EmbeddedResources.GetResourceNames();
+            var resourceNames = EmbeddedResources.GetResourceNames(assembly);
             var fileNames = resourceNames.Where(x => x.Contains(EmbeddedResources.PlatformString));
 
-            return ExtractLibraries(fileNames, LibraryRoot);
+            return ExtractLibraries(assembly, fileNames, LibraryRoot, skipChecksumVerification);
         }
 
-        private static string CreateLibraryDirectory()
+        private static string CreateLibraryDirectory(bool extractToApplicationDirectory)
         {
             string libraryRoot;
 
-            if (ModuleInitializer.BootConfig.NativesInApplicationDirectory)
+            if (extractToApplicationDirectory)
             {
                 var appDirPath = AppContext.BaseDirectory;
 
@@ -57,25 +58,29 @@ namespace Chroma.Natives.Boot
             return libraryRoot;
         }
 
-        private static List<string> ExtractLibraries(IEnumerable<string> resourceNames, string targetDir)
+        private static List<string> ExtractLibraries(
+            Assembly assembly, 
+            IEnumerable<string> resourceNames, 
+            string targetDir,
+            bool skipChecksumVerification)
         {
             var filePaths = new List<string>();
 
             foreach (var resourceName in resourceNames)
             {
                 var fileName = Path.GetFileNameWithoutExtension(
-                    EmbeddedResources.ResourceNameToFileName(resourceName)
-                ) + EmbeddedResources.GetNativeExtensionForCurrentPlatform();
+                    EmbeddedResources.ResourceNameToFileName(assembly, resourceName)
+                ) + EmbeddedResources.PlatformSpecificNativeExtension;
 
                 var libraryPath = Path.Combine(targetDir, fileName);
                 filePaths.Add(libraryPath);
 
-                using var embeddedPackageStream = EmbeddedResources.GetResourceStream(resourceName);
+                using var embeddedPackageStream = EmbeddedResources.GetResourceStream(assembly, resourceName);
                 using var bzipStream = new BZip2InputStream(embeddedPackageStream);
 
                 if (File.Exists(libraryPath))
                 {
-                    if (ModuleInitializer.BootConfig.SkipChecksumVerification)
+                    if (skipChecksumVerification)
                         continue;
 
                     using var memoryStream = new MemoryStream();
@@ -97,7 +102,7 @@ namespace Chroma.Natives.Boot
                         bzipStream.CopyTo(fs);
                 }
 
-                BootLog.Info($"Extracting: {libraryPath}");
+                NativeLoader.EarlyLog.Info($"Extracting: {libraryPath}");
                 bzipStream.Close();
             }
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Chroma.Natives
+namespace Chroma.NALO
 {
     internal class NativeLibraryException : Exception
     {

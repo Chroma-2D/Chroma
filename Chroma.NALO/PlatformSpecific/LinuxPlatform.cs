@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace Chroma.Natives.Boot.PlatformSpecific
+namespace Chroma.NALO.PlatformSpecific
 {
     internal class LinuxPlatform : IPlatform
     {

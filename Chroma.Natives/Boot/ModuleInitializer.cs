@@ -1,25 +1,24 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Chroma.NALO;
 using Chroma.Natives.Bindings.SDL;
 using Chroma.Natives.Boot.Config;
-using Chroma.Natives.Boot.PlatformSpecific;
 using Chroma.Natives.Syscalls;
 
 namespace Chroma.Natives.Boot
 {
     internal static class ModuleInitializer
     {
-        internal static IPlatform Platform { get; private set; }
+        internal static readonly BootLog BootLog = new();
         internal static BootConfig BootConfig { get; private set; }
 
         [ModuleInitializer]
-        public static void Initialize()
+        internal static void Initialize()
         {
             if (!Environment.Is64BitOperatingSystem)
                 throw new PlatformNotSupportedException("Chroma supports 64-bit systems only.");
@@ -27,7 +26,6 @@ namespace Chroma.Natives.Boot
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 SetupConsoleMode();
 
-            BootLog.Begin();
             {
                 BootLog.Info($"It is {DateTime.Now.ToString("MMM dd, yyyy", CultureInfo.InvariantCulture)}.");
                 BootLog.Info("Please wait. I'm trying to boot...");
@@ -39,11 +37,11 @@ namespace Chroma.Natives.Boot
                     if (BootConfig.SkipChecksumVerification)
                         BootLog.Warning("Checksum verification disabled. Living on the edge, huh?");
 
-                    LoadNatives();
+                    NativeLoader.LoadNatives(BootConfig.SkipChecksumVerification);
                 }
-                catch (NativeExtractorException nee)
+                catch (NativeLoaderException nle)
                 {
-                    BootLog.Error($"{nee.Message}. Inner exception: {nee.InnerException}");
+                    BootLog.Error($"{nle.Message}. Inner exception: {nle.InnerException}");
                     Console.WriteLine("Press any key to terminate...");
                     Console.ReadKey();
 
@@ -58,7 +56,7 @@ namespace Chroma.Natives.Boot
                 SetSdlHints();
                 InitializeSdlSystems();
             }
-            BootLog.End();
+            BootLog.Dispose();
         }
 
         private static void SetupConsoleMode()
@@ -99,33 +97,6 @@ namespace Chroma.Natives.Boot
                         IgnoreReadOnlyProperties = false
                     })
                 );
-            }
-        }
-
-        private static void LoadNatives()
-        {
-            var libraryFileNames = NativeLibraryExtractor.ExtractAll()
-                .Select(Path.GetFileName);
-            
-            Posix.DetectLibcEnvironment();
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                Platform = new WindowsPlatform();
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                Platform = new LinuxPlatform();
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                Platform = new MacPlatform();
-            }
-
-            foreach (var libraryFileName in libraryFileNames)
-            {
-                BootLog.Info($"Now loading: {libraryFileName}");
-                Platform.Register(libraryFileName);
             }
         }
 

@@ -1,5 +1,9 @@
 #!/bin/bash
-doxygen
-cp navtree.js site/html/navtree.js
-cp folder.png site/html/folder.png
-cp source.png site/html/source.png
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+echo $SCRIPT_DIR
+rm $SCRIPT_DIR/docs -rf
+rm $SCRIPT_DIR/Working\ Data -rf
+
+git submodule update --init
+mono ../Dependencies/bin/NaturalDocs/NaturalDocs.exe $SCRIPT_DIR --only-access-levels public protected

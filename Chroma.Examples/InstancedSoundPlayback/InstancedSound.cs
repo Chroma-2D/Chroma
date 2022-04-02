@@ -39,6 +39,9 @@ namespace InstancedSoundPlayback
 
         public void PlayInstance()
         {
+            if (_template == null)
+                return;
+            
             using (var ms = new MemoryStream())
             {
                 _template.CopyTo(ms);
@@ -54,13 +57,6 @@ namespace InstancedSoundPlayback
         protected override void FreeManagedResources()
         {
             GameCore.AudioOutput.AudioSourceFinished -= OnAudioSourceFinished;
-            
-            for (var i = 0; i < _liveInstances.Count; i++)
-            {
-                _liveInstances[i].Stop();
-                _expiredInstances.Enqueue(_liveInstances[i]);
-            }
-
             _template.Dispose();
         }
 

@@ -22,7 +22,7 @@
     </Description>
     
     <PackageId>Chroma</PackageId>
-    <Version>0.54.0</Version>
+    <Version>0.54.1</Version>
     <Author>Ciastex</Author>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Ciastex/Chroma</RepositoryUrl>
@@ -46,6 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Chroma.NALO\Chroma.NALO.csproj" />
     <ProjectReference Include="..\Chroma.Natives\Chroma.Natives.csproj">
       <IncludeAssets>Chroma.Natives.dll</IncludeAssets>
     </ProjectReference>

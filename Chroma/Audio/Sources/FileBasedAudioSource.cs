@@ -242,6 +242,8 @@ namespace Chroma.Audio.Sources
 
         protected override void FreeNativeResources()
         {
+            EnsureOnMainThread();
+            
             if (FileSourceHandle != IntPtr.Zero)
             {
                 SDL2_nmix.NMIX_FreeFileSource(FileSourceHandle);

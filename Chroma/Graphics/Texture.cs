@@ -5,7 +5,6 @@ using System.Numerics;
 using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
 using Chroma.Natives.Bindings.SDL;
-using Chroma.Threading;
 using Chroma.STB.Image;
 
 namespace Chroma.Graphics
@@ -846,16 +845,6 @@ namespace Chroma.Graphics
 
         private void CopyDataFrom(Texture other)
             => other._pixelData.CopyTo(_pixelData, 0);
-
-        protected void EnsureOnMainThread()
-        {
-            if (!Dispatcher.IsMainThread)
-            {
-                throw new InvalidOperationException(
-                    "This operation is not thread-safe and must be scheduled to run on main thread."
-                );
-            }
-        }
 
         protected void EnsureHandleValid()
         {

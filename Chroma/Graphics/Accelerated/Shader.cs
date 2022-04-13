@@ -475,6 +475,7 @@ namespace Chroma.Graphics.Accelerated
         protected override void FreeNativeResources()
         {
             EnsureNotDisposed();
+            EnsureOnMainThread();
 
             if (PixelShaderObjectHandle != 0)
                 SDL_gpu.GPU_FreeShader(PixelShaderObjectHandle);

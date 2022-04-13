@@ -125,6 +125,8 @@ namespace Chroma.Audio.Captures
 
         protected override void FreeManagedResources()
         {
+            EnsureOnMainThread();
+            
             if (Status != CaptureStatus.Stopped)
             {
                 Terminate();

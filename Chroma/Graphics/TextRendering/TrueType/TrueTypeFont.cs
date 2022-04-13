@@ -122,6 +122,8 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
         public TrueTypeFont(Stream stream, int height, string alphabet = null)
         {
+            EnsureOnMainThread();
+            
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream), "TTF stream cannot be null.");
 

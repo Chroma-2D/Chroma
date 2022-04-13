@@ -168,6 +168,8 @@ namespace Chroma.Audio.Sources
 
         protected override void FreeNativeResources()
         {
+            EnsureOnMainThread();
+            
             if (IsValid)
             {
                 SDL2_nmix.NMIX_FreeSource(Handle);

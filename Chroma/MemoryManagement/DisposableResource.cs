@@ -1,4 +1,5 @@
 ﻿using System;
+using Chroma.Threading;
 
 namespace Chroma.MemoryManagement
 {
@@ -19,6 +20,16 @@ namespace Chroma.MemoryManagement
 
         protected virtual void FreeNativeResources()
         {
+        }
+        
+        protected void EnsureOnMainThread()
+        {
+            if (!Dispatcher.IsMainThread)
+            {
+                throw new InvalidOperationException(
+                    "This operation is not thread-safe and must be scheduled to run on main thread."
+                );
+            }
         }
 
         private void Dispose(bool disposing)

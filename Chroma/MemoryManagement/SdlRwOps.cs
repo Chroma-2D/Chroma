@@ -172,6 +172,8 @@ namespace Chroma.MemoryManagement
 
         protected override void FreeNativeResources()
         {
+            EnsureOnMainThread();
+            
             if (RwOpsHandle != IntPtr.Zero)
             {
                 SDL2.SDL_FreeRW(RwOpsHandle);

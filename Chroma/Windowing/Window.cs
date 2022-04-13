@@ -715,6 +715,8 @@ namespace Chroma.Windowing
 
         protected override void FreeNativeResources()
         {
+            EnsureOnMainThread();
+            
             if (RenderTargetHandle != IntPtr.Zero)
             {
                 SDL_gpu.GPU_FreeTarget(RenderTargetHandle);

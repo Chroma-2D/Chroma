@@ -116,17 +116,25 @@ namespace Chroma.Graphics.TextRendering.TrueType
         }
 
         public TrueTypeFont(string fileName, int height, string alphabet = null)
-            : this(File.OpenRead(fileName), height, alphabet)
         {
+            using (var fs = new FileStream(fileName, FileMode.Open))
+            {
+                ConstructWithStream(fs, height, alphabet);
+            }
         }
 
         public TrueTypeFont(Stream stream, int height, string alphabet = null)
+        {
+            ConstructWithStream(stream, height, alphabet);
+        }
+
+        private void ConstructWithStream(Stream stream, int height, string alphabet = null)
         {
             EnsureOnMainThread();
             
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream), "TTF stream cannot be null.");
-
+            
             Alphabet = alphabet?.ToCharArray();
             _height = height; // do not use property here to avoid premature atlas building
 

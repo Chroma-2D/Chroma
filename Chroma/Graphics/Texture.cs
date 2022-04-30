@@ -390,39 +390,15 @@ namespace Chroma.Graphics
 
         public Texture(Stream stream)
         {
-            EnsureOnMainThread();
-
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream), "Stream cannot be null.");
-
-            var result = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
-
-            if (result == null)
-            {
-                throw new GraphicsException(
-                    "Failed to load the texture from the provided stream. " +
-                    "It's likely the image format is not supported."
-                );
-            }
-
-            CreateEmpty(
-                result.Width,
-                result.Height,
-                PixelFormat.RGBA,
-                true
-            );
-
-            EnsureHandleValid();
-
-            result.Data.CopyTo(_pixelData, 0);
-            Flush();
-
-            SetDefaultProperties();
+            ConstructWithStream(stream);
         }
 
         public Texture(string filePath)
-            : this(new FileStream(filePath, FileMode.Open))
         {
+            using (var fs = new FileStream(filePath, FileMode.Open))
+            {
+                ConstructWithStream(fs);
+            }
         }
 
         public Texture(Texture other)
@@ -511,6 +487,38 @@ namespace Chroma.Graphics
             InitializeWithSurface(
                 SDL_gpu.GPU_CopySurfaceFromImage(gpuImageHandle)
             );
+
+            SetDefaultProperties();
+        }
+        
+        private void ConstructWithStream(Stream stream)
+        {
+            EnsureOnMainThread();
+
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream), "Stream cannot be null.");
+
+            var result = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
+
+            if (result == null)
+            {
+                throw new GraphicsException(
+                    "Failed to load the texture from the provided stream. " +
+                    "It's likely the image format is not supported."
+                );
+            }
+
+            CreateEmpty(
+                result.Width,
+                result.Height,
+                PixelFormat.RGBA,
+                true
+            );
+
+            EnsureHandleValid();
+
+            result.Data.CopyTo(_pixelData, 0);
+            Flush();
 
             SetDefaultProperties();
         }

@@ -4,6 +4,7 @@ using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Diagnostics;
 using Chroma.Diagnostics.Logging;
+using Chroma.Extensibility;
 using Chroma.Graphics;
 using Chroma.Input;
 using Chroma.Input.GameControllers;
@@ -44,7 +45,7 @@ namespace Chroma
         public Game(GameStartupOptions options = null)
         {
 #if !DEBUG
-            _log.LogLevel = LogLevel.Error;
+            _log.LogLevel = LogLevel.Info | LogLevel.Warning | LogLevel.Error;
 #endif
 
             if (WasConstructed)
@@ -76,6 +77,8 @@ namespace Chroma
             InitializeAudio();
 
             AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
+
+            HookRegistry.Initialize(this);
         }
 
         public void Run()
@@ -192,56 +195,65 @@ namespace Chroma
         {
         }
 
+        internal void OnDraw(RenderContext context)
+            => HookRegistry.WrapCall(HookPoint.Draw, context, Draw);
+
+        internal void OnUpdate(float delta)
+            => HookRegistry.WrapCall(HookPoint.Update, delta, Update);
+
+        internal void OnFixedUpdate(float delta)
+            => HookRegistry.WrapCall(HookPoint.FixedUpdate, delta, FixedUpdate);
+
         internal void OnMouseMoved(MouseMoveEventArgs e)
-            => MouseMoved(e);
+            => HookRegistry.WrapCall(HookPoint.MouseMoved, e, MouseMoved);
 
         internal void OnMousePressed(MouseButtonEventArgs e)
-            => MousePressed(e);
+            => HookRegistry.WrapCall(HookPoint.MousePressed, e, MousePressed);
 
         internal void OnMouseReleased(MouseButtonEventArgs e)
-            => MouseReleased(e);
+            => HookRegistry.WrapCall(HookPoint.MouseReleased, e, MouseReleased);
 
         internal void OnWheelMoved(MouseWheelEventArgs e)
-            => WheelMoved(e);
+            => HookRegistry.WrapCall(HookPoint.WheelMoved, e, WheelMoved);
 
         internal void OnKeyPressed(KeyEventArgs e)
-            => KeyPressed(e);
+            => HookRegistry.WrapCall(HookPoint.KeyPressed, e, KeyPressed);
 
         internal void OnKeyReleased(KeyEventArgs e)
-            => KeyReleased(e);
+            => HookRegistry.WrapCall(HookPoint.KeyReleased, e, KeyReleased);
 
         internal void OnTextInput(TextInputEventArgs e)
-            => TextInput(e);
+            => HookRegistry.WrapCall(HookPoint.TextInput, e, TextInput);
 
         internal void OnControllerConnected(ControllerEventArgs e)
-            => ControllerConnected(e);
+            => HookRegistry.WrapCall(HookPoint.ControllerConnected, e, ControllerConnected);
 
         internal void OnControllerDisconnected(ControllerEventArgs e)
-            => ControllerDisconnected(e);
+            => HookRegistry.WrapCall(HookPoint.ControllerDisconnected, e, ControllerDisconnected);
 
         internal void OnControllerButtonPressed(ControllerButtonEventArgs e)
-            => ControllerButtonPressed(e);
+            => HookRegistry.WrapCall(HookPoint.ControllerButtonPressed, e, ControllerButtonPressed);
 
         internal void OnControllerButtonReleased(ControllerButtonEventArgs e)
-            => ControllerButtonReleased(e);
+            => HookRegistry.WrapCall(HookPoint.ControllerButtonReleased, e, ControllerButtonReleased);
 
         internal void OnControllerAxisMoved(ControllerAxisEventArgs e)
-            => ControllerAxisMoved(e);
+            => HookRegistry.WrapCall(HookPoint.ControllerAxisMoved, e, ControllerAxisMoved);
 
         internal void OnControllerTouchpadMoved(ControllerTouchpadEventArgs e)
-            => ControllerTouchpadMoved(e);
+            => HookRegistry.WrapCall(HookPoint.ControllerTouchpadMoved, e, ControllerTouchpadMoved);
 
         internal void OnControllerTouchpadTouched(ControllerTouchpadEventArgs e)
-            => ControllerTouchpadTouched(e);
+            => HookRegistry.WrapCall(HookPoint.ControllerTouchpadTouched, e, ControllerTouchpadTouched);
 
         internal void OnControllerTouchpadReleased(ControllerTouchpadEventArgs e)
-            => ControllerTouchpadReleased(e);
+            => HookRegistry.WrapCall(HookPoint.ControllerTouchpadReleased, e, ControllerTouchpadReleased);
 
         internal void OnControllerGyroscopeStateChanged(ControllerSensorEventArgs e)
-            => ControllerGyroscopeStateChanged(e);
+            => HookRegistry.WrapCall(HookPoint.ControllerGyroscopeStateChanged, e, ControllerGyroscopeStateChanged);
 
         internal void OnControllerAccelerometerStateChanged(ControllerSensorEventArgs e)
-            => ControllerAccelerometerStateChanged(e);
+            => HookRegistry.WrapCall(HookPoint.ControllerAccelerometerStateChanged, e, ControllerAccelerometerStateChanged);
 
         private void OnDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
@@ -298,9 +310,9 @@ namespace Chroma
         {
             FixedTimeStepTarget = 75;
 
-            Window.Draw = Draw;
-            Window.Update = Update;
-            Window.FixedUpdate = FixedUpdate;
+            Window.Draw = OnDraw;
+            Window.Update = OnUpdate;
+            Window.FixedUpdate = OnFixedUpdate;
             Window.InitializeEventDispatcher();
         }
 

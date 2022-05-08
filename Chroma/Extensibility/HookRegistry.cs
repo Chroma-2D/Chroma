@@ -22,12 +22,12 @@ namespace Chroma.Extensibility
             InitializeHookCollections();
         }
 
-        public static void AttachHooks()
+        public static void AttachAll()
         {
-            AttachHooks(Assembly.GetCallingAssembly());
+            AttachAll(Assembly.GetCallingAssembly());
         }
-
-        public static void AttachHooks(Assembly assembly)
+        
+        public static void AttachAll(Assembly assembly)
         {
             var types = assembly.GetTypes();
 
@@ -46,40 +46,19 @@ namespace Chroma.Extensibility
                     if (attribute == null)
                         continue;
 
-                    if (attribute.HookAttachment == HookAttachment.Prefix)
-                    {
-                        if (!IsValidPrefixHook(method, attribute.HookPoint))
-                        {
-                            _log.Warning(
-                                $"Method '{method.Name}' from '{type.FullName}' is marked as a prefix hook " +
-                                $"for '{attribute.HookPoint}' but its return value or signature is invalid."
-                             );
-
-                            continue;
-                        }
-
-                        _prefixHooks[attribute.HookPoint].Add(method);
-                    }
-                    else if (attribute.HookAttachment == HookAttachment.Postfix)
-                    {
-                        if (!IsValidHook(method, attribute.HookPoint))
-                        {
-                            _log.Warning(
-                                $"Method '{method.Name}' from '{type.FullName}' is marked as a postfix hook " +
-                                $"for '{attribute.HookPoint}' but its signature is invalid."
-                            );
-
-                            continue;
-                        }
-
-                        _postfixHooks[attribute.HookPoint].Add(method);
-                    }
-                    else
-                    {
-                        throw new NotSupportedException($"Hook attachment {attribute.HookAttachment} is not supported.");
-                    }
+                    Attach(attribute.HookPoint, attribute.HookAttachment, method);
                 }
             }
+        }
+
+        public static void Attach(HookPoint hookPoint, HookAttachment hookAttachment, Delegate method)
+        {
+            Attach(hookPoint, hookAttachment, method.GetMethodInfo());
+        }
+
+        public static void Detach(HookPoint hookPoint, HookAttachment hookAttachment, Delegate method)
+        {
+            Detach(hookPoint, hookAttachment, method.GetMethodInfo());
         }
 
         internal static void WrapCall<T>(HookPoint hookPoint, T argument, Action<T> action)
@@ -88,6 +67,92 @@ namespace Chroma.Extensibility
             {
                 action(argument);
                 InvokePostfixHooks(hookPoint, argument);
+            }
+        }
+
+        private static void Attach(HookPoint hookPoint, HookAttachment hookAttachment, MethodInfo method)
+        {
+            var type = method.DeclaringType!;            
+
+            if (hookAttachment == HookAttachment.Prefix)
+            {
+                if (!IsValidPrefixHook(method, hookPoint))
+                {
+                    _log.Warning(
+                        $"Method '{method.Name}' from '{type.FullName}' is marked as a prefix hook " +
+                        $"for '{hookPoint}' but its return value or signature is invalid."
+                    );
+
+                    return;
+                }
+
+                if (_prefixHooks[hookPoint].Contains(method))
+                {
+                    _log.Warning(
+                        $"Attempted to create a duplicate prefix hook with method '{method.Name}' " +
+                        $"from '{type.FullName}' for '{hookPoint}'. The request has been ignored."
+                    );
+                    
+                    return;
+                }
+                
+                _prefixHooks[hookPoint].Add(method);
+            }
+            else if (hookAttachment == HookAttachment.Postfix)
+            {
+                if (!IsValidHook(method, hookPoint))
+                {
+                    _log.Warning(
+                        $"Method '{method.Name}' from '{type.FullName}' is marked as a postfix hook " +
+                        $"for '{hookPoint}' but its signature is invalid."
+                    );
+
+                    return;
+                }
+                
+                if (_postfixHooks[hookPoint].Contains(method))
+                {
+                    _log.Warning(
+                        $"Attempted to create a duplicate postfix hook with method '{method.Name}' " +
+                        $"from '{type.FullName}' for '{hookPoint}'. The request has been ignored."
+                    );
+                    
+                    return;
+                }
+
+                _postfixHooks[hookPoint].Add(method);
+            }
+            else
+            {
+                throw new NotSupportedException(
+                    $"Hook attachment '{hookAttachment}' is not supported.");
+            }
+        }
+
+        private static void Detach(HookPoint hookPoint, HookAttachment hookAttachment, MethodInfo method)
+        {
+            bool wasRemoved;
+
+            if (hookAttachment == HookAttachment.Prefix)
+            {
+                wasRemoved = _prefixHooks[hookPoint].Remove(method);
+            }
+            else if (hookAttachment == HookAttachment.Postfix)
+            {
+                wasRemoved = _postfixHooks[hookPoint].Remove(method);
+            }
+            else
+            {
+                throw new NotSupportedException($"Unsupported hook attachment '{hookAttachment}'.");
+            }
+
+            if (!wasRemoved)
+            {
+                _log.Warning(
+                    $"Attempted to unregister a '{hookAttachment.ToString().ToLower()} hook " +
+                    $"'{method.Name}' for '{hookPoint}' " +
+                    $"declared by '{method.DeclaringType?.FullName}', however none was registered beforehand."
+                );
             }
         }
 
@@ -100,7 +165,7 @@ namespace Chroma.Extensibility
             {
                 continueToMainBody &= (bool)hookCollection[i].Invoke(null, new object[] { _owner, argument })!;
             }
-            
+
             return continueToMainBody;
         }
 
@@ -113,7 +178,7 @@ namespace Chroma.Extensibility
                 hookCollection[i].Invoke(null, new object[] { _owner, argument });
             }
         }
-        
+
         private static void InitializeHookCollections()
         {
             var enumEntryCount = Enum.GetNames(typeof(HookPoint)).Length;

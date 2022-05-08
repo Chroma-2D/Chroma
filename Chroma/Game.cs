@@ -94,7 +94,7 @@ namespace Chroma
             Window.Run();
         }
 
-        public void Quit()
+        public void Quit(int exitCode = 0)
         {
             Window.Dispose();
             Content.Dispose();
@@ -105,7 +105,7 @@ namespace Chroma
             SDL_gpu.GPU_Quit();
             SDL2.SDL_Quit();
 
-            Environment.Exit(0);
+            Environment.Exit(exitCode);
         }
 
         protected virtual void Draw(RenderContext context)

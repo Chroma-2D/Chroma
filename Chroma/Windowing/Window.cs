@@ -52,7 +52,7 @@ namespace Chroma.Windowing
 
         internal static Window Instance { get; private set; }
 
-        public delegate WindowHitTestResult WindowHitTestDelegate(Window window, Point point);
+        public delegate WindowHitTestResult WindowHitTestDelegate(Window window, Vector2 position);
 
         public IntPtr Handle => _windowHandle;
 
@@ -707,7 +707,7 @@ namespace Chroma.Windowing
                     point = *(SDL2.SDL_Point*)area.ToPointer();
                 }
 
-                return (SDL2.SDL_HitTestResult)_hitTestDelegate(this, new Point(point.x, point.y));
+                return (SDL2.SDL_HitTestResult)_hitTestDelegate(this, new Vector2(point.x, point.y));
             }
 
             return SDL2.SDL_HitTestResult.SDL_HITTEST_NORMAL;

@@ -120,7 +120,7 @@ namespace Chroma.Graphics
         public Color GetPixel(short x, short y)
             => Color.FromSdlColor(SDL_gpu.GPU_GetPixel(CurrentRenderTarget, x, y));
 
-        public void Polygon(ShapeMode mode, List<Point> vertices, Color color)
+        public void Polygon(ShapeMode mode, List<Vector2> vertices, Color color)
         {
             if (vertices == null)
             {
@@ -158,7 +158,7 @@ namespace Chroma.Graphics
             }
         }
 
-        public void Polyline(List<Point> vertices, Color color, bool closeLoop)
+        public void Polyline(List<Vector2> vertices, Color color, bool closeLoop)
         {
             if (vertices == null)
             {

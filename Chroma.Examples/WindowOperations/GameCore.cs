@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
 using System.Numerics;
 using System.Text;
 using Chroma;
@@ -206,7 +205,7 @@ namespace WindowOperations
             }
         }
 
-        private WindowHitTestResult HitTest(Window window, Point point)
+        private WindowHitTestResult HitTest(Window window, Vector2 position)
         {
             return WindowHitTestResult.Draggable;
         }

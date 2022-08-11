@@ -238,6 +238,12 @@ namespace Chroma.Graphics
 
         public float[] AsNormalizedFloatArray()
             => new[] {R / 255f, G / 255f, B / 255f, A / 255f};
+        
+        public Color Alpha(byte alpha) 
+            => new(R, G, B, alpha);
+
+        public Color Alpha(float alpha)
+            => new(R, G, B, Math.Clamp(alpha / 255f, 0f, 1f));
 
         public override bool Equals(object obj)
             => obj is Color color && Equals(color);

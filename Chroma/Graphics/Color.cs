@@ -29,7 +29,7 @@ namespace Chroma.Graphics
             {
                 var (min, max, _, _) = GetHsvParameters();
 
-                if (min == max)
+                if (Math.Abs(min - max) < 0.01f)
                     return 0;
 
                 return (max - min) / max;
@@ -42,7 +42,7 @@ namespace Chroma.Graphics
             {
                 var (min, max, _, _) = GetHsvParameters();
 
-                if (min == max)
+                if (Math.Abs(min - max) < 0.01f)
                     return min;
 
                 return max;
@@ -68,24 +68,24 @@ namespace Chroma.Graphics
         }
 
         public Color(float r, float g, float b, float a) : this(
-            (byte)(255 * r),
-            (byte)(255 * g),
-            (byte)(255 * b),
-            (byte)(255 * a))
+            (byte)(255 * Math.Clamp(r, 0f, 1f)),
+            (byte)(255 * Math.Clamp(g, 0f, 1f)),
+            (byte)(255 * Math.Clamp(b, 0f, 1f)),
+            (byte)(255 * Math.Clamp(a, 0f, 1f)))
         {
         }
 
         public Color(float r, float g, float b)
-            : this(r, g, b, 1.0f)
+            : this(r, g, b, 1f)
         {
         }
 
-        public Color(uint packedValue)
+        public Color(uint rgbaPacked)
             : this(
-                (byte)((packedValue & 0xFF000000) >> 24),
-                (byte)((packedValue & 0x00FF0000) >> 16),
-                (byte)((packedValue & 0x0000FF00) >> 8),
-                (byte)(packedValue & 0x000000FF)
+                (byte)((rgbaPacked & 0xFF000000) >> 24),
+                (byte)((rgbaPacked & 0x00FF0000) >> 16),
+                (byte)((rgbaPacked & 0x0000FF00) >> 8),
+                (byte)(rgbaPacked & 0x000000FF)
             )
         {
         }
@@ -243,7 +243,7 @@ namespace Chroma.Graphics
             => new(R, G, B, alpha);
 
         public Color Alpha(float alpha)
-            => new(R, G, B, Math.Clamp(alpha / 255f, 0f, 1f));
+            => new(R / 255f, G / 255f, B / 255f, alpha);
 
         public override bool Equals(object obj)
             => obj is Color color && Equals(color);
@@ -344,11 +344,11 @@ namespace Chroma.Graphics
             var minRgb = Math.Min(rf, Math.Min(gf, bf));
             var maxRgb = Math.Max(rf, Math.Max(gf, bf));
 
-            if (minRgb == maxRgb)
+            if (Math.Abs(minRgb - maxRgb) < 0.001f)
                 return (minRgb, maxRgb, 0, 0);
 
-            float d = (rf == minRgb) ? gf - bf : ((bf == minRgb) ? rf - gf : bf - rf);
-            float h = (rf == minRgb) ? 3 : ((bf == minRgb) ? 1 : 5);
+            float d = (Math.Abs(rf - minRgb) < 0.001f) ? gf - bf : ((Math.Abs(bf - minRgb) < 0.001f) ? rf - gf : bf - rf);
+            float h = (Math.Abs(rf - minRgb) < 0.001f) ? 3 : ((Math.Abs(bf - minRgb) < 0.001f) ? 1 : 5);
 
             return (minRgb, maxRgb, d, h);
         }

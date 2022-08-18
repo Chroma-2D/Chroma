@@ -121,7 +121,7 @@ namespace Chroma.Graphics
 
             LineThickness = 1;
 
-            ShapeBlendingEnabled = false;
+            ShapeBlendingEnabled = true;
             MultiSamplingEnabled = false;
 
             ResetShapeBlending();

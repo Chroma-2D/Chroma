@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Graphics
@@ -237,9 +238,9 @@ namespace Chroma.Graphics
         public static readonly Color YellowGreen = new(154, 205, 50);
 
         public float[] AsNormalizedFloatArray()
-            => new[] {R / 255f, G / 255f, B / 255f, A / 255f};
-        
-        public Color Alpha(byte alpha) 
+            => new[] { R / 255f, G / 255f, B / 255f, A / 255f };
+
+        public Color Alpha(byte alpha)
             => new(R, G, B, alpha);
 
         public Color Alpha(float alpha)
@@ -323,6 +324,64 @@ namespace Chroma.Graphics
             );
         }
 
+        public static implicit operator Color(Vector4 vector4)
+        {
+            return new(
+                vector4.X,
+                vector4.Y,
+                vector4.Z,
+                vector4.W
+            );
+        }
+
+        public static implicit operator Vector4(Color color)
+        {
+            return new(
+                color.R / 255f,
+                color.G / 255f,
+                color.B / 255f,
+                color.A / 255f
+            );
+        }
+
+        public static Color operator *(Color a, Color b)
+        {
+            return new(
+                (byte)(a.R * b.R),
+                (byte)(a.G * b.G),
+                (byte)(a.B * b.B),
+                (byte)(a.A * a.A)
+            );
+        }
+
+        public static Color operator +(Color a, Color b)
+        {
+            return new(
+                (byte)(a.R + b.R),
+                (byte)(a.G + b.G),
+                (byte)(a.B + b.B),
+                (byte)(a.A + a.A)
+            );
+        }
+
+        public static Color operator -(Color a, Color b)
+        {
+            return new(
+                (byte)(a.R - b.R),
+                (byte)(a.G - b.G),
+                (byte)(a.B - b.B),
+                (byte)(a.A - a.A)
+            );
+        }
+
+        public static Color operator /(Color a, float b)
+            => new(
+                (byte)(a.R / b),
+                (byte)(a.G / b),
+                (byte)(a.B / b),
+                (byte)(a.A / b)
+            );
+
         internal static SDL2.SDL_Color ToSdlColor(Color color)
             => new()
             {
@@ -340,15 +399,24 @@ namespace Chroma.Graphics
             var rf = R / 255f;
             var gf = G / 255f;
             var bf = B / 255f;
-            
+
             var minRgb = Math.Min(rf, Math.Min(gf, bf));
             var maxRgb = Math.Max(rf, Math.Max(gf, bf));
 
             if (Math.Abs(minRgb - maxRgb) < 0.001f)
                 return (minRgb, maxRgb, 0, 0);
 
-            float d = (Math.Abs(rf - minRgb) < 0.001f) ? gf - bf : ((Math.Abs(bf - minRgb) < 0.001f) ? rf - gf : bf - rf);
-            float h = (Math.Abs(rf - minRgb) < 0.001f) ? 3 : ((Math.Abs(bf - minRgb) < 0.001f) ? 1 : 5);
+            float d = Math.Abs(rf - minRgb) < 0.001f
+                ? gf - bf
+                : Math.Abs(bf - minRgb) < 0.001f
+                    ? rf - gf
+                    : bf - rf;
+
+            float h = Math.Abs(rf - minRgb) < 0.001f
+                ? 3
+                : Math.Abs(bf - minRgb) < 0.001f
+                    ? 1
+                    : 5;
 
             return (minRgb, maxRgb, d, h);
         }

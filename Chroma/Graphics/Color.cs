@@ -49,18 +49,73 @@ namespace Chroma.Graphics
                 return max;
             }
         }
+        
+        public uint RGBA
+        {
+            get
+            {
+                var value = 0u;
 
-        public readonly PackedValue Packed;
+                value |= (uint)(R << 24);
+                value |= (uint)(G << 16);
+                value |= (uint)(B << 8);
+                value |= A;
 
+                return value;
+            }
+        }
+
+        public uint ARGB
+        {
+            get
+            {
+                var value = 0u;
+
+                value |= (uint)(A << 24);
+                value |= (uint)(R << 16);
+                value |= (uint)(G << 8);
+                value |= B;
+
+                return value;
+            }
+        }
+
+        public uint BGRA
+        {
+            get
+            {
+                var value = 0u;
+
+                value |= (uint)(B << 24);
+                value |= (uint)(G << 16);
+                value |= (uint)(R << 8);
+                value |= A;
+
+                return value;
+            }
+        }
+
+        public uint ABGR
+        {
+            get
+            {
+                var value = 0u;
+
+                value |= (uint)(A << 24);
+                value |= (uint)(B << 16);
+                value |= (uint)(G << 8);
+                value |= R;
+
+                return value;
+            }
+        }
+        
         public Color(byte r, byte g, byte b, byte a)
         {
             R = r;
             G = g;
             B = b;
             A = a;
-
-            Packed = new PackedValue();
-            Packed.Owner = this;
         }
 
         public Color(byte r, byte g, byte b)
@@ -78,16 +133,6 @@ namespace Chroma.Graphics
 
         public Color(float r, float g, float b)
             : this(r, g, b, 1f)
-        {
-        }
-
-        public Color(uint rgbaPacked)
-            : this(
-                (byte)((rgbaPacked & 0xFF000000) >> 24),
-                (byte)((rgbaPacked & 0x00FF0000) >> 16),
-                (byte)((rgbaPacked & 0x0000FF00) >> 8),
-                (byte)(rgbaPacked & 0x000000FF)
-            )
         {
         }
 
@@ -246,8 +291,6 @@ namespace Chroma.Graphics
         public Color Alpha(float alpha)
             => new(R / 255f, G / 255f, B / 255f, alpha);
 
-        public override bool Equals(object obj)
-            => obj is Color color && Equals(color);
 
         public static Color Lerp(Color a, Color b, float t)
         {
@@ -283,16 +326,61 @@ namespace Chroma.Graphics
             };
         }
 
-        public override int GetHashCode()
-            => Packed.RGBA.GetHashCode();
+        public static Color FromRGBA(uint rgba)
+        {
+            return new(
+                (byte)((rgba & 0xFF000000) >> 24),
+                (byte)((rgba & 0x00FF0000) >> 16),
+                (byte)((rgba & 0x0000FF00) >> 8),
+                (byte)(rgba & 0x000000FF)
+            );
+        }
 
+        public static Color FromARGB(uint argb)
+        {
+            return new(
+                (byte)((argb & 0x00FF0000) >> 16),
+                (byte)((argb & 0x0000FF00) >> 8),
+                (byte)(argb & 0x000000FF),
+                (byte)((argb & 0xFF000000) >> 24)
+            );
+        }
+        
+        public static Color FromABGR(uint abgr)
+        {
+            return new(
+                (byte)(abgr & 0x000000FF),
+                (byte)((abgr & 0x0000FF00) >> 8),
+                (byte)((abgr & 0x00FF0000) >> 16),
+                (byte)((abgr & 0xFF000000) >> 24)
+            );
+        }
+
+        public static Color FromBGRA(uint bgra)
+        {
+            return new(
+                (byte)((bgra & 0x0000FF00) >> 8),
+                (byte)((bgra & 0x00FF0000) >> 16),
+                (byte)((bgra & 0xFF000000) >> 24),
+                (byte)(bgra & 0x000000FF)
+            );
+        }
+        
+        public override string ToString()
+            => $"(R: {R}, G: {G}, B: {B}, A: {A}) (H: {Hue}, S: {Saturation}, V: {Value}) (RGBA {RGBA:X8})";
+        
+        public override int GetHashCode()
+            => RGBA.GetHashCode();
+
+        public override bool Equals(object obj)
+            => obj is Color color && Equals(color);
+        
         public bool Equals(Color other)
         {
             return R == other.R &&
                    G == other.G &&
                    B == other.B &&
-                   A == other.A &&
-                   Packed.RGBA == other.Packed.RGBA;
+                   A == other.A;
         }
 
         public static bool operator ==(Color left, Color right)
@@ -419,75 +507,6 @@ namespace Chroma.Graphics
                     : 5;
 
             return (minRgb, maxRgb, d, h);
-        }
-
-        public class PackedValue
-        {
-            internal Color Owner { get; set; }
-
-            public uint RGBA
-            {
-                get
-                {
-                    var value = 0u;
-
-                    value |= (uint)(Owner.R << 24);
-                    value |= (uint)(Owner.G << 16);
-                    value |= (uint)(Owner.B << 8);
-                    value |= Owner.A;
-
-                    return value;
-                }
-            }
-
-            public uint ARGB
-            {
-                get
-                {
-                    var value = 0u;
-
-                    value |= (uint)(Owner.A << 24);
-                    value |= (uint)(Owner.R << 16);
-                    value |= (uint)(Owner.G << 8);
-                    value |= Owner.B;
-
-                    return value;
-                }
-            }
-
-            public uint BGRA
-            {
-                get
-                {
-                    var value = 0u;
-
-                    value |= (uint)(Owner.B << 24);
-                    value |= (uint)(Owner.G << 16);
-                    value |= (uint)(Owner.R << 8);
-                    value |= Owner.A;
-
-                    return value;
-                }
-            }
-
-            public uint ABGR
-            {
-                get
-                {
-                    var value = 0u;
-
-                    value |= (uint)(Owner.A << 24);
-                    value |= (uint)(Owner.B << 16);
-                    value |= (uint)(Owner.G << 8);
-                    value |= Owner.R;
-
-                    return value;
-                }
-            }
-
-            internal PackedValue()
-            {
-            }
         }
     }
 }

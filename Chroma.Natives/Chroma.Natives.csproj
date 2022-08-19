@@ -14,10 +14,6 @@
     <!-- freetype -> SDL2 -> SDL_gpu -> SDL_sound -> SDL_nmix -->
     <ItemGroup>
         <EmbeddedResource Include="Binaries\windows_64\freetype.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\SDL2.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\SDL2_gpu.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\SDL2_sound.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\SDL2_nmix.bz2" />
         
         <EmbeddedResource Include="Binaries\linux_64\libfreetype.bz2" />
         <EmbeddedResource Include="Binaries\linux_64\libSDL2.bz2" />

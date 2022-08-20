@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Chroma.Audio.Sources;
 using Chroma.Diagnostics.Logging;
-using Chroma.Natives.SDL;
+using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Audio
 {

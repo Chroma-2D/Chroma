@@ -1,5 +1,5 @@
 using System.Numerics;
-using Chroma.Natives.SDL;
+using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Graphics
 {
@@ -99,6 +99,7 @@ namespace Chroma.Graphics
 
         public Camera()
         {
+            Zoom = Vector2.One;
         }
 
         public Camera(Camera other)

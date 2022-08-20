@@ -2,7 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
-using Chroma.Natives.SDL;
+using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Audio.Captures
 {
@@ -125,6 +125,8 @@ namespace Chroma.Audio.Captures
 
         protected override void FreeManagedResources()
         {
+            EnsureOnMainThread();
+            
             if (Status != CaptureStatus.Stopped)
             {
                 Terminate();

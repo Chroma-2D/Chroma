@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
-using Chroma.Natives.SDL;
+using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Audio.Sources
 {
@@ -115,7 +115,10 @@ namespace Chroma.Audio.Sources
 
                 unsafe
                 {
-                    return new Span<byte>(Source->in_buffer.ToPointer(), Source->in_buffer_size);
+                    return new Span<byte>(
+                        Source->in_buffer.ToPointer(),
+                        Source->in_buffer_size
+                    );
                 }
             }
         }
@@ -128,7 +131,10 @@ namespace Chroma.Audio.Sources
 
                 unsafe
                 {
-                    return new Span<byte>(Source->out_buffer.ToPointer(), Source->out_buffer_size);
+                    return new Span<byte>(
+                        Source->out_buffer.ToPointer(),
+                        Source->out_buffer_size
+                    );
                 }
             }
         }
@@ -162,6 +168,8 @@ namespace Chroma.Audio.Sources
 
         protected override void FreeNativeResources()
         {
+            EnsureOnMainThread();
+            
             if (IsValid)
             {
                 SDL2_nmix.NMIX_FreeSource(Handle);

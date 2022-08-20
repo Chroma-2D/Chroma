@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+    
+    <PropertyGroup>
+        <Title>Chroma Native Loader</Title>
+
+        <Description>
+            Native Loader for Chroma Framework aiming to ease integration of C and C++ libraries.
+        </Description>
+
+        <PackageId>Chroma.NALO</PackageId>
+        <Version>1.0.0</Version>
+        <Author>Ciastex</Author>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/Chroma-2D/Chroma/tree/master/Chroma.NALO</RepositoryUrl>
+        <PackageIcon>nugeticon.png</PackageIcon>
+        <PackageTags>cross-platform;gamedev;engine;2d;chroma;framework;sdl;opengl;game;xna;netcore;</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <None Include="Resources\nugeticon.png" Pack="true" PackagePath="\" />
+    </ItemGroup>
+</Project>

@@ -8,7 +8,7 @@ using Chroma.Diagnostics;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.MemoryManagement;
-using Chroma.Natives.SDL;
+using Chroma.Natives.Bindings.SDL;
 using Chroma.Threading;
 using Chroma.Windowing.DragDrop;
 using Chroma.Windowing.EventHandling;
@@ -52,7 +52,7 @@ namespace Chroma.Windowing
 
         internal static Window Instance { get; private set; }
 
-        public delegate WindowHitTestResult WindowHitTestDelegate(Window window, Point point);
+        public delegate WindowHitTestResult WindowHitTestDelegate(Window window, Vector2 position);
 
         public IntPtr Handle => _windowHandle;
 
@@ -556,6 +556,10 @@ namespace Chroma.Windowing
                 //
                 // 22.01.2022: Guess it's going to stay like this for longer.
                 //
+                // 23.03.2022: Freetype. It's fucked. Badly.
+                //
+                // 23.03.2022 (later that day): It's not Freetype? See Game.cs for details.
+                //
                 SDL_gpu.GPU_BlitTransformX(
                     EmbeddedAssets.DummyFixTexture.ImageHandle,
                     IntPtr.Zero,
@@ -703,7 +707,7 @@ namespace Chroma.Windowing
                     point = *(SDL2.SDL_Point*)area.ToPointer();
                 }
 
-                return (SDL2.SDL_HitTestResult)_hitTestDelegate(this, new Point(point.x, point.y));
+                return (SDL2.SDL_HitTestResult)_hitTestDelegate(this, new Vector2(point.x, point.y));
             }
 
             return SDL2.SDL_HitTestResult.SDL_HITTEST_NORMAL;
@@ -711,6 +715,8 @@ namespace Chroma.Windowing
 
         protected override void FreeNativeResources()
         {
+            EnsureOnMainThread();
+            
             if (RenderTargetHandle != IntPtr.Zero)
             {
                 SDL_gpu.GPU_FreeTarget(RenderTargetHandle);

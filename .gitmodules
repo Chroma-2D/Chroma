@@ -1,0 +1,3 @@
+[submodule "Chroma.Docs/docs"]
+	path = Chroma.Docs/docs
+	url = git@github.com:Chroma-2D/chroma-2d.github.io

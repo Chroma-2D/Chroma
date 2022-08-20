@@ -4,7 +4,7 @@ using System.Text;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.Hardware;
-using Chroma.Natives.SDL;
+using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Input.GameControllers
 {
@@ -117,12 +117,34 @@ namespace Chroma.Input.GameControllers
             }
         }
 
+        public virtual void RumbleTriggers(ushort leftIntensity, ushort rightIntensity, uint duration)
+        {
+            if (Info == null || Info.InstancePointer == IntPtr.Zero)
+                return;
+
+            if (SDL2.SDL_GameControllerRumbleTriggers(
+                    Info.InstancePointer,
+                    leftIntensity,
+                    rightIntensity,
+                    duration
+                ) < 0)
+            {
+                _log.Error($"Failed to rumble controller triggers at player index {Info.PlayerIndex}, '{Info.Name}': {SDL2.SDL_GetError()}");
+            }
+        }
+
         public virtual string RetrieveMapping()
         {
             if (Info == null || Info.InstancePointer == IntPtr.Zero)
                 return string.Empty;
 
             return SDL2.SDL_GameControllerMapping(Info.InstancePointer);
+        }
+
+        internal unsafe void SendEffect(byte* ptr, int length)
+        {
+            if (SDL2.SDL_GameControllerSendEffect(Info.InstancePointer, ptr, length) < 0)
+                _log.Error($"Failed to send effect: {SDL2.SDL_GetError()}");
         }
 
         public virtual void SendEffect(byte[] data)
@@ -134,8 +156,7 @@ namespace Chroma.Input.GameControllers
             {
                 fixed (byte* bp = &data[0])
                 {
-                    if (SDL2.SDL_GameControllerSendEffect(Info.InstancePointer, bp, data.Length) < 0)
-                        _log.Error($"Failed to send effect: {SDL2.SDL_GetError()}");
+                    SendEffect(bp, data.Length);
                 }
             }
         }

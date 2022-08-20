@@ -4,8 +4,8 @@ using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Chroma.Diagnostics.Logging;
-using Chroma.Natives.GL;
-using Chroma.Natives.SDL;
+using Chroma.Natives.Bindings.GL;
+using Chroma.Natives.Bindings.SDL;
 using Chroma.Windowing;
 
 namespace Chroma.Graphics

@@ -54,7 +54,7 @@ namespace PrimitiveShapes
             RenderSettings.LineThickness = 1;
             context.Polygon(
                 ShapeMode.Fill,
-                new List<Point>
+                new()
                 {
                     new(200, 200),
                     new(232, 200),
@@ -65,7 +65,7 @@ namespace PrimitiveShapes
             );
 
             context.Polyline(
-                new List<Point>
+                new()
                 {
                     new(300, 300),
                     new(310, 310),

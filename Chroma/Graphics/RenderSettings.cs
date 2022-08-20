@@ -1,7 +1,7 @@
 using System;
 using System.Drawing;
-using Chroma.Natives.GL;
-using Chroma.Natives.SDL;
+using Chroma.Natives.Bindings.GL;
+using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Graphics
 {
@@ -121,7 +121,7 @@ namespace Chroma.Graphics
 
             LineThickness = 1;
 
-            ShapeBlendingEnabled = false;
+            ShapeBlendingEnabled = true;
             MultiSamplingEnabled = false;
 
             ResetShapeBlending();

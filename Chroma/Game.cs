@@ -4,11 +4,12 @@ using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Diagnostics;
 using Chroma.Diagnostics.Logging;
+using Chroma.Extensibility;
 using Chroma.Graphics;
 using Chroma.Input;
 using Chroma.Input.GameControllers;
+using Chroma.Natives.Bindings.SDL;
 using Chroma.Natives.Boot;
-using Chroma.Natives.SDL;
 using Chroma.Threading;
 using Chroma.Windowing;
 
@@ -43,6 +44,10 @@ namespace Chroma
 
         public Game(GameStartupOptions options = null)
         {
+#if !DEBUG
+            _log.LogLevel = LogLevel.Info | LogLevel.Warning | LogLevel.Error;
+#endif
+
             if (WasConstructed)
             {
                 throw new InvalidOperationException(
@@ -72,6 +77,8 @@ namespace Chroma
             InitializeAudio();
 
             AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
+
+            HookRegistry.Initialize(this);
         }
 
         public void Run()
@@ -87,7 +94,7 @@ namespace Chroma
             Window.Run();
         }
 
-        public void Quit()
+        public void Quit(int exitCode = 0)
         {
             Window.Dispose();
             Content.Dispose();
@@ -98,7 +105,7 @@ namespace Chroma
             SDL_gpu.GPU_Quit();
             SDL2.SDL_Quit();
 
-            Environment.Exit(0);
+            Environment.Exit(exitCode);
         }
 
         protected virtual void Draw(RenderContext context)
@@ -188,56 +195,65 @@ namespace Chroma
         {
         }
 
+        internal void OnDraw(RenderContext context)
+            => HookRegistry.WrapCall(HookPoint.Draw, context, Draw);
+
+        internal void OnUpdate(float delta)
+            => HookRegistry.WrapCall(HookPoint.Update, delta, Update);
+
+        internal void OnFixedUpdate(float delta)
+            => HookRegistry.WrapCall(HookPoint.FixedUpdate, delta, FixedUpdate);
+
         internal void OnMouseMoved(MouseMoveEventArgs e)
-            => MouseMoved(e);
+            => HookRegistry.WrapCall(HookPoint.MouseMoved, e, MouseMoved);
 
         internal void OnMousePressed(MouseButtonEventArgs e)
-            => MousePressed(e);
+            => HookRegistry.WrapCall(HookPoint.MousePressed, e, MousePressed);
 
         internal void OnMouseReleased(MouseButtonEventArgs e)
-            => MouseReleased(e);
+            => HookRegistry.WrapCall(HookPoint.MouseReleased, e, MouseReleased);
 
         internal void OnWheelMoved(MouseWheelEventArgs e)
-            => WheelMoved(e);
+            => HookRegistry.WrapCall(HookPoint.WheelMoved, e, WheelMoved);
 
         internal void OnKeyPressed(KeyEventArgs e)
-            => KeyPressed(e);
+            => HookRegistry.WrapCall(HookPoint.KeyPressed, e, KeyPressed);
 
         internal void OnKeyReleased(KeyEventArgs e)
-            => KeyReleased(e);
+            => HookRegistry.WrapCall(HookPoint.KeyReleased, e, KeyReleased);
 
         internal void OnTextInput(TextInputEventArgs e)
-            => TextInput(e);
+            => HookRegistry.WrapCall(HookPoint.TextInput, e, TextInput);
 
         internal void OnControllerConnected(ControllerEventArgs e)
-            => ControllerConnected(e);
+            => HookRegistry.WrapCall(HookPoint.ControllerConnected, e, ControllerConnected);
 
         internal void OnControllerDisconnected(ControllerEventArgs e)
-            => ControllerDisconnected(e);
+            => HookRegistry.WrapCall(HookPoint.ControllerDisconnected, e, ControllerDisconnected);
 
         internal void OnControllerButtonPressed(ControllerButtonEventArgs e)
-            => ControllerButtonPressed(e);
+            => HookRegistry.WrapCall(HookPoint.ControllerButtonPressed, e, ControllerButtonPressed);
 
         internal void OnControllerButtonReleased(ControllerButtonEventArgs e)
-            => ControllerButtonReleased(e);
+            => HookRegistry.WrapCall(HookPoint.ControllerButtonReleased, e, ControllerButtonReleased);
 
         internal void OnControllerAxisMoved(ControllerAxisEventArgs e)
-            => ControllerAxisMoved(e);
+            => HookRegistry.WrapCall(HookPoint.ControllerAxisMoved, e, ControllerAxisMoved);
 
         internal void OnControllerTouchpadMoved(ControllerTouchpadEventArgs e)
-            => ControllerTouchpadMoved(e);
+            => HookRegistry.WrapCall(HookPoint.ControllerTouchpadMoved, e, ControllerTouchpadMoved);
 
         internal void OnControllerTouchpadTouched(ControllerTouchpadEventArgs e)
-            => ControllerTouchpadTouched(e);
+            => HookRegistry.WrapCall(HookPoint.ControllerTouchpadTouched, e, ControllerTouchpadTouched);
 
         internal void OnControllerTouchpadReleased(ControllerTouchpadEventArgs e)
-            => ControllerTouchpadReleased(e);
+            => HookRegistry.WrapCall(HookPoint.ControllerTouchpadReleased, e, ControllerTouchpadReleased);
 
         internal void OnControllerGyroscopeStateChanged(ControllerSensorEventArgs e)
-            => ControllerGyroscopeStateChanged(e);
+            => HookRegistry.WrapCall(HookPoint.ControllerGyroscopeStateChanged, e, ControllerGyroscopeStateChanged);
 
         internal void OnControllerAccelerometerStateChanged(ControllerSensorEventArgs e)
-            => ControllerAccelerometerStateChanged(e);
+            => HookRegistry.WrapCall(HookPoint.ControllerAccelerometerStateChanged, e, ControllerAccelerometerStateChanged);
 
         private void OnDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
@@ -257,6 +273,20 @@ namespace Chroma
             Graphics = new GraphicsManager(StartupOptions);
             Window = new Window(this);
 
+            // This is a kludge.
+            // Do not touch or shit will break.
+            //
+            // What shit you wonder?
+            // Something related to texture initialization
+            // overwriting things in memory but it happens
+            // very early so I am not sure if it's FreeType
+            // fucking things up or SDL_gpu or whatever.
+            //
+            // This fixes it. So do not touch.
+            // - 23.03.2022
+            //
+            EmbeddedAssets.LoadEmbeddedAssets();
+
             if (StartupOptions.UseBootSplash)
             {
                 FixedTimeStepTarget = 60;
@@ -269,20 +299,20 @@ namespace Chroma
             }
             else
             {
-                InitializeGraphicsDefault();
+                InitializeGraphicsDefaults();
             }
 
             Graphics.VerticalSyncMode = VerticalSyncMode.Retrace;
             Window.SetIcon(EmbeddedAssets.DefaultIconTexture);
         }
 
-        private void InitializeGraphicsDefault()
+        private void InitializeGraphicsDefaults()
         {
             FixedTimeStepTarget = 75;
 
-            Window.Draw = Draw;
-            Window.Update = Update;
-            Window.FixedUpdate = FixedUpdate;
+            Window.Draw = OnDraw;
+            Window.Update = OnUpdate;
+            Window.FixedUpdate = OnFixedUpdate;
             Window.InitializeEventDispatcher();
         }
 
@@ -298,12 +328,13 @@ namespace Chroma
 
             FinishBoot();
 
-            InitializeGraphicsDefault();
+            InitializeGraphicsDefaults();
         }
 
         private void FinishBoot()
         {
             Content = InitializeContentPipeline();
+
             // Initialize extensions after re-write.
 
             LoadContent();

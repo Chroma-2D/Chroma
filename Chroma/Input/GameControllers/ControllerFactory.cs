@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using Chroma.Hardware;
 using Chroma.Input.GameControllers.Drivers;
+using Chroma.Input.GameControllers.Drivers.Nintendo;
+using Chroma.Input.GameControllers.Drivers.Sony;
 
 namespace Chroma.Input.GameControllers
 {

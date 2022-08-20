@@ -4,8 +4,7 @@ using System.IO;
 using System.Numerics;
 using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
-using Chroma.Natives.SDL;
-using Chroma.Threading;
+using Chroma.Natives.Bindings.SDL;
 using Chroma.STB.Image;
 
 namespace Chroma.Graphics
@@ -391,39 +390,15 @@ namespace Chroma.Graphics
 
         public Texture(Stream stream)
         {
-            EnsureOnMainThread();
-
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream), "Stream cannot be null.");
-
-            var result = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
-
-            if (result == null)
-            {
-                throw new GraphicsException(
-                    "Failed to load the texture from the provided stream. " +
-                    "It's likely the image format is not supported."
-                );
-            }
-
-            CreateEmpty(
-                result.Width,
-                result.Height,
-                PixelFormat.RGBA,
-                true
-            );
-
-            EnsureHandleValid();
-
-            result.Data.CopyTo(_pixelData, 0);
-            Flush();
-
-            SetDefaultProperties();
+            ConstructWithStream(stream);
         }
 
         public Texture(string filePath)
-            : this(new FileStream(filePath, FileMode.Open))
         {
+            using (var fs = new FileStream(filePath, FileMode.Open))
+            {
+                ConstructWithStream(fs);
+            }
         }
 
         public Texture(Texture other)
@@ -512,6 +487,38 @@ namespace Chroma.Graphics
             InitializeWithSurface(
                 SDL_gpu.GPU_CopySurfaceFromImage(gpuImageHandle)
             );
+
+            SetDefaultProperties();
+        }
+        
+        private void ConstructWithStream(Stream stream)
+        {
+            EnsureOnMainThread();
+
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream), "Stream cannot be null.");
+
+            var result = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
+
+            if (result == null)
+            {
+                throw new GraphicsException(
+                    "Failed to load the texture from the provided stream. " +
+                    "It's likely the image format is not supported."
+                );
+            }
+
+            CreateEmpty(
+                result.Width,
+                result.Height,
+                PixelFormat.RGBA,
+                true
+            );
+
+            EnsureHandleValid();
+
+            result.Data.CopyTo(_pixelData, 0);
+            Flush();
 
             SetDefaultProperties();
         }
@@ -789,10 +796,10 @@ namespace Chroma.Graphics
                     break;
 
                 case PixelFormat.RGBA:
-                    c.R = _pixelData[i + 3];
-                    c.G = _pixelData[i + 2];
-                    c.B = _pixelData[i + 1];
-                    c.A = _pixelData[i + 0];
+                    c.R = _pixelData[i + 0];
+                    c.G = _pixelData[i + 1];
+                    c.B = _pixelData[i + 2];
+                    c.A = _pixelData[i + 3];
                     break;
 
                 default:
@@ -847,16 +854,6 @@ namespace Chroma.Graphics
         private void CopyDataFrom(Texture other)
             => other._pixelData.CopyTo(_pixelData, 0);
 
-        protected void EnsureOnMainThread()
-        {
-            if (!Dispatcher.IsMainThread)
-            {
-                throw new InvalidOperationException(
-                    "This operation is not thread-safe and must be scheduled to run on main thread."
-                );
-            }
-        }
-
         protected void EnsureHandleValid()
         {
             if (ImageHandle == IntPtr.Zero)
@@ -866,7 +863,6 @@ namespace Chroma.Graphics
         protected override void FreeNativeResources()
         {
             SDL_gpu.GPU_FreeImage(ImageHandle);
-
             ImageHandle = IntPtr.Zero;
         }
     }

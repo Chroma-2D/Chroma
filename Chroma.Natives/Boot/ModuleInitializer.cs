@@ -1,25 +1,23 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Chroma.NALO;
+using Chroma.Natives.Bindings.SDL;
 using Chroma.Natives.Boot.Config;
-using Chroma.Natives.Boot.PlatformSpecific;
-using Chroma.Natives.SDL;
 using Chroma.Natives.Syscalls;
 
 namespace Chroma.Natives.Boot
 {
     internal static class ModuleInitializer
     {
-        internal static IPlatform Platform { get; private set; }
         internal static BootConfig BootConfig { get; private set; }
 
         [ModuleInitializer]
-        public static void Initialize()
+        internal static void Initialize()
         {
             if (!Environment.Is64BitOperatingSystem)
                 throw new PlatformNotSupportedException("Chroma supports 64-bit systems only.");
@@ -27,23 +25,22 @@ namespace Chroma.Natives.Boot
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 SetupConsoleMode();
 
-            BootLog.Begin();
             {
-                BootLog.Info($"It is {DateTime.Now.ToString("MMM dd, yyyy", CultureInfo.InvariantCulture)}.");
-                BootLog.Info("Please wait. I'm trying to boot...");
+                EarlyLog.Info($"It is {DateTime.Now.ToString("MMM dd, yyyy", CultureInfo.InvariantCulture)}.");
+                EarlyLog.Info("Please wait. I'm trying to boot...");
                 
                 ReadBootConfig();
 
                 try
                 {
                     if (BootConfig.SkipChecksumVerification)
-                        BootLog.Warning("Checksum verification disabled. Living on the edge, huh?");
+                        EarlyLog.Warning("Checksum verification disabled. Living on the edge, huh?");
 
-                    LoadNatives();
+                    NativeLoader.LoadNatives(BootConfig.SkipChecksumVerification);
                 }
-                catch (NativeExtractorException nee)
+                catch (NativeLoaderException nle)
                 {
-                    BootLog.Error($"{nee.Message}. Inner exception: {nee.InnerException}");
+                    EarlyLog.Error($"{nle.Message}. Inner exception: {nle.InnerException}");
                     Console.WriteLine("Press any key to terminate...");
                     Console.ReadKey();
 
@@ -52,13 +49,14 @@ namespace Chroma.Natives.Boot
 
                 if (BootConfig.HookSdlLog)
                 {
-                    BootLog.HookSdlLog();
+                    SdlBootTimeHook.Hook();
                 }
 
                 SetSdlHints();
                 InitializeSdlSystems();
             }
-            BootLog.End();
+
+            SdlBootTimeHook.UnHook();
         }
 
         private static void SetupConsoleMode()
@@ -86,7 +84,7 @@ namespace Chroma.Natives.Boot
             }
             catch (Exception e)
             {
-                BootLog.Warning($"No boot.json or it was invalid ({e.Message}) defaults created.");
+                EarlyLog.Warning($"No boot.json or it was invalid ({e.Message}) defaults created.");
 
                 BootConfig = new BootConfig();
 
@@ -102,31 +100,6 @@ namespace Chroma.Natives.Boot
             }
         }
 
-        private static void LoadNatives()
-        {
-            var libraryFileNames = NativeLibraryExtractor.ExtractAll()
-                .Select(Path.GetFileName);
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                Platform = new WindowsPlatform();
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                Platform = new LinuxPlatform();
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                Platform = new MacPlatform();
-            }
-
-            foreach (var libraryFileName in libraryFileNames)
-            {
-                BootLog.Info($"Now loading: {libraryFileName}");
-                Platform.Register(libraryFileName);
-            }
-        }
-
         private static void SetSdlHints()
         {
             if (BootConfig.SdlInitializationHints != null)
@@ -135,7 +108,7 @@ namespace Chroma.Natives.Boot
                 {
                     if (!SDL2.SDL_SetHint(kvp.Key, kvp.Value))
                     {
-                        BootLog.Error($"Failed to set '{kvp.Key}' to '{kvp.Value}': {SDL2.SDL_GetError()}");
+                        EarlyLog.Error($"Failed to set '{kvp.Key}' to '{kvp.Value}': {SDL2.SDL_GetError()}");
                     }
                 }
             }
@@ -144,17 +117,17 @@ namespace Chroma.Natives.Boot
         private static void InitializeSdlSystems()
         {
             SDL2.SDL_GetVersion(out var sdlVersion);
-            BootLog.Info($"Initializing SDL {sdlVersion.major}.{sdlVersion.minor}.{sdlVersion.patch}");
+            EarlyLog.Info($"Initializing SDL {sdlVersion.major}.{sdlVersion.minor}.{sdlVersion.patch}");
 
             SDL2.SDL_Init(BootConfig.SdlModules.SdlInitFlags);
             if (BootConfig.EnableSdlGpuDebugging)
             {
-                BootLog.Info("Enabling SDL_gpu debugging...");
+                EarlyLog.Info("Enabling SDL_gpu debugging...");
                 SDL_gpu.GPU_SetDebugLevel(SDL_gpu.GPU_DebugLevelEnum.GPU_DEBUG_LEVEL_MAX);
             }
             
-            BootLog.Info("Handing over to the core. " +
-                         $"Its log will be located somewhere in {AppContext.BaseDirectory}Logs...");
+            EarlyLog.Info("Handing over to the core. " +
+                          $"Its log will be located somewhere in {AppContext.BaseDirectory}Logs...");
             Console.WriteLine("---");
         }
     }

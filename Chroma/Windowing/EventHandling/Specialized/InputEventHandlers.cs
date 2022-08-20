@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using Chroma.Hardware;
 using Chroma.Input;
 using Chroma.Input.GameControllers;
-using Chroma.Natives.SDL;
+using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Windowing.EventHandling.Specialized
 {

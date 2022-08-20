@@ -15,7 +15,7 @@ SDL_ARTIFACT=libSDL2.so
 SDL_GPU_SOPATH=$SDL_GPU_BUILDROOT/SDL_gpu/lib/libSDL2_gpu.so
 SDL_GPU_ARTIFACT=libSDL2_gpu.so
 
-SDL_SOUND_SOPATH=$SDL_SOUND_BUILDROOT/libSDL2_sound.so.2.0.0
+SDL_SOUND_SOPATH=$SDL_SOUND_BUILDROOT/libSDL2_sound.so.2.0.1
 SDL_SOUND_ARTIFACT=libSDL2_sound.so
 
 SDL_NMIX_SOPATH=$SDL_NMIX_BUILDROOT/libSDL2_nmix.so.1.1.0
@@ -61,7 +61,7 @@ fi
                     -DCMAKE_BUILD_TYPE=$SDL_BUILD_TYPE                                \
                     -DSDL_STATIC=0                                                    \
                      && cd $SDL_BUILDROOT && $MAKE -j$THREADCOUNT                     \
-                     && mv $(readlink $(readlink -f $SDL_SOPATH)) $ARTIFACT_DIR/$SDL_ARTIFACT     \
+                     && mv $(readlink -f $SDL_SOPATH) $ARTIFACT_DIR/$SDL_ARTIFACT     \
                                                                                       \
 && $CMAKE $CMAKE_FLAGS -B $SDL_GPU_BUILDROOT $SDL_GPU_PATH -G "$CMAKE_GENERATOR"      \
                     -DCMAKE_BUILD_TYPE=$SDL_GPU_BUILD_TYPE                            \

@@ -18,9 +18,6 @@ SDL_GPU_ARTIFACT=libSDL2_gpu.so
 SDL_SOUND_SOPATH=$SDL_SOUND_BUILDROOT/libSDL2_sound.so.2.0.1
 SDL_SOUND_ARTIFACT=libSDL2_sound.so
 
-SDL_NMIX_SOPATH=$SDL_NMIX_BUILDROOT/libSDL2_nmix.so.1.1.0
-SDL_NMIX_ARTIFACT=libSDL2_nmix.so
-
 if [ "$SKIP_FT" -eq "0" ]; then
        $CMAKE $CMAKE_FLAGS -B $FT_BUILDROOT $FT_PATH -G "$CMAKE_GENERATOR"                \
                         -DCMAKE_BUILD_TYPE=$FT_BUILD_TYPE                                 \
@@ -88,15 +85,4 @@ fi
                     -DSDL2_LIBRARIES=$ARTIFACT_DIR/$SDL_ARTIFACT                      \
                      && cd $SDL_SOUND_BUILDROOT && $MAKE -j$THREADCOUNT               \
                      && mv $SDL_SOUND_SOPATH $ARTIFACT_DIR/$SDL_SOUND_ARTIFACT        \
-                                                                                      \
-&& $CMAKE $CMAKE_FLAGS -B $SDL_NMIX_BUILDROOT $SDL_NMIX_PATH -G "$CMAKE_GENERATOR"    \
-                    -DCMAKE_BUILD_TYPE=$SDL_NMIX_BUILD_TYPE                           \
-                    -DSDL_SOUND_INCLUDE_DIR=$SDL_SOUND_PATH/src                       \
-                    -DSDL_SOUND_LIBRARY=$ARTIFACT_DIR/$SDL_SOUND_ARTIFACT             \
-                    -DSDL_SOUND_LIBRARIES=$ARTIFACT_DIR/$SDL_SOUND_ARTIFACT           \
-                    -DSDL2_INCLUDE_DIR=$SDL_PATH/include                              \
-                    -DSDL2_LIBRARY=$ARTIFACT_DIR/$SDL_ARTIFACT                        \
-                    -DSDL2_LIBRARIES=$ARTIFACT_DIR/$SDL_ARTIFACT                      \
-                     && cd $SDL_NMIX_BUILDROOT && $MAKE -j$THREADCOUNT                \
-                     && mv $SDL_NMIX_SOPATH $ARTIFACT_DIR/$SDL_NMIX_ARTIFACT          \
 && bzip2 $ARTIFACT_DIR/*.so                                                           \

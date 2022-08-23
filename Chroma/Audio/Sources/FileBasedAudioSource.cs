@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
 using Chroma.Natives.Bindings.SDL;
+using Chroma.Natives.Ports.NMIX;
 
 namespace Chroma.Audio.Sources
 {
@@ -21,8 +22,7 @@ namespace Chroma.Audio.Sources
         internal unsafe SDL2_nmix.NMIX_FileSource* FileSource
             => (SDL2_nmix.NMIX_FileSource*)FileSourceHandle.ToPointer();
 
-        internal unsafe SDL2_sound.Sound_Sample* SoundSample
-            => (SDL2_sound.Sound_Sample*)FileSource->sample.ToPointer();
+        internal unsafe SDL2_sound.Sound_Sample* SoundSample => FileSource->sample;
 
         public override PlaybackStatus Status { get; set; }
 
@@ -118,7 +118,7 @@ namespace Chroma.Audio.Sources
 
             unsafe
             {
-                Handle = FileSource->source;
+                Handle = (IntPtr)FileSource->source;
             }
 
             HookSourceCallback();
@@ -299,7 +299,7 @@ namespace Chroma.Audio.Sources
 
                 Position += sampleDuration;
 
-                if (Source->eof > 0)
+                if (Source->eof)
                 {
                     if (!IsLooping)
                     {

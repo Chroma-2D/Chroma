@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Chroma.Diagnostics.Logging;
 using Chroma.MemoryManagement;
 using Chroma.Natives.Bindings.SDL;
+using Chroma.Natives.Ports.NMIX;
 
 namespace Chroma.Audio.Sources
 {
@@ -116,7 +117,7 @@ namespace Chroma.Audio.Sources
                 unsafe
                 {
                     return new Span<byte>(
-                        Source->in_buffer.ToPointer(),
+                        Source->in_buffer,
                         Source->in_buffer_size
                     );
                 }
@@ -132,7 +133,7 @@ namespace Chroma.Audio.Sources
                 unsafe
                 {
                     return new Span<byte>(
-                        Source->out_buffer.ToPointer(),
+                        Source->out_buffer,
                         Source->out_buffer_size
                     );
                 }

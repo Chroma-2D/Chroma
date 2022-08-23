@@ -1,6 +1,7 @@
 ﻿using System;
 using Chroma.Diagnostics.Logging;
 using Chroma.Natives.Bindings.SDL;
+using Chroma.Natives.Ports.NMIX;
 
 namespace Chroma.Audio.Sources
 {

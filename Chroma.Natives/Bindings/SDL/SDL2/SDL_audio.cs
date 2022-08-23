@@ -65,9 +65,9 @@ namespace Chroma.Natives.Bindings.SDL
 
 		/* userdata refers to a void*, stream to a Uint8 */
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-		public delegate void SDL_AudioCallback(
-			IntPtr userdata,
-			IntPtr stream,
+		public unsafe delegate void SDL_AudioCallback(
+			void* userdata,
+			byte* stream,
 			int len
 		);
 
@@ -338,6 +338,14 @@ namespace Chroma.Natives.Bindings.SDL
 			IntPtr buf,
 			int len
 		);
+		
+		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+		public static extern unsafe int SDL_AudioStreamPut(
+			IntPtr stream,
+			void* buf,
+			int len
+		);
+
 
 		/* stream refers to an SDL_AudioStream*, buf to a void*.
 	    * Only available in 2.0.7 or higher.
@@ -346,6 +354,13 @@ namespace Chroma.Natives.Bindings.SDL
 		public static extern int SDL_AudioStreamGet(
 			IntPtr stream,
 			IntPtr buf,
+			int len
+		);
+		
+		[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+		public static extern unsafe int SDL_AudioStreamGet(
+			IntPtr stream,
+			void* buf,
 			int len
 		);
 

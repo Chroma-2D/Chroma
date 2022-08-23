@@ -86,6 +86,14 @@ namespace Chroma.Natives.Bindings.SDL
             ref Sound_AudioInfo desired,
             uint bufferSize
         );
+        
+        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern IntPtr Sound_NewSample(
+            IntPtr rw,
+            [In, MarshalAs(UnmanagedType.LPStr)] string ext,
+            IntPtr desired,
+            uint bufferSize
+        );
 
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr Sound_NewSampleFromMem(

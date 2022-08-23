@@ -12,11 +12,17 @@ namespace Chroma.Natives.Bindings.SDL
 
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr SDL_malloc(IntPtr size);
-
+        
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void SDL_free(IntPtr memblock);
 
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr SDL_memcpy(IntPtr dst, IntPtr src, IntPtr len);
+        internal static extern IntPtr SDL_memcpy(IntPtr dst, IntPtr src, IntPtr len);
+
+        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern unsafe void SDL_memset(void* buf, byte c, IntPtr len);
+        
+        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void SDL_OutOfMemory();
     }
 }

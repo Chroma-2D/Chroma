@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using Chroma.Audio.Sources;
 using Chroma.Diagnostics.Logging;
 using Chroma.Natives.Bindings.SDL;
+using Chroma.Natives.Ports.NMIX;
 
 namespace Chroma.Audio
 {
@@ -26,7 +27,7 @@ namespace Chroma.Audio
         public IReadOnlyList<Decoder> Decoders => _decoders;
 
         public int Frequency { get; private set; }
-        public int SampleCount { get; private set; }
+        public ushort SampleCount { get; private set; }
 
         public event EventHandler<AudioSourceEventArgs> AudioSourceFinished;
 
@@ -61,7 +62,7 @@ namespace Chroma.Audio
             SDL2_nmix.NMIX_PausePlayback(_playbackPaused);
         }
 
-        public void Open(AudioDevice device = null, int frequency = 44100, int sampleCount = 1024)
+        public void Open(AudioDevice device = null, int frequency = 44100, ushort sampleCount = 1024)
         {
             Close();
 

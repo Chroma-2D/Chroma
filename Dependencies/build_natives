@@ -13,7 +13,6 @@ fi
     git clone https://github.com/libsdl-org/SDL      $SDL_PATH
     git clone https://github.com/Chroma-2D/SDL_gpu   $SDL_GPU_PATH
     git clone https://github.com/Chroma-2D/SDL_sound $SDL_SOUND_PATH
-    git clone https://github.com/Chroma-2D/SDL_nmix  $SDL_NMIX_PATH
 
 if [ "$SKIP_FT" -eq "0" ]; then
     cd $HB_PATH && git checkout $HB_TAG                                            \
@@ -31,7 +30,6 @@ fi
     mv $SDL_ARTIFACT.bz2 libSDL2.bz2                                               \
     && mv $SDL_GPU_ARTIFACT.bz2 libSDL2_gpu.bz2                                    \
     && mv $SDL_SOUND_ARTIFACT.bz2 libSDL2_sound.bz2                                \
-    && mv $SDL_NMIX_ARTIFACT.bz2 libSDL2_nmix.bz2                                  \
     && chmod 644 *.bz2                                                             \
     && find $ARTIFACT_DIR -name "*.bz2"
 }
@@ -45,10 +43,6 @@ do
 
     --clean-buildroot)
         rm -rf $BUILDROOT_DIR
-        ;;
-
-    --rebuild-nmix)
-        rm -rf $BUILDROOT_DIR/$SDL_nmix
         ;;
 
     --rebuild-sound)

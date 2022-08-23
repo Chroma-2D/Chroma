@@ -1,13 +1,13 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index a43d348..015d079 100644
+index be6b6df..eae39dc 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -21,7 +21,7 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID MATCHES "Clang")
-     add_definitions(-std=gnu99)
-     add_definitions(-Wall)
+@@ -15,7 +15,7 @@ include_directories(src)
+ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID MATCHES "Clang")
+     add_compile_options(-Wall)
      # Don't use -rpath.
 -    set(CMAKE_SKIP_RPATH ON CACHE BOOL "Skip RPATH" FORCE)
-+    # set(CMAKE_SKIP_RPATH ON CACHE BOOL "Skip RPATH")
++    #set(CMAKE_SKIP_RPATH ON CACHE BOOL "Skip RPATH" FORCE)
  endif()
  
  if(CMAKE_C_COMPILER_ID STREQUAL "SunPro")

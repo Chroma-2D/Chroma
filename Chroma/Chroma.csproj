@@ -22,10 +22,10 @@
     </Description>
     
     <PackageId>Chroma</PackageId>
-    <Version>0.57.0</Version>
-    <Author>Ciastex</Author>
+    <Version>0.57.1</Version>
+    <Author>vddCore</Author>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/Ciastex/Chroma</RepositoryUrl>
+    <RepositoryUrl>https://github.com/Chroma-2D/Chroma</RepositoryUrl>
     <PackageIcon>nugeticon.png</PackageIcon>
     <PackageTags>cross-platform;gamedev;engine;2d;chroma;framework;sdl;opengl;game;xna;netcore;</PackageTags>
   </PropertyGroup>

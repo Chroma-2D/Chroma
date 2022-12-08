@@ -72,7 +72,7 @@ namespace BoingBall
             _bounce2 = Content.Load<Sound>("Sounds/bounce2.ogg");
         }
 
-        protected override void Update(float delta)
+        protected override void FixedUpdate(float delta)
         {
             _texshift += delta / 1.66f * _dir.X;
             

@@ -4,6 +4,8 @@ namespace Chroma.Graphics.TextRendering
 {
     public class GlyphTransformData
     {
+        public GlyphRenderMetrics Metrics { get; private set; }
+        
         public Vector2 Position { get; set; }
         public Vector2 Scale { get; set; }
         public Vector2 Origin { get; set; }
@@ -11,11 +13,13 @@ namespace Chroma.Graphics.TextRendering
         public float Rotation { get; set; }
 
         public GlyphTransformData()
-            => Clear(Vector2.Zero);
+            => Clear(Vector2.Zero, new());
 
-        internal void Clear(Vector2 basePosition)
+        internal void Clear(Vector2 basePosition, GlyphRenderMetrics metrics)
         {
             Position = basePosition;
+            Metrics = metrics;
+            
             Scale = Vector2.One;
             Origin = Vector2.Zero;
             Color = Color.White;

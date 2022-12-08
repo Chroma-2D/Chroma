@@ -405,7 +405,7 @@ namespace Chroma.Graphics
 
                 var pos = new Vector2(xPos, yPos);
                 
-                _transformData.Clear(pos);
+                _transformData.Clear(pos, new GlyphRenderMetrics(bounds, offsets, advance));
                 
                 if (glyphTransform != null)
                     glyphTransform(_transformData, c, i, pos);

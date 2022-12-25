@@ -16,6 +16,8 @@ namespace Chroma.Graphics.TextRendering.Bitmap
 
         private readonly List<string> _lines;
         private readonly Dictionary<string, Action> _parsers;
+        private readonly Func<string, Texture> _pageTextureLookup;
+        
         private BitmapFontLexer _lexer;
         
         private BitmapFontInfo Info { get; set; }
@@ -36,9 +38,10 @@ namespace Chroma.Graphics.TextRendering.Bitmap
         public int Height => Info.Size;
         public int LineSpacing => (int)(Common.LineHeight + Info.Spacing.Y);
 
-        public BitmapFont(string fileName)
+        public BitmapFont(string fileName, Func<string, Texture> pageTextureLookup = null)
         {
             FileName = fileName;
+            _pageTextureLookup = pageTextureLookup;
 
             using (var sr = new StreamReader(FileName))
                 _lines = sr.ReadToEnd().Split('\n').ToList();
@@ -322,10 +325,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
                         break;
 
                     case "file":
-                        fileName = Path.Combine(
-                            Path.GetDirectoryName(FileName)!,
-                            _lexer.CurrentValue
-                        );
+                        fileName = _lexer.CurrentValue;
                         break;
 
                     default:
@@ -339,7 +339,7 @@ namespace Chroma.Graphics.TextRendering.Bitmap
 
             if (id >= 0)
             {
-                Pages.Add(new BitmapFontPage(id, fileName));
+                Pages.Add(new BitmapFontPage(id, Path.GetDirectoryName(FileName), fileName, _pageTextureLookup));
             }
             else
             {

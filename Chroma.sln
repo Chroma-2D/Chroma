@@ -75,6 +75,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallbackHooks", "Chroma.Exa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProgressFlag", "Chroma.Examples\ProgressFlag\ProgressFlag.csproj", "{3BD49336-6465-40AE-8631-1AD024C7178C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PixelShaders2", "Chroma.Examples\PixelShaders2\PixelShaders2.csproj", "{CB5E4317-4075-47C5-B097-3381DEA1D311}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -221,6 +223,10 @@ Global
 		{3BD49336-6465-40AE-8631-1AD024C7178C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3BD49336-6465-40AE-8631-1AD024C7178C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3BD49336-6465-40AE-8631-1AD024C7178C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB5E4317-4075-47C5-B097-3381DEA1D311}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB5E4317-4075-47C5-B097-3381DEA1D311}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB5E4317-4075-47C5-B097-3381DEA1D311}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB5E4317-4075-47C5-B097-3381DEA1D311}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -257,6 +263,7 @@ Global
 		{6F223B84-6B3F-4E39-AF62-18AFEFA01C2A} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
 		{691CADA9-AEBA-4C5D-B289-F51817920175} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
 		{3BD49336-6465-40AE-8631-1AD024C7178C} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
+		{CB5E4317-4075-47C5-B097-3381DEA1D311} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BD41D1A7-4878-4659-ADD4-D387313A77CA}

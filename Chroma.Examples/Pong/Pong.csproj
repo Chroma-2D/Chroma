@@ -1,44 +1,42 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
+  </PropertyGroup>
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <LangVersion>10.0</LangVersion>
-    </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <Version>1.0</Version>
+  </PropertyGroup>
 
-    <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <Version>1.0</Version>
-    </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Content\Fonts"/>
+    <Folder Include="Content\Sounds"/>
+  </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Content\Fonts" />
-      <Folder Include="Content\Sounds" />
-    </ItemGroup>
+  <ItemGroup>
+    <None Update="Content\Fonts\visitor2.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Sprites\stretchy.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Sounds\outsidePlayfield.sfxr">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Sounds\paddle.sfxr">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Sounds\wall.sfxr">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
-    <ItemGroup>
-      <None Update="Content\Fonts\visitor2.ttf">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Content\Sprites\stretchy.png">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Content\Sounds\outsidePlayfield.sfxr">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Content\Sounds\paddle.sfxr">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Content\Sounds\wall.sfxr">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Chroma\Chroma.csproj"/>
+  </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\Chroma\Chroma.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="Chroma.Audio.Sfxr" Version="3.0.0" />
-    </ItemGroup>
-
+  <ItemGroup>
+    <PackageReference Include="Chroma.Audio.Sfxr" Version="3.0.0"/>
+  </ItemGroup>
 </Project>

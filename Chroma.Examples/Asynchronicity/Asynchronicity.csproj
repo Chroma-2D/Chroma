@@ -1,17 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
+  </PropertyGroup>
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <LangVersion>10.0</LangVersion>
-    </PropertyGroup>
-    
-    <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <Version>1.0</Version>
-    </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <Version>1.0</Version>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\Chroma\Chroma.csproj" />
-    </ItemGroup>
-
+  <ItemGroup>
+    <ProjectReference Include="..\..\Chroma\Chroma.csproj"/>
+  </ItemGroup>
 </Project>

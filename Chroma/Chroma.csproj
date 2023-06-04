@@ -1,17 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
-    <ItemGroup>
-      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
-    </ItemGroup>
-  </Target>
-  
-  <PropertyGroup>
-    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
-  </PropertyGroup>
-  
+<Project Sdk="Microsoft.NET.Sdk"> 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>10.0</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <IncludeReferencedProjects>true</IncludeReferencedProjects>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -22,19 +17,14 @@
     </Description>
     
     <PackageId>Chroma</PackageId>
-    <Version>0.58.0</Version>
+    <Version>0.59.0</Version>
     <Author>vddCore</Author>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Chroma-2D/Chroma</RepositoryUrl>
     <PackageIcon>nugeticon.png</PackageIcon>
     <PackageTags>cross-platform;gamedev;engine;2d;chroma;framework;sdl;opengl;game;xna;netcore;</PackageTags>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <IncludeReferencedProjects>true</IncludeReferencedProjects>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   
   <ItemGroup>
@@ -73,4 +63,14 @@
     <EmbeddedResource Include="Resources\boot\crsub.png" />
     <EmbeddedResource Include="Resources\boot\crwheel.png" />
   </ItemGroup>
+
+  <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
+    <ItemGroup>
+      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+    </ItemGroup>
+  </Target>
+
+  <PropertyGroup>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+  </PropertyGroup>
 </Project>

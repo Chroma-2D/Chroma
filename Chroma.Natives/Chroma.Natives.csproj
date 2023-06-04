@@ -1,49 +1,43 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
+  </PropertyGroup>
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <LangVersion>10.0</LangVersion>
-    </PropertyGroup>
-    
-    <PropertyGroup>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <NoWarn>CA2255</NoWarn>
-    </PropertyGroup>
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>CA2255</NoWarn>
+  </PropertyGroup>
 
-    <!-- Order of natives is important! -->
-    <ItemGroup>
-        <EmbeddedResource Include="Binaries\windows_64\freetype.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\SDL2.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\SDL2_gpu.bz2" />
-        <EmbeddedResource Include="Binaries\windows_64\SDL2_sound.bz2" />
-        
-        <EmbeddedResource Include="Binaries\linux_64\libfreetype.bz2" />
-        <EmbeddedResource Include="Binaries\linux_64\libSDL2.bz2" />
-        <EmbeddedResource Include="Binaries\linux_64\libSDL2_gpu.bz2" />
-        <EmbeddedResource Include="Binaries\linux_64\libSDL2_sound.bz2" />
-        
-        <EmbeddedResource Include="Binaries\osx_64\libfreetype.bz2" />
-        <EmbeddedResource Include="Binaries\osx_64\libSDL2.bz2" />
-        <EmbeddedResource Include="Binaries\osx_64\libSDL2_gpu.bz2" />
-        <EmbeddedResource Include="Binaries\osx_64\libSDL2_sound.bz2" />
+  <!-- Order of natives is important! -->
+  <ItemGroup>
+    <EmbeddedResource Include="Binaries\windows_64\freetype.bz2"/>
+    <EmbeddedResource Include="Binaries\windows_64\SDL2.bz2"/>
+    <EmbeddedResource Include="Binaries\windows_64\SDL2_gpu.bz2"/>
+    <EmbeddedResource Include="Binaries\windows_64\SDL2_sound.bz2"/>
 
-    </ItemGroup>
+    <EmbeddedResource Include="Binaries\linux_64\libfreetype.bz2"/>
+    <EmbeddedResource Include="Binaries\linux_64\libSDL2.bz2"/>
+    <EmbeddedResource Include="Binaries\linux_64\libSDL2_gpu.bz2"/>
+    <EmbeddedResource Include="Binaries\linux_64\libSDL2_sound.bz2"/>
 
-    <ItemGroup>
-        <PackageReference Include="System.Text.Json" Version="6.0.0" />
-    </ItemGroup>
+    <EmbeddedResource Include="Binaries\osx_64\libfreetype.bz2"/>
+    <EmbeddedResource Include="Binaries\osx_64\libSDL2.bz2"/>
+    <EmbeddedResource Include="Binaries\osx_64\libSDL2_gpu.bz2"/>
+    <EmbeddedResource Include="Binaries\osx_64\libSDL2_sound.bz2"/>
+  </ItemGroup>
 
-    <ItemGroup>
-        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-            <_Parameter1>Chroma</_Parameter1>
-        </AssemblyAttribute>
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="6.0.0"/>
+  </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Bindings" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Chroma.NALO\Chroma.NALO.csproj"/>
+  </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Chroma.NALO\Chroma.NALO.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>Chroma</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
 </Project>

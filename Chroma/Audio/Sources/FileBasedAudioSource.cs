@@ -299,7 +299,7 @@ namespace Chroma.Audio.Sources
 
                 Position += sampleDuration;
 
-                if (Source->eof)
+                if (Position >= Duration || Source->eof)
                 {
                     if (!IsLooping)
                     {
@@ -307,6 +307,7 @@ namespace Chroma.Audio.Sources
                     }
                     
                     AudioOutput.Instance.OnAudioSourceFinished(this, IsLooping);
+                    Rewind();
                 }
             }
         }

@@ -20,7 +20,7 @@ Oh I'm glad you asked! Features include, but are not limited to:
 &nbsp; ▐ FreeType-based TTF and BMFont bitmap font format support.  
 &nbsp; ▐ Integrates well with .NET ecosystem more often than not.  
 &nbsp; ▐ Easy-to-understand rendering controls.  
-&nbsp; ▐ Support for Xbox One/Elite, Nintendo and PlayStation 4 & 5 (trigger haptics) controllers.
+&nbsp; ▐ Support for Xbox One/Elite, Nintendo and PlayStation 4 & 5 (trigger haptics) controllers.  
 &nbsp; ▐ Flexible audio input and output system.  
 
 **Mobile platform support?**  

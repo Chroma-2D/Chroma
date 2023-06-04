@@ -4,7 +4,7 @@ THREADCOUNT=8
 PLATFORM=$($(command -v uname) | tr '[:upper:]' '[:lower:]')
 
 CMAKE=cmake
-CMAKE_GENERATOR="Unix Makefiles"
+CMAKE_GENERATOR="Ninja"
 CMAKE_FLAGS=-Wno-dev
 
 MAKE=ninja

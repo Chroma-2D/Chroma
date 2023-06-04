@@ -1,7 +1,6 @@
 #!/bin/bash
 
-CMAKE_GENERATOR="MinGW Makefiles"
-MAKE=mingw32-make
+CMAKE_GENERATOR="Ninja"
 
 FT_SOPATH=$FT_BUILDROOT/libfreetype.dll
 FT_ARTIFACT=freetype.dll

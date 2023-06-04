@@ -7,13 +7,13 @@ CMAKE=cmake
 CMAKE_GENERATOR="Unix Makefiles"
 CMAKE_FLAGS=-Wno-dev
 
-MAKE=make
+MAKE=ninja
 
 SKIP_FT=1
 
 FT_TAG=VER-2-11-0
 HB_TAG=2.9.0
-SDL_VER=24.0
+SDL_VER=26.5
 SDL_TAG=release-2.$SDL_VER
 
 NATIVES_DIR=$SCRIPT_DIR/build_env

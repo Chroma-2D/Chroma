@@ -11,7 +11,7 @@ CMAKE_FRAMEWORKS="-lc++ -framework CoreFoundation -framework CoreText -framework
 FT_SOPATH=$FT_BUILDROOT/libfreetype.6.18.0.dylib
 FT_ARTIFACT=libfreetype.dylib
 
-SDL_SOPATH=$SDL_BUILDROOT/libSDL2-2.0.dylib
+SDL_SOPATH=$SDL_BUILDROOT/libSDL2-2.0.0.dylib
 SDL_ARTIFACT=libSDL2.dylib
 
 SDL_GPU_SOPATH=$SDL_GPU_BUILDROOT/SDL_gpu/lib/libSDL2_gpu.dylib
@@ -19,12 +19,6 @@ SDL_GPU_ARTIFACT=libSDL2_gpu.dylib
 
 SDL_SOUND_SOPATH=$SDL_SOUND_BUILDROOT/libSDL2_sound.2.0.1.dylib
 SDL_SOUND_ARTIFACT=libSDL2_sound.dylib
-
-# SDL_sound is skipping RPATH for whatever reason during OS X build.
-# This is not helping our use case, so we are patching it out
-#
-cp $PATCH_DIR/SDL_sound.patch $SDL_SOUND_PATH/SDL_sound.patch
-cd $SDL_SOUND_PATH && git apply --verbose SDL_sound.patch
 
 if [ "$SKIP_FT" -eq "0" ]; then
       $CMAKE $CMAKE_FLAGS -B $FT_BUILDROOT $FT_PATH -G "$CMAKE_GENERATOR"                 \

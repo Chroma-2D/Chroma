@@ -86,3 +86,4 @@ fi
                      && cd $SDL_SOUND_BUILDROOT && $MAKE -j$THREADCOUNT               \
                      && mv $SDL_SOUND_SOPATH $ARTIFACT_DIR/$SDL_SOUND_ARTIFACT        \
 && bzip2 $ARTIFACT_DIR/*.dll                                                          \
+&& for f in lib*; do mv "$f" "${f#lib}"; done;                                        \

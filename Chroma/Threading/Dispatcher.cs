@@ -22,12 +22,12 @@ namespace Chroma.Threading
             var scheduledAction = new ScheduledAction { Action = action };
             ActionQueue.Enqueue(scheduledAction);
 
-            return Task.Factory.StartNew(async (a) =>
+            return new Task((a) =>
             {
                 var sched = a as ScheduledAction;
                 
                 while (!sched!.Completed)
-                    await Task.Delay(1);
+                    Task.Delay(1);
             }, scheduledAction);
         }
     }

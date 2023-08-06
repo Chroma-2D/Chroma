@@ -11,9 +11,9 @@ namespace Chroma.Audio.Sources
     public abstract class FileBasedAudioSource : AudioSource
     {
         private static readonly Log _log = LogManager.GetForCurrentAssembly();
-        
+
         private readonly SdlRwOps _sdlRwOps;
-        
+
         private SDL2_nmix.NMIX_SourceCallback _originalSourceCallback;
         private SDL2_nmix.NMIX_SourceCallback _internalSourceCallback;
 
@@ -68,7 +68,7 @@ namespace Chroma.Audio.Sources
         internal FileBasedAudioSource(string filePath, bool decodeWhole)
             : this(new FileStream(filePath, FileMode.Open, FileAccess.Read), decodeWhole,
                 Path.GetExtension(filePath).Replace(".", ""))
-        { 
+        {
         }
 
         internal FileBasedAudioSource(Stream stream, bool decodeWhole, string fileFormat = null)
@@ -139,6 +139,7 @@ namespace Chroma.Audio.Sources
                 }
 
                 Status = PlaybackStatus.Stopped;
+                Position = 0;
             }
 
             if (SDL2_nmix.NMIX_Play(Handle) < 0)
@@ -146,13 +147,10 @@ namespace Chroma.Audio.Sources
                 _log.Error($"Failed to play the audio source [play]: {SDL2.SDL_GetError()}");
                 return;
             }
-
-            if (Status == PlaybackStatus.Stopped)
+            else
             {
-                Position = 0;
+                Status = PlaybackStatus.Playing;
             }
-
-            Status = PlaybackStatus.Playing;
         }
 
         public override void Pause()
@@ -226,7 +224,7 @@ namespace Chroma.Audio.Sources
             {
                 targetPosition = Duration + targetPosition;
             }
-            
+
             Pause();
 
             if (SDL2_nmix.NMIX_Seek(FileSourceHandle, (int)(targetPosition * 1000)) < 0)
@@ -234,7 +232,7 @@ namespace Chroma.Audio.Sources
                 _log.Error($"Failed to seek to {seconds}: {SDL2.SDL_GetError()}");
                 return;
             }
-            
+
             Play();
 
             Position = targetPosition;
@@ -243,7 +241,7 @@ namespace Chroma.Audio.Sources
         protected override void FreeNativeResources()
         {
             EnsureOnMainThread();
-            
+
             if (FileSourceHandle != IntPtr.Zero)
             {
                 SDL2_nmix.NMIX_FreeFileSource(FileSourceHandle);
@@ -285,7 +283,7 @@ namespace Chroma.Audio.Sources
                     SoundSample->buffer.ToPointer(),
                     (int)SoundSample->buffer_size
                 );
-                
+
                 var actualAudioFormat = AudioFormat.FromSdlFormat(SoundSample->actual.format);
 
                 for (var i = 0; i < Filters.Count; i++)
@@ -301,13 +299,14 @@ namespace Chroma.Audio.Sources
 
                 if (Position >= Duration || Source->eof)
                 {
+                    Position = 0;
+                    
                     if (!IsLooping)
                     {
                         Status = PlaybackStatus.Stopped;
                     }
-                    
+
                     AudioOutput.Instance.OnAudioSourceFinished(this, IsLooping);
-                    Rewind();
                 }
             }
         }

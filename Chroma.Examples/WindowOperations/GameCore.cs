@@ -22,7 +22,7 @@ namespace WindowOperations
         private int _lastResult;
 
         private string _diagText;
-        
+
         private string _lastDroppedText;
         private string _lastDroppedFileList;
 
@@ -30,7 +30,7 @@ namespace WindowOperations
         {
             Window.FilesDropped += WindowOnFilesDropped;
             Window.TextDropped += WindowOnTextDropped;
-            
+
             var sb = new StringBuilder();
 
             var exts = Graphics.GlExtensions;
@@ -102,7 +102,7 @@ namespace WindowOperations
                 $"Is mouse over: {Window.IsMouseOver}\n" +
                 $"Last dropped file: {_lastDroppedFileList}\n" +
                 $"Last dropped text: {_lastDroppedText}\n" +
-                $"Window handle: {Window.Handle}" +
+                $"System window handle: {Window.SystemWindowHandle:X8}\n" +
                 $"{_diagText}",
                 new Vector2(8)
             );
@@ -110,7 +110,9 @@ namespace WindowOperations
 
         protected override void Update(float delta)
         {
-            _diagText = $"FPS: {PerformanceCounter.FPS}, frame {PerformanceCounter.LifetimeFrames}. On display: {Window.CurrentDisplay.Index} : total memory usage: {Process.GetCurrentProcess().PrivateMemorySize64} bytes";
+            _diagText =
+                $"FPS: {PerformanceCounter.FPS}, frame {PerformanceCounter.LifetimeFrames}. On display: {Window.CurrentDisplay.Index}\n" +
+                $"Total memory usage: {Process.GetCurrentProcess().PrivateMemorySize64} bytes ({Process.GetCurrentProcess().PrivateMemorySize64 / 1024 / 1024} MB)";
         }
 
         protected override void KeyPressed(KeyEventArgs e)

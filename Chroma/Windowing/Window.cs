@@ -35,6 +35,7 @@ namespace Chroma.Windowing
 
         private IntPtr _windowHandle;
         private IntPtr _currentIconPtr;
+        private PlatformWindowInformation _windowInfo;
 
         internal delegate void StateUpdateDelegate(float delta);
 
@@ -48,14 +49,14 @@ namespace Chroma.Windowing
         internal EventDispatcher EventDispatcher { get; private set; }
         internal DragDropManager DragDropManager { get; }
 
+        internal IntPtr Handle => _windowHandle;
         internal IntPtr RenderTargetHandle { get; private set; }
 
         internal static Window Instance { get; private set; }
 
         public delegate WindowHitTestResult WindowHitTestDelegate(Window window, Vector2 position);
 
-        public IntPtr Handle => _windowHandle;
-
+        public IntPtr SystemWindowHandle => _windowInfo.SystemWindowHandle;
         public bool Exists { get; private set; }
 
         public Size Size
@@ -395,8 +396,10 @@ namespace Chroma.Windowing
             }
 
             if (Handle == IntPtr.Zero)
-                throw new FrameworkException($"Failed to initialize the window: {SDL2.SDL_GetError()}.");
+                throw new FrameworkException($"Failed to initialize SDL window: {SDL2.SDL_GetError()}.");
 
+            _windowInfo = new PlatformWindowInformation(Handle);
+            
             Title = _title;
             Position = _position;
 

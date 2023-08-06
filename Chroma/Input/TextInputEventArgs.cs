@@ -1,6 +1,6 @@
 ﻿namespace Chroma.Input
 {
-    public class TextInputEventArgs
+    public sealed class TextInputEventArgs
     {
         public string Text { get; }
 

@@ -4,7 +4,7 @@ using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Input
 {
-    public class MouseButtonEventArgs
+    public sealed class MouseButtonEventArgs
     {
         public Vector2 Position { get; }
         public MouseButton Button { get; }

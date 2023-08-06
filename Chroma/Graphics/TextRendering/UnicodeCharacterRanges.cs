@@ -1,6 +1,6 @@
 using System;
 
-namespace Chroma.Graphics.TextRendering.TrueType
+namespace Chroma.Graphics.TextRendering
 {
     public class UnicodeCharacterRanges
     {

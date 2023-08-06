@@ -6,7 +6,7 @@ using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Windowing.DragDrop
 {
-    internal class DragDropManager
+    internal sealed class DragDropManager
     {
         private readonly Window _owner;
 

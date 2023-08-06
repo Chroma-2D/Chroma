@@ -2,7 +2,7 @@
 
 namespace Chroma.Windowing.EventHandling.Specialized
 {
-    internal class AudioEventHandlers
+    internal sealed class AudioEventHandlers
     {
         private EventDispatcher Dispatcher { get; }
 

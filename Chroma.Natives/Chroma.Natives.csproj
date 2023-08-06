@@ -11,28 +11,28 @@
 
   <!-- Order of natives is important! -->
   <ItemGroup>
-    <EmbeddedResource Include="Binaries\windows_64\freetype.bz2"/>
-    <EmbeddedResource Include="Binaries\windows_64\SDL2.bz2"/>
-    <EmbeddedResource Include="Binaries\windows_64\SDL2_gpu.bz2"/>
-    <EmbeddedResource Include="Binaries\windows_64\SDL2_sound.bz2"/>
+    <EmbeddedResource Include="Binaries\windows_64\freetype.bz2" />
+    <EmbeddedResource Include="Binaries\windows_64\SDL2.bz2" />
+    <EmbeddedResource Include="Binaries\windows_64\SDL2_gpu.bz2" />
+    <EmbeddedResource Include="Binaries\windows_64\SDL2_sound.bz2" />
+    
+    <EmbeddedResource Include="Binaries\linux_64\libfreetype.bz2" />
+    <EmbeddedResource Include="Binaries\linux_64\libSDL2.bz2" />
+    <EmbeddedResource Include="Binaries\linux_64\libSDL2_gpu.bz2" />
+    <EmbeddedResource Include="Binaries\linux_64\libSDL2_sound.bz2" />
 
-    <EmbeddedResource Include="Binaries\linux_64\libfreetype.bz2"/>
-    <EmbeddedResource Include="Binaries\linux_64\libSDL2.bz2"/>
-    <EmbeddedResource Include="Binaries\linux_64\libSDL2_gpu.bz2"/>
-    <EmbeddedResource Include="Binaries\linux_64\libSDL2_sound.bz2"/>
-
-    <EmbeddedResource Include="Binaries\osx_64\libfreetype.bz2"/>
-    <EmbeddedResource Include="Binaries\osx_64\libSDL2.bz2"/>
-    <EmbeddedResource Include="Binaries\osx_64\libSDL2_gpu.bz2"/>
-    <EmbeddedResource Include="Binaries\osx_64\libSDL2_sound.bz2"/>
+    <EmbeddedResource Include="Binaries\osx_64\libfreetype.bz2" />
+    <EmbeddedResource Include="Binaries\osx_64\libSDL2.bz2" />
+    <EmbeddedResource Include="Binaries\osx_64\libSDL2_gpu.bz2" />
+    <EmbeddedResource Include="Binaries\osx_64\libSDL2_sound.bz2" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="6.0.0"/>
+    <PackageReference Include="System.Text.Json" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Chroma.NALO\Chroma.NALO.csproj"/>
+    <ProjectReference Include="..\Chroma.NALO\Chroma.NALO.csproj" />
   </ItemGroup>
 
   <ItemGroup>

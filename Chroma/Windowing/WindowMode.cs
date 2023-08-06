@@ -6,7 +6,7 @@ using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Windowing
 {
-    public class WindowMode
+    public sealed class WindowMode
     {
         private static readonly Log _log = LogManager.GetForCurrentAssembly();
         

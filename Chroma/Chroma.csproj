@@ -7,6 +7,7 @@
   <PropertyGroup>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IncludeReferencedProjects>true</IncludeReferencedProjects>
+    <NoWarn>CS1591</NoWarn>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -17,7 +18,7 @@
     </Description>
     
     <PackageId>Chroma</PackageId>
-    <Version>0.59.0</Version>
+    <Version>0.60.0</Version>
     <Author>vddCore</Author>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Chroma-2D/Chroma</RepositoryUrl>
@@ -25,6 +26,7 @@
     <PackageTags>cross-platform;gamedev;engine;2d;chroma;framework;sdl;opengl;game;xna;netcore;</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   
   <ItemGroup>

@@ -77,6 +77,31 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProgressFlag", "Chroma.Exam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PixelShaders2", "Chroma.Examples\PixelShaders2\PixelShaders2.csproj", "{CB5E4317-4075-47C5-B097-3381DEA1D311}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{14BADE0D-C0CC-49C6-AFCC-B876B9E964D7}"
+	ProjectSection(SolutionItems) = preProject
+		Dependencies\build_natives = Dependencies\build_natives
+		Dependencies\build_natives_linux = Dependencies\build_natives_linux
+		Dependencies\build_natives_mingw = Dependencies\build_natives_mingw
+		Dependencies\build_natives_osx = Dependencies\build_natives_osx
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{E520164F-F501-4AD0-AB4A-54CAEA0F927F}"
+	ProjectSection(SolutionItems) = preProject
+		Dependencies\scripts\FindPackageHandleStandardArgs.cmake = Dependencies\scripts\FindPackageHandleStandardArgs.cmake
+		Dependencies\scripts\FindSDL_sound.cmake = Dependencies\scripts\FindSDL_sound.cmake
+		Dependencies\scripts\FindSDL2.cmake = Dependencies\scripts\FindSDL2.cmake
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "patches", "patches", "{E867A642-1F8F-4BD1-A135-3E352E60E7D2}"
+	ProjectSection(SolutionItems) = preProject
+		Dependencies\patches\SDL_sound.patch = Dependencies\patches\SDL_sound.patch
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{4E142959-AB62-4716-A658-10CD6E747C1A}"
+	ProjectSection(SolutionItems) = preProject
+		Dependencies\lib\buildvars.sh = Dependencies\lib\buildvars.sh
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -264,6 +289,9 @@ Global
 		{691CADA9-AEBA-4C5D-B289-F51817920175} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
 		{3BD49336-6465-40AE-8631-1AD024C7178C} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
 		{CB5E4317-4075-47C5-B097-3381DEA1D311} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
+		{E520164F-F501-4AD0-AB4A-54CAEA0F927F} = {14BADE0D-C0CC-49C6-AFCC-B876B9E964D7}
+		{E867A642-1F8F-4BD1-A135-3E352E60E7D2} = {14BADE0D-C0CC-49C6-AFCC-B876B9E964D7}
+		{4E142959-AB62-4716-A658-10CD6E747C1A} = {14BADE0D-C0CC-49C6-AFCC-B876B9E964D7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BD41D1A7-4878-4659-ADD4-D387313A77CA}

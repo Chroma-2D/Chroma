@@ -2,7 +2,7 @@
 
 namespace Chroma.Windowing
 {
-    public class CancelEventArgs : EventArgs
+    public sealed class CancelEventArgs
     {
         public bool Cancel { get; set; }
 

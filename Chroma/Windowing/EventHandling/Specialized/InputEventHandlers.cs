@@ -9,7 +9,7 @@ using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Windowing.EventHandling.Specialized
 {
-    internal class InputEventHandlers
+    internal sealed class InputEventHandlers
     {
         private EventDispatcher Dispatcher { get; }
 

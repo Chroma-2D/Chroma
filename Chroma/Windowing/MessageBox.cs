@@ -6,7 +6,7 @@ using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Windowing
 {
-    public class MessageBox
+    public sealed class MessageBox
     {
         private static readonly Log _log = LogManager.GetForCurrentAssembly();
 

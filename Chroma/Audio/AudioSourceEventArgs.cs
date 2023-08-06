@@ -1,9 +1,8 @@
-﻿using System;
-using Chroma.Audio.Sources;
+﻿using Chroma.Audio.Sources;
 
 namespace Chroma.Audio
 {
-    public class AudioSourceEventArgs : EventArgs
+    public sealed class AudioSourceEventArgs
     {
         public AudioSource Source { get; }
         public bool IsLooping { get; }

@@ -1,9 +1,8 @@
-using System;
 using System.Collections.Generic;
 
 namespace Chroma.Windowing.DragDrop
 {
-    public class FileDragDropEventArgs : EventArgs
+    public sealed class FileDragDropEventArgs
     {
         public List<string> Files { get; }
 

@@ -1,6 +1,6 @@
 ﻿namespace Chroma.Input.GameControllers
 {
-    public class ControllerEventArgs
+    public sealed class ControllerEventArgs
     {
         public ControllerDriver Controller { get; }
 

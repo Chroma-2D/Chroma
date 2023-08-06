@@ -6,7 +6,7 @@ using Chroma.Graphics;
 
 namespace Chroma
 {
-    internal class DefaultScene
+    internal sealed class DefaultScene
     {
         private Game Game { get; }
         

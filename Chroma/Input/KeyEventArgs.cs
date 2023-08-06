@@ -1,6 +1,6 @@
 namespace Chroma.Input
 {
-    public class KeyEventArgs
+    public sealed class KeyEventArgs
     {
         public ScanCode ScanCode { get; }
         public KeyCode KeyCode { get; }

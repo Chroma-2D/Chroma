@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace Chroma.Input.GameControllers
 {
-    public class ControllerSensorEventArgs : EventArgs
+    public sealed class ControllerSensorEventArgs
     {
         public ControllerDriver Controller { get; }
         public Vector3 Values { get; }

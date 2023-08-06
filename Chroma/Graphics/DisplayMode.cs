@@ -3,7 +3,7 @@ using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Graphics
 {
-    public class DisplayMode
+    public sealed class DisplayMode
     {
         public static readonly DisplayMode Invalid = new(-1, -1, -1);
 

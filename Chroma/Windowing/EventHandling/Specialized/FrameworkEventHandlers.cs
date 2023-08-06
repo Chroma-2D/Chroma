@@ -2,7 +2,7 @@
 
 namespace Chroma.Windowing.EventHandling.Specialized
 {
-    internal class FrameworkEventHandlers
+    internal sealed class FrameworkEventHandlers
     {
         private EventDispatcher Dispatcher { get; }
 

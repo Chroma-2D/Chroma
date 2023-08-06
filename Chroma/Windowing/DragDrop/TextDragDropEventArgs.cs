@@ -1,6 +1,6 @@
 namespace Chroma.Windowing.DragDrop
 {
-    public class TextDragDropEventArgs
+    public sealed class TextDragDropEventArgs
     {
         public string Text { get; }
 

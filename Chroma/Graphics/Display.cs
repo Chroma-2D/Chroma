@@ -6,7 +6,7 @@ using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Graphics
 {
-    public class Display
+    public sealed class Display
     {
         private static readonly Log _log = LogManager.GetForCurrentAssembly();
 

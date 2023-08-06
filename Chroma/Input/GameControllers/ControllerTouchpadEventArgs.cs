@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace Chroma.Input.GameControllers
 {
-    public class ControllerTouchpadEventArgs : EventArgs
+    public sealed class ControllerTouchpadEventArgs
     {
         public ControllerDriver Controller { get; }
         public int TouchpadIndex { get; }

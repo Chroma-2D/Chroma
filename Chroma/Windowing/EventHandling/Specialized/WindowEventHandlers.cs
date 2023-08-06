@@ -4,7 +4,7 @@ using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Windowing.EventHandling.Specialized
 {
-    internal class WindowEventHandlers
+    internal sealed class WindowEventHandlers
     {
         private EventDispatcher Dispatcher { get; }
 

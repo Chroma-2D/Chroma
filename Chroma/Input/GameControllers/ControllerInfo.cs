@@ -5,7 +5,7 @@ using Chroma.Hardware;
 
 namespace Chroma.Input.GameControllers
 {
-    public class ControllerInfo
+    public sealed class ControllerInfo
     {
         private readonly Dictionary<ControllerAxis, bool> _supportedAxes;
         private readonly Dictionary<ControllerButton, bool> _supportedButtons;

@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace Chroma.Windowing
 {
-    public class WindowMoveEventArgs : EventArgs
+    public sealed class WindowMoveEventArgs
     {
         public Vector2 Position { get; }
 

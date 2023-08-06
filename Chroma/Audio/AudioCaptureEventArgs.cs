@@ -1,8 +1,6 @@
-using System;
-
 namespace Chroma.Audio
 {
-    public class AudioCaptureEventArgs : EventArgs
+    public sealed class AudioCaptureEventArgs
     {
         public byte[] Buffer { get; }
 

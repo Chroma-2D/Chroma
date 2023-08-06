@@ -4,7 +4,7 @@ using Chroma.Graphics;
 
 namespace Chroma
 {
-    internal class BootScene
+    internal sealed class BootScene
     {
         private const int FrameCount = 301;
         

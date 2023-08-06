@@ -4,14 +4,18 @@ using System.Threading.Tasks;
 
 namespace Chroma.Threading
 {
-    public class Dispatcher
+    public sealed class Dispatcher
     {
         internal static ConcurrentQueue<ScheduledAction> ActionQueue { get; } = new();
-        
+
         public static int MainThreadId { get; internal set; }
 
         public static bool IsMainThread
             => Environment.CurrentManagedThreadId == MainThreadId;
+        
+        internal Dispatcher()
+        {
+        }
         
         public static Task RunOnMainThread(Action action)
         {

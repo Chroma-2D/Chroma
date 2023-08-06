@@ -2,7 +2,7 @@
 
 namespace Chroma.Diagnostics.Logging
 {
-    public class DuplicateSinkException : FrameworkException
+    public sealed class DuplicateSinkException : FrameworkException
     {
         public Type SinkType { get; }
 

@@ -1,6 +1,6 @@
 ﻿namespace Chroma.ContentManagement
 {
-    public class UnsupportedContentException : ContentException
+    public sealed class UnsupportedContentException : ContentException
     {
         public string TargetPath { get; }
 

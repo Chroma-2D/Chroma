@@ -2,7 +2,7 @@
 
 namespace Chroma.Audio
 {
-    public class Decoder
+    public sealed class Decoder
     {
         public string Description { get; }
         public string Author { get; }

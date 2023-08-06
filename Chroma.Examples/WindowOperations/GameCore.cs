@@ -102,6 +102,7 @@ namespace WindowOperations
                 $"Is mouse over: {Window.IsMouseOver}\n" +
                 $"Last dropped file: {_lastDroppedFileList}\n" +
                 $"Last dropped text: {_lastDroppedText}\n" +
+                $"Window handle: {Window.Handle}" +
                 $"{_diagText}",
                 new Vector2(8)
             );
@@ -185,12 +186,19 @@ namespace WindowOperations
             }
             else if (e.KeyCode == KeyCode.F12)
             {
-                MessageBox.Show(
-                    MessageBoxSeverity.Error,
-                    "A test error message box.",
-                    "This is a test message to let you know about the error.",
-                    Window
-                );
+                if (e.Modifiers.HasFlag(KeyModifiers.LeftShift))
+                {
+                    Window.Flash(WindowFlash.Continuous);
+                }
+                else
+                {
+                    MessageBox.Show(
+                        MessageBoxSeverity.Error,
+                        "A test error message box.",
+                        "This is a test message to let you know about the error.",
+                        Window
+                    );
+                }
             }
             else if (e.KeyCode == KeyCode.Tilde)
             {

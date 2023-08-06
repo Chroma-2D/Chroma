@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Chroma.Input.GameControllers
 {
-    internal class ControllerRegistry
+    internal sealed class ControllerRegistry
     {
         internal const int MaxSupportedPlayers = 24;
 

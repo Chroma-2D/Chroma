@@ -9,7 +9,7 @@ using Chroma.Windowing;
 
 namespace Chroma.Graphics
 {
-    public class RenderContext
+    public sealed class RenderContext
     {
         private readonly GlyphTransformData _transformData = new();
         

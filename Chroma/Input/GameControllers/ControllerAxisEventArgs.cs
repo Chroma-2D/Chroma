@@ -1,6 +1,6 @@
 ﻿namespace Chroma.Input.GameControllers
 {
-    public class ControllerAxisEventArgs
+    public sealed class ControllerAxisEventArgs
     {
         public ControllerDriver Controller { get; }
         public ControllerAxis Axis { get; internal set; }

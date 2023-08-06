@@ -41,6 +41,7 @@ namespace BoingBall
             : base(new(false, false))
         {
             Window.Mode.SetWindowed(960, 600, true);
+            FixedTimeStepTarget = 60;
         }
 
         protected override IContentProvider InitializeContentPipeline()

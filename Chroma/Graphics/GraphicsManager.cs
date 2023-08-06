@@ -10,7 +10,7 @@ using Chroma.Windowing;
 
 namespace Chroma.Graphics
 {
-    public class GraphicsManager
+    public sealed class GraphicsManager
     {
         private static readonly Log _log = LogManager.GetForCurrentAssembly();
         private readonly GameStartupOptions _startupOptions;

@@ -9,7 +9,7 @@ using Chroma.Natives.Ports.NMIX;
 
 namespace Chroma.Audio
 {
-    public class AudioOutput
+    public sealed class AudioOutput
     {
         private static readonly Log _log = LogManager.GetForCurrentAssembly();
         

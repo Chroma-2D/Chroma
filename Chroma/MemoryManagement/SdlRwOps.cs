@@ -5,7 +5,7 @@ using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.MemoryManagement
 {
-    internal class SdlRwOps : DisposableResource
+    internal sealed class SdlRwOps : DisposableResource
     {
         private Stream _stream;
         private unsafe SDL2.SDL_RWops* _rwOps;

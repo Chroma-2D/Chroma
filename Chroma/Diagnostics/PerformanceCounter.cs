@@ -2,7 +2,7 @@
 
 namespace Chroma.Diagnostics
 {
-    public class PerformanceCounter
+    public sealed class PerformanceCounter
     {
         private ulong _lastFpsUpdateTime = SDL2.SDL_GetTicks64();
         private ulong _lastLagMeasureTime = SDL2.SDL_GetTicks64();

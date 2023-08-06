@@ -4,7 +4,7 @@ using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Audio
 {
-    public class AudioFormat
+    public sealed class AudioFormat
     {
         private readonly Dictionary<SampleFormat, ushort> SdlFormatBE = new()
         {

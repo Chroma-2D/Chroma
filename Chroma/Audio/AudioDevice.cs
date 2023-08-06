@@ -1,6 +1,6 @@
 ﻿namespace Chroma.Audio
 {
-    public class AudioDevice
+    public sealed class AudioDevice
     {
         public static AudioDevice DefaultOutput { get; }
 

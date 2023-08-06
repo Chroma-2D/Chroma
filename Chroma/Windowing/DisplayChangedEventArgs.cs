@@ -2,7 +2,7 @@ using System;
 
 namespace Chroma.Windowing
 {
-    public class DisplayChangedEventArgs : EventArgs
+    public sealed class DisplayChangedEventArgs
     {
         public int Index { get; }
 

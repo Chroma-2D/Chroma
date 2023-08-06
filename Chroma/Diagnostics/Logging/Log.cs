@@ -5,7 +5,7 @@ using Chroma.Diagnostics.Logging.Base;
 
 namespace Chroma.Diagnostics.Logging
 {
-    public class Log
+    public sealed class Log
     {
         private bool HasBeenClosed { get; set; }
 

@@ -2,7 +2,7 @@
 
 namespace Chroma.Graphics
 {
-    public class DisplayDpi
+    public sealed class DisplayDpi
     {
         public static readonly DisplayDpi None = new(0, 0, 0); 
             

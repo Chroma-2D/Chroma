@@ -6,7 +6,7 @@ using Chroma.Natives.Bindings.SDL;
 
 namespace Chroma.Audio
 {
-    public class AudioInput
+    public sealed class AudioInput
     {
         private static readonly Log _log = LogManager.GetForCurrentAssembly();
         

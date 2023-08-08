@@ -12,7 +12,8 @@ namespace RenderTransforms
     {
         private Texture _burger;
         private RenderTarget _rt;
-        
+        private float _angle = 0;
+
         public GameCore() : base(new(false, false))
         {
         }
@@ -41,10 +42,9 @@ namespace RenderTransforms
             );
         }
 
-        private float angle = 0;
         protected override void Update(float delta)
         {
-            angle += 2f;
+            _angle += 200f * delta;
         }
 
         protected override void Draw(RenderContext context)
@@ -58,7 +58,7 @@ namespace RenderTransforms
                 RenderTransform.LoadIdentity();
                 
                 RenderTransform.Translate(_burger.Center);
-                RenderTransform.Rotate(angle, new Vector3(0, 0, 1f));
+                RenderTransform.Rotate(_angle, new Vector3(0, 0, 1f));
                 RenderTransform.Translate(-_burger.Center);
                 
                 context.DrawTexture(_burger, Vector2.Zero, Vector2.One, Vector2.Zero, 0);

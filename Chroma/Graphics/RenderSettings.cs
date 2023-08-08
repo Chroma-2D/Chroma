@@ -81,6 +81,12 @@ namespace Chroma.Graphics
             {
                 _scissor = value;
 
+                if (_scissor.Width < 0)
+                    _scissor.Width = 0;
+
+                if (_scissor.Height < 0)
+                    _scissor.Height = 0;
+
                 if (_scissor == Rectangle.Empty)
                 {
                     SDL_gpu.GPU_UnsetClip(

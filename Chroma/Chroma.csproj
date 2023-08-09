@@ -27,10 +27,12 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageReadmeFile>README.nuget.md</PackageReadmeFile>
   </PropertyGroup>
   
   <ItemGroup>
     <None Include="Resources\nugeticon.png" Pack="true" PackagePath="\" />
+    <None Include="README.nuget.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
   <ItemGroup>

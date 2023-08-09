@@ -16,6 +16,8 @@ namespace Chroma.NALO
 
         public static void LoadNatives(bool skipChecksumVerification)
         {
+            var currentlyAttemptedLibraryFileName = string.Empty;
+            
             try
             {
                 var assembly = Assembly.GetCallingAssembly();
@@ -58,17 +60,24 @@ namespace Chroma.NALO
 
                 foreach (var libraryFileName in libraryFileNames)
                 {
+                    currentlyAttemptedLibraryFileName = libraryFileName;
+                    
                     EarlyLog.Info($"Now loading: {libraryFileName}");
                     Platform.Register(libraryFileName);
                 }
+
+                currentlyAttemptedLibraryFileName = string.Empty;
             }
             catch (Exception e)
             {
                 throw new NativeLoaderException(
-                    "NALO has failed. This is an engine error. If you are:\n" +
+                    "Native loader has failed. This is an engine error. If you are:\n" +
                     "  a) a user: contact the application developer\n" +
                     "  b) a developer: if you believe this is Chroma's fault post an issue on our website\n" +
-                    "  c) cookie: you fucked up - better fix it quickly before anyone notices",
+                    "  c) natalie: you fucked up - better fix it quickly before anyone notices\n" +
+                    "\n" +
+                    $"Alternatively, if this happened on Linux, try running `ldd {currentlyAttemptedLibraryFileName}'.\n" +
+                    $"Maybe you're missing dependencies.",
                     e
                 );
             }

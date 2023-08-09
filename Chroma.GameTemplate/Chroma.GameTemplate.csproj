@@ -1,28 +1,28 @@
-<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <PackageType>Template</PackageType>
-        <PackageVersion>1.0.4</PackageVersion>
-        <PackageId>Chroma.GameTemplate</PackageId>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageType>Template</PackageType>
+    <PackageVersion>2.0.0</PackageVersion>
+    <PackageId>Chroma.GameTemplate</PackageId>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
 
-        <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
 
-        <Title>Chroma Game Template</Title>
-        <Authors>Ciastex</Authors>
-        <Description>Bare-bones game project to help you get started with Chroma Game Framework quickly.</Description>
-        <PackageTags>dotnet-new;templates;chroma;gamedev;engine;framework;game</PackageTags>
-	
-	<RepositoryUrl>https://github.com/Ciastex/Chroma</RepositoryUrl>
-        
-	<IncludeContentInPack>true</IncludeContentInPack>
-        <IncludeBuildOutput>false</IncludeBuildOutput>
-        <ContentTargetFolders>content</ContentTargetFolders>
+    <Title>Chroma Game Template</Title>
+    <Authors>vddCore</Authors>
+    <Description>Bare-bones game project to help you get started with Chroma Game Framework quickly.</Description>
+    <PackageTags>dotnet-new;templates;chroma;gamedev;engine;framework;game</PackageTags>
 
-        <NoWarn>$(NoWarn);NU5128</NoWarn>
-    </PropertyGroup>
+    <RepositoryUrl>https://github.com/Chroma-2D/Chroma</RepositoryUrl>
 
-    <ItemGroup>
-        <Content Include="template\**\*" Exclude="template\**\bin\**;template\**\obj\**" />
-        <Compile Remove="**\*" />
-    </ItemGroup>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="template\**\*" Exclude="template\**\bin\**;template\**\obj\**"/>
+    <Compile Remove="**\*"/>
+  </ItemGroup>
 </Project>

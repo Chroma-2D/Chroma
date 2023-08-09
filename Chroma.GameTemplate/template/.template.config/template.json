@@ -1,10 +1,10 @@
 {
     "$schema": "https://json.schemastore.org/template",
-    "author": "Tomasz Cichoń",
+    "author": "vddCore",
     "classifications": ["Chroma", "Game"],
     "identity": "Chroma.GameTemplate",
     "name": "Chroma Framework Cross Platform Game",
-    "description": "A Chroma Framework game project for Windows, Linux and MacOS.",
+    "description": "A cross-platform Chroma Framework game project.",
     "shortName": "chromagame",
     "sourceName": "ChromaGame",
     "preferNameDirectory": true,

@@ -1,4 +1,4 @@
-<p align="center"><img src="https://raw.githubusercontent.com/Chroma-2D/Chroma/master/Chroma/Resources/deficon.png"><br>Chroma Framework</p>
+<p align="center"><img style="margin: -96px 0 -96px 0px" src="https://raw.githubusercontent.com/Chroma-2D/Chroma/master/Chroma/Resources/deficon.png"><br>Chroma Framework</p>
 
 **What? Another one?**  
 *Yeah!* ***Another one!*** Chroma is a 2D-focused game development framework. Works just as well for other kinds of 2D applications too. Might as well call it a glorified SDL wrapper for .NET 6 if you like.
@@ -8,7 +8,7 @@ Because MonoGame ~~is~~was so slow to add hassle-free shader compilation on Linu
 
 **Alright. What are its features?**  
 Oh I'm glad you asked! Features include, but are not limited to:  
-&nbsp; ▐ Cross-platform support - Windows, Linux and macOS!  
+&nbsp; ▐ Cross-platform support - Windows, Linux and (*experimental*!) macOS  
 &nbsp; ▐ Hassle-free framework bring-up allowing you to prototype fast and without bullshit boilerplate.  
 &nbsp; ▐ Supports GLSL shaders on any platform. No shader pre-compilation - plain old .frag and .vert.  
 &nbsp; ▐ MIT licensed! Do whatever you want to/with it, I want my name on Chroma, though.  
@@ -26,10 +26,10 @@ Oh I'm glad you asked! Features include, but are not limited to:
 **Mobile platform support?**  
 Maybe? Until that happens you're free to use [Love2D](https://love2d.org/). I really dig its robustness and ease-of-use.
 
-**Docs?**
+**Docs?**  
 [API reference is available](https://chroma-2d.github.io/apiref), but... [I'll do you one better.](https://chroma.vddcore.eu)
 
-**Is the API stable?**
+**Is the API stable?**  
 Mostly (meaning 'sometimes a method or two might change its signature'). While the entire thing is ready for people to make stuff with, I consider this software to still be in beta stage.
 
 **You got a roadmap or something?**  

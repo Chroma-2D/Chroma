@@ -292,15 +292,15 @@ namespace Chroma.Graphics
             => new(R / 255f, G / 255f, B / 255f, alpha);
 
 
-        public static Color Lerp(Color a, Color b, float t)
+        public static Color ColorLerp(Color a, Color b, float t)
         {
             return new(
-                255 * (a.R + (b.R - a.R) * t),
-                255 * (a.G + (b.G - a.G) * t),
-                255 * (a.B + (b.B - a.B) * t),
-                255 * (a.A + (b.A - a.A) * t)
+                (byte)Math.Round(a.R * (1f - t) + b.R * t),
+                (byte)Math.Round(a.G * (1f - t) + b.G * t),
+                (byte)Math.Round(a.B * (1f - t) + b.B * t),
+                (byte)Math.Round(a.A * (1f - t) + b.A * t)
             );
-        }
+        }    
 
         public static Color FromHSV(float hue, float sat = 1f, float val = 1f)
         {

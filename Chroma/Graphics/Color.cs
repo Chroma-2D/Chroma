@@ -292,7 +292,7 @@ namespace Chroma.Graphics
             => new(R / 255f, G / 255f, B / 255f, alpha);
 
 
-        public static Color ColorLerp(Color a, Color b, float t)
+        public static Color Lerp(Color a, Color b, float t)
         {
             return new(
                 (byte)Math.Round(a.R * (1f - t) + b.R * t),

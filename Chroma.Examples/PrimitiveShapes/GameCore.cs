@@ -15,10 +15,17 @@ namespace PrimitiveShapes
         public GameCore() : base(new(false, true, 8))
         {
             Cursor.IsVisible = false;
+            Graphics.VerticalSyncMode = VerticalSyncMode.None;
         }
 
         protected override void Draw(RenderContext context)
         {
+            context.Rectangle(ShapeMode.Stroke, 0, 0, 32, 32, Color.Cyan);
+            context.Line(0, 120, 0, 180, Color.Red);
+            context.Line(Window.Width - 1, 120, Window.Width - 1, 180, Color.Red);
+            context.Line(48, 0, 96, 0, Color.Lime);
+            context.Line(48, Window.Height - 1, 96, Window.Height - 1, Color.Gold);
+            
             context.Arc(
                 ShapeMode.Fill,
                 new Vector2(256, 32),
@@ -89,8 +96,8 @@ namespace PrimitiveShapes
             RenderSettings.LineThickness = 1;
             context.Rectangle(
                 ShapeMode.Stroke,
-                _cursorPosition,
-                33, 33,
+                _cursorPosition - new Vector2(1),
+                34, 34,
                 Color.White
             );
 

@@ -68,6 +68,7 @@
     <EmbeddedResource Include="Resources\boot\crwheel.png" />
   </ItemGroup>
 
+
   <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
     <ItemGroup>
       <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />

@@ -46,9 +46,7 @@ namespace Chroma.Input.GameControllers
 
         public virtual void SetDeadZone(ControllerAxis axis, ushort value)
         {
-            if (!_deadZones.ContainsKey(axis))
-                _deadZones.Add(axis, value);
-            else
+            if (!_deadZones.TryAdd(axis, value))
                 _deadZones[axis] = value;
         }
 
@@ -107,13 +105,14 @@ namespace Chroma.Input.GameControllers
                 return;
 
             if (SDL2.SDL_GameControllerRumble(
-                Info.InstancePointer,
-                leftIntensity,
-                rightIntensity,
-                duration
-            ) < 0)
+                    Info.InstancePointer,
+                    leftIntensity,
+                    rightIntensity,
+                    duration
+                ) < 0)
             {
-                _log.Error($"Failed to rumble controller at player index {Info.PlayerIndex}, '{Info.Name}': {SDL2.SDL_GetError()}");
+                _log.Error(
+                    $"Failed to rumble controller at player index {Info.PlayerIndex}, '{Info.Name}': {SDL2.SDL_GetError()}");
             }
         }
 
@@ -129,7 +128,8 @@ namespace Chroma.Input.GameControllers
                     duration
                 ) < 0)
             {
-                _log.Error($"Failed to rumble controller triggers at player index {Info.PlayerIndex}, '{Info.Name}': {SDL2.SDL_GetError()}");
+                _log.Error(
+                    $"Failed to rumble controller triggers at player index {Info.PlayerIndex}, '{Info.Name}': {SDL2.SDL_GetError()}");
             }
         }
 
@@ -160,12 +160,12 @@ namespace Chroma.Input.GameControllers
                 }
             }
         }
-        
+
         public virtual void SetLedColor(Color color)
         {
             if (!Info.HasConfigurableLed)
                 return;
-            
+
             if (SDL2.SDL_GameControllerSetLED(Info.InstancePointer, color.R, color.G, color.B) < 0)
                 _log.Error($"Failed to set LED color: {SDL2.SDL_GetError()}");
         }

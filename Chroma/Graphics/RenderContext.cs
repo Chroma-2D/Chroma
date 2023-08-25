@@ -11,6 +11,9 @@ namespace Chroma.Graphics
 {
     public sealed class RenderContext
     {
+        public delegate void RenderTargetDrawDelegate(RenderContext context, RenderTarget target);
+        public delegate void CameraDrawDelegate(RenderContext context, Camera camera);
+        
         private readonly GlyphTransformData _transformData = new();
         
         internal Window Owner { get; }
@@ -306,7 +309,7 @@ namespace Chroma.Graphics
             }
         }
 
-        [Obsolete("This call is obsolete and will be removed in next minor release. Use the alternate overload instead.")]
+        [Obsolete("This call is obsolete and will be removed in version 0.61. Use the alternate overload instead.")]
         public void RenderTo(RenderTarget target, Action drawingLogic)
         {           
             if (target == null)
@@ -327,7 +330,7 @@ namespace Chroma.Graphics
             TargetStack.Pop();
         }
         
-        public void RenderTo(RenderTarget target, Action<RenderContext> drawingLogic)
+        public void RenderTo(RenderTarget target, RenderTargetDrawDelegate drawingLogic)
         {           
             if (target == null)
             {
@@ -342,12 +345,12 @@ namespace Chroma.Graphics
 
             TargetStack.Push(target.TargetHandle);
             {
-                drawingLogic.Invoke(this);
+                drawingLogic.Invoke(this, target);
             }
             TargetStack.Pop();
         }
 
-        [Obsolete("This call is obsolete and will be removed in next minor release. Use the alternate overload instead.")]
+        [Obsolete("This call is obsolete and will be removed in version 0.61. Use the alternate overload instead.")]
         public void WithCamera(Camera camera, Action drawingLogic)
         {
             if (camera == null)
@@ -368,7 +371,7 @@ namespace Chroma.Graphics
             SDL_gpu.GPU_SetCamera(CurrentRenderTarget, IntPtr.Zero);
         }
         
-        public void WithCamera(Camera camera, Action<RenderContext> drawingLogic)
+        public void WithCamera(Camera camera, CameraDrawDelegate drawingLogic)
         {
             if (camera == null)
             {
@@ -383,7 +386,7 @@ namespace Chroma.Graphics
 
             SDL_gpu.GPU_SetCamera(CurrentRenderTarget, ref camera.GpuCamera);
             {
-                drawingLogic.Invoke(this);
+                drawingLogic.Invoke(this, camera);
             }
             SDL_gpu.GPU_SetCamera(CurrentRenderTarget, IntPtr.Zero);
         }
@@ -486,7 +489,7 @@ namespace Chroma.Graphics
                 BatchBuffer.Clear();
         }
         
-        [Obsolete("This call is obsolete and will be removed in next minor release. Use the alternate overload instead.")]
+        [Obsolete("This call is obsolete and will be removed in version 0.61. Use the alternate overload instead.")]
         public void Batch(Action drawAction, int depth)
         {
             if (drawAction == null)

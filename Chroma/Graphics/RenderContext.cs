@@ -306,6 +306,7 @@ namespace Chroma.Graphics
             }
         }
 
+        [Obsolete("This call is obsolete and will be removed in next minor release. Use the alternate overload instead.")]
         public void RenderTo(RenderTarget target, Action drawingLogic)
         {           
             if (target == null)
@@ -325,7 +326,28 @@ namespace Chroma.Graphics
             }
             TargetStack.Pop();
         }
+        
+        public void RenderTo(RenderTarget target, Action<RenderContext> drawingLogic)
+        {           
+            if (target == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(target), 
+                    "Render target cannot be null."
+                );
+            }
+            
+            if (drawingLogic == null)
+                return;
 
+            TargetStack.Push(target.TargetHandle);
+            {
+                drawingLogic.Invoke(this);
+            }
+            TargetStack.Pop();
+        }
+
+        [Obsolete("This call is obsolete and will be removed in next minor release. Use the alternate overload instead.")]
         public void WithCamera(Camera camera, Action drawingLogic)
         {
             if (camera == null)
@@ -342,6 +364,26 @@ namespace Chroma.Graphics
             SDL_gpu.GPU_SetCamera(CurrentRenderTarget, ref camera.GpuCamera);
             {
                 drawingLogic.Invoke();
+            }
+            SDL_gpu.GPU_SetCamera(CurrentRenderTarget, IntPtr.Zero);
+        }
+        
+        public void WithCamera(Camera camera, Action<RenderContext> drawingLogic)
+        {
+            if (camera == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(camera), 
+                    "Camera cannot be null"
+                );
+            }
+
+            if (drawingLogic == null)
+                return;
+
+            SDL_gpu.GPU_SetCamera(CurrentRenderTarget, ref camera.GpuCamera);
+            {
+                drawingLogic.Invoke(this);
             }
             SDL_gpu.GPU_SetCamera(CurrentRenderTarget, IntPtr.Zero);
         }
@@ -438,13 +480,28 @@ namespace Chroma.Graphics
             );
 
             for (var i = 0; i < BatchBuffer.Count; i++)
-                BatchBuffer[i].DrawAction?.Invoke();
+                BatchBuffer[i].DrawAction?.Invoke(this);
 
             if (discardBatchAfterUse)
                 BatchBuffer.Clear();
         }
-
+        
+        [Obsolete("This call is obsolete and will be removed in next minor release. Use the alternate overload instead.")]
         public void Batch(Action drawAction, int depth)
+        {
+            if (drawAction == null)
+                return;
+
+            BatchBuffer.Add(
+                new BatchInfo
+                {
+                    DrawAction = (c) => drawAction(),
+                    Depth = depth
+                }
+            );
+        }
+
+        public void Batch(Action<RenderContext> drawAction, int depth)
         {
             if (drawAction == null)
                 return;

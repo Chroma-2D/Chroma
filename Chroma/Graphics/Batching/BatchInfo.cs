@@ -4,7 +4,7 @@ namespace Chroma.Graphics.Batching
 {
     internal struct BatchInfo
     {
-        internal Action DrawAction;
+        internal Action<RenderContext> DrawAction;
         internal int Depth;
     }
 }

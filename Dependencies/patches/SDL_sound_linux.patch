@@ -1,0 +1,10 @@
+--- build_env/sources/SDL_sound/CMakeLists.txt	2023-08-24 18:53:02.565847628 +0200
++++ build_env/sources/SDL_sound/CMakeLists-linux-patched-remove-findpackage.txt	2023-08-24 19:14:40.936836449 +0200
+@@ -28,7 +28,6 @@
+     add_compile_options(-xldscope=hidden)
+ endif()
+ 
+-find_package(SDL2 REQUIRED)
+ if(WIN32)
+     # -lmingw32: gcc adds it automatically.
+     # -mwindows: doesn't make sense.

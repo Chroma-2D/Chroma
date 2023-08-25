@@ -74,6 +74,8 @@ fi
                      && cd $SDL_GPU_BUILDROOT && $MAKE -j$THREADCOUNT                 \
                      && mv $SDL_GPU_SOPATH $ARTIFACT_DIR/$SDL_GPU_ARTIFACT            \
                                                                                       \
+&& patch --forward $SDL_SOUND_PATH/CMakeLists.txt $PATCH_DIR/SDL_sound_linux.patch || true \
+                                                                                      \
 && $CMAKE $CMAKE_FLAGS -B $SDL_SOUND_BUILDROOT $SDL_SOUND_PATH -G "$CMAKE_GENERATOR"  \
                     -DCMAKE_BUILD_TYPE=$SDL_SOUND_BUILD_TYPE                          \
                     -DSDLSOUND_BUILD_STATIC=0                                         \

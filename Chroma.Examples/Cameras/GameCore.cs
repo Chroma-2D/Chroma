@@ -82,9 +82,9 @@ namespace Cameras
 
         protected override void Draw(RenderContext context)
         {
-            context.WithCamera(_cam, () =>
+            context.WithCamera(_cam, (ctx, cam) =>
             {
-                context.DrawTexture(
+                ctx.DrawTexture(
                     _grid,
                     Vector2.Zero,
                     Vector2.One,
@@ -92,7 +92,7 @@ namespace Cameras
                     rotation: 0f
                 );
                 
-                context.DrawTexture(
+                ctx.DrawTexture(
                     _burg,
                     _burgpos,
                     Vector2.One,

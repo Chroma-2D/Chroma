@@ -167,20 +167,20 @@ namespace GameController.Views
 
         public virtual void Draw(RenderContext context)
         {
-            context.RenderTo(_renderTarget, () =>
+            context.RenderTo(_renderTarget, (ctx, tgt) =>
             {
-                context.Clear(Color.Black);
+                ctx.Clear(Color.Black);
                 
                 foreach (var kvp in _controllers)
                 {
                     var controller = kvp.Key;
                     var player = kvp.Value;
-                    context.Rectangle(ShapeMode.Fill, player.Rectangle, player.Color);
+                    ctx.Rectangle(ShapeMode.Fill, player.Rectangle, player.Color);
                     
                     var playerLabel = controller.Info.PlayerIndex.ToString();
                     var labelMeasure = TrueTypeFont.Default.Measure(playerLabel);
 
-                    context.DrawString(
+                    ctx.DrawString(
                         playerLabel,
                         new Vector2(
                             player.Rectangle.X + (player.Rectangle.Width / 2f - labelMeasure.Width / 2f),
@@ -192,7 +192,7 @@ namespace GameController.Views
                     var playerButtonsLabel = string.Join(", ", controller.ActiveButtons);
                     var playerButtonsMeasure = TrueTypeFont.Default.Measure(playerButtonsLabel);
                     
-                    context.DrawString(
+                    ctx.DrawString(
                         playerButtonsLabel,
                         new Vector2(
                             player.Rectangle.X + (player.Rectangle.Width / 2f - playerButtonsMeasure.Width / 2f),
@@ -205,7 +205,7 @@ namespace GameController.Views
                         var triggerLabel = player.TriggerLeft.ToString("F3");
                         var triggerMeasure = TrueTypeFont.Default.Measure(triggerLabel);
                         
-                        context.DrawString(
+                        ctx.DrawString(
                             triggerLabel,
                             new Vector2(
                                 player.Rectangle.X - triggerMeasure.Width - 8,
@@ -215,7 +215,7 @@ namespace GameController.Views
 
                         BlendTriggerBar(() =>
                         {
-                            context.Rectangle(
+                            ctx.Rectangle(
                                 ShapeMode.Fill,
                                 player.Rectangle.X, 
                                 player.Rectangle.Y + player.Rectangle.Height / 2 - 8,
@@ -231,7 +231,7 @@ namespace GameController.Views
                         var triggerLabel = player.TriggerRight.ToString("F3");
                         var triggerMeasure = TrueTypeFont.Default.Measure(triggerLabel);
                         
-                        context.DrawString(
+                        ctx.DrawString(
                             triggerLabel,
                             new Vector2(
                                 player.Rectangle.X + player.Rectangle.Width + 8,
@@ -241,7 +241,7 @@ namespace GameController.Views
                         
                         BlendTriggerBar(() =>
                         {
-                            context.Rectangle(
+                            ctx.Rectangle(
                                 ShapeMode.Fill,
                                 player.Rectangle.X + player.Rectangle.Width, 
                                 player.Rectangle.Y + player.Rectangle.Height / 2 - 8,
@@ -254,7 +254,7 @@ namespace GameController.Views
 
                     var typeLabel = controller.Info.Type.ToString();
                     var typeMeasure = TrueTypeFont.Default.Measure(typeLabel);
-                    context.DrawString(
+                    ctx.DrawString(
                         typeLabel,
                         new Vector2(
                             player.Rectangle.X + (player.Rectangle.Width / 2f - typeMeasure.Width / 2f),
@@ -265,7 +265,7 @@ namespace GameController.Views
                     
                     if (Math.Abs(player.RightStickX) > 0.09 || Math.Abs(player.RightStickY) > 0.09)
                     {
-                        context.Circle(
+                        ctx.Circle(
                             ShapeMode.Fill, 
                             new Vector2(
                                 player.Rectangle.X + player.Rectangle.Width / 2 + (32 * player.RightStickX),
@@ -276,7 +276,7 @@ namespace GameController.Views
                         );
                     }
 
-                    DrawViewSpecific(controller, player, context);
+                    DrawViewSpecific(controller, player, ctx);
                 }
 
                 PostDraw(context);

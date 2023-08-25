@@ -91,16 +91,16 @@ namespace CellularAutomaton
 
         public void Draw(RenderContext context)
         {
-            context.RenderTo(_target, () =>
+            context.RenderTo(_target, (ctx, tgt) =>
             {
-                context.Clear(Color.White);
-                context.Rectangle(ShapeMode.Fill, 1, 1, Height - 2, Width - 2, Color.Black);
+                ctx.Clear(Color.White);
+                ctx.Rectangle(ShapeMode.Fill, 1, 1, Height - 2, Width - 2, Color.Black);
 
                 for (var i = 0; i < _cells.Length; i++)
                 {
                     if (_cells[i] != null)
                     {
-                        _cells[i]?.Draw(context);
+                        _cells[i]?.Draw(ctx);
                     }
                 }
             });

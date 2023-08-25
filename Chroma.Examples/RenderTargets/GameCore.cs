@@ -47,11 +47,11 @@ namespace RenderTargets
 
         protected override void Draw(RenderContext context)
         {
-            context.RenderTo(_tgt, () =>
+            context.RenderTo(_tgt, (ctx, tgt) =>
             {
-                context.Clear(Color.Black);
-                context.Rectangle(ShapeMode.Fill, _position, 64, 64, Color.Cyan);
-                context.DrawString("This was rendered inside a render target.", new Vector2(16));
+                ctx.Clear(Color.Black);
+                ctx.Rectangle(ShapeMode.Fill, _position, 64, 64, Color.Cyan);
+                ctx.DrawString("This was rendered inside a render target.", new Vector2(16));
             });
 
             context.Clear(Color.Crimson);

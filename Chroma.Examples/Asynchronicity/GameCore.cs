@@ -37,9 +37,9 @@ namespace Asynchronicity
 
             if (_target != null && !_target.Disposed)
             {
-                context.RenderTo(_target, () =>
+                context.RenderTo(_target, (ctx, tgt) =>
                 {
-                    context.Rectangle(
+                    ctx.Rectangle(
                         ShapeMode.Fill,
                         new Vector2(16),
                         new Size(32, 32),

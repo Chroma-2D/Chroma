@@ -43,9 +43,9 @@ namespace DrawBatching
 
         protected override void Draw(RenderContext context)
         {
-            context.Batch(() => context.DrawTexture(_texA, new Vector2(48, 48), Vector2.One, Vector2.Zero, 0f), 0);
-            context.Batch(() => context.DrawTexture(_texC, new Vector2(72, 72), Vector2.One, Vector2.Zero, 0f), 1);
-            context.Batch(() => context.DrawTexture(_texB, new Vector2(96, 96), Vector2.One, Vector2.Zero, 0f), 2);
+            context.Batch((ctx) => ctx.DrawTexture(_texA, new Vector2(48, 48), Vector2.One, Vector2.Zero, 0f), 0);
+            context.Batch((ctx) => ctx.DrawTexture(_texC, new Vector2(72, 72), Vector2.One, Vector2.Zero, 0f), 1);
+            context.Batch((ctx) => ctx.DrawTexture(_texB, new Vector2(96, 96), Vector2.One, Vector2.Zero, 0f), 2);
 
             context.DrawBatch(_order);
 

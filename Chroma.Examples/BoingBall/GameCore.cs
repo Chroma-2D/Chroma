@@ -128,16 +128,16 @@ namespace BoingBall
             var shadowOffset = new Vector2(16, 4);
             var sphereTilt = 25f;
 
-            context.RenderTo(_target, () =>
+            context.RenderTo(_target, (ctx, tgt) =>
             {
-                context.Clear(127, 127, 127);
+                ctx.Clear(127, 127, 127);
 
-                DrawGrid(new(40, 16), context);
+                DrawGrid(new(40, 16), ctx);
 
                 _effect.Activate();
                 _effect.SetUniform("mode", (int)EffectMode.Shadow);
                 _texture.ColorMask = new(0, 0, 0, 127);
-                context.DrawTexture(
+                ctx.DrawTexture(
                     _texture, 
                     basePosition + shadowOffset + _pos, 
                     scale,
@@ -146,7 +146,7 @@ namespace BoingBall
                 
                 _effect.SetUniform("mode", (int)EffectMode.Sphere);
                 _effect.SetUniform("texshift", _texshift);
-                context.DrawTexture(
+                ctx.DrawTexture(
                     _texture, 
                     basePosition + _pos, 
                     scale, 
@@ -157,7 +157,7 @@ namespace BoingBall
                 
                 _effect.Activate();
                 _effect.SetUniform("mode", (int)EffectMode.Shade);
-                context.DrawTexture(
+                ctx.DrawTexture(
                     _shade, 
                     basePosition + _pos, 
                     scale, 

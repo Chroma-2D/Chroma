@@ -49,9 +49,9 @@ namespace RenderTransforms
 
         protected override void Draw(RenderContext context)
         {          
-            context.RenderTo(_rt, () =>
+            context.RenderTo(_rt, (ctx, tgt) =>
             {
-                context.Clear(Color.Aqua);
+                ctx.Clear(Color.Aqua);
 
                 RenderTransform.SetMatrixMode(MatrixMode.Model, _rt);
                 RenderTransform.Push();
@@ -61,7 +61,7 @@ namespace RenderTransforms
                 RenderTransform.Rotate(_angle, new Vector3(0, 0, 1f));
                 RenderTransform.Translate(-_burger.Center);
                 
-                context.DrawTexture(_burger, Vector2.Zero, Vector2.One, Vector2.Zero, 0);
+                ctx.DrawTexture(_burger, Vector2.Zero, Vector2.One, Vector2.Zero, 0);
                 RenderTransform.Pop();
             });
             

@@ -80,7 +80,7 @@ namespace PixelShaders2
 
         protected override void Draw(RenderContext context)
         {
-            context.RenderTo(_target, () => { context.Clear(Color.Black); });
+            context.RenderTo(_target, (ctx, tgt) => { ctx.Clear(Color.Black); });
 
             var mp = Mouse.WindowSpacePosition;
             var dx = Window.Center.X - mp.X;

@@ -53,9 +53,9 @@ namespace ParticleSystems
 
         protected override void Draw(RenderContext context)
         {
-            context.RenderTo(_target, () =>
+            context.RenderTo(_target, (ctx, tgt) =>
             {
-                context.Clear(Color.Black);
+                ctx.Clear(Color.Black);
                 _emitter.Draw(context);
             });
 

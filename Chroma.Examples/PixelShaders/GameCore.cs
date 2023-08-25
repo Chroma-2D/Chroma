@@ -84,9 +84,9 @@ namespace PixelShaders
 
         protected override void Draw(RenderContext context)
         {
-            context.RenderTo(_target, () =>
+            context.RenderTo(_target, (ctx, _) =>
             {
-                context.Clear(Color.Black);
+                ctx.Clear(Color.Black);
 
                 _tintEffect.Activate();
                 _tintEffect.SetUniform("mouse_loc", Mouse.GetPosition() / Window.Width);
@@ -97,7 +97,7 @@ namespace PixelShaders
                 _tintEffect.SetUniform("show_overlay", _showOverlay);
                 _tintEffect.SetUniform("show_tweak", _showTweak);
 
-                context.DrawTexture(
+                ctx.DrawTexture(
                     _burger,
                     Window.Center - (_burger.Center / 2),
                     Vector2.One * 2,
@@ -106,7 +106,7 @@ namespace PixelShaders
                 );
                 Shader.Deactivate();
 
-                context.DrawString(
+                ctx.DrawString(
                     _messageBuilder.ToString(),
                     new Vector2(8)
                 );

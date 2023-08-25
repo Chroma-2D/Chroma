@@ -22,10 +22,10 @@ namespace LerpingCameras
 
         protected override void Draw(RenderContext context)
         {
-            context.WithCamera(_lerpCamera, () =>
+            context.WithCamera(_lerpCamera, (ctx, tgt) =>
             {
-                base.Draw(context);
-                context.Pixel(Window.Center, Color.Red);
+                base.Draw(ctx);
+                ctx.Pixel(Window.Center, Color.Red);
             });
             
             context.DrawString(

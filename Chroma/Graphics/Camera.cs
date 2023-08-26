@@ -118,6 +118,16 @@ namespace Chroma.Graphics
             NearZ = other.NearZ;
         }
 
+        public Camera(Vector2 position)
+            : this((int)position.X, (int)position.Y, 0, 0)
+        {
+        }
+
+        public Camera(Vector3 position)
+            : this((int)position.X, (int)position.Y, (int)position.Z, 0)
+        {
+        }
+
         public Camera(int x, int y)
             : this(x, y, 0, 0)
         {

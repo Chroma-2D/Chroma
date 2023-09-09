@@ -1,7 +1,13 @@
 ﻿### Chroma Framework
 Chroma is a 2D game development framework focused on quick prototyping.
 
-### Changes in release 0.60.1
+### Change log
+#### Changes in release 0.61.0
+- Added Vector2 and Vector3 constructors for Camera class.
+- Added a convenient way to cut a sub-texture out of a larger texture.
+- Removed obsolete overloads for `RenderTo`, `WithCamera` and `Batch` RenderContext calls.
+
+#### Changes in release 0.60.1
 - Added extension methods overloading `Rumble` and `RumbleTriggers` for `ControllerDriver` allowing use of float values 
   in range 0.0-1.0.
 - Updated SDL_gpu to draw pixel-perfect lines and rectangles, thanks to 

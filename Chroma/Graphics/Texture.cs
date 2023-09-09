@@ -695,6 +695,51 @@ namespace Chroma.Graphics
             SDL_gpu.GPU_GenerateMipmaps(ImageHandle);
         }
 
+        public Texture SubTexture(Rectangle sourceRectangle)
+        {
+            EnsureNotDisposed();
+            EnsureHandleValid();
+            EnsureOnMainThread();
+
+            if (sourceRectangle.Width <= 0)
+            {
+                throw new GraphicsException("Unable to take a source rectangle of negative or zero width.");
+            }
+
+            if (sourceRectangle.Height <= 0)
+            {
+                throw new GraphicsException("Unable to take a source rectangle of negative or zero height.");
+            }
+
+            if (sourceRectangle.X < 0)
+            {
+                throw new GraphicsException("Source X coordinate must not be negative.");
+            }
+            else if (sourceRectangle.X >= Width)
+            {
+                throw new GraphicsException("Source X coordinate must not be larger than texture width.");
+            }
+            
+            if (sourceRectangle.Y < 0)
+            {
+                throw new GraphicsException("Source Y coordinate must not be negative.");
+            }
+            else if (sourceRectangle.Y >= Height)
+            {
+                throw new GraphicsException("Source Y coordinate must not be larger than texture height.");
+            }
+
+            var srcRect = new SDL_gpu.GPU_Rect(sourceRectangle);
+            var tgtRect = new SDL_gpu.GPU_Rect(0, 0, sourceRectangle.Width, sourceRectangle.Height);
+            var newTexture = new Texture(sourceRectangle.Width, sourceRectangle.Height);
+            
+            var thisAsSurface = AsSdlSurface();
+            SDL_gpu.GPU_UpdateImage(newTexture.ImageHandle, ref tgtRect, thisAsSurface, ref srcRect);
+            SDL2.SDL_FreeSurface(thisAsSurface);
+            
+            return newTexture;
+        }
+
         internal IntPtr AsSdlSurface()
             => SDL_gpu.GPU_CopySurfaceFromImage(ImageHandle);
 

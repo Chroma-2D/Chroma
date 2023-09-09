@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using static Chroma.Natives.Bindings.SDL.SDL2;
 
@@ -292,6 +293,25 @@ namespace Chroma.Natives.Bindings.SDL
         {
             public float x, y;
             public float w, h;
+
+            public GPU_Rect(int x, int y, int w, int h)
+            {
+                this.x = x;
+                this.y = y;
+                this.w = w;
+                this.h = h;
+            }
+
+            public GPU_Rect(Rectangle rectangle)
+            {
+                this.x = rectangle.X;
+                this.y = rectangle.Y;
+                this.w = rectangle.Width;
+                this.h = rectangle.Height;
+            }
+
+            public Rectangle ToRectangle()
+                => new((int)x, (int)y, (int)w, (int)h);
         }
 
         public struct GPU_RendererID

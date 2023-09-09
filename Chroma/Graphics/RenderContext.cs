@@ -283,14 +283,7 @@ namespace Chroma.Graphics
 
                 if (sourceRectangle.HasValue)
                 {
-                    var r = new SDL_gpu.GPU_Rect
-                    {
-                        x = sourceRectangle.Value.X,
-                        y = sourceRectangle.Value.Y,
-                        w = sourceRectangle.Value.Width,
-                        h = sourceRectangle.Value.Height
-                    };
-
+                    var r = new SDL_gpu.GPU_Rect(sourceRectangle.Value);
                     rect = &r;
                 }
 

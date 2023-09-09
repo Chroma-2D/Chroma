@@ -15,6 +15,8 @@ namespace Textures
     public class GameCore : Game
     {
         private Texture _tileMap;
+        private Texture _tile1;
+        
         private Texture _burger;
         private Texture _dynTex;
 
@@ -54,6 +56,7 @@ namespace Textures
         {
             _tileMap = Content.Load<Texture>("Textures/walls.jpeg");
             _totalTiles = _tileMap.Width / 64;
+            _tile1 = _tileMap.SubTexture(new(64, 0, 64, 64));
 
             _burger = Content.Load<Texture>("Textures/burg.png");
             _virtRes = new Size(_burger.Width, _burger.Height);
@@ -79,6 +82,14 @@ namespace Textures
                 Window.Center + new Vector2(127, 0),
                 Vector2.One,
                 Vector2.Zero, 
+                0
+            );
+            
+            context.DrawTexture(
+                _tile1,
+                Window.Center - new Vector2(0, 127),
+                Vector2.One,
+                Vector2.Zero,
                 0
             );
 

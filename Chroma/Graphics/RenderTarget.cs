@@ -44,13 +44,7 @@ namespace Chroma.Graphics
             EnsureNotDisposed();
 
             CurrentViewport = viewportRectangle;
-            SDL_gpu.GPU_SetViewport(TargetHandle, new SDL_gpu.GPU_Rect
-            {
-                x = viewportRectangle.X,
-                y = viewportRectangle.Y,
-                w = viewportRectangle.Width,
-                h = viewportRectangle.Height
-            });
+            SDL_gpu.GPU_SetViewport(TargetHandle, new(viewportRectangle));
         }
 
         public void ResetViewport()

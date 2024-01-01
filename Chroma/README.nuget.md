@@ -2,6 +2,11 @@
 Chroma is a 2D game development framework focused on quick prototyping.
 
 ### Change log
+#### Changes in release 0.61.1
+- `Game` base class now implements `IDisposable`.
+- `Game` base class now exposes `protected void OnDispose()` that is called 
+  at the beginning of `Dispose()` method execution.
+
 #### Changes in release 0.61.0
 - Added Vector2 and Vector3 constructors for Camera class.
 - Added a convenient way to cut a sub-texture out of a larger texture.

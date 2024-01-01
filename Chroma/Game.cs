@@ -15,7 +15,7 @@ using Chroma.Windowing;
 
 namespace Chroma
 {
-    public class Game
+    public class Game : IDisposable
     {
         private static DefaultScene _defaultScene;
         private static BootScene _bootScene;
@@ -96,12 +96,8 @@ namespace Chroma
 
         public void Quit(int exitCode = 0)
         {
-            Window.Dispose();
-            Content.Dispose();
-
-            AudioOutput.Instance.Close();
-            AudioInput.Instance.Close();
-
+            Dispose();
+            
             SDL_gpu.GPU_Quit();
             SDL2.SDL_Quit();
 
@@ -192,6 +188,10 @@ namespace Chroma
         }
 
         protected virtual void ControllerAccelerometerStateChanged(ControllerSensorEventArgs e)
+        {
+        }
+        
+        protected virtual void OnDispose()
         {
         }
 
@@ -338,6 +338,17 @@ namespace Chroma
             // Initialize extensions after re-write.
 
             LoadContent();
+        }
+
+        public void Dispose()
+        {
+            OnDispose();
+            
+            Window.Dispose();
+            Content.Dispose();
+
+            AudioOutput.Instance.Close();
+            AudioInput.Instance.Close();
         }
     }
 }

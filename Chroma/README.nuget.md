@@ -2,6 +2,10 @@
 Chroma is a 2D game development framework focused on quick prototyping.
 
 ### Change log
+#### Changes in release 0.62.0
+- `Dispatcher` was extended to allow execution of tasks from non-async callers.
+- Actions scheduled to run on main thread can now return values.
+
 #### Changes in release 0.61.1
 - `Game` base class now implements `IDisposable`.
 - `Game` base class now exposes `protected void OnDispose()` that is called 

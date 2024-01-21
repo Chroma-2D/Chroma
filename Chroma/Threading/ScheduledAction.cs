@@ -2,9 +2,8 @@
 
 namespace Chroma.Threading
 {
-    internal sealed class ScheduledAction
+    internal sealed class ScheduledAction : SchedulerEntry
     {
-        public bool Completed { get; set; }
         public Action Action { get; set; }
     }
 }

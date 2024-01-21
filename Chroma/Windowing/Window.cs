@@ -666,17 +666,36 @@ namespace Chroma.Windowing
         {
             while (true)
             {
-                if (!Dispatcher.ActionQueue.TryDequeue(out var scheduledAction))
+                if (!Dispatcher.ActionQueue.TryDequeue(out var schedulerEntry))
                     break;
 
-                try
+                if (schedulerEntry is ScheduledValueAction scheduledValueAction)
                 {
-                    scheduledAction.Action.Invoke();
-                    scheduledAction.Completed = true;
+                    try
+                    {
+                        scheduledValueAction.ReturnValue = scheduledValueAction.ValueAction.Invoke();
+                        scheduledValueAction.Completed = true;
+                    }
+                    catch (Exception e)
+                    {
+                        _log.Exception(e);
+                    }
                 }
-                catch (Exception e)
+                else if (schedulerEntry is ScheduledAction scheduledAction)
                 {
-                    _log.Exception(e);
+                    try
+                    {
+                        scheduledAction.Action.Invoke();
+                        scheduledAction.Completed = true;
+                    }
+                    catch (Exception e)
+                    {
+                        _log.Exception(e);
+                    }
+                }
+                else
+                {
+                    _log.Error($"Unexpected scheduled action type '{schedulerEntry.GetType().FullName}'.");
                 }
             }
         }

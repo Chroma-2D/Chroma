@@ -16,9 +16,20 @@ namespace Asynchronicity
         private static readonly Log _log = LogManager.GetForCurrentAssembly();
 
         private RenderTarget _target;
+        private Task _longRunningTask;
 
         public GameCore() : base(new(false, false))
         {
+            _longRunningTask = new Task(async () =>
+            {
+                while (true)
+                {
+                    ProcessInSeparateTask();
+                    await Task.Delay(10);
+                }
+            });
+
+            _longRunningTask.Start();
         }
 
         protected override void LoadContent()
@@ -99,6 +110,20 @@ namespace Asynchronicity
                         }
                     });
                 });
+            }
+        }
+
+        private void ProcessInSeparateTask()
+        {
+            var target = Dispatcher.RunOnMainThread<RenderTarget>(() =>
+            {
+                return new RenderTarget(10, 10);
+            }, true).Result;
+
+            if (target != null)
+            {
+                _log.Info(target.ToString());
+                Dispatcher.RunOnMainThread(target.Dispose, true).GetAwaiter().GetResult();
             }
         }
     }

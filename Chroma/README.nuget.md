@@ -2,6 +2,9 @@
 Chroma is a 2D game development framework focused on quick prototyping.
 
 ### Change log
+#### Changes in release 0.62.1
+- Actions returning values can now also use non-reference types.
+
 #### Changes in release 0.62.0
 - `Dispatcher` was extended to allow execution of tasks from non-async callers.
 - Actions scheduled to run on main thread can now return values.

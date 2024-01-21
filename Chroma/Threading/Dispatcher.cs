@@ -38,7 +38,7 @@ namespace Chroma.Threading
             return task;
         }
 
-        public static Task<T> RunOnMainThread<T>(Func<object> valueAction, bool immediateStart = false) where T : class
+        public static Task<T> RunOnMainThread<T>(Func<object> valueAction, bool immediateStart = false)
         {
             var scheduledAction = new ScheduledValueAction { ValueAction = valueAction };
             ActionQueue.Enqueue(scheduledAction);
@@ -50,7 +50,7 @@ namespace Chroma.Threading
                 while (!sched!.Completed)
                     Task.Delay(1);
 
-                return sched.ReturnValue as T;
+                return (T)sched.ReturnValue;
             }, scheduledAction);
 
             if (immediateStart)

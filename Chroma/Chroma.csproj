@@ -18,7 +18,7 @@
     </Description>
     
     <PackageId>Chroma</PackageId>
-    <Version>0.62.1</Version>
+    <Version>0.62.2</Version>
     <Author>vddCore</Author>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Chroma-2D/Chroma</RepositoryUrl>

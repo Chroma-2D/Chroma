@@ -469,7 +469,7 @@ namespace Chroma.Windowing
         {
             EnsureNotDisposed();
 
-            var rwOpsIo = new SdlRwOps(outputStream);
+            var rwOpsIo = new SdlRwOps(outputStream, true);
 
             var created = false;
             var locked = false;
@@ -507,6 +507,8 @@ namespace Chroma.Windowing
 
             if (created)
                 SDL2.SDL_FreeSurface(surface);
+
+            rwOpsIo.Dispose();
         }
 
         public void SaveScreenshot(string filePath)

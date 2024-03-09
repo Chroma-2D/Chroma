@@ -2,6 +2,8 @@
 Chroma is a 2D game development framework focused on quick prototyping.
 
 ### Change log
+#### Changes in release 0.62.2
+- `Window.SaveScreenshot(Stream)` no longer destroys the stream after it's done taking a screenshot.
 #### Changes in release 0.62.1
 - Actions returning values can now also use non-reference types.
 

@@ -167,7 +167,10 @@ namespace Chroma.MemoryManagement
             _write = null;
             _close = null;
 
-            DisposeStream();
+            if (!KeepOpen)
+            {
+                DisposeStream();
+            }
         }
 
         protected override void FreeNativeResources()

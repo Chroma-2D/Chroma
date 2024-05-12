@@ -29,10 +29,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: turtlesec-no/get-ninja@1.1.0
-    
+
     - name: Build
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-      run: cd Dependencies && ./build_natives && cd ..
+      run: cd Dependencies && ./build_natives && cd .. || ls build_env/artifacts
 
     - name: Pack artifact
       uses: actions/upload-artifact@v3.1.3

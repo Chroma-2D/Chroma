@@ -24,7 +24,7 @@ jobs:
       run: sudo apt install xorg-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev libx11-dev xserver-xorg-dev xorg-dev
 
     - name: Build
-      run: cd Dependencies && ./build_natives && cd ..
+      run: cd Dependencies && ./build_natives --with-ft && cd ..
 
     - name: Pack artifact
       uses: actions/upload-artifact@v3.1.3

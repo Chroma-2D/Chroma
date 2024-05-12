@@ -1,4 +1,4 @@
-name: Build Linux natives
+name: Build macOS natives
 
 on:
   push:
@@ -19,6 +19,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: Symbitic/install-cmake@v0.1.0
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
         platform: mac
 

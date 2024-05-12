@@ -52,7 +52,7 @@ fi
 
    $CMAKE $CMAKE_FLAGS -B $SDL_BUILDROOT $SDL_PATH -G "$CMAKE_GENERATOR"              \
                     -DCMAKE_BUILD_TYPE=$SDL_BUILD_TYPE                                \
-                    -DSDL_STATIC=0                                                    \
+                    -DSDL_STATIC=OFF                                                  \
                      && cd $SDL_BUILDROOT && $MAKE -j$THREADCOUNT                     \
                      && mv $SDL_SOPATH $ARTIFACT_DIR/$SDL_ARTIFACT                    \
                      && mv $SDLMAIN_ARPATH $ARTIFACT_DIR/$SDLMAIN_ARTIFACT            \

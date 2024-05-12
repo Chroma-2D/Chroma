@@ -1,0 +1,35 @@
+name: Build Linux natives
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [ Release, Debug, RelWithDebInfo ]
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: turtlesec-no/get-ninja@1.1.0
+
+    - name: Install pre-requisites
+      run: sudo apt install xorg-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev libx11-dev xserver-xorg-dev xorg-dev
+
+    - name: Build
+      run: cd Dependencies && ./build_natives --with-ft && cd ..
+
+    - name: Pack artifact
+      uses: actions/upload-artifact@v3.1.3
+      with:
+        name: chroma-natives-linux-${{ matrix.build_type }}
+        path: Dependencies/build_env/artifacts
+        if-no-files-found: error
+        retention-days: 90

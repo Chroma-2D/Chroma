@@ -33,6 +33,8 @@ namespace Chroma.Graphics.TextRendering.TrueType
         private byte[] _ttfData;
         private Texture _atlas;
 
+        private FT_Error _lastFtError;
+
         public static TrueTypeFont Default => EmbeddedAssets.DefaultFont;
 
         public string FamilyName { get; private set; }
@@ -112,7 +114,12 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
         static TrueTypeFont()
         {
-            FT_Init_FreeType(out _libraryHandle);
+            var error = FT_Init_FreeType(out _libraryHandle);
+
+            if (error != FT_Error.FT_Err_Ok)
+            {
+                throw new FreeTypeException("Failed to initialize FreeType library.");
+            }
         }
 
         public TrueTypeFont(string fileName, int height, string alphabet = null)
@@ -264,15 +271,20 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
         private unsafe void LoadTtf()
         {
-            fixed (byte* fontPtr = &_ttfData[0])
+            fixed (byte* fontPtr = _ttfData)
             {
-                FT_New_Memory_Face(
+                _lastFtError = FT_New_Memory_Face(
                     _libraryHandle,
                     fontPtr,
                     _ttfData.Length,
                     0,
                     out _face
                 );
+
+                if (_lastFtError != FT_Error.FT_Err_Ok)
+                {
+                    throw new FreeTypeException($"Failed to load typeface into memory: {_lastFtError}");
+                }
             }
 
             FamilyName = Marshal.PtrToStringAnsi(_face->family_name);

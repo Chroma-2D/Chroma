@@ -16,22 +16,28 @@ SDL_GPU_ARTIFACT=SDL2_gpu.dll
 SDL_SOUND_SOPATH=$SDL_SOUND_BUILDROOT/SDL2_sound.dll
 SDL_SOUND_ARTIFACT=SDL2_sound.dll
 
-if [ "$SKIP_FT" -eq "0" ]; then
+if [ "$SKIP_FT" -eq "0" ]; then   
        $CMAKE $CMAKE_FLAGS -B $FT_BUILDROOT $FT_PATH -G "$CMAKE_GENERATOR"                \
                         -DCMAKE_BUILD_TYPE=$FT_BUILD_TYPE                                 \
-                        -DCMAKE_DISABLE_FIND_PACKAGE_HarfBuzz=1                           \
-                        -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=1                               \
-                        -DBUILD_SHARED_LIBS=1                                             \
-                        -DFT_WITH_ZLIB=0                                                  \
-                        -DFT_WITH_HARFBUZZ=0                                              \
+                        -DCMAKE_DISABLE_FIND_PACKAGE_HarfBuzz=TRUE                        \
+                        -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=TRUE                            \
+                        -DCMAKE_DISABLE_FIND_PACKAGE_BrotliDec=TRUE                       \
+                        -DCMAKE_DISABLE_FIND_PACKAGE_BZip2=TRUE                           \
+                        -DCMAKE_DISABLE_FIND_PACKAGE_PNG=TRUE                             \
+                        -DBUILD_SHARED_LIBS=ON                                            \
                          && cd $FT_BUILDROOT && $MAKE -j$THREADCOUNT                      \
                          && mv $FT_SOPATH $ARTIFACT_DIR/$FT_ARTIFACT                      \
                          && rm -rf $FT_BUILDROOT                                          \
+                                                                                          \
+    && cd $HB_PATH                                                                        \
+    && (patch -p0 --forward < $PATCH_DIR/HarfBuzz_MinGW.patch || true)                    \
+    && cd $SCRIPT_DIR                                                                     \
                                                                                           \
     && $CMAKE $CMAKE_FLAGS -B $HB_BUILDROOT $HB_PATH -G "$CMAKE_GENERATOR"                \
                         -DCMAKE_BUILD_TYPE=$HB_BUILD_TYPE                                 \
                         -DHB_BUILD_SUBSET=0                                               \
                         -DHB_HAVE_FREETYPE=1                                              \
+                        -DCMAKE_C_FLAGS="-DHB_TINY"                                       \
                         -DFREETYPE_FOUND=1                                                \
                         -DFREETYPE_INCLUDE_DIRS=$FT_PATH/include                          \
                         -DFREETYPE_LIBRARY=$ARTIFACT_DIR/$FT_ARTIFACT                     \
@@ -40,10 +46,14 @@ if [ "$SKIP_FT" -eq "0" ]; then
                                                                                           \
     && $CMAKE $CMAKE_FLAGS -B $FT_BUILDROOT $FT_PATH -G "$CMAKE_GENERATOR"                \
                         -DCMAKE_BUILD_TYPE=$FT_BUILD_TYPE                                 \
-                        -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=1                               \
-                        -DBUILD_SHARED_LIBS=1                                             \
-                        -DFT_WITH_HARFBUZZ=1                                              \
-                        -DFT_WITH_ZLIB=0                                                  \
+                        -DCMAKE_C_FLAGS="-static-libgcc"                                  \
+                        -DCMAKE_DISABLE_FIND_PACKAGE_HarfBuzz=FALSE                       \
+                        -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=TRUE                            \
+                        -DCMAKE_DISABLE_FIND_PACKAGE_BrotliDec=TRUE                       \
+                        -DCMAKE_DISABLE_FIND_PACKAGE_BZip2=TRUE                           \
+                        -DCMAKE_DISABLE_FIND_PACKAGE_PNG=TRUE                             \
+                        -DFT_REQUIRE_HARFBUZZ=TRUE                                        \
+                        -DBUILD_SHARED_LIBS=ON                                            \
                         -DHarfBuzz_INCLUDE_DIR=$HB_PATH/src                               \
                         -DHarfBuzz_LIBRARY=$ARTIFACT_DIR/$HB_ARTIFACT                     \
                          && cd $FT_BUILDROOT && $MAKE -j$THREADCOUNT                      \

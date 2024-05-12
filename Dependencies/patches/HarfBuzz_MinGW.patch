@@ -1,0 +1,18 @@
+--- CMakeLists.txt      2024-05-12 13:43:03.888993000 +0200
+@@ -112,16 +112,6 @@
+ set(PC_REQUIRES_PRIV "")
+ set(PC_LIBS_PRIV "")
+
+-if (NOT MSVC)
+-  set(THREADS_PREFER_PTHREAD_FLAG ON)
+-  find_package(Threads)
+-  if (CMAKE_USE_PTHREADS_INIT)
+-    add_definitions("-DHAVE_PTHREAD")
+-    list(APPEND THIRD_PARTY_LIBS Threads::Threads)
+-    list(APPEND PC_LIBS_PRIV -pthread)
+-  endif ()
+-endif ()
+-
+ if (MSVC)
+   add_definitions(-wd4244 -wd4267 -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS)
+ endif ()

@@ -36,6 +36,9 @@ fi
 for argument in "$@"
 do
   case $argument in
+    --with-ft)
+        SKIP_FT=0
+        ;;
     --clean-artifacts)
         rm -rf $ARTIFACT_DIR
         ;;

@@ -35,6 +35,7 @@ if [ "$SKIP_FT" -eq "0" ]; then
     && $CMAKE $CMAKE_FLAGS -B $HB_BUILDROOT $HB_PATH -G "$CMAKE_GENERATOR"                \
                         -DCMAKE_BUILD_TYPE=$HB_BUILD_TYPE                                 \
 			-DCMAKE_OSX_ARCHITECTURES="arm64"                                 \
+                        -DCMAKE_COMPILE_WARNING_AS_ERROR="OFF"                            \
                         -DCMAKE_CXX_FLAGS=-fPIC                                           \
                         -DCMAKE_C_FLAGS=-fPIC                                             \
                         -DHB_BUILD_SUBSET=0                                               \

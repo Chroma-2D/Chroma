@@ -8,7 +8,7 @@ fi
 
 CMAKE_FRAMEWORKS="-lc++ -framework CoreFoundation -framework CoreText -framework CoreGraphics"
 
-FT_SOPATH=$FT_BUILDROOT/libfreetype.6.21.0.dylib
+FT_SOPATH=$FT_BUILDROOT/libfreetype.6.20.1.dylib
 FT_ARTIFACT=libfreetype.dylib
 
 SDL_SOPATH=$SDL_BUILDROOT/libSDL2-2.0.0.dylib

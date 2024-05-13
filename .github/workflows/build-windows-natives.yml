@@ -13,6 +13,10 @@ jobs:
 
     strategy:
       fail-fast: false
+      
+    defaults:
+      run:
+        shell: bash
 
     steps:
     - uses: actions/checkout@v4
@@ -28,7 +32,8 @@ jobs:
     - name: Put MSYS2_MinGW64 on PATH
       run: echo "$RUNNER_TEMP/msys64/mingw64/bin" >> $GITHUB_PATH
 
-    - name: Build
+    - shell: bash
+      name: Build
       run: cd Dependencies && ./build_natives --with-ft && cd ..
 
     - name: Pack artifact

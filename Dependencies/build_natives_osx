@@ -22,7 +22,7 @@ SDL_SOUND_ARTIFACT=libSDL2_sound.dylib
 
 if [ "$SKIP_FT" -eq "0" ]; then
 echo
-echo "-- [[ BUILDING FREETYPE ]] --"
+echo " -- [[ BUILDING FREETYPE ]] -- "
       $CMAKE $CMAKE_FLAGS -B $FT_BUILDROOT $FT_PATH -G "$CMAKE_GENERATOR"                 \
                         -DCMAKE_BUILD_TYPE=$FT_BUILD_TYPE                                 \
                         -DCMAKE_OSX_ARCHITECTURES="arm64"                                 \
@@ -71,7 +71,7 @@ echo "-- [[ BUILDING FREETYPE ]] --"
 fi
 
 echo
-echo "-- [[ BUILDING SDL ]] --"
+echo " -- [[ BUILDING SDL ]] -- "
    $CMAKE $CMAKE_FLAGS -B $SDL_BUILDROOT $SDL_PATH -G "$CMAKE_GENERATOR"              \
                     -DCMAKE_BUILD_TYPE=$SDL_BUILD_TYPE                                \
                     -DCMAKE_OSX_ARCHITECTURES="arm64"                                 \

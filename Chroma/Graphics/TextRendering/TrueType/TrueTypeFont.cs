@@ -287,8 +287,17 @@ namespace Chroma.Graphics.TextRendering.TrueType
                 }
             }
 
-            FamilyName = Marshal.PtrToStringAnsi(_face->family_name);
-            StyleName = Marshal.PtrToStringAnsi(_face->style_name);
+            FamilyName = Marshal.PtrToStringUTF8(_face->family_name);
+            if (FamilyName == null)
+            {
+                _log.Warning("Unable to retrieve family name for the loaded typeface.");
+            }
+            
+            StyleName = Marshal.PtrToStringUTF8(_face->style_name);
+            if (StyleName == null)
+            {
+                _log.Warning("Unable to retrieve style name for the loaded typeface.");
+            }
         }
 
         private void CreateAlphabetIfNeeded()
@@ -311,7 +320,13 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
         private unsafe void ResizeFont()
         {
-            FT_Set_Pixel_Sizes(_face, 0, (uint)Height);
+            if ((_lastFtError = FT_Set_Pixel_Sizes(_face, 0, (uint)Height)) != FT_Error.FT_Err_Ok)
+            {
+                throw new FreeTypeException(
+                    $"Failed to set resize the typeface '{FamilyName}': {_lastFtError}"
+                );
+            }
+            
             LineSpacing = _face->size->metrics.height.ToInt32() >> 6;
         }
 
@@ -371,7 +386,13 @@ namespace Chroma.Graphics.TextRendering.TrueType
             if (leftIndex == 0 || rightIndex == 0)
                 return 0;
 
-            FT_Get_Kerning(_face, leftIndex, rightIndex, (uint)_kerningMode, out var kerning);
+            if ((_lastFtError = FT_Get_Kerning(_face, leftIndex, rightIndex, (uint)_kerningMode, out var kerning)) != FT_Error.FT_Err_Ok)
+            {
+                throw new FreeTypeException(
+                    $"Failed to retrieve kerning information for glyph pair '{left}' and '{right}' from typeface '{FamilyName}': {_lastFtError}"
+                );
+            }
+            
             return kerning.x.ToInt32() >> 6;
         }
 
@@ -446,8 +467,20 @@ namespace Chroma.Graphics.TextRendering.TrueType
                     }
 
                     var index = FT_Get_Char_Index(_face, character);
-                    FT_Load_Glyph(_face, index, (int)glyphFlags);
-                    FT_Render_Glyph(_face->glyph, renderMode);
+                    
+                    if((_lastFtError = FT_Load_Glyph(_face, index, (int)glyphFlags)) != FT_Error.FT_Err_Ok)
+                    {
+                        throw new FreeTypeException(
+                            $"Failed to load glyph {index} from typeface '{FamilyName}': {_lastFtError}"
+                        );
+                    }
+
+                    if ((_lastFtError = FT_Render_Glyph(_face->glyph, renderMode)) != FT_Error.FT_Err_Ok)
+                    {
+                        throw new FreeTypeException(
+                            $"Failed to render glyph {index} from typeface '{FamilyName}': {_lastFtError}"
+                        );
+                    }
 
                     var bmp = _face->glyph->bitmap;
                     if (penX + bmp.width >= texWidth)
@@ -473,12 +506,19 @@ namespace Chroma.Graphics.TextRendering.TrueType
 
         private unsafe TrueTypeGlyph BuildGlyphInfo(FT_Bitmap bmp, int penX, int penY)
         {
-            FT_Get_Glyph(_face->glyph, out var glyph);
-            FT_Glyph_Get_CBox(
-                ref glyph,
-                (uint)FT_Glyph_BBox_Mode.FT_GLYPH_BBOX_PIXELS,
-                out var cbox
-            );
+            if ((_lastFtError = FT_Get_Glyph(_face->glyph, out var glyph)) != FT_Error.FT_Err_Ok)
+            {
+                throw new FreeTypeException(
+                    $"Failed to get glyph {_face->glyph->glyph_index} from typeface '{FamilyName}': {_lastFtError}"
+                );
+            }
+            
+            if ((_lastFtError = FT_Glyph_Get_CBox(ref glyph, (uint)FT_Glyph_BBox_Mode.FT_GLYPH_BBOX_PIXELS, out var cbox)) != FT_Error.FT_Err_Ok)
+            {
+                throw new FreeTypeException(
+                    $"Failed to get a control box for glyph {_face->glyph->glyph_index} from typeface '{FamilyName}': {_lastFtError}"
+                );
+            }
 
             return new TrueTypeGlyph
             {

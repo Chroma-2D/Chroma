@@ -2,7 +2,7 @@
 {
     public class FreeTypeException : FrameworkException
     {
-        public FreeTypeException(string message) 
+        internal FreeTypeException(string message) 
             : base(message)
         {
         }

@@ -2,6 +2,14 @@
 Chroma is a 2D game development framework focused on quick prototyping.
 
 ### Change log
+#### Changes in release 0.63.0
+- Natives are now built automatically using GitHub Actions.
+- MacOS support is now ARM64 only. This might change in the future.
+- Updated SDL for all platforms to version 2.30.3
+- Updated FreeType for all platforms do version 2.13.2
+- Added `FreeTypeException` exception type to classify TTF rendering errors.
+- Added error checks for FreeType native call failures.
+
 #### Changes in release 0.62.2
 - `Window.SaveScreenshot(Stream)` no longer destroys the stream after it's done taking a screenshot.
 #### Changes in release 0.62.1

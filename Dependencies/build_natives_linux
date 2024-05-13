@@ -32,7 +32,6 @@ echo "-- [[ BUILDING FREETYPE ]] --"
                         -DFT_DISABLE_HARFBUZZ=ON                                          \
                          && cd $FT_BUILDROOT && $MAKE -j$THREADCOUNT                      \
                          && mv $FT_SOPATH $ARTIFACT_DIR/$FT_ARTIFACT                      \
-                         && rm -rf $FT_BUILDROOT                                          \
                                                                                           \
     && $CMAKE $CMAKE_FLAGS -B $HB_BUILDROOT $HB_PATH -G "$CMAKE_GENERATOR"                \
                         -DCMAKE_BUILD_TYPE=$HB_BUILD_TYPE                                 \
@@ -45,6 +44,7 @@ echo "-- [[ BUILDING FREETYPE ]] --"
                         -DFREETYPE_LIBRARY=$ARTIFACT_DIR/$FT_ARTIFACT                     \
                          && cd $HB_BUILDROOT && $MAKE -j$THREADCOUNT                      \
                          && mv $HB_ARPATH $ARTIFACT_DIR/$HB_ARTIFACT                      \
+                         && rm -rf $FT_BUILDROOT                                          \
                                                                                           \
     && $CMAKE $CMAKE_FLAGS -B $FT_BUILDROOT $FT_PATH -G "$CMAKE_GENERATOR"                \
                         -DCMAKE_BUILD_TYPE=$FT_BUILD_TYPE                                 \

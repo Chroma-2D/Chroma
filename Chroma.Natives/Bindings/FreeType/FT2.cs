@@ -212,8 +212,8 @@ namespace Chroma.Natives.Bindings.FreeType
             public long width;
             public long height;
 
-            public long horiBearingX;
-            public long horiBearingY;
+            public IntPtr horiBearingX;
+            public IntPtr horiBearingY;
             public long horiAdvance;
 
             public long vertBearingX;
@@ -224,8 +224,8 @@ namespace Chroma.Natives.Bindings.FreeType
         [StructLayout(LayoutKind.Sequential)]
         public struct FT_Vector
         {
-            public long x;
-            public long y;
+            public IntPtr x;
+            public IntPtr y;
         }
 
         [StructLayout(LayoutKind.Sequential)]

@@ -1,8 +1,6 @@
 name: Build Windows natives
 
 on:
-  push:
-    branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
   workflow_dispatch:
@@ -13,7 +11,7 @@ jobs:
 
     strategy:
       fail-fast: false
-      
+
     defaults:
       run:
         shell: bash

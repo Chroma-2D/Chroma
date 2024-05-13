@@ -2,7 +2,10 @@
 Chroma is a 2D game development framework focused on quick prototyping.
 
 ### Change log
-#### Changes in release 0.63.0
+#### Changes in release 0.63.1
+- Linux natives will now initialize properly.
+
+#### Changes in release 0.63.0 [//! Broken on Linux !//]
 - Natives are now built automatically using GitHub Actions.
 - MacOS support is now ARM64 only. This might change in the future.
 - Updated SDL for all platforms to version 2.30.3

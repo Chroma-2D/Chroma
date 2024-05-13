@@ -17,7 +17,7 @@ jobs:
     - uses: turtlesec-no/get-ninja@1.1.0
 
     - name: Install pre-requisites
-      run: sudo apt install xorg-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev libx11-dev xserver-xorg-dev xorg-dev libpng-dev libgl1-mesa-glx
+      run: sudo apt install xorg-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev libx11-dev xserver-xorg-dev xorg-dev libpng-dev libgl1-mesa-glx libwayland-dev libxkbcommon-dev libasound2-dev
 
     - name: Build
       run: cd Dependencies && ./build_natives --with-ft && cd ..

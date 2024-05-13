@@ -20,7 +20,7 @@ if [ "$SKIP_FT" -eq "0" ]; then
 echo
 echo "-- [[ BUILDING FREETYPE ]] --"
    cd $FT_PATH                                                                            \
-   && (patch -p0 --forward < $PATCH_DIR/FreeType_Win64.patch || true)                      \
+   && (patch -p0 --forward < $PATCH_DIR/FreeType_Win64.patch || true)                     \
    && cd $SCRIPT_DIR                                                                      \
                                                                                           \
    && $CMAKE $CMAKE_FLAGS -B $FT_BUILDROOT $FT_PATH -G "$CMAKE_GENERATOR"                 \

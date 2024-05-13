@@ -13,8 +13,6 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix:
-        build_type: [ Release, Debug, RelWithDebInfo ]
 
     steps:
     - uses: actions/checkout@v4
@@ -30,7 +28,7 @@ jobs:
     - name: Pack artifact
       uses: actions/upload-artifact@v3.1.3
       with:
-        name: chroma-natives-macos-${{ matrix.build_type }}
+        name: chroma-natives-macos
         path: Dependencies/build_env/artifacts
         if-no-files-found: error
         retention-days: 90

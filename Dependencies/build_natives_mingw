@@ -16,40 +16,59 @@ SDL_GPU_ARTIFACT=SDL2_gpu.dll
 SDL_SOUND_SOPATH=$SDL_SOUND_BUILDROOT/SDL2_sound.dll
 SDL_SOUND_ARTIFACT=SDL2_sound.dll
 
-if [ "$SKIP_FT" -eq "0" ]; then
-       $CMAKE $CMAKE_FLAGS -B $FT_BUILDROOT $FT_PATH -G "$CMAKE_GENERATOR"                \
+if [ "$SKIP_FT" -eq "0" ]; then 
+echo
+echo "-- [[ BUILDING FREETYPE ]] --"
+   cd $FT_PATH                                                                            \
+   && (patch -p0 --forward < $PATCH_DIR/FreeType_Win64.patch || true)                     \
+   && cd $SCRIPT_DIR                                                                      \
+                                                                                          \
+   && $CMAKE $CMAKE_FLAGS -B $FT_BUILDROOT $FT_PATH -G "$CMAKE_GENERATOR"                 \
                         -DCMAKE_BUILD_TYPE=$FT_BUILD_TYPE                                 \
-                        -DCMAKE_DISABLE_FIND_PACKAGE_HarfBuzz=1                           \
-                        -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=1                               \
-                        -DBUILD_SHARED_LIBS=1                                             \
-                        -DFT_WITH_ZLIB=0                                                  \
-                        -DFT_WITH_HARFBUZZ=0                                              \
+                        -DBUILD_SHARED_LIBS=ON                                            \
+                        -DFT_ENABLE_ERROR_STRINGS=ON                                      \
+                        -DFT_DISABLE_ZLIB=ON                                              \
+                        -DFT_DISABLE_BZIP2=ON                                             \
+                        -DFT_DISABLE_BROTLI=ON                                            \
+                        -DFT_DISABLE_PNG=ON                                               \
+                        -DFT_DISABLE_HARFBUZZ=ON                                          \
                          && cd $FT_BUILDROOT && $MAKE -j$THREADCOUNT                      \
                          && mv $FT_SOPATH $ARTIFACT_DIR/$FT_ARTIFACT                      \
-                         && rm -rf $FT_BUILDROOT                                          \
+                                                                                          \
+    && cd $HB_PATH                                                                        \
+    && (patch -p0 --forward < $PATCH_DIR/HarfBuzz_MinGW.patch || true)                    \
+    && cd $SCRIPT_DIR                                                                     \
                                                                                           \
     && $CMAKE $CMAKE_FLAGS -B $HB_BUILDROOT $HB_PATH -G "$CMAKE_GENERATOR"                \
                         -DCMAKE_BUILD_TYPE=$HB_BUILD_TYPE                                 \
-                        -DHB_BUILD_SUBSET=0                                               \
-                        -DHB_HAVE_FREETYPE=1                                              \
-                        -DFREETYPE_FOUND=1                                                \
+                        -DHB_BUILD_SUBSET=FALSE                                           \
+                        -DHB_HAVE_FREETYPE=TRUE                                           \
+                        -DFREETYPE_FOUND=TRUE                                             \
                         -DFREETYPE_INCLUDE_DIRS=$FT_PATH/include                          \
                         -DFREETYPE_LIBRARY=$ARTIFACT_DIR/$FT_ARTIFACT                     \
                          && cd $HB_BUILDROOT && $MAKE -j$THREADCOUNT                      \
                          && mv $HB_ARPATH $ARTIFACT_DIR/$HB_ARTIFACT                      \
+                         && rm -rf $FT_BUILDROOT                                          \
                                                                                           \
     && $CMAKE $CMAKE_FLAGS -B $FT_BUILDROOT $FT_PATH -G "$CMAKE_GENERATOR"                \
                         -DCMAKE_BUILD_TYPE=$FT_BUILD_TYPE                                 \
-                        -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=1                               \
-                        -DBUILD_SHARED_LIBS=1                                             \
-                        -DFT_WITH_HARFBUZZ=1                                              \
-                        -DFT_WITH_ZLIB=0                                                  \
+                        -DCMAKE_C_FLAGS="-static-libgcc"                                  \
+                        -DBUILD_SHARED_LIBS=ON                                            \
+                        -DFT_ENABLE_ERROR_STRINGS=ON                                      \
+                        -DFT_DISABLE_ZLIB=ON                                              \
+                        -DFT_DISABLE_BZIP2=ON                                             \
+                        -DFT_DISABLE_BROTLI=ON                                            \
+                        -DFT_DISABLE_PNG=ON                                               \
+                        -DFT_DISABLE_HARFBUZZ=OFF                                         \
+                        -DFT_REQUIRE_HARFBUZZ=TRUE                                        \
                         -DHarfBuzz_INCLUDE_DIR=$HB_PATH/src                               \
                         -DHarfBuzz_LIBRARY=$ARTIFACT_DIR/$HB_ARTIFACT                     \
                          && cd $FT_BUILDROOT && $MAKE -j$THREADCOUNT                      \
                          && mv $FT_SOPATH $ARTIFACT_DIR/$FT_ARTIFACT
 fi
 
+echo
+echo "-- [[ BUILDING SDL ]] --"
    $CMAKE $CMAKE_FLAGS -B $SDL_BUILDROOT $SDL_PATH -G "$CMAKE_GENERATOR"              \
                     -DCMAKE_BUILD_TYPE=$SDL_BUILD_TYPE                                \
                     -DSDL_STATIC=OFF                                                  \

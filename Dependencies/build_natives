@@ -23,6 +23,7 @@ fi
 
 pack_artifacts() {
     cd $ARTIFACT_DIR
+    ls -l
 if [ "$SKIP_FT" -eq "0" ]; then
     mv $FT_ARTIFACT.bz2 libfreetype.bz2
 fi

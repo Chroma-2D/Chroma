@@ -202,23 +202,23 @@ namespace Chroma.Natives.Bindings.FreeType
         [StructLayout(LayoutKind.Sequential)]
         public struct FT_Generic
         {
-            public IntPtr data;
-            public IntPtr finalizer;
+            public nint data;
+            public nint finalizer;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct FT_Glyph_Metrics
         {
-            public IntPtr width;
-            public IntPtr height;
+            public long width;
+            public long height;
 
             public IntPtr horiBearingX;
             public IntPtr horiBearingY;
-            public IntPtr horiAdvance;
+            public long horiAdvance;
 
-            public IntPtr vertBearingX;
-            public IntPtr vertBearingY;
-            public IntPtr vertAdvance;
+            public long vertBearingX;
+            public long vertBearingY;
+            public long vertAdvance;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -264,7 +264,6 @@ namespace Chroma.Natives.Bindings.FreeType
             public FT_Generic generic;
 
             public FT_Glyph_Metrics metrics;
-
             public IntPtr linearHoriAdvance;
             public IntPtr linearVertAdvance;
             public FT_Vector advance;
@@ -287,6 +286,7 @@ namespace Chroma.Natives.Bindings.FreeType
             public IntPtr rsb_delta;
 
             public IntPtr other;
+            
             private IntPtr @internal;
         }
 
@@ -355,13 +355,13 @@ namespace Chroma.Natives.Bindings.FreeType
         [StructLayout(LayoutKind.Sequential)]
         public struct FT_FaceRec
         {
-            public IntPtr num_faces;
-            public IntPtr face_index;
+            public long num_faces;
+            public long face_index;
 
-            public IntPtr face_flags;
-            public IntPtr style_flags;
+            public long face_flags;
+            public long style_flags;
 
-            public IntPtr num_glyphs;
+            public long num_glyphs;
 
             public IntPtr family_name;
             public IntPtr style_name;
@@ -394,9 +394,12 @@ namespace Chroma.Natives.Bindings.FreeType
             private IntPtr driver;
             private IntPtr memory;
             private IntPtr stream;
+            
             private FT_ListRec sizes_list;
+            
             private FT_Generic autohint;
             private IntPtr extensions;
+            
             private IntPtr @internal;
         }
 

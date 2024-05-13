@@ -1,0 +1,69 @@
+--- include/freetype/ftimage.h   2024-05-13 08:05:38.607091000 +0200
++++ include/freetype/ftimage_win64.h     2024-05-13 08:03:11.225157100 +0200
+@@ -49,7 +49,11 @@
+    *   the context, these can represent distances in integer font units, or
+    *   16.16, or 26.6 fixed-point pixel coordinates.
+    */
+-  typedef signed long  FT_Pos;
++#if _WIN64
++  typedef signed __int64 FT_Pos;
++#else
++  typedef signed long FT_Pos;
++#endif
+
+
+   /**************************************************************************
+--- include/freetype/fttypes.h   2024-05-13 08:04:57.594989300 +0200
++++ include/freetype/fttypes_win64.h     2024-05-13 08:04:39.240890900 +0200
+@@ -242,7 +242,11 @@
+    * @description:
+    *   A typedef for signed long.
+    */
+-  typedef signed long  FT_Long;
++#if _WIN64
++  typedef signed __int64  FT_Long;
++#else
++  typedef signed long FT_Long;
++#endif
+
+
+   /**************************************************************************
+@@ -253,7 +257,11 @@
+    * @description:
+    *   A typedef for unsigned long.
+    */
+-  typedef unsigned long  FT_ULong;
++#if _WIN64
++  typedef unsigned __int64  FT_ULong;
++#else
++  typedef unsigned long FT_ULong;
++#endif
+
+
+   /**************************************************************************
+@@ -275,7 +283,11 @@
+    * @description:
+    *   A signed 26.6 fixed-point type used for vectorial pixel coordinates.
+    */
+-  typedef signed long  FT_F26Dot6;
++#if _WIN64
++  typedef signed __int64  FT_F26Dot6;
++#else
++  typedef unsigned long FT_F26Dot6;
++#endif
+
+
+   /**************************************************************************
+@@ -287,7 +299,11 @@
+    *   This type is used to store 16.16 fixed-point values, like scaling
+    *   values or matrix coefficients.
+    */
+-  typedef signed long  FT_Fixed;
++#if _WIN64
++  typedef signed __int64  FT_Fixed;
++#else
++  typedef unsigned long FT_Fixed;
++#endif
+
+
+   /**************************************************************************

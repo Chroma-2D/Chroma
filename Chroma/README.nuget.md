@@ -2,6 +2,9 @@
 Chroma is a 2D game development framework focused on quick prototyping.
 
 ### Change log
+#### Changes in release 0.63.2
+- Linux natives will now work properly with PulseAudio
+
 #### Changes in release 0.63.1
 - Linux natives will now initialize properly.
 

@@ -21,6 +21,7 @@ namespace MusicAndSounds
     public class GameCore : Game
     {
         private static readonly Log _log = LogManager.GetForCurrentAssembly();
+        private IContentProvider _content;
 
         private Sound _doomShotgun;
         private Music _elysiumMod;
@@ -59,6 +60,8 @@ namespace MusicAndSounds
 
         protected override void Initialize(IContentProvider content)
         {
+            _content ??= content;
+            
             _doomShotgun = content.Load<Sound>("Sounds/doomsg.wav");
             _elysiumMod = content.Load<Music>("Music/elysium.mod");
 
@@ -215,7 +218,7 @@ namespace MusicAndSounds
                     Audio.Output.Close();
                     Audio.Output.Open();
                     
-                    Initialize(Content);
+                    Initialize(_content);
                     
                     break;
                 

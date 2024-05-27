@@ -67,7 +67,7 @@ namespace ArbitraryGeometry
             _texture = new Texture(1, 1);
             _texture[0, 0] = Color.White;
 
-            _ps = Content.Load<PixelShader>("Shaders/untextured.frag");
+            _ps = content.Load<PixelShader>("Shaders/untextured.frag");
         }
 
         private void With3D(Action action)

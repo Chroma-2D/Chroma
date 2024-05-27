@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Numerics;
 using System.Threading.Tasks;
 using Chroma;
+using Chroma.ContentManagement;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.Input;
@@ -30,10 +31,6 @@ namespace Asynchronicity
             });
 
             _longRunningTask.Start();
-        }
-
-        protected override void LoadContent()
-        {
         }
 
         protected override void Draw(RenderContext context)

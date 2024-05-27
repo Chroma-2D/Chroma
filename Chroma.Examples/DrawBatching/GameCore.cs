@@ -30,15 +30,15 @@ namespace DrawBatching
             );
         }
 
-        protected override void LoadContent()
+        protected override void Initialize(IContentProvider content)
         {
-            _texA = Content.Load<Texture>("Textures/burg.png");
+            _texA = content.Load<Texture>("Textures/burg.png");
             
-            _texB = Content.Load<Texture>("Textures/pentagram.png");
+            _texB = content.Load<Texture>("Textures/pentagram.png");
             _texB.VirtualResolution = new Size(256, 256);
             _texB.FilteringMode = TextureFilteringMode.NearestNeighbor;
             
-            _texC = Content.Load<Texture>("Textures/walls.jpeg");
+            _texC = content.Load<Texture>("Textures/walls.jpeg");
         }
 
         protected override void Draw(RenderContext context)

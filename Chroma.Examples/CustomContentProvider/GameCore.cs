@@ -17,14 +17,7 @@ namespace CustomContentProvider
 
         public GameCore() : base(new(false, false))
         {
-        }
-
-        protected override void LoadContent()
-        {
-            _texture = Content.Load<Texture>("Textures/pentagram.png");
-            _texture.FilteringMode = TextureFilteringMode.NearestNeighbor;
-
-            _shotgun = Content.Load<Sound>("doomsg.wav");
+            RenderSettings.DefaultTextureFilteringMode = TextureFilteringMode.NearestNeighbor;
         }
 
         protected override IContentProvider InitializeContentPipeline()
@@ -33,6 +26,12 @@ namespace CustomContentProvider
                 this, 
                 Path.Combine(AppContext.BaseDirectory, "../../../../_common/assets.zip")
             );
+        }
+        
+        protected override void Initialize(IContentProvider content)
+        {
+            _texture = content.Load<Texture>("Textures/pentagram.png");
+            _shotgun = content.Load<Sound>("doomsg.wav");
         }
 
         protected override void Draw(RenderContext context)

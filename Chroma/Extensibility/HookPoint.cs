@@ -2,10 +2,10 @@ namespace Chroma.Extensibility
 {
     public enum HookPoint
     {
+        Initialize,
         Draw,
         Update,
         FixedUpdate,
-        LoadContent,
         MouseMoved,
         MousePressed,
         MouseReleased,

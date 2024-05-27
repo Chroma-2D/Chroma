@@ -39,10 +39,10 @@ namespace PixelShaders2
             );
         }
 
-        protected override void LoadContent()
+        protected override void Initialize(IContentProvider content)
         {
-            _effect = Content.Load<Effect>("Shaders/glowyrings.frag");
-            _music = Content.Load<Music>("Music/groovy.mp3");
+            _effect = content.Load<Effect>("Shaders/glowyrings.frag");
+            _music = content.Load<Music>("Music/groovy.mp3");
             _music.Filters.Add(FftTunnel);
             _music.IsLooping = true;
             _music.Play();

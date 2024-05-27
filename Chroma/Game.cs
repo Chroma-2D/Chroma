@@ -19,9 +19,11 @@ namespace Chroma
     {
         private static DefaultScene _defaultScene;
         private static BootScene _bootScene;
-        private int _fixedTimeStepTarget;
-
+        
         private static readonly Log _log = LogManager.GetForCurrentAssembly();
+        
+        private int _fixedTimeStepTarget;
+        private IContentProvider _content;
 
         internal static bool WasConstructed { get; private set; }
 
@@ -40,8 +42,7 @@ namespace Chroma
         public Window Window { get; private set; }
         public GraphicsManager Graphics { get; private set; }
         public AudioManager Audio { get; private set; }
-        public IContentProvider Content { get; private set; }
-
+        
         public Game(GameStartupOptions options = null)
         {
 #if !DEBUG
@@ -103,6 +104,10 @@ namespace Chroma
 
             Environment.Exit(exitCode);
         }
+        
+        protected virtual void Initialize(IContentProvider content)
+        {
+        }
 
         protected virtual void Draw(RenderContext context)
             => _defaultScene?.Draw(context);
@@ -117,10 +122,6 @@ namespace Chroma
         protected virtual IContentProvider InitializeContentPipeline()
         {
             return new FileSystemContentProvider();
-        }
-
-        protected virtual void LoadContent()
-        {
         }
 
         protected virtual void MouseMoved(MouseMoveEventArgs e)
@@ -195,6 +196,9 @@ namespace Chroma
         {
         }
 
+        internal void OnInitialize(IContentProvider content)
+            => HookRegistry.WrapCall(HookPoint.Initialize, content, Initialize);
+
         internal void OnDraw(RenderContext context)
             => HookRegistry.WrapCall(HookPoint.Draw, context, Draw);
 
@@ -205,25 +209,25 @@ namespace Chroma
             => HookRegistry.WrapCall(HookPoint.FixedUpdate, delta, FixedUpdate);
 
         internal void OnMouseMoved(MouseMoveEventArgs e)
-            => HookRegistry.WrapCall(HookPoint.MouseMoved, e, MouseMoved);
+            => HookRegistry.WrapCallMutable(HookPoint.MouseMoved, ref e, MouseMoved);
 
         internal void OnMousePressed(MouseButtonEventArgs e)
-            => HookRegistry.WrapCall(HookPoint.MousePressed, e, MousePressed);
+            => HookRegistry.WrapCallMutable(HookPoint.MousePressed, ref e, MousePressed);
 
         internal void OnMouseReleased(MouseButtonEventArgs e)
-            => HookRegistry.WrapCall(HookPoint.MouseReleased, e, MouseReleased);
+            => HookRegistry.WrapCallMutable(HookPoint.MouseReleased, ref e, MouseReleased);
 
         internal void OnWheelMoved(MouseWheelEventArgs e)
-            => HookRegistry.WrapCall(HookPoint.WheelMoved, e, WheelMoved);
+            => HookRegistry.WrapCallMutable(HookPoint.WheelMoved, ref e, WheelMoved);
 
         internal void OnKeyPressed(KeyEventArgs e)
-            => HookRegistry.WrapCall(HookPoint.KeyPressed, e, KeyPressed);
+            => HookRegistry.WrapCallMutable(HookPoint.KeyPressed, ref e, KeyPressed);
 
         internal void OnKeyReleased(KeyEventArgs e)
-            => HookRegistry.WrapCall(HookPoint.KeyReleased, e, KeyReleased);
+            => HookRegistry.WrapCallMutable(HookPoint.KeyReleased, ref e, KeyReleased);
 
         internal void OnTextInput(TextInputEventArgs e)
-            => HookRegistry.WrapCall(HookPoint.TextInput, e, TextInput);
+            => HookRegistry.WrapCallMutable(HookPoint.TextInput, ref e, TextInput);
 
         internal void OnControllerConnected(ControllerEventArgs e)
             => HookRegistry.WrapCall(HookPoint.ControllerConnected, e, ControllerConnected);
@@ -232,28 +236,28 @@ namespace Chroma
             => HookRegistry.WrapCall(HookPoint.ControllerDisconnected, e, ControllerDisconnected);
 
         internal void OnControllerButtonPressed(ControllerButtonEventArgs e)
-            => HookRegistry.WrapCall(HookPoint.ControllerButtonPressed, e, ControllerButtonPressed);
+            => HookRegistry.WrapCallMutable(HookPoint.ControllerButtonPressed, ref e, ControllerButtonPressed);
 
         internal void OnControllerButtonReleased(ControllerButtonEventArgs e)
-            => HookRegistry.WrapCall(HookPoint.ControllerButtonReleased, e, ControllerButtonReleased);
+            => HookRegistry.WrapCallMutable(HookPoint.ControllerButtonReleased, ref e, ControllerButtonReleased);
 
         internal void OnControllerAxisMoved(ControllerAxisEventArgs e)
-            => HookRegistry.WrapCall(HookPoint.ControllerAxisMoved, e, ControllerAxisMoved);
+            => HookRegistry.WrapCallMutable(HookPoint.ControllerAxisMoved, ref e, ControllerAxisMoved);
 
         internal void OnControllerTouchpadMoved(ControllerTouchpadEventArgs e)
-            => HookRegistry.WrapCall(HookPoint.ControllerTouchpadMoved, e, ControllerTouchpadMoved);
+            => HookRegistry.WrapCallMutable(HookPoint.ControllerTouchpadMoved, ref e, ControllerTouchpadMoved);
 
         internal void OnControllerTouchpadTouched(ControllerTouchpadEventArgs e)
-            => HookRegistry.WrapCall(HookPoint.ControllerTouchpadTouched, e, ControllerTouchpadTouched);
+            => HookRegistry.WrapCallMutable(HookPoint.ControllerTouchpadTouched, ref e, ControllerTouchpadTouched);
 
         internal void OnControllerTouchpadReleased(ControllerTouchpadEventArgs e)
-            => HookRegistry.WrapCall(HookPoint.ControllerTouchpadReleased, e, ControllerTouchpadReleased);
+            => HookRegistry.WrapCallMutable(HookPoint.ControllerTouchpadReleased, ref e, ControllerTouchpadReleased);
 
         internal void OnControllerGyroscopeStateChanged(ControllerSensorEventArgs e)
-            => HookRegistry.WrapCall(HookPoint.ControllerGyroscopeStateChanged, e, ControllerGyroscopeStateChanged);
+            => HookRegistry.WrapCallMutable(HookPoint.ControllerGyroscopeStateChanged, ref e, ControllerGyroscopeStateChanged);
 
         internal void OnControllerAccelerometerStateChanged(ControllerSensorEventArgs e)
-            => HookRegistry.WrapCall(HookPoint.ControllerAccelerometerStateChanged, e, ControllerAccelerometerStateChanged);
+            => HookRegistry.WrapCallMutable(HookPoint.ControllerAccelerometerStateChanged, ref e, ControllerAccelerometerStateChanged);
 
         private void OnDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
@@ -333,11 +337,9 @@ namespace Chroma
 
         private void FinishBoot()
         {
-            Content = InitializeContentPipeline();
-
-            // Initialize extensions after re-write.
-
-            LoadContent();
+            _content = InitializeContentPipeline();
+            
+            OnInitialize(_content);
         }
 
         public void Dispose()
@@ -345,7 +347,7 @@ namespace Chroma
             OnDispose();
             
             Window.Dispose();
-            Content.Dispose();
+            _content.Dispose();
 
             AudioOutput.Instance.Close();
             AudioInput.Instance.Close();

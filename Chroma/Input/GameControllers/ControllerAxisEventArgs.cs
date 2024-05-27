@@ -12,5 +12,21 @@
             Axis = axis;
             Value = value;
         }
+
+        public ControllerAxisEventArgs With(ControllerAxis axis, short value) => new(
+            Controller,
+            axis,
+            value
+        );
+
+        public ControllerAxisEventArgs WithAxis(ControllerAxis axis) => With(
+            axis,
+            Value
+        );
+
+        public ControllerAxisEventArgs WithValue(short value) => With(
+            Axis,
+            value
+        );
     }
 }

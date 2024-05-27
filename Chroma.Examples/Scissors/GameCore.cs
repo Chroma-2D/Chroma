@@ -28,9 +28,9 @@ namespace Scissors
             );
         }
 
-        protected override void LoadContent()
+        protected override void Initialize(IContentProvider content)
         {
-            _grid = Content.Load<Texture>("Textures/grid.png");
+            _grid = content.Load<Texture>("Textures/grid.png");
         }
 
         protected override void Update(float delta)

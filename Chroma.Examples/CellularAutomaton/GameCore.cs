@@ -1,5 +1,6 @@
 using System.Numerics;
 using Chroma;
+using Chroma.ContentManagement;
 using Chroma.Diagnostics;
 using Chroma.Graphics;
 using Chroma.Input;
@@ -17,7 +18,7 @@ namespace CellularAutomaton
             Window.Mode.SetWindowed(1280, 800, true);
         }
 
-        protected override void LoadContent()
+        protected override void Initialize(IContentProvider content)
         {
             _map = new Map(384, 384);
             _map.RenderSize = new(768, 768);

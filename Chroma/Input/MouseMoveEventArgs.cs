@@ -13,8 +13,31 @@ namespace Chroma.Input
         {
             Position = position;
             Delta = delta;
-
             ButtonState = buttonState;
         }
+
+        public static MouseMoveEventArgs With(Vector2 position, Vector2 delta, MouseButtonState buttonState) => new(
+            position,
+            delta,
+            buttonState
+        );
+        
+        public MouseMoveEventArgs WithPosition(Vector2 position) => With(
+            position,
+            Delta,
+            ButtonState
+        );
+        
+        public MouseMoveEventArgs WithDelta(Vector2 delta) => With(
+            Position,
+            delta,
+            ButtonState
+        );
+        
+        public MouseMoveEventArgs WithButtonState(MouseButtonState buttonState) => With(
+            Position,
+            Delta,
+            buttonState
+        );
     }
 }

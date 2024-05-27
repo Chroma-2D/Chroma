@@ -38,5 +38,40 @@ namespace Chroma.Input
 
             return result != 0;
         }
+
+        public static KeyEventArgs With(ScanCode scanCode, KeyCode keyCode, KeyModifiers modifiers, bool isRepeat) => new(
+            scanCode,
+            keyCode,
+            modifiers,
+            isRepeat
+        );
+
+        public KeyEventArgs WithScanCode(ScanCode scanCode) => new(
+            scanCode,
+            KeyCode,
+            Modifiers,
+            IsRepeat
+        );
+
+        public KeyEventArgs WithKeyCode(KeyCode keyCode) => new(
+            ScanCode,
+            keyCode,
+            Modifiers,
+            IsRepeat
+        );
+
+        public KeyEventArgs WithModifiers(KeyModifiers modifiers) => new(
+            ScanCode,
+            KeyCode,
+            modifiers,
+            IsRepeat
+        );
+
+        public KeyEventArgs WithRepeatFlag(bool isRepeat) => new(
+            ScanCode,
+            KeyCode,
+            Modifiers,
+            isRepeat
+        );
     }
 }

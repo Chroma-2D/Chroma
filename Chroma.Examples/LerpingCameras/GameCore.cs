@@ -1,5 +1,6 @@
 using System.Numerics;
 using Chroma;
+using Chroma.ContentManagement;
 using Chroma.Graphics;
 using Chroma.Input;
 
@@ -15,7 +16,7 @@ namespace LerpingCameras
             Graphics.VerticalSyncMode = VerticalSyncMode.None;
         }
 
-        protected override void LoadContent()
+        protected override void Initialize(IContentProvider content)
         {
             _lerpCamera = new LerpCamera(Vector2.Zero);
         }

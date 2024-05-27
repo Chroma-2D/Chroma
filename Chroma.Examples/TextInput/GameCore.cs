@@ -45,7 +45,7 @@ namespace TextInput
             );
         }
 
-        protected override void LoadContent()
+        protected override void Initialize(IContentProvider content)
         {
             using var fs = new FileStream(
                 Path.Combine(AppContext.BaseDirectory, "../../../../_common/Fonts/dos8x14.ttf"),

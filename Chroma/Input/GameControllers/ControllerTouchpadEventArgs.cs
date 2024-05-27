@@ -20,5 +20,41 @@ namespace Chroma.Input.GameControllers
             Position = position;
             Pressure = pressure;
         }
+
+        public ControllerTouchpadEventArgs With(int touchpadIndex, int fingerIndex, Vector2 position, float pressure) => new(
+            Controller,
+            touchpadIndex, 
+            fingerIndex,
+            position,
+            pressure
+        );
+
+        public ControllerTouchpadEventArgs WithTouchpadIndex(int touchpadIndex) => With(
+            touchpadIndex,
+            FingerIndex,
+            Position,
+            Pressure
+        );
+
+        public ControllerTouchpadEventArgs WithFingerIndex(int fingerIndex) => With(
+            TouchpadIndex,
+            fingerIndex,
+            Position,
+            Pressure
+        );
+
+        public ControllerTouchpadEventArgs WithPosition(Vector2 position) => With(
+            TouchpadIndex,
+            FingerIndex,
+            position,
+            Pressure
+        );
+
+        public ControllerTouchpadEventArgs WithPressure(float pressure) => With(
+            TouchpadIndex,
+            FingerIndex,
+            Position,
+            pressure
+        );
     }
 }

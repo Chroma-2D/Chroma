@@ -28,15 +28,15 @@ namespace Cameras
             );
         }
 
-        protected override void LoadContent()
+        protected override void Initialize(IContentProvider content)
         {
             _cam = new Camera
             {
                 UseCenteredOrigin = true
             };
             
-            _grid = Content.Load<Texture>("Textures/grid.png");
-            _burg = Content.Load<Texture>("Textures/burg.png");
+            _grid = content.Load<Texture>("Textures/grid.png");
+            _burg = content.Load<Texture>("Textures/burg.png");
         }
 
         protected override void Update(float delta)

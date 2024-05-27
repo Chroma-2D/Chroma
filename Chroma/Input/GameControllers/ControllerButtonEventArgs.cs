@@ -10,5 +10,10 @@
             Controller = controller;
             Button = button;
         }
+
+        public ControllerButtonEventArgs WithButton(ControllerButton button) => new(
+            Controller,
+            button
+        );
     }
 }

@@ -48,14 +48,14 @@ namespace PixelShaders
             );
         }
 
-        protected override void LoadContent()
+        protected override void Initialize(IContentProvider content)
         {
             _target = new RenderTarget(Window.Size);
-            _tintEffect = Content.Load<Effect>("Shaders/tint.frag");
-            _burger = Content.Load<Texture>("Textures/burg.png");
+            _tintEffect = content.Load<Effect>("Shaders/tint.frag");
+            _burger = content.Load<Texture>("Textures/burg.png");
             _burger.FilteringMode = TextureFilteringMode.NearestNeighbor;
 
-            _overlay = Content.Load<Texture>("Textures/checkerboard.jpg");
+            _overlay = content.Load<Texture>("Textures/checkerboard.jpg");
             _overlay.HorizontalWrappingMode = TextureWrappingMode.Mirror;
             _overlay.VerticalWrappingMode = TextureWrappingMode.Mirror;
         }

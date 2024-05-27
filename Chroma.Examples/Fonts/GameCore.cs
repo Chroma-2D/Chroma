@@ -35,16 +35,16 @@ namespace Fonts
             );
         }
 
-        protected override void LoadContent()
+        protected override void Initialize(IContentProvider content)
         {
-            _republika = Content.Load<TrueTypeFont>("Fonts/republika.ttf", 32);
+            _republika = content.Load<TrueTypeFont>("Fonts/republika.ttf", 32);
             _republika.PreferAutoHinter = false;
             
-            _alienlines = Content.Load<TrueTypeFont>("Fonts/alienlines.ttf", 24);
-            _renegade = Content.Load<TrueTypeFont>("Fonts/renegade.otf", 48);
-            _plasticBag = Content.Load<TrueTypeFont>("Fonts/plasticbag.ttf", 16);
-            _copam8x8 = Content.Load<TrueTypeFont>("Fonts/Copam_8x8.ttf", 16);
-            _plasticBagBmf = Content.Load<BitmapFont>("BitmapFonts/plasticbag.fnt");
+            _alienlines = content.Load<TrueTypeFont>("Fonts/alienlines.ttf", 24);
+            _renegade = content.Load<TrueTypeFont>("Fonts/renegade.otf", 48);
+            _plasticBag = content.Load<TrueTypeFont>("Fonts/plasticbag.ttf", 16);
+            _copam8x8 = content.Load<TrueTypeFont>("Fonts/Copam_8x8.ttf", 16);
+            _plasticBagBmf = content.Load<BitmapFont>("BitmapFonts/plasticbag.fnt");
         }
 
         protected override void Update(float delta)

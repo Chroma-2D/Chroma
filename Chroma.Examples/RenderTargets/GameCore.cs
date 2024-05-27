@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using Chroma;
+using Chroma.ContentManagement;
 using Chroma.Graphics;
 using Chroma.Input;
 
@@ -16,7 +17,7 @@ namespace RenderTargets
         {
         }
 
-        protected override void LoadContent()
+        protected override void Initialize(IContentProvider content)
         {
             _tgt = new RenderTarget(Window.Size);
             

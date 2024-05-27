@@ -28,9 +28,9 @@ namespace CustomHardwareCursor
             );
         }
 
-        protected override void LoadContent()
+        protected override void Initialize(IContentProvider content)
         {
-            _cursor = Content.Load<Cursor>("Cursors/cursor.png");
+            _cursor = content.Load<Cursor>("Cursors/cursor.png");
         }
 
         protected override void Draw(RenderContext context)

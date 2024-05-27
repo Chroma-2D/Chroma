@@ -25,9 +25,9 @@ namespace RenderTransforms
             );
         }
 
-        protected override void LoadContent()
+        protected override void Initialize(IContentProvider content)
         {
-            _burger = Content.Load<Texture>("Textures/burg.png");
+            _burger = content.Load<Texture>("Textures/burg.png");
             _rt = new RenderTarget(_burger.Width * 2, _burger.Height * 2);
 
             RenderTransform.SetMatrixMode(MatrixMode.Projection, Window);

@@ -62,7 +62,7 @@ namespace ArbitraryGeometry
             RenderSettings.MultiSamplingEnabled = true;
         }
 
-        protected override void LoadContent()
+        protected override void Initialize(IContentProvider content)
         {
             _texture = new Texture(1, 1);
             _texture[0, 0] = Color.White;

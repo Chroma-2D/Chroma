@@ -36,6 +36,7 @@ namespace Chroma.Windowing
         private IntPtr _windowHandle;
         private IntPtr _currentIconPtr;
         private PlatformWindowInformation _windowInfo;
+        private bool _exists;
 
         internal delegate void StateUpdateDelegate(float delta);
 
@@ -57,7 +58,8 @@ namespace Chroma.Windowing
         public delegate WindowHitTestResult WindowHitTestDelegate(Window window, Vector2 position);
 
         public IntPtr SystemWindowHandle => _windowInfo.SystemWindowHandle;
-        public bool Exists { get; private set; }
+
+        public bool Exists => _exists;
 
         public Size Size
         {
@@ -536,9 +538,9 @@ namespace Chroma.Windowing
 
         internal void Run()
         {
-            Exists = true;
+            _exists = true;
 
-            while (Exists)
+            while (_exists)
             {
                 _performanceCounter.Update();
                 _performanceCounter.FixedUpdate();
@@ -652,7 +654,7 @@ namespace Chroma.Windowing
             QuitRequested?.Invoke(this, e);
 
             if (!e.Cancel)
-                Exists = false;
+                _exists = false;
         }
 
         // both OnFileDropped and OnTextDropped are

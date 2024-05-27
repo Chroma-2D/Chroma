@@ -57,10 +57,10 @@ namespace MusicAndSounds
             );
         }
 
-        protected override void LoadContent()
+        protected override void Initialize(IContentProvider content)
         {
-            _doomShotgun = Content.Load<Sound>("Sounds/doomsg.wav");
-            _elysiumMod = Content.Load<Music>("Music/elysium.mod");
+            _doomShotgun = content.Load<Sound>("Sounds/doomsg.wav");
+            _elysiumMod = content.Load<Music>("Music/elysium.mod");
 
             var time = 0;
             _waveform = new Waveform(
@@ -215,7 +215,7 @@ namespace MusicAndSounds
                     Audio.Output.Close();
                     Audio.Output.Open();
                     
-                    LoadContent();
+                    Initialize(Content);
                     
                     break;
                 

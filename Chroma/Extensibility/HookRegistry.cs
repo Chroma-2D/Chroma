@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Chroma.ContentManagement;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.Input;
@@ -59,6 +60,15 @@ namespace Chroma.Extensibility
         public static void Detach(HookPoint hookPoint, HookAttachment hookAttachment, Delegate method)
         {
             Detach(hookPoint, hookAttachment, method.GetMethodInfo());
+        }
+        
+        internal static void WrapCallMutable<T>(HookPoint hookPoint, ref T argument, Action<T> action)
+        {
+            if (InvokePrefixHooksMutable(hookPoint, ref argument))
+            {
+                action(argument);
+                InvokePostfixHooks(hookPoint, argument);
+            }
         }
 
         internal static void WrapCall<T>(HookPoint hookPoint, T argument, Action<T> action)
@@ -156,6 +166,21 @@ namespace Chroma.Extensibility
             }
         }
 
+        private static bool InvokePrefixHooksMutable<T>(HookPoint hookPoint, ref T argument)
+        {
+            var continueToMainBody = true;
+            var hookCollection = _prefixHooks[hookPoint];
+
+            for (var i = 0; i < hookCollection.Count; i++)
+            {
+                var arguments = new object[] { _owner, argument };
+                continueToMainBody &= (bool)hookCollection[i].Invoke(null, arguments)!;
+                argument = (T)arguments[1];
+            }
+
+            return continueToMainBody;
+        }
+        
         private static bool InvokePrefixHooks<T>(HookPoint hookPoint, T argument)
         {
             var continueToMainBody = true;
@@ -211,7 +236,12 @@ namespace Chroma.Extensibility
             for (var i = 0; i < parameters.Length; i++)
             {
                 if (parameters[i].ParameterType != parameterTypes[i])
-                    return false;
+                {
+                    if (parameters[i].ParameterType.FullName?.TrimEnd('&') != parameterTypes[i].FullName)
+                    {
+                        return false;
+                    }
+                }
             }
 
             return true;
@@ -221,6 +251,9 @@ namespace Chroma.Extensibility
         {
             return hookPoint switch
             {
+                HookPoint.Initialize
+                    => MatchesSignature(method, typeof(Game), typeof(IContentProvider)),
+                
                 HookPoint.Draw
                     => MatchesSignature(method, typeof(Game), typeof(RenderContext)),
 

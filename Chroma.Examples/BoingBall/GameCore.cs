@@ -51,26 +51,26 @@ namespace BoingBall
             );
         }
 
-        protected override void LoadContent()
+        protected override void Initialize(IContentProvider content)
         {
             _target = new RenderTarget(320, 200);
             _target.VirtualResolution = new(Window.Width, Window.Height);
             _target.FilteringMode = TextureFilteringMode.NearestNeighbor;
 
-            _texture = Content.Load<Texture>("Textures/boing.png");
+            _texture = content.Load<Texture>("Textures/boing.png");
             _texture.FilteringMode = TextureFilteringMode.NearestNeighbor;
             _texture.VerticalWrappingMode = TextureWrappingMode.Repeat;
             _texture.HorizontalWrappingMode = TextureWrappingMode.Repeat;
 
-            _shade = Content.Load<Texture>("Textures/shade.png");
+            _shade = content.Load<Texture>("Textures/shade.png");
             _shade.FilteringMode = TextureFilteringMode.NearestNeighbor;
 
-            _cursor = Content.Load<Cursor>("Cursors/ami13.png");
+            _cursor = content.Load<Cursor>("Cursors/ami13.png");
             _cursor.SetCurrent();
 
-            _effect = Content.Load<Effect>("Shaders/distort.frag");
-            _bounce1 = Content.Load<Sound>("Sounds/bounce1.ogg");
-            _bounce2 = Content.Load<Sound>("Sounds/bounce2.ogg");
+            _effect = content.Load<Effect>("Shaders/distort.frag");
+            _bounce1 = content.Load<Sound>("Sounds/bounce1.ogg");
+            _bounce2 = content.Load<Sound>("Sounds/bounce2.ogg");
         }
 
         protected override void FixedUpdate(float delta)
@@ -128,7 +128,7 @@ namespace BoingBall
             var shadowOffset = new Vector2(16, 4);
             var sphereTilt = 25f;
 
-            context.RenderTo(_target, (ctx, tgt) =>
+            context.RenderTo(_target, (ctx, _) =>
             {
                 ctx.Clear(127, 127, 127);
 

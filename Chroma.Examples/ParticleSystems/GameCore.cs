@@ -34,11 +34,11 @@ namespace ParticleSystems
         // You can assign a new particle state initializer while instantiating
         // the particle emitter.
         //
-        protected override void LoadContent()
+        protected override void Initialize(IContentProvider content)
         {
             _target = new RenderTarget(Window.Width, Window.Height);
 
-            _particle = Content.Load<Texture>("Textures/pentagram.png");
+            _particle = content.Load<Texture>("Textures/pentagram.png");
             _particle.FilteringMode = TextureFilteringMode.NearestNeighbor;
 
             _emitter = new ParticleEmitter(_particle)

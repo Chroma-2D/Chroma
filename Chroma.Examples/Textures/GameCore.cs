@@ -52,13 +52,13 @@ namespace Textures
             );
         }
 
-        protected override void LoadContent()
+        protected override void Initialize(IContentProvider content)
         {
-            _tileMap = Content.Load<Texture>("Textures/walls.jpeg");
+            _tileMap = content.Load<Texture>("Textures/walls.jpeg");
             _totalTiles = _tileMap.Width / 64;
             _tile1 = _tileMap.SubTexture(new(64, 0, 64, 64));
 
-            _burger = Content.Load<Texture>("Textures/burg.png");
+            _burger = content.Load<Texture>("Textures/burg.png");
             _virtRes = new Size(_burger.Width, _burger.Height);
 
             _dynTex = new Texture(256, 256);

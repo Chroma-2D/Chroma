@@ -8,5 +8,9 @@
         {
             Text = text;
         }
+
+        public static TextInputEventArgs With(string text) => new(text);
+
+        public TextInputEventArgs WithText(string text) => new(text);
     }
 }

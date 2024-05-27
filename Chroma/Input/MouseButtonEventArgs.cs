@@ -12,6 +12,14 @@ namespace Chroma.Input
         public bool Pressed { get; }
         public byte ClickCount { get; }
 
+        private MouseButtonEventArgs(Vector2 position, bool pressed, MouseButton button, byte clickCount)
+        {
+            Position = position;
+            Button = button;
+            Pressed = pressed;
+            ClickCount = clickCount;
+        }
+        
         internal MouseButtonEventArgs(Vector2 position, byte state, uint button, byte clickCount)
         {
             Position = position;
@@ -29,5 +37,40 @@ namespace Chroma.Input
             Pressed = state == SDL2.SDL_PRESSED;
             ClickCount = clickCount;
         }
+
+        public static MouseButtonEventArgs With(Vector2 position, bool pressed, MouseButton mouseButton, byte clickCount) => new(
+            position,
+            pressed,
+            mouseButton,
+            clickCount
+        );
+
+        public MouseButtonEventArgs WithPosition(Vector2 position) => With(
+            position,
+            Pressed,
+            Button,
+            ClickCount
+        );
+
+        public MouseButtonEventArgs WithPressState(bool pressed) => With(
+            Position,
+            pressed,
+            Button,
+            ClickCount
+        );
+
+        public MouseButtonEventArgs WithButton(MouseButton button) => With(
+            Position,
+            Pressed,
+            button,
+            ClickCount
+        );
+
+        public MouseButtonEventArgs WithClickCount(byte clickCount) => With(
+            Position,
+            Pressed,
+            Button,
+            clickCount
+        );
     }
 }

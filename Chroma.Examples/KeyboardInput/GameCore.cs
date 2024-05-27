@@ -34,9 +34,9 @@ namespace KeyboardInput
             );
         }
 
-        protected override void LoadContent()
+        protected override void Initialize(IContentProvider content)
         {
-            _burg = Content.Load<Texture>("Textures/burg.png");
+            _burg = content.Load<Texture>("Textures/burg.png");
         }
 
         protected override void Update(float delta)

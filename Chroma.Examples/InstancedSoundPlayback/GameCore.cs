@@ -32,9 +32,9 @@ namespace InstancedSoundPlayback
             return pipeline;
         }
         
-        protected override void LoadContent()
+        protected override void Initialize(IContentProvider content)
         {
-            _instancedSound = Content.Load<InstancedSound>("Sounds/doomsg.wav");
+            _instancedSound = content.Load<InstancedSound>("Sounds/doomsg.wav");
         }
 
         protected override void Update(float delta)

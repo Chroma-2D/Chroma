@@ -2,6 +2,13 @@
 Chroma is a 2D game development framework focused on quick prototyping.
 
 ### Change log
+#### Changes in release 0.64.0
+- `Game.LoadContent()` callback has been refactored to `Game.Initialize(IContentPipeline)` 
+- `Game.Content` property has been removed. It has been replaced by `Game.Initialize(IContentPipeline)`.
+- `HookPoint.LoadContent` has been renamed to `HookPoint.Initialize`.
+- Certain prefix hook methods may now mutate input callback arguments if used with `ref` modifier.
+- Fixed a bug where initialization hook point was never invoked.
+
 #### Changes in release 0.63.2
 - Linux natives will now work properly with PulseAudio
 

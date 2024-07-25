@@ -262,7 +262,7 @@ namespace Chroma
         private void OnDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             _log.Error(
-                $"Unhandled exception. There are two people who could've fucked this up." +
+                $"Unhandled exception. There are two people who could've fucked this up. " +
                 $"You or me.\n\n{e.ExceptionObject}"
             );
         }

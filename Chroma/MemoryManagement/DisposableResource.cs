@@ -11,7 +11,7 @@ namespace Chroma.MemoryManagement
 
         ~DisposableResource()
         {
-            Dispose(false);
+            Dispatcher.RunOnMainThread(() => Dispose(false));
         }
 
         protected virtual void FreeManagedResources()

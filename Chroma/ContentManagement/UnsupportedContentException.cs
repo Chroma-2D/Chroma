@@ -1,13 +1,12 @@
-﻿namespace Chroma.ContentManagement
-{
-    public sealed class UnsupportedContentException : ContentException
-    {
-        public string TargetPath { get; }
+﻿namespace Chroma.ContentManagement;
 
-        public UnsupportedContentException(string message, string targetPath) 
-            : base(message)
-        {
-            TargetPath = targetPath;
-        }
+public sealed class UnsupportedContentException : ContentException
+{
+    public string TargetPath { get; }
+
+    public UnsupportedContentException(string message, string targetPath) 
+        : base(message)
+    {
+        TargetPath = targetPath;
     }
 }

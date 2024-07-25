@@ -1,58 +1,57 @@
-﻿using System;
+﻿namespace Chroma.Audio.Sources;
+
+using System;
 using Chroma.Diagnostics.Logging;
 using Chroma.Natives.Bindings.SDL;
 using Chroma.Natives.Ports.NMIX;
 
-namespace Chroma.Audio.Sources
+public class Waveform : AudioSource
 {
-    public class Waveform : AudioSource
+    private static readonly Log _log = LogManager.GetForCurrentAssembly();
+    private SDL2_nmix.NMIX_SourceCallback _internalCallback; // Needs to be a class field to avoid GC collection.
+
+    public AudioStreamDelegate SampleGenerator { get; set; }
+
+    public ChannelMode ChannelMode { get; }
+    public int Frequency { get; }
+
+    public Waveform(AudioFormat format, AudioStreamDelegate sampleGenerator,
+        ChannelMode channelMode = ChannelMode.Stereo, int frequency = 44100)
     {
-        private static readonly Log _log = LogManager.GetForCurrentAssembly();
-        private SDL2_nmix.NMIX_SourceCallback _internalCallback; // Needs to be a class field to avoid GC collection.
+        _internalCallback = AudioCallback;
+        SampleGenerator = sampleGenerator;
 
-        public AudioStreamDelegate SampleGenerator { get; set; }
+        ChannelMode = channelMode;
+        Frequency = frequency;
 
-        public ChannelMode ChannelMode { get; }
-        public int Frequency { get; }
+        Handle = SDL2_nmix.NMIX_NewSource(
+            format.SdlFormat,
+            (byte)ChannelMode,
+            Frequency,
+            _internalCallback,
+            IntPtr.Zero
+        );
 
-        public Waveform(AudioFormat format, AudioStreamDelegate sampleGenerator,
-            ChannelMode channelMode = ChannelMode.Stereo, int frequency = 44100)
+        if (Handle == IntPtr.Zero)
         {
-            _internalCallback = AudioCallback;
-            SampleGenerator = sampleGenerator;
+            _log.Error($"Failed to create a new audio source: {SDL2.SDL_GetError()}");
+            _internalCallback = null;
+        }
+    }
 
-            ChannelMode = channelMode;
-            Frequency = frequency;
+    private void AudioCallback(IntPtr userData, IntPtr samples, int bufferSize)
+    {
+        if (SampleGenerator == null)
+            return;
 
-            Handle = SDL2_nmix.NMIX_NewSource(
-                format.SdlFormat,
-                (byte)ChannelMode,
-                Frequency,
-                _internalCallback,
-                IntPtr.Zero
+        unsafe
+        {
+            var span = new Span<byte>(
+                samples.ToPointer(),
+                bufferSize
             );
 
-            if (Handle == IntPtr.Zero)
-            {
-                _log.Error($"Failed to create a new audio source: {SDL2.SDL_GetError()}");
-                _internalCallback = null;
-            }
-        }
-
-        private void AudioCallback(IntPtr userData, IntPtr samples, int bufferSize)
-        {
-            if (SampleGenerator == null)
-                return;
-
-            unsafe
-            {
-                var span = new Span<byte>(
-                    samples.ToPointer(),
-                    bufferSize
-                );
-
-                SampleGenerator.Invoke(span, Format);
-            }
+            SampleGenerator.Invoke(span, Format);
         }
     }
 }

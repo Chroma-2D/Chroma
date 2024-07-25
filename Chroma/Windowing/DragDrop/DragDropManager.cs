@@ -1,67 +1,66 @@
+namespace Chroma.Windowing.DragDrop;
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using Chroma.Natives.Bindings.SDL;
 
-namespace Chroma.Windowing.DragDrop
+internal sealed class DragDropManager
 {
-    internal sealed class DragDropManager
+    private readonly Window _owner;
+
+    private bool? _isFileDrop;
+
+    private readonly List<string> _fileList = new();
+    private readonly StringBuilder _textBuffer = new();
+
+    internal DragDropManager(Window owner)
     {
-        private readonly Window _owner;
+        _owner = owner;
+    }
 
-        private bool? _isFileDrop;
+    internal void BeginDrop()
+    {
+        _fileList.Clear();
+        _textBuffer.Clear();
 
-        private readonly List<string> _fileList = new();
-        private readonly StringBuilder _textBuffer = new();
+        _isFileDrop = null;
+    }
 
-        internal DragDropManager(Window owner)
-        {
-            _owner = owner;
-        }
+    internal void OnFileDropped(IntPtr stringPtr)
+    {
+        if (stringPtr == IntPtr.Zero)
+            return;
 
-        internal void BeginDrop()
-        {
-            _fileList.Clear();
-            _textBuffer.Clear();
+        _isFileDrop ??= true;
 
-            _isFileDrop = null;
-        }
+        if (_isFileDrop != true)
+            throw new FrameworkException("Unexpected operation type change during a drop operation.");
 
-        internal void OnFileDropped(IntPtr stringPtr)
-        {
-            if (stringPtr == IntPtr.Zero)
-                return;
+        _fileList.Add(Marshal.PtrToStringAnsi(stringPtr));
+        SDL2.SDL_free(stringPtr);
+    }
 
-            _isFileDrop ??= true;
+    internal void OnTextDropped(IntPtr stringPtr)
+    {
+        if (stringPtr == IntPtr.Zero)
+            return;
 
-            if (_isFileDrop != true)
-                throw new FrameworkException("Unexpected operation type change during a drop operation.");
+        _isFileDrop ??= false;
 
-            _fileList.Add(Marshal.PtrToStringAnsi(stringPtr));
-            SDL2.SDL_free(stringPtr);
-        }
+        if (_isFileDrop != false)
+            throw new FrameworkException("Unexpected operation type change during a drop operation.");
 
-        internal void OnTextDropped(IntPtr stringPtr)
-        {
-            if (stringPtr == IntPtr.Zero)
-                return;
+        _textBuffer.AppendLine(Marshal.PtrToStringAnsi(stringPtr));
+        SDL2.SDL_free(stringPtr);
+    }
 
-            _isFileDrop ??= false;
-
-            if (_isFileDrop != false)
-                throw new FrameworkException("Unexpected operation type change during a drop operation.");
-
-            _textBuffer.AppendLine(Marshal.PtrToStringAnsi(stringPtr));
-            SDL2.SDL_free(stringPtr);
-        }
-
-        internal void FinishDrop()
-        {
-            if (_isFileDrop == true)
-                _owner.OnFilesDropped(new FileDragDropEventArgs(_fileList));
-            else if (_isFileDrop == false)
-                _owner.OnTextDropped(new TextDragDropEventArgs(_textBuffer.ToString()));
-        }
+    internal void FinishDrop()
+    {
+        if (_isFileDrop == true)
+            _owner.OnFilesDropped(new FileDragDropEventArgs(_fileList));
+        else if (_isFileDrop == false)
+            _owner.OnTextDropped(new TextDragDropEventArgs(_textBuffer.ToString()));
     }
 }

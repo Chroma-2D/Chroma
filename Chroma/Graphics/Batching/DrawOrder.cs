@@ -1,8 +1,7 @@
-﻿namespace Chroma.Graphics.Batching
+﻿namespace Chroma.Graphics.Batching;
+
+public enum DrawOrder
 {
-    public enum DrawOrder
-    {
-        BackToFront,
-        FrontToBack
-    }
+    BackToFront,
+    FrontToBack
 }

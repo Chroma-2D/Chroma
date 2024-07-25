@@ -1,15 +1,14 @@
-﻿using System;
+﻿namespace Chroma.Diagnostics.Logging;
 
-namespace Chroma.Diagnostics.Logging
+using System;
+
+public sealed class DuplicateSinkException : FrameworkException
 {
-    public sealed class DuplicateSinkException : FrameworkException
-    {
-        public Type SinkType { get; }
+    public Type SinkType { get; }
 
-        internal DuplicateSinkException(Type sinkType) 
-            : base("Sink of this type already exists.")
-        {
-            SinkType = sinkType;
-        }
+    internal DuplicateSinkException(Type sinkType) 
+        : base("Sink of this type already exists.")
+    {
+        SinkType = sinkType;
     }
 }

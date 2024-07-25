@@ -1,8 +1,7 @@
-namespace Chroma.Extensibility
+namespace Chroma.Extensibility;
+
+public enum HookAttachment
 {
-    public enum HookAttachment
-    {
-        Prefix,
-        Postfix
-    }
+    Prefix,
+    Postfix
 }

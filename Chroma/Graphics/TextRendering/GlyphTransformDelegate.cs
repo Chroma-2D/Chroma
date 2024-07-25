@@ -1,6 +1,5 @@
-﻿using System.Numerics;
+﻿namespace Chroma.Graphics.TextRendering;
 
-namespace Chroma.Graphics.TextRendering
-{
-    public delegate void GlyphTransform(GlyphTransformData d, char c, int i, Vector2 p);
-}
+using System.Numerics;
+
+public delegate void GlyphTransform(GlyphTransformData d, char c, int i, Vector2 p);

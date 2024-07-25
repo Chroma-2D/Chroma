@@ -1,82 +1,81 @@
-﻿using System;
+﻿namespace Chroma.Graphics;
+
+using System;
 using System.Drawing;
 using Chroma.Diagnostics.Logging;
 using Chroma.Natives.Bindings.SDL;
 
-namespace Chroma.Graphics
+public class RenderTarget : Texture
 {
-    public class RenderTarget : Texture
-    {
-        private static readonly Log _log = LogManager.GetForCurrentAssembly();
+    private static readonly Log _log = LogManager.GetForCurrentAssembly();
         
-        internal IntPtr TargetHandle { get; }
+    internal IntPtr TargetHandle { get; }
 
-        public Camera CurrentCamera { get; private set; }
-        public Rectangle? CurrentViewport { get; private set; }
+    public Camera CurrentCamera { get; private set; }
+    public Rectangle? CurrentViewport { get; private set; }
 
-        public RenderTarget(int width, int height)
-            : base(width, height)
+    public RenderTarget(int width, int height)
+        : base(width, height)
+    {
+        if (ImageHandle == IntPtr.Zero)
         {
-            if (ImageHandle == IntPtr.Zero)
-            {
-                var msg = $"Failed to create texture handle: {SDL2.SDL_GetError()}";
-                _log.Error(msg);
+            var msg = $"Failed to create texture handle: {SDL2.SDL_GetError()}";
+            _log.Error(msg);
                 
-                throw new GraphicsException(msg);
-            }
+            throw new GraphicsException(msg);
+        }
             
-            TargetHandle = SDL_gpu.GPU_LoadTarget(ImageHandle);
+        TargetHandle = SDL_gpu.GPU_LoadTarget(ImageHandle);
 
-            if (TargetHandle == IntPtr.Zero)
-            {
-                var msg = $"Failed to create render target handle: {SDL2.SDL_GetError()}";
+        if (TargetHandle == IntPtr.Zero)
+        {
+            var msg = $"Failed to create render target handle: {SDL2.SDL_GetError()}";
                 
-                _log.Error(msg);
-                throw new GraphicsException(msg);
-            }
+            _log.Error(msg);
+            throw new GraphicsException(msg);
         }
+    }
 
-        public RenderTarget(Size size)
-            : this(size.Width, size.Height) { }
+    public RenderTarget(Size size)
+        : this(size.Width, size.Height) { }
 
-        public void SetViewport(Rectangle viewportRectangle)
-        {
-            EnsureNotDisposed();
+    public void SetViewport(Rectangle viewportRectangle)
+    {
+        EnsureNotDisposed();
 
-            CurrentViewport = viewportRectangle;
-            SDL_gpu.GPU_SetViewport(TargetHandle, new(viewportRectangle));
-        }
+        CurrentViewport = viewportRectangle;
+        SDL_gpu.GPU_SetViewport(TargetHandle, new(viewportRectangle));
+    }
 
-        public void ResetViewport()
-        {
-            EnsureNotDisposed();
+    public void ResetViewport()
+    {
+        EnsureNotDisposed();
 
-            SDL_gpu.GPU_UnsetViewport(TargetHandle);
-            CurrentViewport = null;
-        }
+        SDL_gpu.GPU_UnsetViewport(TargetHandle);
+        CurrentViewport = null;
+    }
 
-        public void SetCamera(Camera camera)
-        {
-            EnsureNotDisposed();
+    public void SetCamera(Camera camera)
+    {
+        EnsureNotDisposed();
 
-            SDL_gpu.GPU_SetCamera(TargetHandle, ref camera.GpuCamera);
-            CurrentCamera = camera;
-        }
+        SDL_gpu.GPU_SetCamera(TargetHandle, ref camera.GpuCamera);
+        CurrentCamera = camera;
+    }
 
-        public void ResetCamera()
-        {
-            EnsureNotDisposed();
+    public void ResetCamera()
+    {
+        EnsureNotDisposed();
 
-            SDL_gpu.GPU_SetCamera(TargetHandle, IntPtr.Zero);
-            CurrentCamera = null;
-        }
+        SDL_gpu.GPU_SetCamera(TargetHandle, IntPtr.Zero);
+        CurrentCamera = null;
+    }
 
-        protected override void FreeNativeResources()
-        {
-            EnsureOnMainThread();
+    protected override void FreeNativeResources()
+    {
+        EnsureOnMainThread();
             
-            SDL_gpu.GPU_FreeTarget(TargetHandle);
-            base.FreeNativeResources();
-        }
+        SDL_gpu.GPU_FreeTarget(TargetHandle);
+        base.FreeNativeResources();
     }
 }

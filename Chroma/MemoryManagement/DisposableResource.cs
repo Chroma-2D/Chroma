@@ -1,62 +1,61 @@
-﻿using System;
+﻿namespace Chroma.MemoryManagement;
+
+using System;
 using Chroma.Threading;
 
-namespace Chroma.MemoryManagement
+public class DisposableResource : IDisposable
 {
-    public class DisposableResource : IDisposable
+    public bool Disposed { get; private set; }
+
+    public event EventHandler Disposing;
+
+    ~DisposableResource()
     {
-        public bool Disposed { get; private set; }
+        Dispatcher.RunOnMainThread(() => Dispose(false));
+    }
 
-        public event EventHandler Disposing;
+    protected virtual void FreeManagedResources()
+    {
+    }
 
-        ~DisposableResource()
-        {
-            Dispatcher.RunOnMainThread(() => Dispose(false));
-        }
-
-        protected virtual void FreeManagedResources()
-        {
-        }
-
-        protected virtual void FreeNativeResources()
-        {
-        }
+    protected virtual void FreeNativeResources()
+    {
+    }
         
-        protected void EnsureOnMainThread()
+    protected void EnsureOnMainThread()
+    {
+        if (!Dispatcher.IsMainThread)
         {
-            if (!Dispatcher.IsMainThread)
-            {
-                throw new InvalidOperationException(
-                    "This operation is not thread-safe and must be scheduled to run on main thread."
-                );
-            }
+            throw new InvalidOperationException(
+                "This operation is not thread-safe and must be scheduled to run on main thread."
+            );
+        }
+    }
+
+    private void Dispose(bool disposing)
+    {
+        EnsureNotDisposed();
+
+        if (disposing)
+        {
+            FreeManagedResources();
         }
 
-        private void Dispose(bool disposing)
-        {
-            EnsureNotDisposed();
+        FreeNativeResources();
+        Disposed = true;
+    }
 
-            if (disposing)
-            {
-                FreeManagedResources();
-            }
+    public void Dispose()
+    {
+        Disposing?.Invoke(this, EventArgs.Empty);
+        Dispose(true);
 
-            FreeNativeResources();
-            Disposed = true;
-        }
+        GC.SuppressFinalize(this);
+    }
 
-        public void Dispose()
-        {
-            Disposing?.Invoke(this, EventArgs.Empty);
-            Dispose(true);
-
-            GC.SuppressFinalize(this);
-        }
-
-        protected void EnsureNotDisposed()
-        {
-            if (Disposed)
-                throw new ObjectDisposedException(null, "This object has already been disposed.");
-        }
+    protected void EnsureNotDisposed()
+    {
+        if (Disposed)
+            throw new ObjectDisposedException(null, "This object has already been disposed.");
     }
 }

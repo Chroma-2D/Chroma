@@ -1,12 +1,11 @@
-﻿namespace Chroma.Audio
+﻿namespace Chroma.Audio;
+
+public enum SampleFormat
 {
-    public enum SampleFormat
-    {
-        U8,
-        U16,
-        S8,
-        S16,
-        S32,
-        F32
-    }
+    U8,
+    U16,
+    S8,
+    S16,
+    S32,
+    F32
 }

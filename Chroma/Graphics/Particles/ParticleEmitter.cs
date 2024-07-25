@@ -1,126 +1,125 @@
-﻿using System;
+﻿namespace Chroma.Graphics.Particles;
+
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using Chroma.Graphics.Particles.StateInitializers;
 
-namespace Chroma.Graphics.Particles
+public class ParticleEmitter
 {
-    public class ParticleEmitter
+    public delegate void ParticleStateIntegrator(Particle particle, float deltaTime);
+
+    private readonly List<Particle> _particles;
+    private readonly List<ParticleStateIntegrator> _stateIntegrators;
+
+    public IReadOnlyList<Particle> Particles => _particles;
+    public IReadOnlyList<ParticleStateIntegrator> StateIntegrators => _stateIntegrators;
+
+    public int Density { get; set; } = 60;
+    public int MaxParticleTTL { get; set; } = 120;
+
+    public Texture Texture { get; set; }
+    public ParticleStateInitializer ParticleStateInitializer { get; set; }
+
+    public ParticleEmitter(Texture texture, ParticleStateInitializer initializer = null)
     {
-        public delegate void ParticleStateIntegrator(Particle particle, float deltaTime);
+        if (texture.Disposed)
+            throw new ArgumentException("Texture provided was already disposed.", nameof(texture));
 
-        private readonly List<Particle> _particles;
-        private readonly List<ParticleStateIntegrator> _stateIntegrators;
+        Texture = texture;
+        Texture.UseBlending = true;
+        Texture.SetBlendingMode(BlendingPreset.NormalAddAlpha);
 
-        public IReadOnlyList<Particle> Particles => _particles;
-        public IReadOnlyList<ParticleStateIntegrator> StateIntegrators => _stateIntegrators;
+        _stateIntegrators = new List<ParticleStateIntegrator>();
+        _particles = new List<Particle>(1200);
 
-        public int Density { get; set; } = 60;
-        public int MaxParticleTTL { get; set; } = 120;
+        ParticleStateInitializer = initializer ?? new RandomizedStateInitializer(this);
+    }
 
-        public Texture Texture { get; set; }
-        public ParticleStateInitializer ParticleStateInitializer { get; set; }
+    public void Emit(Vector2 initialPosition, int count)
+    {
+        if (Particles.Count >= Density)
+            return;
 
-        public ParticleEmitter(Texture texture, ParticleStateInitializer initializer = null)
+        for (var i = 0; i < count; i++)
+            CreateParticle(initialPosition);
+    }
+
+    public void RegisterIntegrator(ParticleStateIntegrator integrator)
+    {
+        if (integrator == null)
+            throw new ArgumentNullException(nameof(integrator), "Cannot register a null integrator.");
+
+        if (!_stateIntegrators.Contains(integrator))
+            _stateIntegrators.Add(integrator);
+    }
+
+    public void UnregisterIntegrator(ParticleStateIntegrator integrator)
+    {
+        if (integrator == null)
+            throw new ArgumentNullException(nameof(integrator), "Cannot unregister a null intergrator.");
+
+        if (_stateIntegrators.Contains(integrator))
+            _stateIntegrators.Remove(integrator);
+    }
+
+    public void UnregisterAllIntegrators()
+        => _stateIntegrators.Clear();
+
+    public virtual void Update(float delta)
+    {
+        for (var i = 0; i < Particles.Count; i++)
         {
-            if (texture.Disposed)
-                throw new ArgumentException("Texture provided was already disposed.", nameof(texture));
+            var part = Particles[i];
 
-            Texture = texture;
-            Texture.UseBlending = true;
-            Texture.SetBlendingMode(BlendingPreset.NormalAddAlpha);
+            foreach (var integrator in StateIntegrators)
+                integrator(part, delta);
 
-            _stateIntegrators = new List<ParticleStateIntegrator>();
-            _particles = new List<Particle>(1200);
+            part.TTL--;
 
-            ParticleStateInitializer = initializer ?? new RandomizedStateInitializer(this);
+            if (part.TTL <= 0)
+                _particles.RemoveAt(i);
         }
+    }
 
-        public void Emit(Vector2 initialPosition, int count)
+    public virtual void Draw(RenderContext context)
+    {
+        for (var i = 0; i < Particles.Count; i++)
         {
-            if (Particles.Count >= Density)
-                return;
+            var part = Particles[i];
 
-            for (var i = 0; i < count; i++)
-                CreateParticle(initialPosition);
-        }
+            Texture.ColorMask = part.Color;
 
-        public void RegisterIntegrator(ParticleStateIntegrator integrator)
-        {
-            if (integrator == null)
-                throw new ArgumentNullException(nameof(integrator), "Cannot register a null integrator.");
-
-            if (!_stateIntegrators.Contains(integrator))
-                _stateIntegrators.Add(integrator);
-        }
-
-        public void UnregisterIntegrator(ParticleStateIntegrator integrator)
-        {
-            if (integrator == null)
-                throw new ArgumentNullException(nameof(integrator), "Cannot unregister a null intergrator.");
-
-            if (_stateIntegrators.Contains(integrator))
-                _stateIntegrators.Remove(integrator);
-        }
-
-        public void UnregisterAllIntegrators()
-            => _stateIntegrators.Clear();
-
-        public virtual void Update(float delta)
-        {
-            for (var i = 0; i < Particles.Count; i++)
+            if (part.TextureSourceRectangle.IsEmpty)
             {
-                var part = Particles[i];
-
-                foreach (var integrator in StateIntegrators)
-                    integrator(part, delta);
-
-                part.TTL--;
-
-                if (part.TTL <= 0)
-                    _particles.RemoveAt(i);
+                context.DrawTexture(
+                    Texture,
+                    part.Position,
+                    part.Scale,
+                    part.Origin,
+                    part.Rotation
+                );
             }
-        }
-
-        public virtual void Draw(RenderContext context)
-        {
-            for (var i = 0; i < Particles.Count; i++)
+            else
             {
-                var part = Particles[i];
-
-                Texture.ColorMask = part.Color;
-
-                if (part.TextureSourceRectangle.IsEmpty)
-                {
-                    context.DrawTexture(
-                        Texture,
-                        part.Position,
-                        part.Scale,
-                        part.Origin,
-                        part.Rotation
-                    );
-                }
-                else
-                {
-                    context.DrawTexture(
-                        Texture,
-                        part.Position,
-                        part.Scale,
-                        part.Origin,
-                        part.Rotation,
-                        part.TextureSourceRectangle
-                    );
-                }
-
-                Texture.ColorMask = Color.White;
+                context.DrawTexture(
+                    Texture,
+                    part.Position,
+                    part.Scale,
+                    part.Origin,
+                    part.Rotation,
+                    part.TextureSourceRectangle
+                );
             }
-        }
 
-        protected virtual void CreateParticle(Vector2 initialPosition)
-        {
-            _particles.Add(
-                ParticleStateInitializer.CreateParticle(initialPosition)
-            );
+            Texture.ColorMask = Color.White;
         }
+    }
+
+    protected virtual void CreateParticle(Vector2 initialPosition)
+    {
+        _particles.Add(
+            ParticleStateInitializer.CreateParticle(initialPosition)
+        );
     }
 }

@@ -1,161 +1,160 @@
-﻿using System;
+﻿namespace Chroma.NALO;
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using Chroma.NALO.Syscalls;
 
-namespace Chroma.NALO
+internal class NativeLibraryRegistry
 {
-    internal class NativeLibraryRegistry
+    private readonly List<string> _lookupPaths;
+    private readonly Dictionary<string, NativeLibrary> _libRegistry;
+
+    public NativeLibraryRegistry(IEnumerable<string> lookupPaths)
     {
-        private readonly List<string> _lookupPaths;
-        private readonly Dictionary<string, NativeLibrary> _libRegistry;
+        _lookupPaths = new List<string>(lookupPaths);
+        _libRegistry = new Dictionary<string, NativeLibrary>();
+    }
 
-        public NativeLibraryRegistry(IEnumerable<string> lookupPaths)
+    public NativeLibrary Register(string fileName)
+    {
+        var lookupStack = new Stack<string>(_lookupPaths);
+
+        while (lookupStack.Count != 0)
         {
-            _lookupPaths = new List<string>(lookupPaths);
-            _libRegistry = new Dictionary<string, NativeLibrary>();
+            var lookupDirectory = lookupStack.Pop();
+            var libPath = Path.Combine(lookupDirectory, fileName);
+
+            if (!File.Exists(libPath))
+                continue;
+
+            var handle = RegisterPlatformSpecific(libPath, out var symbolLookup);
+            var nativeInfo = new NativeLibrary(libPath, handle, symbolLookup);
+
+            _libRegistry.Add(fileName, nativeInfo);
+            return nativeInfo;
         }
 
-        public NativeLibrary Register(string fileName)
+        throw new NativeLibraryException($"Failed to find '{fileName}' at the provided lookup paths!");
+    }
+
+    public NativeLibrary TryRegister(params string[] fileNames)
+    {
+        foreach (var fileName in fileNames)
         {
-            var lookupStack = new Stack<string>(_lookupPaths);
-
-            while (lookupStack.Count != 0)
+            try
             {
-                var lookupDirectory = lookupStack.Pop();
-                var libPath = Path.Combine(lookupDirectory, fileName);
-
-                if (!File.Exists(libPath))
-                    continue;
-
-                var handle = RegisterPlatformSpecific(libPath, out var symbolLookup);
-                var nativeInfo = new NativeLibrary(libPath, handle, symbolLookup);
-
-                _libRegistry.Add(fileName, nativeInfo);
-                return nativeInfo;
+                return Register(fileName);
             }
-
-            throw new NativeLibraryException($"Failed to find '{fileName}' at the provided lookup paths!");
-        }
-
-        public NativeLibrary TryRegister(params string[] fileNames)
-        {
-            foreach (var fileName in fileNames)
+            catch (NativeLoaderException)
             {
-                try
-                {
-                    return Register(fileName);
-                }
-                catch (NativeLoaderException)
-                {
-                    /* Skip to next... */
-                }
+                /* Skip to next... */
             }
-
-            throw new NativeLibraryException(
-                "Failed to find any provided file name variant at the provided lookup paths!");
         }
 
-        public NativeLibrary Retrieve(string fileName)
-        {
-            if (!_libRegistry.ContainsKey(fileName))
-                throw new NativeLibraryException($"Library file '{fileName}' was never registered.");
+        throw new NativeLibraryException(
+            "Failed to find any provided file name variant at the provided lookup paths!");
+    }
 
-            return _libRegistry[fileName];
-        }
+    public NativeLibrary Retrieve(string fileName)
+    {
+        if (!_libRegistry.ContainsKey(fileName))
+            throw new NativeLibraryException($"Library file '{fileName}' was never registered.");
 
-        public NativeLibrary TryRetrieve(bool tryRegisterIfNotFound = true, params string[] fileNames)
+        return _libRegistry[fileName];
+    }
+
+    public NativeLibrary TryRetrieve(bool tryRegisterIfNotFound = true, params string[] fileNames)
+    {
+        foreach (var fileName in fileNames)
         {
-            foreach (var fileName in fileNames)
+            try
             {
-                try
+                return Retrieve(fileName);
+            }
+            catch (NativeLoaderException)
+            {
+                if (tryRegisterIfNotFound)
                 {
-                    return Retrieve(fileName);
-                }
-                catch (NativeLoaderException)
-                {
-                    if (tryRegisterIfNotFound)
+                    try
                     {
-                        try
-                        {
-                            return Register(fileName);
-                        }
-                        catch (NativeLoaderException)
-                        {
-                            /* Skip to next... */
-                        }
+                        return Register(fileName);
                     }
-                    /* Skip to next... */
+                    catch (NativeLoaderException)
+                    {
+                        /* Skip to next... */
+                    }
                 }
+                /* Skip to next... */
             }
+        }
             
-            throw new NativeLibraryException(
-                $"None of the provided file names were found. Tried: {string.Join(",", fileNames)}"
-            );
-        }
+        throw new NativeLibraryException(
+            $"None of the provided file names were found. Tried: {string.Join(",", fileNames)}"
+        );
+    }
 
-        private IntPtr RegisterPlatformSpecific(string absoluteFilePath,
-            out NativeLibrary.SymbolLookupDelegate symbolLookup)
+    private IntPtr RegisterPlatformSpecific(string absoluteFilePath,
+        out NativeLibrary.SymbolLookupDelegate symbolLookup)
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                var handle = Posix.dlopen(absoluteFilePath, Posix.RTLD_LAZY | Posix.RTLD_GLOBAL);
+            var handle = Posix.dlopen(absoluteFilePath, Posix.RTLD_LAZY | Posix.RTLD_GLOBAL);
 
-                if (handle == IntPtr.Zero)
-                    throw new NativeLibraryException(
-                        $"Failed to load '{absoluteFilePath}'. dlerror: {Marshal.PtrToStringAnsi(Posix.dlerror())}");
+            if (handle == IntPtr.Zero)
+                throw new NativeLibraryException(
+                    $"Failed to load '{absoluteFilePath}'. dlerror: {Marshal.PtrToStringAnsi(Posix.dlerror())}");
 
-                symbolLookup = Posix.dlsym;
-                return handle;
-            }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                var handle = Posix.dlopen(absoluteFilePath, Posix.RTLD_LAZY | Posix.RTLD_GLOBAL);
-
-                if (handle == IntPtr.Zero)
-                    throw new NativeLibraryException(
-                        $"Failed to load '{absoluteFilePath}'. dlerror: {Marshal.PtrToStringAnsi(Posix.dlerror())}");
-
-                symbolLookup = Posix.dlsym;
-                return handle;
-            }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                var dllDirectory = Path.GetDirectoryName(absoluteFilePath);
-                var fileName = Path.GetFileName(absoluteFilePath);
-
-                Windows.SetDllDirectory(dllDirectory);
-                var handle = Windows.LoadLibrary(fileName);
-
-                if (handle == IntPtr.Zero)
-                {
-                    var error = Windows.GetLastError();
-
-                    if (error == 0x000000C1 || error == 0x0000007E)
-                    {
-                        throw new NativeLibraryException(
-                            $"Failed to load '{absoluteFilePath}'. " +
-                            $"Make sure your system has VC/VC++ runtime redistributables installed."
-                        );
-                    }
-                    else
-                    {
-                        throw new NativeLibraryException(
-                            $"Failed to load '{absoluteFilePath}' - " +
-                            $"LoadLibrary returned HRESULT 0x{error:X8}. " +
-                            $"If you feel adventurous you can look it up using your favorite search engine."
-                        );
-                    }
-                }
-
-                symbolLookup = Windows.GetProcAddress;
-                return handle;
-            }
-
-            throw new NativeLibraryException($"Platform '{Environment.OSVersion.Platform}' is not supported.");
+            symbolLookup = Posix.dlsym;
+            return handle;
         }
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            var handle = Posix.dlopen(absoluteFilePath, Posix.RTLD_LAZY | Posix.RTLD_GLOBAL);
+
+            if (handle == IntPtr.Zero)
+                throw new NativeLibraryException(
+                    $"Failed to load '{absoluteFilePath}'. dlerror: {Marshal.PtrToStringAnsi(Posix.dlerror())}");
+
+            symbolLookup = Posix.dlsym;
+            return handle;
+        }
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            var dllDirectory = Path.GetDirectoryName(absoluteFilePath);
+            var fileName = Path.GetFileName(absoluteFilePath);
+
+            Windows.SetDllDirectory(dllDirectory);
+            var handle = Windows.LoadLibrary(fileName);
+
+            if (handle == IntPtr.Zero)
+            {
+                var error = Windows.GetLastError();
+
+                if (error == 0x000000C1 || error == 0x0000007E)
+                {
+                    throw new NativeLibraryException(
+                        $"Failed to load '{absoluteFilePath}'. " +
+                        $"Make sure your system has VC/VC++ runtime redistributables installed."
+                    );
+                }
+                else
+                {
+                    throw new NativeLibraryException(
+                        $"Failed to load '{absoluteFilePath}' - " +
+                        $"LoadLibrary returned HRESULT 0x{error:X8}. " +
+                        $"If you feel adventurous you can look it up using your favorite search engine."
+                    );
+                }
+            }
+
+            symbolLookup = Windows.GetProcAddress;
+            return handle;
+        }
+
+        throw new NativeLibraryException($"Platform '{Environment.OSVersion.Platform}' is not supported.");
     }
 }

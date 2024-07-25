@@ -1,9 +1,8 @@
-﻿namespace Chroma.Audio
+﻿namespace Chroma.Audio;
+
+public enum PlaybackStatus
 {
-    public enum PlaybackStatus
-    {
-        Stopped,
-        Playing,
-        Paused
-    }
+    Stopped,
+    Playing,
+    Paused
 }

@@ -1,24 +1,23 @@
-﻿using System;
+﻿namespace Chroma.ContentManagement;
+
+using System;
 using System.IO;
 using Chroma.MemoryManagement;
 
-namespace Chroma.ContentManagement
+public interface IContentProvider : IDisposable
 {
-    public interface IContentProvider : IDisposable
-    {
-        string ContentRoot { get; }
+    string ContentRoot { get; }
 
-        T Load<T>(string relativePath, params object[] args) where T : DisposableResource;
-        void Unload<T>(T resource) where T : DisposableResource;
+    T Load<T>(string relativePath, params object[] args) where T : DisposableResource;
+    void Unload<T>(T resource) where T : DisposableResource;
 
-        byte[] Read(string relativePath);
-        Stream Open(string relativePath);
+    byte[] Read(string relativePath);
+    Stream Open(string relativePath);
 
-        void Track<T>(T resource) where T : DisposableResource;
-        void StopTracking<T>(T resource) where T : DisposableResource;
+    void Track<T>(T resource) where T : DisposableResource;
+    void StopTracking<T>(T resource) where T : DisposableResource;
 
-        void RegisterImporter<T>(Func<string, object[], object> importer) where T : DisposableResource;
-        void UnregisterImporter<T>() where T : DisposableResource;
-        bool IsImporterPresent<T>() where T : DisposableResource;
-    }
+    void RegisterImporter<T>(Func<string, object[], object> importer) where T : DisposableResource;
+    void UnregisterImporter<T>() where T : DisposableResource;
+    bool IsImporterPresent<T>() where T : DisposableResource;
 }

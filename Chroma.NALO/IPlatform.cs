@@ -1,9 +1,8 @@
-﻿namespace Chroma.NALO
+﻿namespace Chroma.NALO;
+
+internal interface IPlatform
 {
-    internal interface IPlatform
-    {
-        NativeLibraryRegistry Registry { get; }
+    NativeLibraryRegistry Registry { get; }
         
-        void Register(string libFilePath);
-    }
+    void Register(string libFilePath);
 }

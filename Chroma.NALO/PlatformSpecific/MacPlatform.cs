@@ -1,36 +1,35 @@
-﻿using System.Collections.Generic;
+﻿namespace Chroma.NALO.PlatformSpecific;
+
+using System.Collections.Generic;
 using System.IO;
 
-namespace Chroma.NALO.PlatformSpecific
+internal class MacPlatform : IPlatform
 {
-    internal class MacPlatform : IPlatform
+    public NativeLibraryRegistry Registry { get; }
+
+    public MacPlatform()
     {
-        public NativeLibraryRegistry Registry { get; }
-
-        public MacPlatform()
+        Directory.SetCurrentDirectory(NativeLibraryExtractor.LibraryRoot);
+        var paths = new List<string>
         {
-            Directory.SetCurrentDirectory(NativeLibraryExtractor.LibraryRoot);
-            var paths = new List<string>
-            {
-                NativeLibraryExtractor.LibraryRoot
-            };
+            NativeLibraryExtractor.LibraryRoot
+        };
             
-            Registry = new NativeLibraryRegistry(paths);
-        }
+        Registry = new NativeLibraryRegistry(paths);
+    }
 
-        public void Register(string libFilePath)
+    public void Register(string libFilePath)
+    {
+        var fileName = Path.GetFileName(libFilePath);
+            
+        var namesToTry = new[]
         {
-            var fileName = Path.GetFileName(libFilePath);
-            
-            var namesToTry = new[]
-            {
-                fileName,
-                $"{fileName}.dylib",
-                $"lib{fileName}",
-                $"lib{fileName}.dylib"
-            };
+            fileName,
+            $"{fileName}.dylib",
+            $"lib{fileName}",
+            $"lib{fileName}.dylib"
+        };
 
-            Registry.TryRegister(namesToTry);
-        }
+        Registry.TryRegister(namesToTry);
     }
 }

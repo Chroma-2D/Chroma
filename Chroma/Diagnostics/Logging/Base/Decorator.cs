@@ -1,7 +1,6 @@
-﻿namespace Chroma.Diagnostics.Logging.Base
+﻿namespace Chroma.Diagnostics.Logging.Base;
+
+public abstract class Decorator
 {
-    public abstract class Decorator
-    {
-        public abstract string Decorate(LogLevel logLevel, string input, string originalMessage, Sink sink);
-    }
+    public abstract string Decorate(LogLevel logLevel, string input, string originalMessage, Sink sink);
 }

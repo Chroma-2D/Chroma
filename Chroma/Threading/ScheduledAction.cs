@@ -1,9 +1,8 @@
-﻿using System;
+﻿namespace Chroma.Threading;
 
-namespace Chroma.Threading
+using System;
+
+internal sealed class ScheduledAction : SchedulerEntry
 {
-    internal sealed class ScheduledAction : SchedulerEntry
-    {
-        public Action Action { get; set; }
-    }
+    public Action Action { get; set; }
 }

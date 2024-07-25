@@ -1,8 +1,7 @@
-﻿namespace Chroma.Graphics
+﻿namespace Chroma.Graphics;
+
+public enum ShapeMode
 {
-    public enum ShapeMode
-    {
-        Fill,
-        Stroke
-    }
+    Fill,
+    Stroke
 }

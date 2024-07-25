@@ -1,10 +1,9 @@
-﻿namespace Chroma.Graphics.TextRendering.TrueType
+﻿namespace Chroma.Graphics.TextRendering.TrueType;
+
+public class FreeTypeException : FrameworkException
 {
-    public class FreeTypeException : FrameworkException
+    internal FreeTypeException(string message) 
+        : base(message)
     {
-        internal FreeTypeException(string message) 
-            : base(message)
-        {
-        }
     }
 }

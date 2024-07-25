@@ -1,36 +1,35 @@
-﻿using System;
+﻿namespace Chroma.Diagnostics.Logging.Sinks;
+
+using System;
 using System.IO;
 using Chroma.Diagnostics.Logging.Base;
 
-namespace Chroma.Diagnostics.Logging.Sinks
+public class StreamSink : Sink, IDisposable
 {
-    public class StreamSink : Sink, IDisposable
+    private StreamWriter StreamWriter { get; }
+
+    public StreamSink(Stream stream)
     {
-        private StreamWriter StreamWriter { get; }
+        StreamWriter = new StreamWriter(stream) {AutoFlush = true};
+    }
 
-        public StreamSink(Stream stream)
+    public override void Write(LogLevel logLevel, string message, params object[] args)
+    {
+        StreamWriter.WriteLine(message);
+
+        if (args.Length == 1)
         {
-            StreamWriter = new StreamWriter(stream) {AutoFlush = true};
-        }
-
-        public override void Write(LogLevel logLevel, string message, params object[] args)
-        {
-            StreamWriter.WriteLine(message);
-
-            if (args.Length == 1)
+            if (args[0] is Exception e)
             {
-                if (args[0] is Exception e)
-                {
-                    StreamWriter.WriteLine(
-                        Formatting.ExceptionForLogging(e, true)
-                    );
-                }
+                StreamWriter.WriteLine(
+                    Formatting.ExceptionForLogging(e, true)
+                );
             }
         }
+    }
 
-        public void Dispose()
-        {
-            StreamWriter?.Dispose();
-        }
+    public void Dispose()
+    {
+        StreamWriter?.Dispose();
     }
 }

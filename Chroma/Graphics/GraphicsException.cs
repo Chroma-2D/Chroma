@@ -1,10 +1,9 @@
-namespace Chroma.Graphics
+namespace Chroma.Graphics;
+
+public class GraphicsException : FrameworkException
 {
-    public class GraphicsException : FrameworkException
+    internal GraphicsException(string message) 
+        : base(message)
     {
-        internal GraphicsException(string message) 
-            : base(message)
-        {
-        }
     }
 }

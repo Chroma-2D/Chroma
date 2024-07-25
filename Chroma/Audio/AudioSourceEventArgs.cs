@@ -1,16 +1,15 @@
-﻿using Chroma.Audio.Sources;
+﻿namespace Chroma.Audio;
 
-namespace Chroma.Audio
+using Chroma.Audio.Sources;
+
+public sealed class AudioSourceEventArgs
 {
-    public sealed class AudioSourceEventArgs
-    {
-        public AudioSource Source { get; }
-        public bool IsLooping { get; }
+    public AudioSource Source { get; }
+    public bool IsLooping { get; }
 
-        internal AudioSourceEventArgs(AudioSource source, bool isLooping)
-        {
-            Source = source;
-            IsLooping = isLooping;
-        }
+    internal AudioSourceEventArgs(AudioSource source, bool isLooping)
+    {
+        Source = source;
+        IsLooping = isLooping;
     }
 }

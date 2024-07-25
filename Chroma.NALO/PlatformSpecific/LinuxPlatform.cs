@@ -1,38 +1,37 @@
-﻿using System.Collections.Generic;
+﻿namespace Chroma.NALO.PlatformSpecific;
+
+using System.Collections.Generic;
 using System.IO;
 
-namespace Chroma.NALO.PlatformSpecific
+internal class LinuxPlatform : IPlatform
 {
-    internal class LinuxPlatform : IPlatform
+    public NativeLibraryRegistry Registry { get; }
+
+    public LinuxPlatform()
     {
-        public NativeLibraryRegistry Registry { get; }
-
-        public LinuxPlatform()
+        var paths = new List<string>
         {
-            var paths = new List<string>
-            {
-                "/lib",
-                "/usr/lib",
-                "/usr/local/lib",
-                NativeLibraryExtractor.LibraryRoot
-            };
+            "/lib",
+            "/usr/lib",
+            "/usr/local/lib",
+            NativeLibraryExtractor.LibraryRoot
+        };
 
-            Registry = new NativeLibraryRegistry(paths);
-        }
+        Registry = new NativeLibraryRegistry(paths);
+    }
 
-        public void Register(string libFilePath)
+    public void Register(string libFilePath)
+    {
+        var fileName = Path.GetFileName(libFilePath);
+
+        var namesToTry = new[]
         {
-            var fileName = Path.GetFileName(libFilePath);
+            fileName,
+            $"{fileName}.so",
+            $"lib{fileName}",
+            $"lib{fileName}.so"
+        };
 
-            var namesToTry = new[]
-            {
-                fileName,
-                $"{fileName}.so",
-                $"lib{fileName}",
-                $"lib{fileName}.so"
-            };
-
-            Registry.TryRegister(namesToTry);
-        }
+        Registry.TryRegister(namesToTry);
     }
 }

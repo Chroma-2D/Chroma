@@ -1,10 +1,9 @@
-﻿using System.Reflection;
+﻿namespace Chroma.Diagnostics.Logging;
 
-namespace Chroma.Diagnostics.Logging
+using System.Reflection;
+
+internal class LogInfo
 {
-    internal class LogInfo
-    {
-        internal Assembly OwningAssembly { get; set; }
-        internal Log Log { get; set; }
-    }
+    internal Assembly OwningAssembly { get; set; }
+    internal Log Log { get; set; }
 }

@@ -1,9 +1,8 @@
-﻿namespace Chroma.Windowing
+﻿namespace Chroma.Windowing;
+
+public enum WindowState
 {
-    public enum WindowState
-    {
-        Normal,
-        Minimized,
-        Maximized
-    }
+    Normal,
+    Minimized,
+    Maximized
 }

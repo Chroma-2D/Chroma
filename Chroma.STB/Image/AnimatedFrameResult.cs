@@ -1,7 +1,6 @@
-﻿namespace Chroma.STB.Image
+﻿namespace Chroma.STB.Image;
+
+internal class AnimatedFrameResult : ImageResult
 {
-    internal class AnimatedFrameResult : ImageResult
-    {
-        public int Delay { get; set; }
-    }
+    public int Delay { get; set; }
 }

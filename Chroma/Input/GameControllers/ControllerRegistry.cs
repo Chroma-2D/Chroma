@@ -1,79 +1,78 @@
-﻿using System;
+﻿namespace Chroma.Input.GameControllers;
+
+using System;
 using System.Collections.Generic;
 
-namespace Chroma.Input.GameControllers
+internal sealed class ControllerRegistry
 {
-    internal sealed class ControllerRegistry
+    internal const int MaxSupportedPlayers = 24;
+
+    private static readonly Lazy<ControllerRegistry> _lazyInitializer = new(
+        () => new ControllerRegistry()
+    );
+
+    private readonly Dictionary<IntPtr, ControllerDriver> _controllers;
+    private readonly Dictionary<int, IntPtr> _playerMappings;
+
+    internal int DeviceCount => _controllers.Count;
+
+    public static ControllerRegistry Instance => _lazyInitializer.Value;
+
+    private ControllerRegistry()
     {
-        internal const int MaxSupportedPlayers = 24;
+        _controllers = new Dictionary<IntPtr, ControllerDriver>();
+        _playerMappings = new Dictionary<int, IntPtr>(MaxSupportedPlayers);
 
-        private static readonly Lazy<ControllerRegistry> _lazyInitializer = new(
-            () => new ControllerRegistry()
-        );
+        for (var i = 0; i < MaxSupportedPlayers; i++)
+            _playerMappings.Add(i, IntPtr.Zero);
+    }
 
-        private readonly Dictionary<IntPtr, ControllerDriver> _controllers;
-        private readonly Dictionary<int, IntPtr> _playerMappings;
+    public void Register(IntPtr instance, ControllerDriver controller)
+    {
+        if (_controllers.ContainsKey(instance))
+            throw new InvalidOperationException("Duplicate controller instance pointer.");
 
-        internal int DeviceCount => _controllers.Count;
+        if (_playerMappings[controller.Info.PlayerIndex] != IntPtr.Zero)
+            throw new InvalidOperationException("Duplicate controller player index.");
 
-        public static ControllerRegistry Instance => _lazyInitializer.Value;
+        _playerMappings[controller.Info.PlayerIndex] = instance;
+        _controllers.Add(instance, controller);
+    }
 
-        private ControllerRegistry()
-        {
-            _controllers = new Dictionary<IntPtr, ControllerDriver>();
-            _playerMappings = new Dictionary<int, IntPtr>(MaxSupportedPlayers);
+    public void Unregister(IntPtr instance)
+    {
+        if (!_controllers.ContainsKey(instance))
+            throw new InvalidOperationException($"Controller with instance ID {instance} does not exist.");
 
-            for (var i = 0; i < MaxSupportedPlayers; i++)
-                _playerMappings.Add(i, IntPtr.Zero);
-        }
+        var playerIndex = _controllers[instance].Info.PlayerIndex;
+        _playerMappings[playerIndex] = IntPtr.Zero;
 
-        public void Register(IntPtr instance, ControllerDriver controller)
-        {
-            if (_controllers.ContainsKey(instance))
-                throw new InvalidOperationException("Duplicate controller instance pointer.");
+        _controllers.Remove(instance);
+    }
 
-            if (_playerMappings[controller.Info.PlayerIndex] != IntPtr.Zero)
-                throw new InvalidOperationException("Duplicate controller player index.");
+    public int FindFirstFreePlayerSlot()
+    {
+        for (var i = 0; i < _playerMappings.Count; i++)
+            if (_playerMappings[i] == IntPtr.Zero)
+                return i;
 
-            _playerMappings[controller.Info.PlayerIndex] = instance;
-            _controllers.Add(instance, controller);
-        }
+        return -1;
+    }
 
-        public void Unregister(IntPtr instance)
-        {
-            if (!_controllers.ContainsKey(instance))
-                throw new InvalidOperationException($"Controller with instance ID {instance} does not exist.");
+    public ControllerDriver GetControllerDriver(int playerIndex)
+    {
+        if (!_playerMappings.ContainsKey(playerIndex) || _playerMappings[playerIndex] == IntPtr.Zero)
+            return null;
 
-            var playerIndex = _controllers[instance].Info.PlayerIndex;
-            _playerMappings[playerIndex] = IntPtr.Zero;
+        var instancePointer = _playerMappings[playerIndex];
+        return _controllers[instancePointer];
+    }
 
-            _controllers.Remove(instance);
-        }
+    internal ControllerDriver GetControllerDriverByPointer(IntPtr instancePointer)
+    {
+        if (!_controllers.ContainsKey(instancePointer))
+            return null;
 
-        public int FindFirstFreePlayerSlot()
-        {
-            for (var i = 0; i < _playerMappings.Count; i++)
-                if (_playerMappings[i] == IntPtr.Zero)
-                    return i;
-
-            return -1;
-        }
-
-        public ControllerDriver GetControllerDriver(int playerIndex)
-        {
-            if (!_playerMappings.ContainsKey(playerIndex) || _playerMappings[playerIndex] == IntPtr.Zero)
-                return null;
-
-            var instancePointer = _playerMappings[playerIndex];
-            return _controllers[instancePointer];
-        }
-
-        internal ControllerDriver GetControllerDriverByPointer(IntPtr instancePointer)
-        {
-            if (!_controllers.ContainsKey(instancePointer))
-                return null;
-
-            return _controllers[instancePointer];
-        }
+        return _controllers[instancePointer];
     }
 }

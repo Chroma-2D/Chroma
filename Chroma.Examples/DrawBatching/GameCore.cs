@@ -1,4 +1,6 @@
-﻿using System;
+﻿namespace DrawBatching;
+
+using System;
 using System.Drawing;
 using System.IO;
 using System.Numerics;
@@ -9,63 +11,60 @@ using Chroma.Graphics;
 using Chroma.Graphics.Batching;
 using Chroma.Input;
 
-namespace DrawBatching
+public class GameCore : Game
 {
-    public class GameCore : Game
+    private Texture _texA;
+    private Texture _texB;
+    private Texture _texC;
+
+    private DrawOrder _order;
+
+    public GameCore() : base(new(false, false))
     {
-        private Texture _texA;
-        private Texture _texB;
-        private Texture _texC;
+    }
 
-        private DrawOrder _order;
+    protected override IContentProvider InitializeContentPipeline()
+    {
+        return new FileSystemContentProvider(
+            Path.Combine(AppContext.BaseDirectory, "../../../../_common")
+        );
+    }
 
-        public GameCore() : base(new(false, false))
-        {
-        }
-
-        protected override IContentProvider InitializeContentPipeline()
-        {
-            return new FileSystemContentProvider(
-                Path.Combine(AppContext.BaseDirectory, "../../../../_common")
-            );
-        }
-
-        protected override void Initialize(IContentProvider content)
-        {
-            _texA = content.Load<Texture>("Textures/burg.png");
+    protected override void Initialize(IContentProvider content)
+    {
+        _texA = content.Load<Texture>("Textures/burg.png");
             
-            _texB = content.Load<Texture>("Textures/pentagram.png");
-            _texB.VirtualResolution = new Size(256, 256);
-            _texB.FilteringMode = TextureFilteringMode.NearestNeighbor;
+        _texB = content.Load<Texture>("Textures/pentagram.png");
+        _texB.VirtualResolution = new Size(256, 256);
+        _texB.FilteringMode = TextureFilteringMode.NearestNeighbor;
             
-            _texC = content.Load<Texture>("Textures/walls.jpeg");
-        }
+        _texC = content.Load<Texture>("Textures/walls.jpeg");
+    }
 
-        protected override void Draw(RenderContext context)
+    protected override void Draw(RenderContext context)
+    {
+        context.Batch((ctx) => ctx.DrawTexture(_texA, new Vector2(48, 48), Vector2.One, Vector2.Zero, 0f), 0);
+        context.Batch((ctx) => ctx.DrawTexture(_texC, new Vector2(72, 72), Vector2.One, Vector2.Zero, 0f), 1);
+        context.Batch((ctx) => ctx.DrawTexture(_texB, new Vector2(96, 96), Vector2.One, Vector2.Zero, 0f), 2);
+
+        context.DrawBatch(_order);
+
+        context.DrawString(
+            "Use <F1> to change the order the batch in back-to-front fashion.\n" +
+            "Use <F2> to change the order the batch in front-to-back fashion.",
+            new Vector2(8)
+        );
+    }
+
+    protected override void KeyPressed(KeyEventArgs e)
+    {
+        if (e.KeyCode == KeyCode.F1)
         {
-            context.Batch((ctx) => ctx.DrawTexture(_texA, new Vector2(48, 48), Vector2.One, Vector2.Zero, 0f), 0);
-            context.Batch((ctx) => ctx.DrawTexture(_texC, new Vector2(72, 72), Vector2.One, Vector2.Zero, 0f), 1);
-            context.Batch((ctx) => ctx.DrawTexture(_texB, new Vector2(96, 96), Vector2.One, Vector2.Zero, 0f), 2);
-
-            context.DrawBatch(_order);
-
-            context.DrawString(
-                "Use <F1> to change the order the batch in back-to-front fashion.\n" +
-                "Use <F2> to change the order the batch in front-to-back fashion.",
-                new Vector2(8)
-            );
+            _order = DrawOrder.BackToFront;
         }
-
-        protected override void KeyPressed(KeyEventArgs e)
+        else if(e.KeyCode == KeyCode.F2)
         {
-            if (e.KeyCode == KeyCode.F1)
-            {
-                _order = DrawOrder.BackToFront;
-            }
-            else if(e.KeyCode == KeyCode.F2)
-            {
-                _order = DrawOrder.FrontToBack;
-            }
+            _order = DrawOrder.FrontToBack;
         }
     }
 }

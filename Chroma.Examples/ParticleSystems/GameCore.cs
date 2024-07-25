@@ -1,4 +1,6 @@
-﻿using System;
+﻿namespace ParticleSystems;
+
+using System;
 using System.IO;
 using System.Numerics;
 using Chroma;
@@ -9,87 +11,84 @@ using Chroma.Graphics;
 using Chroma.Graphics.Particles;
 using Chroma.Input;
 
-namespace ParticleSystems
+public class GameCore : Game
 {
-    public class GameCore : Game
+    private Texture _particle;
+    private RenderTarget _target;
+    private ParticleEmitter _emitter;
+
+    public GameCore() : base(new(false, false))
     {
-        private Texture _particle;
-        private RenderTarget _target;
-        private ParticleEmitter _emitter;
+    }
 
-        public GameCore() : base(new(false, false))
+    protected override IContentProvider InitializeContentPipeline()
+    {
+        return new FileSystemContentProvider(
+            Path.Combine(AppContext.BaseDirectory, "../../../../_common")
+        );
+    }
+
+    // Please see Chroma/Graphics/Particles/StateInitializers/RandomizedStateInitializer
+    // for how to implement a working particle state initializer.
+    //
+    // You can assign a new particle state initializer while instantiating
+    // the particle emitter.
+    //
+    protected override void Initialize(IContentProvider content)
+    {
+        _target = new RenderTarget(Window.Width, Window.Height);
+
+        _particle = content.Load<Texture>("Textures/pentagram.png");
+        _particle.FilteringMode = TextureFilteringMode.NearestNeighbor;
+
+        _emitter = new ParticleEmitter(_particle)
         {
-        }
+            Density = 300
+        };
 
-        protected override IContentProvider InitializeContentPipeline()
+        _emitter.RegisterIntegrator(BuiltInParticleStateIntegrators.ScaleDown);
+        _emitter.RegisterIntegrator(BuiltInParticleStateIntegrators.FadeOut);
+        _emitter.RegisterIntegrator(CustomStateIntegrator);
+    }
+
+    protected override void Draw(RenderContext context)
+    {
+        context.RenderTo(_target, (ctx, tgt) =>
         {
-            return new FileSystemContentProvider(
-                Path.Combine(AppContext.BaseDirectory, "../../../../_common")
-            );
-        }
+            ctx.Clear(Color.Black);
+            _emitter.Draw(context);
+        });
 
-        // Please see Chroma/Graphics/Particles/StateInitializers/RandomizedStateInitializer
-        // for how to implement a working particle state initializer.
-        //
-        // You can assign a new particle state initializer while instantiating
-        // the particle emitter.
-        //
-        protected override void Initialize(IContentProvider content)
-        {
-            _target = new RenderTarget(Window.Width, Window.Height);
+        context.DrawTexture(_target, Vector2.Zero, Vector2.One, Vector2.Zero, 0);
 
-            _particle = content.Load<Texture>("Textures/pentagram.png");
-            _particle.FilteringMode = TextureFilteringMode.NearestNeighbor;
+        context.DrawString(
+            "Move mouse around the window to change particle spawn position.\n" +
+            "Press <LMB> to activate the particle emitter.",
+            new Vector2(8)
+        );
+    }
 
-            _emitter = new ParticleEmitter(_particle)
-            {
-                Density = 300
-            };
+    protected override void Update(float delta)
+    {
+        Window.Title = $"{PerformanceCounter.FPS} | {_emitter.Particles.Count} particles shown";
 
-            _emitter.RegisterIntegrator(BuiltInParticleStateIntegrators.ScaleDown);
-            _emitter.RegisterIntegrator(BuiltInParticleStateIntegrators.FadeOut);
-            _emitter.RegisterIntegrator(CustomStateIntegrator);
-        }
+        if (Mouse.IsButtonDown(MouseButton.Left))
+            _emitter.Emit(Mouse.GetPosition(), 10);
 
-        protected override void Draw(RenderContext context)
-        {
-            context.RenderTo(_target, (ctx, tgt) =>
-            {
-                ctx.Clear(Color.Black);
-                _emitter.Draw(context);
-            });
+        _emitter.Update(delta);
+    }
 
-            context.DrawTexture(_target, Vector2.Zero, Vector2.One, Vector2.Zero, 0);
+    private void CustomStateIntegrator(Particle part, float delta)
+    {
+        part.Origin = part.Owner.Texture.Center;
 
-            context.DrawString(
-                "Move mouse around the window to change particle spawn position.\n" +
-                "Press <LMB> to activate the particle emitter.",
-                new Vector2(8)
-            );
-        }
+        part.Position.X += part.Velocity.X * 5 * delta;
+        part.Position.Y += part.Velocity.Y * delta;
 
-        protected override void Update(float delta)
-        {
-            Window.Title = $"{PerformanceCounter.FPS} | {_emitter.Particles.Count} particles shown";
+        part.Rotation += part.Velocity.X - part.Velocity.Y * delta;
 
-            if (Mouse.IsButtonDown(MouseButton.Left))
-                _emitter.Emit(Mouse.GetPosition(), 10);
-
-            _emitter.Update(delta);
-        }
-
-        private void CustomStateIntegrator(Particle part, float delta)
-        {
-            part.Origin = part.Owner.Texture.Center;
-
-            part.Position.X += part.Velocity.X * 5 * delta;
-            part.Position.Y += part.Velocity.Y * delta;
-
-            part.Rotation += part.Velocity.X - part.Velocity.Y * delta;
-
-            part.Velocity.X *= (float)part.TTL / part.InitialTTL;
-            if (part.Velocity.Y < 0)
-                part.Velocity.Y *= -1;
-        }
+        part.Velocity.X *= (float)part.TTL / part.InitialTTL;
+        if (part.Velocity.Y < 0)
+            part.Velocity.Y *= -1;
     }
 }

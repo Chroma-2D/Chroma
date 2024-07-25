@@ -1,195 +1,192 @@
-﻿using System.Numerics;
-using Chroma;
+﻿namespace TextInput;
+
+using System.Numerics;
 using Chroma.Graphics;
-using Chroma.Graphics.TextRendering;
 using Chroma.Graphics.TextRendering.TrueType;
 using Chroma.Windowing;
 
-namespace TextInput
+public class VGA
 {
-    public class VGA
+    private readonly TrueTypeFont _ttf;
+    private Color[] _fgColorBuffer;
+    private char[] _charBuffer;
+
+    private int _cx;
+    private int _cy;
+
+    private float _cursorTimer;
+    private bool _drawCursor;
+
+    public int TotalCols { get; }
+    public int TotalRows { get; }
+
+    public int RowSize { get; }
+    public int ColSize { get; }
+
+    public int CursorX
     {
-        private readonly TrueTypeFont _ttf;
-        private Color[] _fgColorBuffer;
-        private char[] _charBuffer;
-
-        private int _cx;
-        private int _cy;
-
-        private float _cursorTimer;
-        private bool _drawCursor;
-
-        public int TotalCols { get; }
-        public int TotalRows { get; }
-
-        public int RowSize { get; }
-        public int ColSize { get; }
-
-        public int CursorX
+        get => _cx;
+        set
         {
-            get => _cx;
-            set
-            {
-                if (value >= TotalCols)
-                    _cx = TotalCols - 1;
-                else if (value < 0)
-                    _cx = 0;
-                else _cx = value;
-            }
+            if (value >= TotalCols)
+                _cx = TotalCols - 1;
+            else if (value < 0)
+                _cx = 0;
+            else _cx = value;
         }
+    }
 
-        public int CursorY
+    public int CursorY
+    {
+        get => _cy;
+        set
         {
-            get => _cy;
-            set
-            {
-                if (value >= TotalRows)
-                    _cy = TotalRows - 1;
-                else if (value < 0)
-                    _cy = 0;
-                else _cy = value;
-            }
+            if (value >= TotalRows)
+                _cy = TotalRows - 1;
+            else if (value < 0)
+                _cy = 0;
+            else _cy = value;
         }
+    }
 
-        public bool CursorEnabled { get; set; }
+    public bool CursorEnabled { get; set; }
 
-        public VGA(Window window, TrueTypeFont ttf)
+    public VGA(Window window, TrueTypeFont ttf)
+    {
+        _ttf = ttf;
+
+        ColSize = _ttf.Measure("A").Width;
+        RowSize = _ttf.Height;
+
+        TotalCols = window.Width / ColSize;
+        TotalRows = window.Height / RowSize;
+
+        Reset();
+    }
+
+    public void Reset()
+    {
+        _cx = 0;
+        _cy = 0;
+
+        _fgColorBuffer = new Color[TotalCols * TotalRows];
+        _charBuffer = new char[TotalCols * TotalRows];
+
+        Clear(true, true);
+    }
+
+    public void Clear(bool chars, bool colors)
+    {
+        for (var y = 0; y < TotalRows; y++)
         {
-            _ttf = ttf;
-
-            ColSize = _ttf.Measure("A").Width;
-            RowSize = _ttf.Height;
-
-            TotalCols = window.Width / ColSize;
-            TotalRows = window.Height / RowSize;
-
-            Reset();
-        }
-
-        public void Reset()
-        {
-            _cx = 0;
-            _cy = 0;
-
-            _fgColorBuffer = new Color[TotalCols * TotalRows];
-            _charBuffer = new char[TotalCols * TotalRows];
-
-            Clear(true, true);
-        }
-
-        public void Clear(bool chars, bool colors)
-        {
-            for (var y = 0; y < TotalRows; y++)
-            {
-                for (var x = 0; x < TotalCols; x++)
-                {
-                    if (chars)
-                        _charBuffer[y * TotalCols + x] = ' ';
-
-                    if (colors)
-                        _fgColorBuffer[y * TotalCols + x] = Color.White;
-                }
-            }
-        }
-
-        public void SetCharAt(int x, int y, char c)
-            => _charBuffer[y * TotalCols + x] = c;
-
-        public void SetColorAt(int x, int y, Color c)
-            => _fgColorBuffer[y * TotalCols + x] = c;
-
-        public void WriteStringTo(int x, int y, string str)
-        {
-            var tx = x;
-            var ty = y;
-
-            for (var i = 0; i < str.Length; i++)
-            {
-                SetCharAt(tx, ty, str[i]);
-
-                tx++;
-
-                if (tx >= TotalCols)
-                {
-                    tx = 0;
-                    ty++;
-
-                    if (ty >= TotalRows)
-                        ty = 0;
-                }
-            }
-        }
-
-        public void ScrollUp()
-        {
-            for (var y = 1; y < TotalRows; y++)
-            {
-                for (var x = 0; x < TotalCols; x++)
-                {
-                    _charBuffer[(y - 1) * TotalCols + x] = _charBuffer[y * TotalCols + x];
-                }
-            }
-
             for (var x = 0; x < TotalCols; x++)
             {
-                _charBuffer[(TotalRows - 1) * TotalCols + x] = ' ';
-                _fgColorBuffer[(TotalRows - 1) * TotalCols + x] = Color.White;
+                if (chars)
+                    _charBuffer[y * TotalCols + x] = ' ';
+
+                if (colors)
+                    _fgColorBuffer[y * TotalCols + x] = Color.White;
             }
         }
+    }
 
-        public void SetLineToColor(Color color, int y)
+    public void SetCharAt(int x, int y, char c)
+        => _charBuffer[y * TotalCols + x] = c;
+
+    public void SetColorAt(int x, int y, Color c)
+        => _fgColorBuffer[y * TotalCols + x] = c;
+
+    public void WriteStringTo(int x, int y, string str)
+    {
+        var tx = x;
+        var ty = y;
+
+        for (var i = 0; i < str.Length; i++)
         {
-            if (y < 0 || y >= TotalRows)
-                return;
+            SetCharAt(tx, ty, str[i]);
 
+            tx++;
+
+            if (tx >= TotalCols)
+            {
+                tx = 0;
+                ty++;
+
+                if (ty >= TotalRows)
+                    ty = 0;
+            }
+        }
+    }
+
+    public void ScrollUp()
+    {
+        for (var y = 1; y < TotalRows; y++)
+        {
             for (var x = 0; x < TotalCols; x++)
-                _fgColorBuffer[y * TotalCols + x] = color;
-        }
-
-        public void Update(float delta)
-        {
-            _cursorTimer += 2000 * delta;
-
-            if (_cursorTimer > 1000)
             {
-                _drawCursor = !_drawCursor;
-                _cursorTimer = 0;
+                _charBuffer[(y - 1) * TotalCols + x] = _charBuffer[y * TotalCols + x];
             }
         }
 
-        public void Draw(RenderContext context)
+        for (var x = 0; x < TotalCols; x++)
         {
-            for (var y = 0; y < TotalRows; y++)
-            {
-                var start = y * TotalCols;
-                var end = start + TotalCols;
+            _charBuffer[(TotalRows - 1) * TotalCols + x] = ' ';
+            _fgColorBuffer[(TotalRows - 1) * TotalCols + x] = Color.White;
+        }
+    }
 
-                var str = new string(_charBuffer[start..end]);
+    public void SetLineToColor(Color color, int y)
+    {
+        if (y < 0 || y >= TotalRows)
+            return;
 
-                context.DrawString(
-                    _ttf,
-                    str,
-                    new Vector2(0, y * _ttf.Height),
-                    (d, _, i, _) =>
-                    {
-                        d.Color = _fgColorBuffer[y * TotalCols + i];
-                    }
-                );
-            }
+        for (var x = 0; x < TotalCols; x++)
+            _fgColorBuffer[y * TotalCols + x] = color;
+    }
 
-            if (CursorEnabled && _drawCursor)
-            {
-                context.Rectangle(
-                    ShapeMode.Stroke,
-                    new Vector2(
-                        _cx * ColSize + 4,
-                        _cy * RowSize - 1
-                    ),
-                    ColSize,
-                    RowSize - 2,
-                    _fgColorBuffer[_cy * TotalCols + _cx]
-                );
-            }
+    public void Update(float delta)
+    {
+        _cursorTimer += 2000 * delta;
+
+        if (_cursorTimer > 1000)
+        {
+            _drawCursor = !_drawCursor;
+            _cursorTimer = 0;
+        }
+    }
+
+    public void Draw(RenderContext context)
+    {
+        for (var y = 0; y < TotalRows; y++)
+        {
+            var start = y * TotalCols;
+            var end = start + TotalCols;
+
+            var str = new string(_charBuffer[start..end]);
+
+            context.DrawString(
+                _ttf,
+                str,
+                new Vector2(0, y * _ttf.Height),
+                (d, _, i, _) =>
+                {
+                    d.Color = _fgColorBuffer[y * TotalCols + i];
+                }
+            );
+        }
+
+        if (CursorEnabled && _drawCursor)
+        {
+            context.Rectangle(
+                ShapeMode.Stroke,
+                new Vector2(
+                    _cx * ColSize + 4,
+                    _cy * RowSize - 1
+                ),
+                ColSize,
+                RowSize - 2,
+                _fgColorBuffer[_cy * TotalCols + _cx]
+            );
         }
     }
 }

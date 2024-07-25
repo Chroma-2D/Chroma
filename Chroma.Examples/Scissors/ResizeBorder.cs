@@ -1,10 +1,9 @@
-﻿namespace Scissors
+﻿namespace Scissors;
+
+public enum ResizeBorder
 {
-    public enum ResizeBorder
-    {
-        Left,
-        Top,
-        Right,
-        Bottom
-    }
+    Left,
+    Top,
+    Right,
+    Bottom
 }

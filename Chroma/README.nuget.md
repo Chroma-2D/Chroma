@@ -2,6 +2,12 @@
 Chroma is a 2D game development framework focused on quick prototyping.
 
 ### Change log
+#### Changes in release 0.64.1
+- Updates to some diagnostic strings.
+- SDL updated to 2.30.5
+- Fixed a bug where garbage collected `DisposableResource`objects
+  would be disposed outside of the main thread.
+
 #### Changes in release 0.64.0
 - `Game.LoadContent()` callback has been refactored to `Game.Initialize(IContentPipeline)` 
 - `Game.Content` property has been removed. It has been replaced by `Game.Initialize(IContentPipeline)`.

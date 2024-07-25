@@ -1,4 +1,6 @@
-﻿using System;
+﻿namespace WindowOperations;
+
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Numerics;
@@ -12,212 +14,209 @@ using Chroma.Windowing;
 using Chroma.Windowing.DragDrop;
 using Color = Chroma.Graphics.Color;
 
-namespace WindowOperations
+public class GameCore : Game
 {
-    public class GameCore : Game
+    private static readonly Log _log = LogManager.GetForCurrentAssembly();
+
+    private bool _drawCenterVector;
+    private int _lastResult;
+
+    private string _diagText;
+
+    private string _lastDroppedText;
+    private string _lastDroppedFileList;
+
+    public GameCore() : base(new(false, false))
     {
-        private static readonly Log _log = LogManager.GetForCurrentAssembly();
+        Window.FilesDropped += WindowOnFilesDropped;
+        Window.TextDropped += WindowOnTextDropped;
 
-        private bool _drawCenterVector;
-        private int _lastResult;
+        var sb = new StringBuilder();
 
-        private string _diagText;
-
-        private string _lastDroppedText;
-        private string _lastDroppedFileList;
-
-        public GameCore() : base(new(false, false))
+        var exts = Graphics.GlExtensions;
+        for (var i = 0; i < exts.Count; i++)
         {
-            Window.FilesDropped += WindowOnFilesDropped;
-            Window.TextDropped += WindowOnTextDropped;
-
-            var sb = new StringBuilder();
-
-            var exts = Graphics.GlExtensions;
-            for (var i = 0; i < exts.Count; i++)
-            {
-                _log.Info(exts[i]);
-            }
-
-            var displays = Graphics.GetDisplayList();
-
-            for (var i = 0; i < displays.Count; i++)
-            {
-                sb.AppendLine($"Display {i} DPI: {displays[i].DPI}");
-                sb.AppendLine($"Display {i} Bounds: {displays[i].Bounds}");
-                sb.AppendLine($"Display {i} Desktop Bounds: {displays[i].DesktopBounds}");
-
-                sb.AppendLine($"Display {i} supports:");
-                var modes = displays[i].QuerySupportedDisplayModes();
-
-                foreach (var m in modes)
-                    sb.AppendLine($"  {m.Width}x{m.Height}@{m.RefreshRate}");
-            }
-
-            _log.Info(sb.ToString());
+            _log.Info(exts[i]);
         }
 
-        private void WindowOnTextDropped(object sender, TextDragDropEventArgs e)
+        var displays = Graphics.GetDisplayList();
+
+        for (var i = 0; i < displays.Count; i++)
         {
-            _lastDroppedText = e.Text;
-            _log.Info($"Text has been dropped onto the game window:\n{e.Text}.");
+            sb.AppendLine($"Display {i} DPI: {displays[i].DPI}");
+            sb.AppendLine($"Display {i} Bounds: {displays[i].Bounds}");
+            sb.AppendLine($"Display {i} Desktop Bounds: {displays[i].DesktopBounds}");
+
+            sb.AppendLine($"Display {i} supports:");
+            var modes = displays[i].QuerySupportedDisplayModes();
+
+            foreach (var m in modes)
+                sb.AppendLine($"  {m.Width}x{m.Height}@{m.RefreshRate}");
         }
 
-        private void WindowOnFilesDropped(object sender, FileDragDropEventArgs e)
-        {
-            _lastDroppedFileList = string.Join('\n', e.Files);
-            _log.Info($"Files have been dropped onto the game window:\n{_lastDroppedFileList}.");
-        }
+        _log.Info(sb.ToString());
+    }
 
-        protected override void Draw(RenderContext context)
-        {
-            if (_drawCenterVector)
-            {
-                context.Line(
-                    Mouse.GetPosition(),
-                    Window.Center,
-                    Color.Lime
-                );
-            }
+    private void WindowOnTextDropped(object sender, TextDragDropEventArgs e)
+    {
+        _lastDroppedText = e.Text;
+        _log.Info($"Text has been dropped onto the game window:\n{e.Text}.");
+    }
 
-            context.DrawString(
-                $"Use <F1> to toggle window resizable status ({(Window.CanResize ? "resizable" : "fixed")}).\n" +
-                $"Use <F2> to switch into exclusive fullscreen mode with native resolution: {Window.IsFullScreen}\n" +
-                $"Use <F3> to switch into borderless fullscreen mode with native resolution: {Window.IsBorderlessFullScreen}\n" +
-                "Use <F4> to switch into 1024x600 windowed mode - hold any <Shift> to center the window afterwards.\n" +
-                "Use <F5> toggle always-on-top status of the window.\n" +
-                $"Use <F6> to toggle window border ({(Window.EnableBorder ? "enabled" : "disabled")}).\n" +
-                "Use <F7> to set maximum window size to 800x600.\n" +
-                "Use <F8> to set minimum window size to 320x240.\n" +
-                "Use <F9> to reset minimum and maximum window sizes.\n" +
-                $"Use <F10> to cycle between display synchronization modes ({Graphics.VerticalSyncMode}).\n" +
-                $"Use <F11> to show a cross-platform message box (last result: {_lastResult}).\n" +
-                "Use <space> to toggle the center vector on/off.\n" +
-                $"Use <~> to toggle window hit testing ({Window.IsHitTestEnabled}).\n\n" +
-                $"Current screen position: {Window.Position}\n" +
-                $"Current viewport resolution: {Window.Width}x{Window.Height}\n" +
-                $"Maximum screen dimensions: {Window.MaximumWidth}x{Window.MaximumHeight}\n" +
-                $"Minimum screen dimensions: {Window.MinimumWidth}x{Window.MinimumHeight}\n" +
-                $"Has keyboard focus: {Window.HasKeyboardFocus}\n" +
-                $"Is mouse over: {Window.IsMouseOver}\n" +
-                $"Last dropped file: {_lastDroppedFileList}\n" +
-                $"Last dropped text: {_lastDroppedText}\n" +
-                $"System window handle: {Window.SystemWindowHandle:X8}\n" +
-                $"{_diagText}",
-                new Vector2(8)
+    private void WindowOnFilesDropped(object sender, FileDragDropEventArgs e)
+    {
+        _lastDroppedFileList = string.Join('\n', e.Files);
+        _log.Info($"Files have been dropped onto the game window:\n{_lastDroppedFileList}.");
+    }
+
+    protected override void Draw(RenderContext context)
+    {
+        if (_drawCenterVector)
+        {
+            context.Line(
+                Mouse.GetPosition(),
+                Window.Center,
+                Color.Lime
             );
         }
 
-        protected override void Update(float delta)
-        {
-            _diagText =
-                $"FPS: {PerformanceCounter.FPS}, frame {PerformanceCounter.LifetimeFrames}. On display: {Window.CurrentDisplay.Index}\n" +
-                $"Total memory usage: {Process.GetCurrentProcess().PrivateMemorySize64} bytes ({Process.GetCurrentProcess().PrivateMemorySize64 / 1024 / 1024} MB)";
-        }
+        context.DrawString(
+            $"Use <F1> to toggle window resizable status ({(Window.CanResize ? "resizable" : "fixed")}).\n" +
+            $"Use <F2> to switch into exclusive fullscreen mode with native resolution: {Window.IsFullScreen}\n" +
+            $"Use <F3> to switch into borderless fullscreen mode with native resolution: {Window.IsBorderlessFullScreen}\n" +
+            "Use <F4> to switch into 1024x600 windowed mode - hold any <Shift> to center the window afterwards.\n" +
+            "Use <F5> toggle always-on-top status of the window.\n" +
+            $"Use <F6> to toggle window border ({(Window.EnableBorder ? "enabled" : "disabled")}).\n" +
+            "Use <F7> to set maximum window size to 800x600.\n" +
+            "Use <F8> to set minimum window size to 320x240.\n" +
+            "Use <F9> to reset minimum and maximum window sizes.\n" +
+            $"Use <F10> to cycle between display synchronization modes ({Graphics.VerticalSyncMode}).\n" +
+            $"Use <F11> to show a cross-platform message box (last result: {_lastResult}).\n" +
+            "Use <space> to toggle the center vector on/off.\n" +
+            $"Use <~> to toggle window hit testing ({Window.IsHitTestEnabled}).\n\n" +
+            $"Current screen position: {Window.Position}\n" +
+            $"Current viewport resolution: {Window.Width}x{Window.Height}\n" +
+            $"Maximum screen dimensions: {Window.MaximumWidth}x{Window.MaximumHeight}\n" +
+            $"Minimum screen dimensions: {Window.MinimumWidth}x{Window.MinimumHeight}\n" +
+            $"Has keyboard focus: {Window.HasKeyboardFocus}\n" +
+            $"Is mouse over: {Window.IsMouseOver}\n" +
+            $"Last dropped file: {_lastDroppedFileList}\n" +
+            $"Last dropped text: {_lastDroppedText}\n" +
+            $"System window handle: {Window.SystemWindowHandle:X8}\n" +
+            $"{_diagText}",
+            new Vector2(8)
+        );
+    }
 
-        protected override void KeyPressed(KeyEventArgs e)
+    protected override void Update(float delta)
+    {
+        _diagText =
+            $"FPS: {PerformanceCounter.FPS}, frame {PerformanceCounter.LifetimeFrames}. On display: {Window.CurrentDisplay.Index}\n" +
+            $"Total memory usage: {Process.GetCurrentProcess().PrivateMemorySize64} bytes ({Process.GetCurrentProcess().PrivateMemorySize64 / 1024 / 1024} MB)";
+    }
+
+    protected override void KeyPressed(KeyEventArgs e)
+    {
+        if (e.KeyCode == KeyCode.F1)
         {
-            if (e.KeyCode == KeyCode.F1)
+            Window.CanResize = !Window.CanResize;
+        }
+        else if (e.KeyCode == KeyCode.F2)
+        {
+            Window.Mode.SetExclusiveFullScreen(Window.CurrentDisplay.DesktopMode);
+        }
+        else if (e.KeyCode == KeyCode.F3)
+        {
+            Window.Mode.SetBorderlessFullScreen();
+        }
+        else if (e.KeyCode == KeyCode.F4)
+        {
+            Window.Mode.SetWindowed(
+                new Size(1024, 600),
+                e.IsAnyShiftPressed
+            );
+        }
+        else if (e.KeyCode == KeyCode.F5)
+        {
+            Window.TopMost = !Window.TopMost;
+        }
+        else if (e.KeyCode == KeyCode.F6)
+        {
+            Window.EnableBorder = !Window.EnableBorder;
+        }
+        else if (e.KeyCode == KeyCode.F7)
+        {
+            Window.MaximumSize = new Size(800, 600);
+        }
+        else if (e.KeyCode == KeyCode.F8)
+        {
+            Window.MinimumSize = new Size(320, 240);
+        }
+        else if (e.KeyCode == KeyCode.F9)
+        {
+            Window.MaximumSize = Window.MinimumSize = Size.Empty;
+        }
+        else if (e.KeyCode == KeyCode.F10)
+        {
+            if (Graphics.VerticalSyncMode == VerticalSyncMode.Adaptive)
             {
-                Window.CanResize = !Window.CanResize;
+                Graphics.VerticalSyncMode = VerticalSyncMode.None;
             }
-            else if (e.KeyCode == KeyCode.F2)
+            else if (Graphics.VerticalSyncMode == VerticalSyncMode.None)
             {
-                Window.Mode.SetExclusiveFullScreen(Window.CurrentDisplay.DesktopMode);
+                Graphics.VerticalSyncMode = VerticalSyncMode.Retrace;
             }
-            else if (e.KeyCode == KeyCode.F3)
+            else if (Graphics.VerticalSyncMode == VerticalSyncMode.Retrace)
             {
-                Window.Mode.SetBorderlessFullScreen();
+                Graphics.VerticalSyncMode = VerticalSyncMode.Adaptive;
             }
-            else if (e.KeyCode == KeyCode.F4)
+        }
+        else if (e.KeyCode == KeyCode.Space)
+        {
+            _drawCenterVector = !_drawCenterVector;
+        }
+        else if (e.KeyCode == KeyCode.F11)
+        {
+            _lastResult = new MessageBox(MessageBoxSeverity.Information)
+                .Titled("Test message box")
+                .WithMessage("This is a test message. For testing!")
+                .WithButton("Alright?")
+                .WithButton("Okay...", _ => _drawCenterVector = true)
+                .WithButton("/shrug", _ => _drawCenterVector = false)
+                .HandleAbnormalClosureWith(() => Console.WriteLine("Fukc. MessageBox closed abnormally."))
+                .Show(Window);
+        }
+        else if (e.KeyCode == KeyCode.F12)
+        {
+            if (e.Modifiers.HasFlag(KeyModifiers.LeftShift))
             {
-                Window.Mode.SetWindowed(
-                    new Size(1024, 600),
-                    e.IsAnyShiftPressed
+                Window.Flash(WindowFlash.Continuous);
+            }
+            else
+            {
+                MessageBox.Show(
+                    MessageBoxSeverity.Error,
+                    "A test error message box.",
+                    "This is a test message to let you know about the error.",
+                    Window
                 );
             }
-            else if (e.KeyCode == KeyCode.F5)
-            {
-                Window.TopMost = !Window.TopMost;
-            }
-            else if (e.KeyCode == KeyCode.F6)
-            {
-                Window.EnableBorder = !Window.EnableBorder;
-            }
-            else if (e.KeyCode == KeyCode.F7)
-            {
-                Window.MaximumSize = new Size(800, 600);
-            }
-            else if (e.KeyCode == KeyCode.F8)
-            {
-                Window.MinimumSize = new Size(320, 240);
-            }
-            else if (e.KeyCode == KeyCode.F9)
-            {
-                Window.MaximumSize = Window.MinimumSize = Size.Empty;
-            }
-            else if (e.KeyCode == KeyCode.F10)
-            {
-                if (Graphics.VerticalSyncMode == VerticalSyncMode.Adaptive)
-                {
-                    Graphics.VerticalSyncMode = VerticalSyncMode.None;
-                }
-                else if (Graphics.VerticalSyncMode == VerticalSyncMode.None)
-                {
-                    Graphics.VerticalSyncMode = VerticalSyncMode.Retrace;
-                }
-                else if (Graphics.VerticalSyncMode == VerticalSyncMode.Retrace)
-                {
-                    Graphics.VerticalSyncMode = VerticalSyncMode.Adaptive;
-                }
-            }
-            else if (e.KeyCode == KeyCode.Space)
-            {
-                _drawCenterVector = !_drawCenterVector;
-            }
-            else if (e.KeyCode == KeyCode.F11)
-            {
-                _lastResult = new MessageBox(MessageBoxSeverity.Information)
-                    .Titled("Test message box")
-                    .WithMessage("This is a test message. For testing!")
-                    .WithButton("Alright?")
-                    .WithButton("Okay...", _ => _drawCenterVector = true)
-                    .WithButton("/shrug", _ => _drawCenterVector = false)
-                    .HandleAbnormalClosureWith(() => Console.WriteLine("Fukc. MessageBox closed abnormally."))
-                    .Show(Window);
-            }
-            else if (e.KeyCode == KeyCode.F12)
-            {
-                if (e.Modifiers.HasFlag(KeyModifiers.LeftShift))
-                {
-                    Window.Flash(WindowFlash.Continuous);
-                }
-                else
-                {
-                    MessageBox.Show(
-                        MessageBoxSeverity.Error,
-                        "A test error message box.",
-                        "This is a test message to let you know about the error.",
-                        Window
-                    );
-                }
-            }
-            else if (e.KeyCode == KeyCode.Tilde)
-            {
-                if (Window.IsHitTestEnabled)
-                    Window.HitTest = null;
-                else
-                    Window.HitTest = HitTest;
-            }
-            else if (e.KeyCode == KeyCode.LeftBracket)
-            {
-                Window.SaveScreenshot("screenshot.bmp");
-            }
         }
-
-        private WindowHitTestResult HitTest(Window window, Vector2 position)
+        else if (e.KeyCode == KeyCode.Tilde)
         {
-            return WindowHitTestResult.Draggable;
+            if (Window.IsHitTestEnabled)
+                Window.HitTest = null;
+            else
+                Window.HitTest = HitTest;
         }
+        else if (e.KeyCode == KeyCode.LeftBracket)
+        {
+            Window.SaveScreenshot("screenshot.bmp");
+        }
+    }
+
+    private WindowHitTestResult HitTest(Window window, Vector2 position)
+    {
+        return WindowHitTestResult.Draggable;
     }
 }

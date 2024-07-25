@@ -1,125 +1,123 @@
+namespace Pong;
+
 using System.Drawing;
 using System.Numerics;
-using Chroma;
 using Chroma.Graphics;
 using Chroma.Input;
 using Color = Chroma.Graphics.Color;
 
-namespace Pong
+public class Board
 {
-    public class Board
+    public Size Size { get; }
+
+    public int LeftScore;
+    public int RightScore;
+
+    private Paddle _leftPaddle;
+    private Paddle _rightPaddle;
+    private Ball _ball;
+
+    public Board(Size size)
     {
-        public Size Size { get; }
+        Size = size;
 
-        public int LeftScore;
-        public int RightScore;
+        Assets.Stretchy.VirtualResolution = new Size(
+            8,
+            size.Height
+        );
 
-        private Paddle _leftPaddle;
-        private Paddle _rightPaddle;
-        private Ball _ball;
+        Assets.Stretchy.FilteringMode = TextureFilteringMode.NearestNeighbor;
 
-        public Board(Size size)
+        _leftPaddle = new Paddle(this)
         {
-            Size = size;
+            UpKey = KeyCode.W,
+            DownKey = KeyCode.S,
+        };
+        _leftPaddle.Position = new(
+            48,
+            Size.Height / 2f - _leftPaddle.Size.Y / 2
+        );
 
-            Assets.Stretchy.VirtualResolution = new Size(
-                8,
-                size.Height
-            );
+        _rightPaddle = new Paddle(this);
+        _rightPaddle.Position = new(
+            Size.Width - 48 - _rightPaddle.Size.X,
+            Size.Height / 2f - _rightPaddle.Size.Y / 2
+        );
 
-            Assets.Stretchy.FilteringMode = TextureFilteringMode.NearestNeighbor;
+        _ball = new Ball(this);
+    }
 
-            _leftPaddle = new Paddle(this)
-            {
-                UpKey = KeyCode.W,
-                DownKey = KeyCode.S,
-            };
-            _leftPaddle.Position = new(
-                48,
-                Size.Height / 2f - _leftPaddle.Size.Y / 2
-            );
+    public void Draw(RenderContext context)
+    {
+        context.DrawTexture(
+            Assets.Stretchy,
+            new Vector2(
+                Size.Width / 2f - Assets.Stretchy.VirtualResolution!.Value.Width / 2f,
+                -12
+            ),
+            Vector2.One,
+            Vector2.Zero,
+            0
+        );
 
-            _rightPaddle = new Paddle(this);
-            _rightPaddle.Position = new(
-                Size.Width - 48 - _rightPaddle.Size.X,
-                Size.Height / 2f - _rightPaddle.Size.Y / 2
-            );
+        var scoreStr = $"{LeftScore}  {RightScore}";
+        var scoreSize = Assets.ScoreFont.Measure(scoreStr);
 
-            _ball = new Ball(this);
+        context.DrawString(
+            Assets.ScoreFont,
+            scoreStr,
+            Size.Width / 2f - scoreSize.Width / 2f,
+            Size.Height / 2f - scoreSize.Height / 2f,
+            Color.White
+        );
+
+        _leftPaddle.Draw(context);
+        _rightPaddle.Draw(context);
+        _ball.Draw(context);
+    }
+
+    public void Update(float delta)
+    {
+        if (Keyboard.IsKeyDown(KeyCode.Space))
+        {
+            _ball.CanMove = true;
         }
 
-        public void Draw(RenderContext context)
+        _leftPaddle.Update(delta);
+        _rightPaddle.Update(delta);
+        _ball.Update(delta);
+
+        if (_ball.CollidesWithPaddle(_leftPaddle))
         {
-            context.DrawTexture(
-                Assets.Stretchy,
-                new Vector2(
-                    Size.Width / 2f - Assets.Stretchy.VirtualResolution!.Value.Width / 2f,
-                    -12
-                ),
-                Vector2.One,
-                Vector2.Zero,
-                0
-            );
-
-            var scoreStr = $"{LeftScore}  {RightScore}";
-            var scoreSize = Assets.ScoreFont.Measure(scoreStr);
-
-            context.DrawString(
-                Assets.ScoreFont,
-                scoreStr,
-                Size.Width / 2f - scoreSize.Width / 2f,
-                Size.Height / 2f - scoreSize.Height / 2f,
-                Color.White
-            );
-
-            _leftPaddle.Draw(context);
-            _rightPaddle.Draw(context);
-            _ball.Draw(context);
+            _ball.BounceFromPaddle(_leftPaddle);
+            Assets.PaddleHit.Play();
+        }
+        else if (_ball.CollidesWithPaddle(_rightPaddle))
+        {
+            _ball.BounceFromPaddle(_rightPaddle);
+            Assets.PaddleHit.Play();
+        }
+        else if (_ball.CollidesWithBoardSide())
+        {
+            _ball.BounceFromSide();
+            Assets.WallHit.Play();
         }
 
-        public void Update(float delta)
+        if (_ball.CollidesWithEndOfPlayfield(out var left))
         {
-            if (Keyboard.IsKeyDown(KeyCode.Space))
+            if (left)
             {
-                _ball.CanMove = true;
+                RightScore++;
+            }
+            else
+            {
+                LeftScore++;
             }
 
-            _leftPaddle.Update(delta);
-            _rightPaddle.Update(delta);
-            _ball.Update(delta);
+            _ball.Center();
+            Assets.OutsidePlayfield.Play();
 
-            if (_ball.CollidesWithPaddle(_leftPaddle))
-            {
-                _ball.BounceFromPaddle(_leftPaddle);
-                Assets.PaddleHit.Play();
-            }
-            else if (_ball.CollidesWithPaddle(_rightPaddle))
-            {
-                _ball.BounceFromPaddle(_rightPaddle);
-                Assets.PaddleHit.Play();
-            }
-            else if (_ball.CollidesWithBoardSide())
-            {
-                _ball.BounceFromSide();
-                Assets.WallHit.Play();
-            }
-
-            if (_ball.CollidesWithEndOfPlayfield(out var left))
-            {
-                if (left)
-                {
-                    RightScore++;
-                }
-                else
-                {
-                    LeftScore++;
-                }
-
-                _ball.Center();
-                Assets.OutsidePlayfield.Play();
-
-                _ball.CanMove = false;
-            }
+            _ball.CanMove = false;
         }
     }
 }

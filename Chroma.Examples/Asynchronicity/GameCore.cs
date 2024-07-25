@@ -1,127 +1,125 @@
-﻿using System;
+﻿namespace Asynchronicity;
+
+using System;
 using System.Drawing;
 using System.Numerics;
 using System.Threading.Tasks;
 using Chroma;
-using Chroma.ContentManagement;
 using Chroma.Diagnostics.Logging;
 using Chroma.Graphics;
 using Chroma.Input;
 using Chroma.Threading;
 using Color = System.Drawing.Color;
 
-namespace Asynchronicity
+public class GameCore : Game
 {
-    public class GameCore : Game
+    private static readonly Log _log = LogManager.GetForCurrentAssembly();
+
+    private RenderTarget _target;
+    private Task _longRunningTask;
+
+    public GameCore() : base(new(false, false))
     {
-        private static readonly Log _log = LogManager.GetForCurrentAssembly();
-
-        private RenderTarget _target;
-        private Task _longRunningTask;
-
-        public GameCore() : base(new(false, false))
+        _longRunningTask = new Task(async () =>
         {
-            _longRunningTask = new Task(async () =>
+            while (true)
             {
-                while (true)
-                {
-                    ProcessInSeparateTask();
-                    await Task.Delay(10);
-                }
+                ProcessInSeparateTask();
+                await Task.Delay(10);
+            }
+        });
+
+        _longRunningTask.Start();
+    }
+
+    protected override void Draw(RenderContext context)
+    {
+        context.DrawString(
+            "Press <F1> to asynchronously dispose and recreate the render target\n" +
+            "causing an InvalidOperationException.\n\n" +
+            "Press <F2> to asynchronously queue the render target creation for execution on the main thread.\n" +
+            "Press <F3> to asynchronously queue render target destruction for execution on the main thread.",
+            new Vector2(8)
+        );
+
+        if (_target != null && !_target.Disposed)
+        {
+            context.RenderTo(_target, (ctx, tgt) =>
+            {
+                ctx.Rectangle(
+                    ShapeMode.Fill,
+                    new Vector2(16),
+                    new Size(32, 32),
+                    Color.Aqua
+                );
             });
 
-            _longRunningTask.Start();
+            context.DrawTexture(_target, Vector2.Zero, Vector2.One, Vector2.Zero, 0);
         }
+    }
 
-        protected override void Draw(RenderContext context)
+    protected override void Update(float delta)
+    {
+    }
+
+    protected override void KeyPressed(KeyEventArgs e)
+    {
+        if (e.KeyCode == KeyCode.F1)
         {
-            context.DrawString(
-                "Press <F1> to asynchronously dispose and recreate the render target\n" +
-                "causing an InvalidOperationException.\n\n" +
-                "Press <F2> to asynchronously queue the render target creation for execution on the main thread.\n" +
-                "Press <F3> to asynchronously queue render target destruction for execution on the main thread.",
-                new Vector2(8)
-            );
-
-            if (_target != null && !_target.Disposed)
+            Task.Run(() =>
             {
-                context.RenderTo(_target, (ctx, tgt) =>
+                try
                 {
-                    ctx.Rectangle(
-                        ShapeMode.Fill,
-                        new Vector2(16),
-                        new Size(32, 32),
-                        Color.Aqua
-                    );
-                });
-
-                context.DrawTexture(_target, Vector2.Zero, Vector2.One, Vector2.Zero, 0);
-            }
+                    _target?.Dispose();
+                    _target = new RenderTarget(Window.Size);
+                }
+                catch (InvalidOperationException ioe)
+                {
+                    _log.Error($"Caught exception: {ioe.Message}");
+                }
+            });
         }
-
-        protected override void Update(float delta)
+        else if (e.KeyCode == KeyCode.F2)
         {
-        }
-
-        protected override void KeyPressed(KeyEventArgs e)
-        {
-            if (e.KeyCode == KeyCode.F1)
+            Task.Run(async () =>
             {
-                Task.Run(() =>
+                await Dispatcher.RunOnMainThread(() =>
                 {
-                    try
+                    if (_target != null && !_target.Disposed)
                     {
-                        _target?.Dispose();
-                        _target = new RenderTarget(Window.Size);
+                        _target.Dispose();
                     }
-                    catch (InvalidOperationException ioe)
+
+                    _target = new RenderTarget(Window.Size);
+                });
+            });
+        }
+        else if (e.KeyCode == KeyCode.F3)
+        {
+            Task.Run(async () =>
+            {
+                await Dispatcher.RunOnMainThread(() =>
+                {
+                    if (_target != null && !_target.Disposed)
                     {
-                        _log.Error($"Caught exception: {ioe.Message}");
+                        _target.Dispose();
                     }
                 });
-            }
-            else if (e.KeyCode == KeyCode.F2)
-            {
-                Task.Run(async () =>
-                {
-                    await Dispatcher.RunOnMainThread(() =>
-                    {
-                        if (_target != null && !_target.Disposed)
-                        {
-                            _target.Dispose();
-                        }
-
-                        _target = new RenderTarget(Window.Size);
-                    });
-                });
-            }
-            else if (e.KeyCode == KeyCode.F3)
-            {
-                Task.Run(async () =>
-                {
-                    await Dispatcher.RunOnMainThread(() =>
-                    {
-                        if (_target != null && !_target.Disposed)
-                        {
-                            _target.Dispose();
-                        }
-                    });
-                });
-            }
+            });
         }
+    }
 
-        private void ProcessInSeparateTask()
+    private void ProcessInSeparateTask()
+    {
+        var target = Dispatcher.RunOnMainThread<RenderTarget>(() =>
         {
-            var target = Dispatcher.RunOnMainThread<RenderTarget>(() =>
-            {
-                return new RenderTarget(10, 10);
-            }, true).Result;
+            return new RenderTarget(10, 10);
+        }, true).Result;
 
-            if (target != null)
-            {
-                _log.Info(target.ToString());
-                Dispatcher.RunOnMainThread(target.Dispose, true).GetAwaiter().GetResult();
-            }
+        if (target != null)
+        {
+            _log.Info(target.ToString());
+            Dispatcher.RunOnMainThread(target.Dispose, true).GetAwaiter().GetResult();
         }
     }
 }

@@ -1,3 +1,4 @@
 ﻿using ArbitraryGeometry;
 
-new GameCore().Run();
+using(var game = new GameCore())
+    game.Run();

@@ -1,3 +1,4 @@
 ﻿using PixelShaders2;
 
-new GameCore().Run();
+using (var game = new GameCore())
+    game.Run();

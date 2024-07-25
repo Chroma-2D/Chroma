@@ -1,64 +1,63 @@
+namespace Chroma.Threading;
+
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
-namespace Chroma.Threading
+public sealed class Dispatcher
 {
-    public sealed class Dispatcher
+    internal static ConcurrentQueue<SchedulerEntry> ActionQueue { get; } = new();
+
+    public static int MainThreadId { get; internal set; }
+
+    public static bool IsMainThread
+        => Environment.CurrentManagedThreadId == MainThreadId;
+
+    internal Dispatcher()
     {
-        internal static ConcurrentQueue<SchedulerEntry> ActionQueue { get; } = new();
+    }
 
-        public static int MainThreadId { get; internal set; }
+    public static Task RunOnMainThread(Action action, bool immediateStart = false)
+    {
+        var scheduledAction = new ScheduledAction { Action = action };
+        ActionQueue.Enqueue(scheduledAction);
 
-        public static bool IsMainThread
-            => Environment.CurrentManagedThreadId == MainThreadId;
-
-        internal Dispatcher()
+        var task = new Task((a) =>
         {
+            var sched = a as ScheduledAction;
+
+            while (!sched!.Completed)
+                Task.Delay(1);
+        }, scheduledAction);
+
+        if (immediateStart)
+        {
+            task.Start();
         }
 
-        public static Task RunOnMainThread(Action action, bool immediateStart = false)
+        return task;
+    }
+
+    public static Task<T> RunOnMainThread<T>(Func<object> valueAction, bool immediateStart = false)
+    {
+        var scheduledAction = new ScheduledValueAction { ValueAction = valueAction };
+        ActionQueue.Enqueue(scheduledAction);
+
+        var task = new Task<T>((a) =>
         {
-            var scheduledAction = new ScheduledAction { Action = action };
-            ActionQueue.Enqueue(scheduledAction);
+            var sched = a as ScheduledValueAction;
 
-            var task = new Task((a) =>
-            {
-                var sched = a as ScheduledAction;
+            while (!sched!.Completed)
+                Task.Delay(1);
 
-                while (!sched!.Completed)
-                    Task.Delay(1);
-            }, scheduledAction);
+            return (T)sched.ReturnValue;
+        }, scheduledAction);
 
-            if (immediateStart)
-            {
-                task.Start();
-            }
-
-            return task;
+        if (immediateStart)
+        {
+            task.Start();
         }
 
-        public static Task<T> RunOnMainThread<T>(Func<object> valueAction, bool immediateStart = false)
-        {
-            var scheduledAction = new ScheduledValueAction { ValueAction = valueAction };
-            ActionQueue.Enqueue(scheduledAction);
-
-            var task = new Task<T>((a) =>
-            {
-                var sched = a as ScheduledValueAction;
-
-                while (!sched!.Completed)
-                    Task.Delay(1);
-
-                return (T)sched.ReturnValue;
-            }, scheduledAction);
-
-            if (immediateStart)
-            {
-                task.Start();
-            }
-
-            return task;
-        }
+        return task;
     }
 }

@@ -1,9 +1,8 @@
-namespace Chroma.Audio
+namespace Chroma.Audio;
+
+public enum CaptureStatus
 {
-    public enum CaptureStatus
-    {
-        Recording,
-        Paused,
-        Stopped
-    }
+    Recording,
+    Paused,
+    Stopped
 }

@@ -1,55 +1,54 @@
+namespace Chroma.Natives.Boot;
+
 using System;
 using System.Runtime.InteropServices;
 using Chroma.NALO;
 using Chroma.Natives.Bindings.SDL;
 
-namespace Chroma.Natives.Boot
+internal static class SdlBootTimeHook
 {
-    internal static class SdlBootTimeHook
+    private static SDL2.SDL_LogOutputFunction _defaultLogOutputFunction;
+        
+    internal static void Hook()
     {
-        private static SDL2.SDL_LogOutputFunction _defaultLogOutputFunction;
+        SDL2.SDL_LogSetAllPriority(SDL2.SDL_LogPriority.SDL_LOG_PRIORITY_VERBOSE);
+        SDL2.SDL_LogGetOutputFunction(out _defaultLogOutputFunction, out _);
+        SDL2.SDL_LogSetOutputFunction(SdlLogOutputFunction, IntPtr.Zero);
+    }
+
+    internal static void UnHook()
+    {
+        SDL2.SDL_LogSetOutputFunction(_defaultLogOutputFunction, IntPtr.Zero);
+        _defaultLogOutputFunction = null;
+    }
         
-        internal static void Hook()
+    private static void SdlLogOutputFunction(
+        IntPtr userdata,
+        int category,
+        SDL2.SDL_LogPriority priority,
+        IntPtr message)
+    {
+        var messageString = Marshal.PtrToStringAuto(message);
+
+        switch (priority)
         {
-            SDL2.SDL_LogSetAllPriority(SDL2.SDL_LogPriority.SDL_LOG_PRIORITY_VERBOSE);
-            SDL2.SDL_LogGetOutputFunction(out _defaultLogOutputFunction, out _);
-            SDL2.SDL_LogSetOutputFunction(SdlLogOutputFunction, IntPtr.Zero);
-        }
+            case SDL2.SDL_LogPriority.SDL_LOG_PRIORITY_INFO:
+                EarlyLog.Info(messageString);
+                break;
 
-        internal static void UnHook()
-        {
-            SDL2.SDL_LogSetOutputFunction(_defaultLogOutputFunction, IntPtr.Zero);
-            _defaultLogOutputFunction = null;
-        }
-        
-        private static void SdlLogOutputFunction(
-            IntPtr userdata,
-            int category,
-            SDL2.SDL_LogPriority priority,
-            IntPtr message)
-        {
-            var messageString = Marshal.PtrToStringAuto(message);
+            case SDL2.SDL_LogPriority.SDL_LOG_PRIORITY_WARN:
+                EarlyLog.Warning(messageString);
+                break;
 
-            switch (priority)
-            {
-                case SDL2.SDL_LogPriority.SDL_LOG_PRIORITY_INFO:
-                    EarlyLog.Info(messageString);
-                    break;
+            case SDL2.SDL_LogPriority.SDL_LOG_PRIORITY_ERROR:
+            case SDL2.SDL_LogPriority.SDL_LOG_PRIORITY_CRITICAL:
+                EarlyLog.Error(messageString);
+                break;
 
-                case SDL2.SDL_LogPriority.SDL_LOG_PRIORITY_WARN:
-                    EarlyLog.Warning(messageString);
-                    break;
-
-                case SDL2.SDL_LogPriority.SDL_LOG_PRIORITY_ERROR:
-                case SDL2.SDL_LogPriority.SDL_LOG_PRIORITY_CRITICAL:
-                    EarlyLog.Error(messageString);
-                    break;
-
-                case SDL2.SDL_LogPriority.SDL_LOG_PRIORITY_DEBUG:
-                case SDL2.SDL_LogPriority.SDL_LOG_PRIORITY_VERBOSE:
-                    EarlyLog.Debug(messageString);
-                    break;
-            }
+            case SDL2.SDL_LogPriority.SDL_LOG_PRIORITY_DEBUG:
+            case SDL2.SDL_LogPriority.SDL_LOG_PRIORITY_VERBOSE:
+                EarlyLog.Debug(messageString);
+                break;
         }
     }
 }

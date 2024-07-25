@@ -1,7 +1,6 @@
-namespace Chroma.Threading
+namespace Chroma.Threading;
+
+internal abstract class SchedulerEntry
 {
-    internal abstract class SchedulerEntry
-    {
-        public virtual bool Completed { get; set; }
-    }
+    public virtual bool Completed { get; set; }
 }

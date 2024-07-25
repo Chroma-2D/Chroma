@@ -1,9 +1,8 @@
-﻿namespace Chroma.Graphics.TextRendering.TrueType
+﻿namespace Chroma.Graphics.TextRendering.TrueType;
+
+public enum HintingMode
 {
-    public enum HintingMode
-    {
-        Normal,
-        Light,
-        Monochrome
-    }
+    Normal,
+    Light,
+    Monochrome
 }

@@ -1,10 +1,9 @@
+namespace Chroma.Threading;
+
 using System;
 
-namespace Chroma.Threading
+internal class ScheduledValueAction : SchedulerEntry
 {
-    internal class ScheduledValueAction : SchedulerEntry
-    {
-        public Func<object> ValueAction { get; set; }
-        public object ReturnValue { get; set; }
-    }
+    public Func<object> ValueAction { get; set; }
+    public object ReturnValue { get; set; }
 }

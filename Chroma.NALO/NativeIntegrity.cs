@@ -1,24 +1,22 @@
-﻿using System.Security.Cryptography;
-using System.Text;
+﻿namespace Chroma.NALO;
 
-namespace Chroma.NALO
+using System.Security.Cryptography;
+
+internal static class NativeIntegrity
 {
-    internal static class NativeIntegrity
+    private static readonly MD5 MD5 = MD5.Create();
+
+    public static bool ChecksumsMatch(byte[] existing, byte[] embedded)
     {
-        private static readonly MD5 MD5 = MD5.Create();
+        var existingHash = MD5.ComputeHash(existing);
+        var embeddedHash = MD5.ComputeHash(embedded);
 
-        public static bool ChecksumsMatch(byte[] existing, byte[] embedded)
+        for (var i = 0; i < existingHash.Length; i++)
         {
-            var existingHash = MD5.ComputeHash(existing);
-            var embeddedHash = MD5.ComputeHash(embedded);
-
-            for (var i = 0; i < existingHash.Length; i++)
-            {
-                if (existingHash[i] != embeddedHash[i])
-                    return false;
-            }
-
-            return true;
+            if (existingHash[i] != embeddedHash[i])
+                return false;
         }
+
+        return true;
     }
 }

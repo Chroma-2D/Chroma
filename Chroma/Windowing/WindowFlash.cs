@@ -1,10 +1,9 @@
+namespace Chroma.Windowing;
+
 using Chroma.Natives.Bindings.SDL;
 
-namespace Chroma.Windowing
+public enum WindowFlash
 {
-    public enum WindowFlash
-    {
-        Brief = SDL2.SDL_FlashOperation.SDL_FLASH_BRIEFLY,
-        Continuous = SDL2.SDL_FlashOperation.SDL_FLASH_UNTIL_FOCUSED
-    }
+    Brief = SDL2.SDL_FlashOperation.SDL_FLASH_BRIEFLY,
+    Continuous = SDL2.SDL_FlashOperation.SDL_FLASH_UNTIL_FOCUSED
 }

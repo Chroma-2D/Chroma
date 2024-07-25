@@ -1,14 +1,11 @@
-using System;
+namespace Chroma.Windowing;
 
-namespace Chroma.Windowing
+public sealed class DisplayChangedEventArgs
 {
-    public sealed class DisplayChangedEventArgs
-    {
-        public int Index { get; }
+    public int Index { get; }
 
-        internal DisplayChangedEventArgs(int index)
-        {
-            Index = index;
-        }
+    internal DisplayChangedEventArgs(int index)
+    {
+        Index = index;
     }
 }

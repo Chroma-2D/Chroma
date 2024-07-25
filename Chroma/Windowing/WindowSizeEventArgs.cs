@@ -1,14 +1,13 @@
-﻿using System.Drawing;
+﻿namespace Chroma.Windowing;
 
-namespace Chroma.Windowing
+using System.Drawing;
+
+public sealed class WindowSizeEventArgs
 {
-    public sealed class WindowSizeEventArgs
-    {
-        public Size Size { get; }
+    public Size Size { get; }
 
-        internal WindowSizeEventArgs(Size size)
-        {
-            Size = size;
-        }
+    internal WindowSizeEventArgs(Size size)
+    {
+        Size = size;
     }
 }

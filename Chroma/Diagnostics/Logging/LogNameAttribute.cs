@@ -1,15 +1,14 @@
+namespace Chroma.Diagnostics.Logging;
+
 using System;
 
-namespace Chroma.Diagnostics.Logging
+[AttributeUsage(AttributeTargets.Class)]
+public sealed class LogNameAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Class)]
-    public sealed class LogNameAttribute : Attribute
-    {
-        public string Name { get; }
+    public string Name { get; }
 
-        public LogNameAttribute(string name)
-        {
-            Name = name;
-        }
+    public LogNameAttribute(string name)
+    {
+        Name = name;
     }
 }

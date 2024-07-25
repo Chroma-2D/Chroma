@@ -1,13 +1,10 @@
-﻿using System;
+﻿namespace Chroma.Windowing;
 
-namespace Chroma.Windowing
+public sealed class CancelEventArgs
 {
-    public sealed class CancelEventArgs
-    {
-        public bool Cancel { get; set; }
+    public bool Cancel { get; set; }
 
-        internal CancelEventArgs()
-        {
-        }
+    internal CancelEventArgs()
+    {
     }
 }

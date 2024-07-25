@@ -1,17 +1,15 @@
+namespace ChromaGame
+    
 using System;
 using Chroma;
 using Chroma.Diagnostics.Logging;
 
-namespace ChromaGame
+internal class GameCore() : Game(/*(new(false, false)*/) // Uncomment to disable splash screen and default asset init.
 {
-    internal class GameCore : Game
+    private Log Log { get; } = LogManager.GetForCurrentAssembly();
+
+    protected override void Initialize(IContentProvider content)
     {
-        private Log Log { get; } = LogManager.GetForCurrentAssembly();
-                            // uncomment this to disable construction of
-                            // the default scene and splash screen
-        internal GameCore() // : base(new(false, false))
-        {
-            Log.Info("Hello, world!");
-        }
+        Log.Info("Hello, world!!");
     }
 }

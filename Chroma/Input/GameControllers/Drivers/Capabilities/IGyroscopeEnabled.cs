@@ -1,13 +1,12 @@
-﻿using System.Numerics;
+﻿namespace Chroma.Input.GameControllers.Drivers.Capabilities;
 
-namespace Chroma.Input.GameControllers.Drivers.Capabilities
+using System.Numerics;
+
+public interface IGyroscopeEnabled
 {
-    public interface IGyroscopeEnabled
-    {
-        bool GyroscopeEnabled { get; set; }
+    bool GyroscopeEnabled { get; set; }
 
-        Vector3 ReadGyroscopeSensor();
+    Vector3 ReadGyroscopeSensor();
 
-        internal void OnGyroscopeStateChanged(float x, float y, float z);
-    }
+    internal void OnGyroscopeStateChanged(float x, float y, float z);
 }

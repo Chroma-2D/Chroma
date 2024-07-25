@@ -1,15 +1,13 @@
-﻿using System;
+﻿namespace Chroma.Windowing;
+
 using System.Numerics;
 
-namespace Chroma.Windowing
+public sealed class WindowMoveEventArgs
 {
-    public sealed class WindowMoveEventArgs
-    {
-        public Vector2 Position { get; }
+    public Vector2 Position { get; }
 
-        internal WindowMoveEventArgs(Vector2 position)
-        {
-            Position = position;
-        }
+    internal WindowMoveEventArgs(Vector2 position)
+    {
+        Position = position;
     }
 }

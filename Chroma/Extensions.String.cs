@@ -1,27 +1,26 @@
-﻿using System;
+﻿namespace Chroma;
+
+using System;
 using System.Collections.Generic;
 
-namespace Chroma
+public static partial class Extensions
 {
-    public static partial class Extensions
+    public static string AnsiColorEncodeRGB(this string s, byte r, byte g, byte b)
+        => $"\x1b[38;2;{r};{g};{b}m{s}\x1b[0m";
+
+    public static List<Range> FindWordRanges(this string str, params string[] highlights)
     {
-        public static string AnsiColorEncodeRGB(this string s, byte r, byte g, byte b)
-            => $"\x1b[38;2;{r};{g};{b}m{s}\x1b[0m";
+        var ranges = new List<Range>();
 
-        public static List<Range> FindWordRanges(this string str, params string[] highlights)
+        for (var i = 0; i < highlights.Length; i++)
         {
-            var ranges = new List<Range>();
+            var highlight = highlights[i];
+            var index = str.IndexOf(highlight, StringComparison.Ordinal);
 
-            for (var i = 0; i < highlights.Length; i++)
-            {
-                var highlight = highlights[i];
-                var index = str.IndexOf(highlight, StringComparison.Ordinal);
-
-                if (index >= 0)
-                    ranges.Add(index..(index + highlight.Length));
-            }
-
-            return ranges;
+            if (index >= 0)
+                ranges.Add(index..(index + highlight.Length));
         }
+
+        return ranges;
     }
 }

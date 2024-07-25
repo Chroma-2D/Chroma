@@ -1,92 +1,91 @@
-﻿namespace Chroma.Graphics.TextRendering.Bitmap
+﻿namespace Chroma.Graphics.TextRendering.Bitmap;
+
+internal class BitmapFontLexer
 {
-    internal class BitmapFontLexer
+    public string CurrentKey { get; private set; }
+    public string CurrentValue { get; private set; }
+
+    public string Line { get; }
+
+    public char CurrentChar => Line[Position];
+    public bool IsEOL => Position >= Line.Length;
+
+    public int Position { get; private set; }
+
+    public BitmapFontLexer(string line)
     {
-        public string CurrentKey { get; private set; }
-        public string CurrentValue { get; private set; }
+        Line = line;
+        Next();
+    }
 
-        public string Line { get; }
+    public void Next()
+    {
+        Advance();
 
-        public char CurrentChar => Line[Position];
-        public bool IsEOL => Position >= Line.Length;
+        CurrentKey = string.Empty;
+        CurrentValue = string.Empty;
 
-        public int Position { get; private set; }
+        var addingToKey = true;
 
-        public BitmapFontLexer(string line)
+        while (!IsEOL && CurrentChar != ' ')
         {
-            Line = line;
-            Next();
-        }
-
-        public void Next()
-        {
-            Advance();
-
-            CurrentKey = string.Empty;
-            CurrentValue = string.Empty;
-
-            var addingToKey = true;
-
-            while (!IsEOL && CurrentChar != ' ')
+            if (CurrentChar == '"')
             {
-                if (CurrentChar == '"')
-                {
-                    Position++;
-
-                    CurrentValue = GetString();
-                    break;
-                }
-                else if (CurrentChar == '=')
-                {
-                    addingToKey = false;
-                    Position++;
-                }
-                else
-                {
-                    if (addingToKey)
-                        CurrentKey += CurrentChar;
-                    else
-                        CurrentValue += CurrentChar;
-
-                    Position++;
-                }
-            }
-        }
-
-        private string GetString()
-        {
-            var str = string.Empty;
-
-            while (CurrentChar != '"')
-            {
-                if (IsEOL)
-                    throw new BitmapFontException("Unterminated string.");
-
-                if (CurrentChar == '\\')
-                {
-                    Position++;
-
-                    if (IsEOL)
-                        throw new BitmapFontException("Broken escape sequence.");
-
-                    str += CurrentChar;
-                    Position++;
-                }
-                else
-                {
-                    str += CurrentChar;
-                    Position++;
-                }
-            }
-
-            Position++;
-            return str;
-        }
-
-        private void Advance()
-        {
-            while (char.IsWhiteSpace(CurrentChar))
                 Position++;
+
+                CurrentValue = GetString();
+                break;
+            }
+            else if (CurrentChar == '=')
+            {
+                addingToKey = false;
+                Position++;
+            }
+            else
+            {
+                if (addingToKey)
+                    CurrentKey += CurrentChar;
+                else
+                    CurrentValue += CurrentChar;
+
+                Position++;
+            }
         }
+    }
+
+    private string GetString()
+    {
+        var str = string.Empty;
+
+        while (CurrentChar != '"')
+        {
+            if (IsEOL)
+                throw new BitmapFontException("Unterminated string.");
+
+            if (CurrentChar == '\\')
+            {
+                Position++;
+
+                if (IsEOL)
+                    throw new BitmapFontException("Broken escape sequence.");
+
+                str += CurrentChar;
+                Position++;
+            }
+            else
+            {
+                str += CurrentChar;
+                Position++;
+            }
+        }
+
+        Position++;
+        return str;
+    }
+
+    private void Advance()
+    {
+        while (char.IsWhiteSpace(CurrentChar))
+            Position++;
     }
 }

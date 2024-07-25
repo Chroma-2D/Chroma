@@ -1,9 +1,8 @@
-﻿using System;
+﻿namespace Chroma.NALO;
 
-namespace Chroma.NALO
+using System;
+
+internal class NativeLibraryException : Exception
 {
-    internal class NativeLibraryException : Exception
-    {
-        public NativeLibraryException(string message) : base(message) { }
-    }
+    public NativeLibraryException(string message) : base(message) { }
 }

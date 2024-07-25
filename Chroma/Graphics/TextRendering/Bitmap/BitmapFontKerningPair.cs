@@ -1,9 +1,8 @@
-﻿namespace Chroma.Graphics.TextRendering.Bitmap
+﻿namespace Chroma.Graphics.TextRendering.Bitmap;
+
+internal struct BitmapFontKerningPair
 {
-    internal struct BitmapFontKerningPair
-    {
-        public char First { get; internal set; }
-        public char Second { get; internal set; }
-        public int Amount { get; internal set; }
-    }
+    public char First { get; internal set; }
+    public char Second { get; internal set; }
+    public int Amount { get; internal set; }
 }

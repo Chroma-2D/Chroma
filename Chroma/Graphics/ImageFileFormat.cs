@@ -1,11 +1,10 @@
-﻿using Chroma.Natives.Bindings.SDL;
+﻿namespace Chroma.Graphics;
 
-namespace Chroma.Graphics
+using Chroma.Natives.Bindings.SDL;
+
+public enum ImageFileFormat
 {
-    public enum ImageFileFormat
-    {
-        BMP = SDL_gpu.GPU_FileFormatEnum.GPU_FILE_BMP,
-        PNG = SDL_gpu.GPU_FileFormatEnum.GPU_FILE_PNG,
-        TGA = SDL_gpu.GPU_FileFormatEnum.GPU_FILE_TGA
-    }
+    BMP = SDL_gpu.GPU_FileFormatEnum.GPU_FILE_BMP,
+    PNG = SDL_gpu.GPU_FileFormatEnum.GPU_FILE_PNG,
+    TGA = SDL_gpu.GPU_FileFormatEnum.GPU_FILE_TGA
 }

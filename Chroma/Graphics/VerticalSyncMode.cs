@@ -1,9 +1,8 @@
-﻿namespace Chroma.Graphics
+﻿namespace Chroma.Graphics;
+
+public enum VerticalSyncMode
 {
-    public enum VerticalSyncMode
-    {
-        Adaptive = -1,
-        None = 0,
-        Retrace = 1
-    }
+    Adaptive = -1,
+    None = 0,
+    Retrace = 1
 }

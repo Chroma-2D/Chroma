@@ -1,31 +1,30 @@
-﻿using System.Collections.Generic;
+﻿namespace Chroma.Graphics.Accelerated;
+
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Chroma.Graphics.Accelerated
+public class ShaderException : GraphicsException
 {
-    public class ShaderException : GraphicsException
+    public List<string> GlslErrors { get; }
+
+    internal ShaderException(string message, string rawGlslError) 
+        : base(message)
     {
-        public List<string> GlslErrors { get; }
+        GlslErrors = rawGlslError.Split('\n').ToList();
+        GlslErrors.RemoveAll(string.IsNullOrWhiteSpace);
+    }
 
-        internal ShaderException(string message, string rawGlslError) 
-            : base(message)
-        {
-            GlslErrors = rawGlslError.Split('\n').ToList();
-            GlslErrors.RemoveAll(string.IsNullOrWhiteSpace);
-        }
+    public override string ToString()
+    {
+        var sb = new StringBuilder();
 
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-
-            sb.AppendLine(base.ToString());
-            sb.AppendLine("---");
+        sb.AppendLine(base.ToString());
+        sb.AppendLine("---");
             
-            foreach(var l in GlslErrors)
-                sb.AppendLine(l);
+        foreach(var l in GlslErrors)
+            sb.AppendLine(l);
 
-            return sb.ToString();
-        }
+        return sb.ToString();
     }
 }

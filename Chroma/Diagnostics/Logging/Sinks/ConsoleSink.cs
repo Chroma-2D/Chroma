@@ -1,22 +1,21 @@
-﻿using System;
+﻿namespace Chroma.Diagnostics.Logging.Sinks;
+
+using System;
 using Chroma.Diagnostics.Logging.Base;
 
-namespace Chroma.Diagnostics.Logging.Sinks
+public class ConsoleSink : Sink
 {
-    public class ConsoleSink : Sink
+    public override void Write(LogLevel logLevel, string message, params object[] args)
     {
-        public override void Write(LogLevel logLevel, string message, params object[] args)
-        {
-            Console.WriteLine(message);
+        Console.WriteLine(message);
 
-            if (args.Length == 1)
+        if (args.Length == 1)
+        {
+            if (args[0] is Exception e)
             {
-                if (args[0] is Exception e)
-                {
-                    Console.WriteLine(
-                        Formatting.ExceptionForLogging(e, true)
-                    );
-                }
+                Console.WriteLine(
+                    Formatting.ExceptionForLogging(e, true)
+                );
             }
         }
     }

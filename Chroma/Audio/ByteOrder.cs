@@ -1,9 +1,8 @@
-﻿namespace Chroma.Audio
+﻿namespace Chroma.Audio;
+
+public enum ByteOrder
 {
-    public enum ByteOrder
-    {
-        Native,
-        LittleEndian,
-        BigEndian
-    }
+    Native,
+    LittleEndian,
+    BigEndian
 }

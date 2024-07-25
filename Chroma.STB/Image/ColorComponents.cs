@@ -1,10 +1,9 @@
-﻿namespace Chroma.STB.Image
+﻿namespace Chroma.STB.Image;
+
+internal enum ColorComponents
 {
-    internal enum ColorComponents
-    {
-        Grey = 1,
-        GreyAlpha = 2,
-        RedGreenBlue = 3,
-        RedGreenBlueAlpha = 4
-    }
+    Grey = 1,
+    GreyAlpha = 2,
+    RedGreenBlue = 3,
+    RedGreenBlueAlpha = 4
 }

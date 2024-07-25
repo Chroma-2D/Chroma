@@ -1,10 +1,9 @@
-﻿using System;
+﻿namespace Chroma;
 
-namespace Chroma
+using System;
+
+public static partial class Extensions
 {
-    public static partial class Extensions
-    {
-        public static bool Includes(this Range range, int number)
-            => range.Start.Value <= number && range.End.Value > number;
-    }
+    public static bool Includes(this Range range, int number)
+        => range.Start.Value <= number && range.End.Value > number;
 }

@@ -1,14 +1,13 @@
-﻿using System.IO;
+﻿namespace Chroma.Diagnostics.Logging.Sinks;
 
-namespace Chroma.Diagnostics.Logging.Sinks
+using System.IO;
+
+public class FileSink : StreamSink
 {
-    public class FileSink : StreamSink
+    public FileSink(string filePath)
+        : base(new FileStream(
+            filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read
+        ))
     {
-        public FileSink(string filePath)
-            : base(new FileStream(
-                filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read
-            ))
-        {
-        }
     }
 }

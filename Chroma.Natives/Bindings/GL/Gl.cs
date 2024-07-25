@@ -1,136 +1,135 @@
-﻿using System;
+﻿namespace Chroma.Natives.Bindings.GL;
+
+using System;
 using System.Runtime.InteropServices;
 using Chroma.Natives.Bindings.SDL;
 
-namespace Chroma.Natives.Bindings.GL
+internal static class Gl
 {
-    internal static class Gl
-    {
-        internal const int GL_BLEND_DST_RGB = 0x80C8;
-        internal const int GL_BLEND_SRC_RGB = 0x80C9;
-        internal const int GL_BLEND_DST_ALPHA = 0x80CA;
-        internal const int GL_BLEND_SRC_ALPHA = 0x80CB;
-        internal const int GL_BLEND_EQUATION_RGB = 0x8009;
-        internal const int GL_BLEND_EQUATION_ALPHA = 0x883D;
+    internal const int GL_BLEND_DST_RGB = 0x80C8;
+    internal const int GL_BLEND_SRC_RGB = 0x80C9;
+    internal const int GL_BLEND_DST_ALPHA = 0x80CA;
+    internal const int GL_BLEND_SRC_ALPHA = 0x80CB;
+    internal const int GL_BLEND_EQUATION_RGB = 0x8009;
+    internal const int GL_BLEND_EQUATION_ALPHA = 0x883D;
 
-        internal const uint GL_POINT_SMOOTH = 0x0B10;
-        internal const uint GL_LINE_SMOOTH = 0x0B20;
-        internal const uint GL_POLYGON_SMOOTH = 0x0B41;
+    internal const uint GL_POINT_SMOOTH = 0x0B10;
+    internal const uint GL_LINE_SMOOTH = 0x0B20;
+    internal const uint GL_POLYGON_SMOOTH = 0x0B41;
         
-        internal const uint GL_LINE_WIDTH = 0x0B21;
+    internal const uint GL_LINE_WIDTH = 0x0B21;
 
-        internal const uint GL_MULTISAMPLE = 0x809D;
-        internal const uint GL_MAX_SAMPLES = 0x8D57;
+    internal const uint GL_MULTISAMPLE = 0x809D;
+    internal const uint GL_MAX_SAMPLES = 0x8D57;
 
-        internal const uint GL_DONT_CARE = 0x1100;
-        internal const uint GL_FASTEST = 0x1101;
-        internal const uint GL_NICEST = 0x1102;
+    internal const uint GL_DONT_CARE = 0x1100;
+    internal const uint GL_FASTEST = 0x1101;
+    internal const uint GL_NICEST = 0x1102;
 
-        internal const uint GL_BLEND = 0x0BE2;
+    internal const uint GL_BLEND = 0x0BE2;
 
-        internal const uint GL_POINT_SMOOTH_HINT = 0x0C51;
-        internal const uint GL_LINE_SMOOTH_HINT = 0x0C52;
-        internal const uint GL_POLYGON_SMOOTH_HINT = 0x0C53;
+    internal const uint GL_POINT_SMOOTH_HINT = 0x0C51;
+    internal const uint GL_LINE_SMOOTH_HINT = 0x0C52;
+    internal const uint GL_POLYGON_SMOOTH_HINT = 0x0C53;
 
-        internal const uint GL_DEPTH_TEST = 0x0B71;
+    internal const uint GL_DEPTH_TEST = 0x0B71;
         
-        internal const uint GL_NO_ERROR = 0;
-        internal const uint GL_INVALID_ENUM = 0x500;
-        internal const uint GL_INVALID_VALUE = 0x501;
-        internal const uint GL_INVALID_OPERATION = 0x502;
-        internal const uint GL_STACK_OVERFLOW = 0x503;
-        internal const uint GL_STACK_UNDERFLOW = 0x504;
-        internal const uint GL_OUT_OF_MEMORY = 0x505;
+    internal const uint GL_NO_ERROR = 0;
+    internal const uint GL_INVALID_ENUM = 0x500;
+    internal const uint GL_INVALID_VALUE = 0x501;
+    internal const uint GL_INVALID_OPERATION = 0x502;
+    internal const uint GL_STACK_OVERFLOW = 0x503;
+    internal const uint GL_STACK_UNDERFLOW = 0x504;
+    internal const uint GL_OUT_OF_MEMORY = 0x505;
 
-        internal const uint GL_NUM_EXTENSIONS = 0x821D;
-        internal const uint GL_VENDOR = 0x1F00;
-        internal const uint GL_RENDERER = 0x1F01;
-        internal const uint GL_VERSION = 0x1F02;
-        internal const uint GL_EXTENSIONS = 0x1F03;
+    internal const uint GL_NUM_EXTENSIONS = 0x821D;
+    internal const uint GL_VENDOR = 0x1F00;
+    internal const uint GL_RENDERER = 0x1F01;
+    internal const uint GL_VERSION = 0x1F02;
+    internal const uint GL_EXTENSIONS = 0x1F03;
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate void GlEnableDisableDelegate(uint cap);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate void GlEnableDisableDelegate(uint cap);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate void GlGetIntegervDelegate(uint attr, out int result);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate void GlGetIntegervDelegate(uint attr, out int result);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate void GlGetFloatvDelegate(uint attr, out float result);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate void GlGetFloatvDelegate(uint attr, out float result);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate uint GlGetErrorDelegate();
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate uint GlGetErrorDelegate();
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate bool GlIsEnabledDelegate(uint cap);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate bool GlIsEnabledDelegate(uint cap);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate void GlHintDelegate(uint target, uint mode);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate void GlHintDelegate(uint target, uint mode);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate void GlLineWidthDelegate(float width);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate void GlLineWidthDelegate(float width);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate IntPtr GlGetStringiDelegate(uint attr, uint index);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate IntPtr GlGetStringiDelegate(uint attr, uint index);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate IntPtr GlGetStringDelegate(uint attr);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate IntPtr GlGetStringDelegate(uint attr);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        internal delegate IntPtr GlDepthMaskDelegate(bool value);
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    internal delegate IntPtr GlDepthMaskDelegate(bool value);
 
-        internal static GlEnableDisableDelegate Enable =>
-            Marshal.GetDelegateForFunctionPointer<GlEnableDisableDelegate>(
-                SDL2.SDL_GL_GetProcAddress("glEnable")
-            );
+    internal static GlEnableDisableDelegate Enable =>
+        Marshal.GetDelegateForFunctionPointer<GlEnableDisableDelegate>(
+            SDL2.SDL_GL_GetProcAddress("glEnable")
+        );
 
-        internal static GlEnableDisableDelegate Disable =>
-            Marshal.GetDelegateForFunctionPointer<GlEnableDisableDelegate>(
-                SDL2.SDL_GL_GetProcAddress("glDisable")
-            );
+    internal static GlEnableDisableDelegate Disable =>
+        Marshal.GetDelegateForFunctionPointer<GlEnableDisableDelegate>(
+            SDL2.SDL_GL_GetProcAddress("glDisable")
+        );
 
-        internal static GlGetIntegervDelegate GetIntegerV =>
-            Marshal.GetDelegateForFunctionPointer<GlGetIntegervDelegate>(
-                SDL2.SDL_GL_GetProcAddress("glGetIntegerv")
-            );
+    internal static GlGetIntegervDelegate GetIntegerV =>
+        Marshal.GetDelegateForFunctionPointer<GlGetIntegervDelegate>(
+            SDL2.SDL_GL_GetProcAddress("glGetIntegerv")
+        );
 
-        internal static GlGetFloatvDelegate GetFloatV =>
-            Marshal.GetDelegateForFunctionPointer<GlGetFloatvDelegate>(
-                SDL2.SDL_GL_GetProcAddress("glGetFloatv")
-            );
+    internal static GlGetFloatvDelegate GetFloatV =>
+        Marshal.GetDelegateForFunctionPointer<GlGetFloatvDelegate>(
+            SDL2.SDL_GL_GetProcAddress("glGetFloatv")
+        );
 
-        internal static GlGetErrorDelegate GetError =>
-            Marshal.GetDelegateForFunctionPointer<GlGetErrorDelegate>(
-                SDL2.SDL_GL_GetProcAddress("glGetError")
-            );
+    internal static GlGetErrorDelegate GetError =>
+        Marshal.GetDelegateForFunctionPointer<GlGetErrorDelegate>(
+            SDL2.SDL_GL_GetProcAddress("glGetError")
+        );
 
-        internal static GlIsEnabledDelegate IsEnabled =>
-            Marshal.GetDelegateForFunctionPointer<GlIsEnabledDelegate>(
-                SDL2.SDL_GL_GetProcAddress("glIsEnabled")
-            );
+    internal static GlIsEnabledDelegate IsEnabled =>
+        Marshal.GetDelegateForFunctionPointer<GlIsEnabledDelegate>(
+            SDL2.SDL_GL_GetProcAddress("glIsEnabled")
+        );
 
-        internal static GlHintDelegate Hint =>
-            Marshal.GetDelegateForFunctionPointer<GlHintDelegate>(
-                SDL2.SDL_GL_GetProcAddress("glHint")
-            );
+    internal static GlHintDelegate Hint =>
+        Marshal.GetDelegateForFunctionPointer<GlHintDelegate>(
+            SDL2.SDL_GL_GetProcAddress("glHint")
+        );
 
-        internal static GlLineWidthDelegate LineWidth =>
-            Marshal.GetDelegateForFunctionPointer<GlLineWidthDelegate>(
-                SDL2.SDL_GL_GetProcAddress("glLineWidth")
-            );
+    internal static GlLineWidthDelegate LineWidth =>
+        Marshal.GetDelegateForFunctionPointer<GlLineWidthDelegate>(
+            SDL2.SDL_GL_GetProcAddress("glLineWidth")
+        );
 
-        internal static GlDepthMaskDelegate DepthMask =>
-            Marshal.GetDelegateForFunctionPointer<GlDepthMaskDelegate>(
-                SDL2.SDL_GL_GetProcAddress("glDepthMask")
-            );
+    internal static GlDepthMaskDelegate DepthMask =>
+        Marshal.GetDelegateForFunctionPointer<GlDepthMaskDelegate>(
+            SDL2.SDL_GL_GetProcAddress("glDepthMask")
+        );
 
-        internal static GlGetStringiDelegate GetStringI =>
-            Marshal.GetDelegateForFunctionPointer<GlGetStringiDelegate>(
-                SDL2.SDL_GL_GetProcAddress("glGetStringi")
-            );
+    internal static GlGetStringiDelegate GetStringI =>
+        Marshal.GetDelegateForFunctionPointer<GlGetStringiDelegate>(
+            SDL2.SDL_GL_GetProcAddress("glGetStringi")
+        );
 
-        internal static GlGetStringDelegate GetString =>
-            Marshal.GetDelegateForFunctionPointer<GlGetStringDelegate>(
-                SDL2.SDL_GL_GetProcAddress("glGetString")
-            );
-    }
+    internal static GlGetStringDelegate GetString =>
+        Marshal.GetDelegateForFunctionPointer<GlGetStringDelegate>(
+            SDL2.SDL_GL_GetProcAddress("glGetString")
+        );
 }

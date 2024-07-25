@@ -1,12 +1,11 @@
-namespace Chroma.Windowing.DragDrop
-{
-    public sealed class TextDragDropEventArgs
-    {
-        public string Text { get; }
+namespace Chroma.Windowing.DragDrop;
 
-        internal TextDragDropEventArgs(string text)
-        {
-            Text = text;
-        }
+public sealed class TextDragDropEventArgs
+{
+    public string Text { get; }
+
+    internal TextDragDropEventArgs(string text)
+    {
+        Text = text;
     }
 }

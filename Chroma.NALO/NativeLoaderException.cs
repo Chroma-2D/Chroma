@@ -1,12 +1,11 @@
-﻿using System;
+﻿namespace Chroma.NALO;
 
-namespace Chroma.NALO
+using System;
+
+public class NativeLoaderException : Exception
 {
-    public class NativeLoaderException : Exception
+    public NativeLoaderException(string message, Exception innerException)
+        : base(message, innerException)
     {
-        public NativeLoaderException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
     }
 }

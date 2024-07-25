@@ -1,25 +1,24 @@
-﻿using System.Drawing;
+﻿namespace Chroma.Graphics.TextRendering;
+
+using System.Drawing;
 using System.Numerics;
 
-namespace Chroma.Graphics.TextRendering
+public interface IFontProvider
 {
-    public interface IFontProvider
-    {
-        string FamilyName { get; }
+    string FamilyName { get; }
 
-        int Height { get; }
-        int LineSpacing { get; }
+    int Height { get; }
+    int LineSpacing { get; }
         
-        bool IsKerningEnabled { get; set; }
+    bool IsKerningEnabled { get; set; }
         
-        bool HasGlyph(char c);
-        Size Measure(string text);
+    bool HasGlyph(char c);
+    Size Measure(string text);
 
-        int GetKerning(char first, char second);
-        int GetHorizontalAdvance(char c);
+    int GetKerning(char first, char second);
+    int GetHorizontalAdvance(char c);
         
-        Texture GetTexture(char c = (char)0);
-        Rectangle GetGlyphBounds(char c);
-        Vector2 GetRenderOffsets(char c);
-    }
+    Texture GetTexture(char c = (char)0);
+    Rectangle GetGlyphBounds(char c);
+    Vector2 GetRenderOffsets(char c);
 }

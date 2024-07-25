@@ -1,13 +1,12 @@
-﻿using Chroma.Natives.Bindings.SDL;
+﻿namespace Chroma.Input;
 
-namespace Chroma.Input
+using Chroma.Natives.Bindings.SDL;
+
+public enum MouseButton : uint
 {
-    public enum MouseButton : uint
-    {
-        Left = SDL2.SDL_BUTTON_LEFT,
-        Right = SDL2.SDL_BUTTON_RIGHT,
-        Middle = SDL2.SDL_BUTTON_MIDDLE,
-        X1 = SDL2.SDL_BUTTON_X1,
-        X2 = SDL2.SDL_BUTTON_X2
-    }
+    Left = SDL2.SDL_BUTTON_LEFT,
+    Right = SDL2.SDL_BUTTON_RIGHT,
+    Middle = SDL2.SDL_BUTTON_MIDDLE,
+    X1 = SDL2.SDL_BUTTON_X1,
+    X2 = SDL2.SDL_BUTTON_X2
 }

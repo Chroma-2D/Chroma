@@ -1,40 +1,39 @@
-﻿using System;
+﻿namespace Chroma.NALO;
+
+using System;
 using System.Runtime.InteropServices;
 
-namespace Chroma.NALO
+internal class NativeLibrary
 {
-    internal class NativeLibrary
+    public delegate IntPtr SymbolLookupDelegate(IntPtr handle, string name);
+
+    private SymbolLookupDelegate SymbolLookup { get; }
+
+    public string FilePath { get; }
+    public IntPtr Handle { get; }
+
+    public IntPtr this[string symbol] => SymbolLookup(Handle, symbol);
+
+    public NativeLibrary(string filePath, IntPtr handle, SymbolLookupDelegate symbolLookup)
     {
-        public delegate IntPtr SymbolLookupDelegate(IntPtr handle, string name);
+        FilePath = filePath;
+        Handle = handle;
 
-        private SymbolLookupDelegate SymbolLookup { get; }
+        SymbolLookup = symbolLookup;
+    }
 
-        public string FilePath { get; }
-        public IntPtr Handle { get; }
+    public T LoadFunction<T>(string symbolName, bool throwIfLookupFails = false)
+    {
+        var symbolAddress = this[symbolName];
 
-        public IntPtr this[string symbol] => SymbolLookup(Handle, symbol);
-
-        public NativeLibrary(string filePath, IntPtr handle, SymbolLookupDelegate symbolLookup)
+        if (symbolAddress == IntPtr.Zero)
         {
-            FilePath = filePath;
-            Handle = handle;
+            if (throwIfLookupFails)
+                throw new NativeLibraryException($"Symbol {symbolName} was not found.");
 
-            SymbolLookup = symbolLookup;
+            return default;
         }
 
-        public T LoadFunction<T>(string symbolName, bool throwIfLookupFails = false)
-        {
-            var symbolAddress = this[symbolName];
-
-            if (symbolAddress == IntPtr.Zero)
-            {
-                if (throwIfLookupFails)
-                    throw new NativeLibraryException($"Symbol {symbolName} was not found.");
-
-                return default;
-            }
-
-            return Marshal.GetDelegateForFunctionPointer<T>(symbolAddress);
-        }
+        return Marshal.GetDelegateForFunctionPointer<T>(symbolAddress);
     }
 }

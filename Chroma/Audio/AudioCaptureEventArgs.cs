@@ -1,12 +1,11 @@
-namespace Chroma.Audio
-{
-    public sealed class AudioCaptureEventArgs
-    {
-        public byte[] Buffer { get; }
+namespace Chroma.Audio;
 
-        internal AudioCaptureEventArgs(byte[] buffer)
-        {
-            Buffer = buffer;
-        }
+public sealed class AudioCaptureEventArgs
+{
+    public byte[] Buffer { get; }
+
+    internal AudioCaptureEventArgs(byte[] buffer)
+    {
+        Buffer = buffer;
     }
 }

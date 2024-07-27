@@ -13,7 +13,7 @@ public sealed class AudioInput
     private readonly List<AudioDevice> _devices = new();
     private readonly List<AudioCapture> _activeCaptures = new();
         
-    private static AudioInput _instance;
+    private static AudioInput? _instance;
     internal static AudioInput Instance => _instance ??= new();
 
     public IReadOnlyList<AudioDevice> Devices => _devices;

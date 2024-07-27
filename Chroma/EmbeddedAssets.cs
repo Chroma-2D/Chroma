@@ -35,16 +35,16 @@ internal class EmbeddedAssets
     internal const string BootTextResourceKey = "Chroma.Resources.boot.crsub.png";
     internal const string BootWheelResourceKey = "Chroma.Resources.boot.crwheel.png";
 
-    private static Texture _logoTexture;
-    private static Texture _betaEmblem;
-    private static Texture _defaultIcon;
-    private static Texture _dummyFix;
-    private static TrueTypeFont _defaultFont;
+    private static Texture? _logoTexture;
+    private static Texture? _betaEmblem;
+    private static Texture? _defaultIcon;
+    private static Texture? _dummyFix;
+    private static TrueTypeFont? _defaultFont;
 
-    private static Texture _bootLogoTexture;
-    private static Texture _bootTextTexture;
-    private static Texture _bootWheelTexture;
-    private static List<List<BootAnimationInfo>> _bootAnimData;
+    private static Texture? _bootLogoTexture;
+    private static Texture? _bootTextTexture;
+    private static Texture? _bootWheelTexture;
+    private static List<List<BootAnimationInfo>>? _bootAnimData;
 
     internal static Texture DefaultIconTexture => Retrieve(ref _defaultIcon, nameof(_defaultIcon));
     internal static Texture DummyFixTexture => Retrieve(ref _dummyFix, nameof(_dummyFix));
@@ -56,7 +56,7 @@ internal class EmbeddedAssets
     internal static Texture BootTextTexture => Retrieve(ref _bootTextTexture, nameof(_bootTextTexture));
     internal static Texture BootWheelTexture => Retrieve(ref _bootWheelTexture, nameof(_bootWheelTexture));
 
-    internal static List<List<BootAnimationInfo>> BootAnimationData =>
+    internal static List<List<BootAnimationInfo>>? BootAnimationData =>
         _bootAnimData ?? LazyDeserialize(ref _bootAnimData, BootDataResourceKey);
 
     internal static void LoadEmbeddedAssets()
@@ -71,12 +71,12 @@ internal class EmbeddedAssets
         _bootWheelTexture = Load(ref _bootWheelTexture, BootWheelResourceKey);
     }
 
-    private static T Retrieve<T>(ref T field, string name)
+    private static T Retrieve<T>(ref T? field, string name)
     {
         return field ?? throw new FrameworkException($"Internal failure: {name} not loaded");
     }
 
-    private static T Load<T>(ref T field, string resourceKey, params object[] args)
+    private static T? Load<T>(ref T? field, string resourceKey, params object?[] args)
     {
         if (field == null)
         {
@@ -84,13 +84,17 @@ internal class EmbeddedAssets
                 .GetManifestResourceStream(resourceKey);
 
             var actualArgs = new[] { resourceStream }.Concat(args).ToArray();
-            field = (T)Activator.CreateInstance(typeof(T), actualArgs);
+            
+            field = (T)(
+                Activator.CreateInstance(typeof(T), actualArgs) 
+                ?? throw new FrameworkException($"Unable to create an instance of embedded resource for type '{typeof(T).FullName}.'")
+            );
         }
 
         return field;
     }
 
-    private static T LazyDeserialize<T>(ref T field, string resourceKey)
+    private static T? LazyDeserialize<T>(ref T? field, string resourceKey)
     {
         if (field == null)
         {

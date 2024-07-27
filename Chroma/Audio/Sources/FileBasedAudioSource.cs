@@ -14,8 +14,8 @@ public abstract class FileBasedAudioSource : AudioSource
 
     private readonly SdlRwOps _sdlRwOps;
 
-    private SDL2_nmix.NMIX_SourceCallback _originalSourceCallback;
-    private SDL2_nmix.NMIX_SourceCallback _internalSourceCallback;
+    private SDL2_nmix.NMIX_SourceCallback? _originalSourceCallback;
+    private SDL2_nmix.NMIX_SourceCallback? _internalSourceCallback;
 
     internal IntPtr FileSourceHandle { get; private set; }
 
@@ -71,7 +71,7 @@ public abstract class FileBasedAudioSource : AudioSource
     {
     }
 
-    internal FileBasedAudioSource(Stream stream, bool decodeWhole, string fileFormat = null)
+    internal FileBasedAudioSource(Stream stream, bool decodeWhole, string? fileFormat = null)
     {
         _sdlRwOps = new SdlRwOps(stream, true);
 
@@ -145,7 +145,6 @@ public abstract class FileBasedAudioSource : AudioSource
         if (SDL2_nmix.NMIX_Play(Handle) < 0)
         {
             _log.Error($"Failed to play the audio source [play]: {SDL2.SDL_GetError()}");
-            return;
         }
         else
         {
@@ -287,9 +286,9 @@ public abstract class FileBasedAudioSource : AudioSource
             var actualAudioFormat = AudioFormat.FromSdlFormat(SoundSample->actual.format);
 
             for (var i = 0; i < Filters.Count; i++)
-                Filters[i]?.Invoke(span, actualAudioFormat);
+                Filters[i](span, actualAudioFormat);
 
-            _originalSourceCallback(userdata, buffer, bufferSize);
+            _originalSourceCallback?.Invoke(userdata, buffer, bufferSize);
 
             var sampleDuration = (double)bufferSize / (
                 SoundSample->actual.rate * SoundSample->actual.channels * (actualAudioFormat.BitsPerSample / 8)

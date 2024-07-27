@@ -15,7 +15,7 @@ public sealed class GraphicsManager
     private static readonly Log _log = LogManager.GetForCurrentAssembly();
     private readonly GameStartupOptions _startupOptions;
 
-    private Stack<SDL_gpu.GPU_RendererID> _rendererIdStack;
+    private Stack<SDL_gpu.GPU_RendererID>? _rendererIdStack;
 
     private VerticalSyncMode _verticalSyncMode;
 
@@ -69,17 +69,17 @@ public sealed class GraphicsManager
     public string OpenGlVendorString =>
         Marshal.PtrToStringAnsi(
             Gl.GetString(Gl.GL_VENDOR)
-        );
+        ) ?? string.Empty;
 
     public string OpenGlVersionString =>
         Marshal.PtrToStringAnsi(
             Gl.GetString(Gl.GL_VERSION)
-        );
+        ) ?? string.Empty;
 
     public string OpenGlRendererString =>
         Marshal.PtrToStringAnsi(
             Gl.GetString(Gl.GL_RENDERER)
-        );
+        ) ?? string.Empty;
 
     public bool IsAdaptiveVSyncSupported { get; private set; }
 
@@ -112,7 +112,7 @@ public sealed class GraphicsManager
         return displays;
     }
 
-    public Display FetchDisplay(int index)
+    public Display? FetchDisplay(int index)
     {
         if (SDL2.SDL_GetCurrentDisplayMode(index, out _) == 0)
             return new Display(index);
@@ -212,7 +212,9 @@ public sealed class GraphicsManager
                        "Performance might be degraded.");
         }
 
-        var rendererId = _rendererIdStack.Peek();
+        var rendererId = _rendererIdStack?.Peek() 
+                         ?? throw new InvalidOperationException("Renderer ID stack was null.");
+        
         var renderTargetHandle = SDL_gpu.GPU_InitRendererByID(
             rendererId,
             (ushort)window.Size.Width,
@@ -279,8 +281,14 @@ public sealed class GraphicsManager
         for (var i = 0; i < numExtensions; i++)
         {
             var strPtr = Gl.GetStringI(Gl.GL_EXTENSIONS, (uint)i);
-            var str = Marshal.PtrToStringAnsi(strPtr);
+            var str = Marshal.PtrToStringAnsi(strPtr) ?? string.Empty;
 
+            if (string.IsNullOrEmpty(str))
+            {
+                _log.Warning($"Extension ID {i} lookup returned an empty string.");
+                continue;
+            }
+            
             GlExtensions.Add(str);
         }
 

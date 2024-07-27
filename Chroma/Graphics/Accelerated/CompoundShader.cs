@@ -8,13 +8,16 @@ public sealed class CompoundShader : Shader
     public string PixelShaderFilePath { get; }
     public string VertexShaderFilePath { get; }
 
-    public string PixelShaderSourceCode { get; private set; }
-    public string VertexShaderSourceCode { get; private set; }
+    public string PixelShaderSourceCode { get; }
+    public string VertexShaderSourceCode { get; }
 
     public CompoundShader(string pixelShaderFilePath, string vertexShaderFilePath)
     {
         PixelShaderFilePath = pixelShaderFilePath;
         VertexShaderFilePath = vertexShaderFilePath;
+
+        PixelShaderSourceCode = File.ReadAllText(PixelShaderFilePath);
+        VertexShaderSourceCode = File.ReadAllText(VertexShaderFilePath);
 
         TryCompilePixelShader();
         TryCompileVertexShader();
@@ -25,7 +28,6 @@ public sealed class CompoundShader : Shader
 
     private void TryCompilePixelShader()
     {
-        PixelShaderSourceCode = File.ReadAllText(PixelShaderFilePath);
         PixelShaderObjectHandle =
             SDL_gpu.GPU_CompileShader(SDL_gpu.GPU_ShaderEnum.GPU_PIXEL_SHADER, PixelShaderSourceCode);
 
@@ -35,7 +37,6 @@ public sealed class CompoundShader : Shader
 
     private void TryCompileVertexShader()
     {
-        VertexShaderSourceCode = File.ReadAllText(VertexShaderFilePath);
         VertexShaderObjectHandle =
             SDL_gpu.GPU_CompileShader(SDL_gpu.GPU_ShaderEnum.GPU_VERTEX_SHADER, VertexShaderSourceCode);
 

@@ -372,7 +372,7 @@ public struct Color : IEquatable<Color>
     public override int GetHashCode()
         => RGBA.GetHashCode();
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
         => obj is Color color && Equals(color);
         
     public bool Equals(Color other)

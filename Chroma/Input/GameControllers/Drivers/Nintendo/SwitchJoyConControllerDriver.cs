@@ -48,26 +48,48 @@ public sealed class SwitchJoyConControllerDriver
 
     public bool GyroscopeEnabled
     {
-        get => SDL2.SDL_GameControllerIsSensorEnabled(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_GYRO);
+        get
+        {
+            if (Info == null)
+            {
+                throw new FrameworkException("Driver information structure was null. This is an internal error. Report pwease? >w<");
+            }
+            
+            return SDL2.SDL_GameControllerIsSensorEnabled(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_GYRO);
+        }
 
         set
         {
-            if (SDL2.SDL_GameControllerSetSensorEnabled(
-                    Info.InstancePointer,
-                    SDL2.SDL_SensorType.SDL_SENSOR_GYRO,
-                    value
-                ) < 0)
+            if (Info == null)
+            {
+                throw new FrameworkException("Driver information structure was null. This is an internal error. Report pwease? >w<");
+            }
+            
+            if (SDL2.SDL_GameControllerSetSensorEnabled(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_GYRO, value) < 0)
                 _log.Error($"Failed to enable gyroscope: {SDL2.SDL_GetError()}");
         }
     }
 
     public bool AccelerometerEnabled
     {
-        get => SDL2.SDL_GameControllerIsSensorEnabled(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_ACCEL);
+        get
+        {
+            if (Info == null)
+            {
+                throw new FrameworkException("Driver information structure was null. This is an internal error. Report pwease? >w<");
+            }
+            
+            return SDL2.SDL_GameControllerIsSensorEnabled(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_ACCEL);
+        }
+        
         set
         {
-            if (SDL2.SDL_GameControllerSetSensorEnabled(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_ACCEL,
-                    value) < 0)
+            if (Info == null)
+            {
+                throw new FrameworkException("Driver information structure was null. This is an internal error. Report pwease? >w<");
+            }
+            
+            if (SDL2.SDL_GameControllerSetSensorEnabled(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_ACCEL, value) < 0)
                 _log.Error($"Failed to enable accelerometer: {SDL2.SDL_GetError()}");
         }
     }
@@ -122,14 +144,18 @@ public sealed class SwitchJoyConControllerDriver
 
     public Vector3 ReadGyroscopeSensor()
     {
+        if (Info == null)
+        {
+            throw new FrameworkException("Driver information structure was null. This is an internal error. Report pwease? >w<");
+        }
+        
         var data = new float[3];
 
         unsafe
         {
             fixed (float* dataPtr = &data[0])
             {
-                if (SDL2.SDL_GameControllerGetSensorData(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_GYRO,
-                        dataPtr, 3) < 0)
+                if (SDL2.SDL_GameControllerGetSensorData(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_GYRO, dataPtr, 3) < 0)
                 {
                     _log.Error($"Failed to retrieve gyroscope data: {SDL2.SDL_GetError()}");
                     return Vector3.Zero;
@@ -146,14 +172,18 @@ public sealed class SwitchJoyConControllerDriver
 
     public Vector3 ReadAccelerometerSensor()
     {
+        if (Info == null)
+        {
+            throw new FrameworkException("Driver information structure was null. This is an internal error. Report pwease? >w<");
+        }
+        
         var data = new float[3];
 
         unsafe
         {
             fixed (float* dataPtr = &data[0])
             {
-                if (SDL2.SDL_GameControllerGetSensorData(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_ACCEL,
-                        dataPtr, 3) < 0)
+                if (SDL2.SDL_GameControllerGetSensorData(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_ACCEL, dataPtr, 3) < 0)
                 {
                     _log.Error($"Failed to retrieve accelerometer data: {SDL2.SDL_GetError()}");
                     return Vector3.Zero;

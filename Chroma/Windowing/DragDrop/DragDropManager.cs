@@ -38,7 +38,8 @@ internal sealed class DragDropManager
         if (_isFileDrop != true)
             throw new FrameworkException("Unexpected operation type change during a drop operation.");
 
-        _fileList.Add(Marshal.PtrToStringAnsi(stringPtr));
+        _fileList.Add(Marshal.PtrToStringAnsi(stringPtr)!);
+        
         SDL2.SDL_free(stringPtr);
     }
 

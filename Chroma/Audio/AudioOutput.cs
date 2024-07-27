@@ -16,7 +16,7 @@ public sealed class AudioOutput
     private readonly List<AudioDevice> _devices = new();
     private readonly List<Decoder> _decoders = new();
         
-    private static AudioOutput _instance;
+    private static AudioOutput? _instance;
     internal static AudioOutput Instance => _instance ??= new();
 
     private bool _mixerInitialized;
@@ -29,7 +29,7 @@ public sealed class AudioOutput
     public int Frequency { get; private set; }
     public ushort SampleCount { get; private set; }
 
-    public event EventHandler<AudioSourceEventArgs> AudioSourceFinished;
+    public event EventHandler<AudioSourceEventArgs>? AudioSourceFinished;
 
     public float MasterVolume
     {
@@ -48,7 +48,7 @@ public sealed class AudioOutput
         }
     }
 
-    public AudioDevice CurrentOutputDevice => _devices.FirstOrDefault(
+    public AudioDevice? CurrentOutputDevice => _devices.FirstOrDefault(
         x => x.OpenIndex == SDL2_nmix.NMIX_GetAudioDevice()
     );
 
@@ -62,7 +62,7 @@ public sealed class AudioOutput
         SDL2_nmix.NMIX_PausePlayback(_playbackPaused);
     }
 
-    public void Open(AudioDevice device = null, int frequency = 44100, ushort sampleCount = 1024)
+    public void Open(AudioDevice? device = null, int frequency = 44100, ushort sampleCount = 1024)
     {
         Close();
 
@@ -200,10 +200,11 @@ public sealed class AudioOutput
 
                 _decoders.Add(
                     new Decoder(
-                        Marshal.PtrToStringAnsi(decoderList[i]->description),
-                        Marshal.PtrToStringUTF8(decoderList[i]->author),
-                        Marshal.PtrToStringAnsi(decoderList[i]->url)
-                    ) { SupportedFormats = fmts }
+                        Marshal.PtrToStringAnsi(decoderList[i]->description) ?? string.Empty,
+                        Marshal.PtrToStringUTF8(decoderList[i]->author) ?? string.Empty,
+                        Marshal.PtrToStringAnsi(decoderList[i]->url) ?? string.Empty,
+                        supportedFormats: fmts
+                    )
                 );
             }
         }

@@ -7,7 +7,8 @@ Chroma is a 2D game development framework focused on quick prototyping.
 - SDL updated to 2.30.5
 - Fixed a bug where garbage collected `DisposableResource`objects
   would be disposed outside of the main thread.
-- Drop support for .NET 6, move to .NET 7.
+- Dropped support for .NET 6, move to .NET 7.
+- Added nullability annotations to the API.
 
 #### Changes in release 0.64.0
 - `Game.LoadContent()` callback has been refactored to `Game.Initialize(IContentPipeline)` 
@@ -32,6 +33,7 @@ Chroma is a 2D game development framework focused on quick prototyping.
 
 #### Changes in release 0.62.2
 - `Window.SaveScreenshot(Stream)` no longer destroys the stream after it's done taking a screenshot.
+
 #### Changes in release 0.62.1
 - Actions returning values can now also use non-reference types.
 

@@ -7,7 +7,7 @@ using Chroma.Natives.Bindings.SDL;
 
 internal sealed class SdlRwOps : DisposableResource
 {
-    private Stream _stream;
+    private Stream? _stream;
     private unsafe SDL2.SDL_RWops* _rwOps;
 
     private delegate long SdlRwOpsSizeDelegate(IntPtr context);
@@ -20,11 +20,11 @@ internal sealed class SdlRwOps : DisposableResource
 
     private delegate int SdlRwOpsCloseDelegate(IntPtr context);
 
-    private SdlRwOpsSizeDelegate _size;
-    private SdlRwOpsSeekDelegate _seek;
-    private SdlRwOpsReadDelegate _read;
-    private SdlRwOpsWriteDelegate _write;
-    private SdlRwOpsCloseDelegate _close;
+    private SdlRwOpsSizeDelegate? _size;
+    private SdlRwOpsSeekDelegate? _seek;
+    private SdlRwOpsReadDelegate? _read;
+    private SdlRwOpsWriteDelegate? _write;
+    private SdlRwOpsCloseDelegate? _close;
 
     internal IntPtr RwOpsHandle
     {
@@ -75,7 +75,7 @@ internal sealed class SdlRwOps : DisposableResource
 
         try
         {
-            length = _stream.Length;
+            length = _stream?.Length ?? throw new InvalidOperationException("Underlying stream was null.");
         }
         catch (Exception e)
         {
@@ -88,6 +88,11 @@ internal sealed class SdlRwOps : DisposableResource
 
     private long Seek(IntPtr context, long offset, int whence)
     {
+        if (_stream == null)
+        {
+            throw new InvalidOperationException("Underlying stream was null.");
+        }
+        
         if (!_stream.CanSeek)
         {
             SDL2.SDL_SetError("This does not support seeking.");
@@ -100,6 +105,11 @@ internal sealed class SdlRwOps : DisposableResource
 
     private unsafe ulong Read(IntPtr context, void* ptr, ulong size, ulong maxnum)
     {
+        if (_stream == null)
+        {
+            throw new InvalidOperationException("Underlying stream was null.");
+        }
+        
         if (!_stream.CanRead)
         {
             SDL2.SDL_SetError("Attempted to read from a write-only stream.");
@@ -123,6 +133,11 @@ internal sealed class SdlRwOps : DisposableResource
 
     private unsafe ulong Write(IntPtr context, void* ptr, ulong size, ulong maxnum)
     {
+        if (_stream == null)
+        {
+            throw new InvalidOperationException("Underlying stream was null.");
+        }
+        
         if (!_stream.CanWrite)
         {
             SDL2.SDL_SetError("Attempted to write to a read-only stream.");

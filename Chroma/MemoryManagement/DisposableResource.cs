@@ -7,7 +7,7 @@ public class DisposableResource : IDisposable
 {
     public bool Disposed { get; private set; }
 
-    public event EventHandler Disposing;
+    public event EventHandler? Disposing;
 
     ~DisposableResource()
     {

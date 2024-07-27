@@ -16,7 +16,7 @@ public class Texture : DisposableResource
     internal IntPtr ImageHandle { get; private set; }
     internal unsafe SDL_gpu.GPU_Image* Image => (SDL_gpu.GPU_Image*)ImageHandle.ToPointer();
 
-    private byte[] _pixelData;
+    private byte[] _pixelData = null!;
 
     public PixelFormat Format { get; private set; }
 

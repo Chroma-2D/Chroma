@@ -16,8 +16,8 @@ public sealed class AudioManager
 
     public IReadOnlyList<string> AudioDrivers => _audioDrivers;
         
-    public event EventHandler<AudioDeviceEventArgs> DeviceConnected;
-    public event EventHandler<AudioDeviceEventArgs> DeviceDisconnected;
+    public event EventHandler<AudioDeviceEventArgs>? DeviceConnected;
+    public event EventHandler<AudioDeviceEventArgs>? DeviceDisconnected;
 
     internal AudioManager()
     {

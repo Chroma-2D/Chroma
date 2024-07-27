@@ -12,7 +12,7 @@ using Chroma.Input.GameControllers;
 public static class HookRegistry
 {
     private static readonly Log _log = LogManager.GetForCurrentAssembly();
-    private static Game _owner;
+    private static Game _owner = null!;
 
     private static readonly Dictionary<HookPoint, List<MethodInfo>> _prefixHooks = new();
     private static readonly Dictionary<HookPoint, List<MethodInfo>> _postfixHooks = new();
@@ -173,9 +173,9 @@ public static class HookRegistry
 
         for (var i = 0; i < hookCollection.Count; i++)
         {
-            var arguments = new object[] { _owner, argument };
+            var arguments = new object?[] { _owner, argument };
             continueToMainBody &= (bool)hookCollection[i].Invoke(null, arguments)!;
-            argument = (T)arguments[1];
+            argument = (T?)arguments[1] ?? throw new InvalidOperationException("Argument mutation cannot be a null value.");
         }
 
         return continueToMainBody;
@@ -188,7 +188,7 @@ public static class HookRegistry
 
         for (var i = 0; i < hookCollection.Count; i++)
         {
-            continueToMainBody &= (bool)hookCollection[i].Invoke(null, new object[] { _owner, argument })!;
+            continueToMainBody &= (bool)hookCollection[i].Invoke(null, new object?[] { _owner, argument })!;
         }
 
         return continueToMainBody;
@@ -200,7 +200,7 @@ public static class HookRegistry
 
         for (var i = 0; i < hookCollection.Count; i++)
         {
-            hookCollection[i].Invoke(null, new object[] { _owner, argument });
+            hookCollection[i].Invoke(null, new object?[] { _owner, argument });
         }
     }
 

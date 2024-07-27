@@ -76,16 +76,16 @@ public sealed class Log
     }
 
     public void Info(object obj)
-        => Info(obj.ToString());
+        => Info(obj.ToString() ?? "<null>");
 
     public void Warning(object obj)
-        => Warning(obj.ToString());
+        => Warning(obj.ToString() ?? "<null>");
 
     public void Error(object obj)
-        => Error(obj.ToString());
+        => Error(obj.ToString() ?? "<null>");
 
     public void Debug(object obj)
-        => Debug(obj.ToString());
+        => Debug(obj.ToString() ?? "<null>");
 
     public Log WithOutputTemplate(string template)
     {

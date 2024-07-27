@@ -30,17 +30,17 @@ public class TrueTypeFont : DisposableResource, IFontProvider
     private readonly Dictionary<char, TrueTypeGlyph> _glyphs = new();
     private readonly Dictionary<int, int> _kernings = new();
 
-    private byte[] _ttfData;
-    private Texture _atlas;
+    private byte[]? _ttfData;
+    private Texture? _atlas;
 
     private FT_Error _lastFtError;
 
     public static TrueTypeFont Default => EmbeddedAssets.DefaultFont;
 
-    public string FamilyName { get; private set; }
-    public string StyleName { get; private set; }
+    public string FamilyName { get; private set; } = string.Empty;
+    public string StyleName { get; private set; } = string.Empty;
 
-    public IReadOnlyCollection<char> Alphabet { get; private set; }
+    public IReadOnlyCollection<char>? Alphabet { get; private set; }
 
     public bool IsKerningEnabled { get; set; } = true;
     public int LineSpacing { get; private set; }
@@ -122,7 +122,7 @@ public class TrueTypeFont : DisposableResource, IFontProvider
         }
     }
 
-    public TrueTypeFont(string fileName, int height, string alphabet = null)
+    public TrueTypeFont(string fileName, int height, string? alphabet = null)
     {
         using (var fs = new FileStream(fileName, FileMode.Open))
         {
@@ -130,12 +130,12 @@ public class TrueTypeFont : DisposableResource, IFontProvider
         }
     }
 
-    public TrueTypeFont(Stream stream, int height, string alphabet = null)
+    public TrueTypeFont(Stream stream, int height, string? alphabet = null)
     {
         ConstructWithStream(stream, height, alphabet);
     }
 
-    private void ConstructWithStream(Stream stream, int height, string alphabet = null)
+    private void ConstructWithStream(Stream stream, int height, string? alphabet = null)
     {
         EnsureOnMainThread();
             
@@ -213,7 +213,7 @@ public class TrueTypeFont : DisposableResource, IFontProvider
         return new Size(maxWidth, maxHeight);
     }
 
-    public Texture GetTexture(char c = (char)0)
+    public Texture? GetTexture(char c = (char)0)
         => _atlas;
 
     public int GetHorizontalAdvance(char c)
@@ -272,11 +272,11 @@ public class TrueTypeFont : DisposableResource, IFontProvider
     private unsafe void LoadTtf()
     {
         fixed (byte* fontPtr = _ttfData)
-        {
+        {            
             _lastFtError = FT_New_Memory_Face(
                 _libraryHandle,
                 fontPtr,
-                _ttfData.Length,
+                _ttfData?.Length ?? -1,
                 0,
                 out _face
             );
@@ -287,16 +287,16 @@ public class TrueTypeFont : DisposableResource, IFontProvider
             }
         }
 
-        FamilyName = Marshal.PtrToStringUTF8(_face->family_name);
-        if (FamilyName == null)
+        FamilyName = Marshal.PtrToStringUTF8(_face->family_name) ?? string.Empty;
+        if (string.IsNullOrEmpty(FamilyName))
         {
-            _log.Warning("Unable to retrieve family name for the loaded typeface.");
+            _log.Warning("Typeface family name was empty.");
         }
-            
-        StyleName = Marshal.PtrToStringUTF8(_face->style_name);
-        if (StyleName == null)
+
+        StyleName = Marshal.PtrToStringUTF8(_face->style_name) ?? string.Empty;
+        if (string.IsNullOrEmpty(StyleName))
         {
-            _log.Warning("Unable to retrieve style name for the loaded typeface.");
+            _log.Warning("Typeface style name was empty.");
         }
     }
 
@@ -332,11 +332,21 @@ public class TrueTypeFont : DisposableResource, IFontProvider
 
     private void RebuildAtlas()
     {
+        if (Alphabet == null)
+        {
+            throw new InvalidOperationException("Attempt to generate a texture atlas with a null alphabet.");
+        }
+        
         _atlas = GenerateTextureAtlas(Alphabet);
     }
 
     private void RetrieveKerningData()
     {
+        if (Alphabet == null)
+        {
+            throw new InvalidOperationException("Attempt to retrieve kerning data with a null alphabet.");
+        }
+        
         for (var i = 0; i < Alphabet.Count; i++)
         {
             var left = Alphabet.ElementAt(i);

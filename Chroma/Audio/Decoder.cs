@@ -8,12 +8,13 @@ public sealed class Decoder
     public string Author { get; }
     public string Url { get; }
         
-    public IReadOnlyList<string> SupportedFormats { get; internal set; }
+    public IReadOnlyList<string> SupportedFormats { get; }
 
-    internal Decoder(string description, string author, string url)
+    internal Decoder(string description, string author, string url, IReadOnlyList<string> supportedFormats)
     {
         Description = description;
         Author = author;
         Url = url;
+        SupportedFormats = supportedFormats;
     }
 }

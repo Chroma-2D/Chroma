@@ -8,15 +8,14 @@ using Chroma.Natives.Ports.NMIX;
 public class Waveform : AudioSource
 {
     private static readonly Log _log = LogManager.GetForCurrentAssembly();
-    private SDL2_nmix.NMIX_SourceCallback _internalCallback; // Needs to be a class field to avoid GC collection.
+    private SDL2_nmix.NMIX_SourceCallback? _internalCallback; // Needs to be a class field to avoid GC collection.
 
     public AudioStreamDelegate SampleGenerator { get; set; }
 
     public ChannelMode ChannelMode { get; }
     public int Frequency { get; }
 
-    public Waveform(AudioFormat format, AudioStreamDelegate sampleGenerator,
-        ChannelMode channelMode = ChannelMode.Stereo, int frequency = 44100)
+    public Waveform(AudioFormat format, AudioStreamDelegate sampleGenerator, ChannelMode channelMode = ChannelMode.Stereo, int frequency = 44100)
     {
         _internalCallback = AudioCallback;
         SampleGenerator = sampleGenerator;
@@ -41,9 +40,6 @@ public class Waveform : AudioSource
 
     private void AudioCallback(IntPtr userData, IntPtr samples, int bufferSize)
     {
-        if (SampleGenerator == null)
-            return;
-
         unsafe
         {
             var span = new Span<byte>(
@@ -51,7 +47,7 @@ public class Waveform : AudioSource
                 bufferSize
             );
 
-            SampleGenerator.Invoke(span, Format);
+            SampleGenerator(span, Format);
         }
     }
 }

@@ -18,7 +18,7 @@ public abstract class ControllerDriver
     public IReadOnlyDictionary<ControllerAxis, ushort> DeadZones => _deadZones;
     public IReadOnlySet<ControllerButton> ActiveButtons => _buttonStates;
 
-    public ControllerInfo Info { get; }
+    public ControllerInfo? Info { get; }
     public abstract string Name { get; }
 
     public virtual BatteryStatus BatteryStatus
@@ -38,7 +38,7 @@ public abstract class ControllerDriver
         Info = info;
     }
 
-    public T As<T>() where T : ControllerDriver
+    public T? As<T>() where T : ControllerDriver
         => this as T;
 
     public bool Is<T>() where T : ControllerDriver
@@ -143,6 +143,12 @@ public abstract class ControllerDriver
 
     internal unsafe void SendEffect(byte* ptr, int length)
     {
+        if (Info == null)
+        {
+            _log.Error("Controller information structure was null when attempting to send effect to the device.");
+            return;
+        }
+
         if (SDL2.SDL_GameControllerSendEffect(Info.InstancePointer, ptr, length) < 0)
             _log.Error($"Failed to send effect: {SDL2.SDL_GetError()}");
     }
@@ -163,7 +169,7 @@ public abstract class ControllerDriver
 
     public virtual void SetLedColor(Color color)
     {
-        if (!Info.HasConfigurableLed)
+        if (Info?.HasConfigurableLed is null or false)
             return;
 
         if (SDL2.SDL_GameControllerSetLED(Info.InstancePointer, color.R, color.G, color.B) < 0)
@@ -185,7 +191,7 @@ public abstract class ControllerDriver
         var sb = new StringBuilder();
 
         sb.AppendLine($"Driver \"{Name}\":");
-        sb.AppendLine(Info.ToString());
+        sb.AppendLine(Info?.ToString() ?? "<null>");
 
         return sb.ToString();
     }

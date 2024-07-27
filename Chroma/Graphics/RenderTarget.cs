@@ -11,7 +11,7 @@ public class RenderTarget : Texture
         
     internal IntPtr TargetHandle { get; }
 
-    public Camera CurrentCamera { get; private set; }
+    public Camera? CurrentCamera { get; private set; }
     public Rectangle? CurrentViewport { get; private set; }
 
     public RenderTarget(int width, int height)

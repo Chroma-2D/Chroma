@@ -19,14 +19,14 @@ public class FileSystemContentProvider : DisposableResource, IContentProvider
 
     public string ContentRoot { get; }
 
-    public FileSystemContentProvider(string contentRoot = null)
+    public FileSystemContentProvider(string? contentRoot = null)
     {
-        ContentRoot = contentRoot;
-
-        if (string.IsNullOrEmpty(ContentRoot))
+        if (string.IsNullOrEmpty(contentRoot))
         {
-            ContentRoot = Path.Combine(AppContext.BaseDirectory, "Content");
+            contentRoot = Path.Combine(AppContext.BaseDirectory, "Content");
         }
+        
+        ContentRoot = contentRoot;
 
         _loadedResources = new HashSet<DisposableResource>();
         _importers = new Dictionary<Type, Func<string, object[], object>>();
@@ -34,7 +34,7 @@ public class FileSystemContentProvider : DisposableResource, IContentProvider
         RegisterImporters();
     }
 
-    public T Load<T>(string relativePath, params object[] args) where T : DisposableResource
+    public T? Load<T>(string relativePath, params object[] args) where T : DisposableResource
     {
         var type = typeof(T);
 
@@ -173,7 +173,7 @@ public class FileSystemContentProvider : DisposableResource, IContentProvider
     private string MakeAbsolutePath(string relativePath)
         => Path.Combine(ContentRoot, relativePath);
 
-    private void OnResourceDisposing(object sender, EventArgs e)
+    private void OnResourceDisposing(object? sender, EventArgs e)
     {
         if (sender is DisposableResource disposable)
         {

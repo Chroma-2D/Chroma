@@ -21,7 +21,7 @@ public class ParticleEmitter
     public Texture Texture { get; set; }
     public ParticleStateInitializer ParticleStateInitializer { get; set; }
 
-    public ParticleEmitter(Texture texture, ParticleStateInitializer initializer = null)
+    public ParticleEmitter(Texture texture, ParticleStateInitializer? initializer = null)
     {
         if (texture.Disposed)
             throw new ArgumentException("Texture provided was already disposed.", nameof(texture));

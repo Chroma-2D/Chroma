@@ -18,7 +18,7 @@ public interface IFontProvider
     int GetKerning(char first, char second);
     int GetHorizontalAdvance(char c);
         
-    Texture GetTexture(char c = (char)0);
+    Texture? GetTexture(char c = (char)0);
     Rectangle GetGlyphBounds(char c);
     Vector2 GetRenderOffsets(char c);
 }

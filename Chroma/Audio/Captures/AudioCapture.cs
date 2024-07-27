@@ -9,7 +9,7 @@ using Chroma.Natives.Bindings.SDL;
 public abstract class AudioCapture : DisposableResource
 {
     private static readonly Log _log = LogManager.GetForCurrentAssembly();
-    private CancellationTokenSource _finishTokenSource;
+    private CancellationTokenSource? _finishTokenSource;
 
     private uint _deviceId;
 
@@ -23,8 +23,8 @@ public abstract class AudioCapture : DisposableResource
     public ulong TotalSize { get; private set; }
 
     protected AudioCapture(
-        AudioDevice device = null, 
-        AudioFormat format = null, 
+        AudioDevice? device = null, 
+        AudioFormat? format = null, 
         ChannelMode channelMode = ChannelMode.Mono, 
         int frequency = 44100,
         ushort bufferSize = 4096)
@@ -158,7 +158,7 @@ public abstract class AudioCapture : DisposableResource
         {
             while (true)
             {
-                _finishTokenSource.Token.ThrowIfCancellationRequested();
+                _finishTokenSource?.Token.ThrowIfCancellationRequested();
 
                 var dataSize = SDL2.SDL_GetQueuedAudioSize(_deviceId);
 

@@ -9,7 +9,7 @@ using Chroma.Natives.Bindings.SDL;
 internal static class SdlLogHook
 {
     private static readonly Log _log = LogManager.GetForCurrentAssembly();
-    private static SDL2.SDL_LogOutputFunction _originalLogOutputFunction;
+    private static SDL2.SDL_LogOutputFunction? _originalLogOutputFunction;
 
     internal static void Enable()
     {
@@ -26,7 +26,7 @@ internal static class SdlLogHook
         SDL2.SDL_LogPriority priority,
         IntPtr message)
     {
-        var messageString = Marshal.PtrToStringAuto(message);
+        var messageString = Marshal.PtrToStringAuto(message) ?? "<null>";
 
         switch (priority)
         {

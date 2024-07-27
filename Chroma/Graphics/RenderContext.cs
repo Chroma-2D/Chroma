@@ -311,10 +311,7 @@ public sealed class RenderContext
                 "Render target cannot be null."
             );
         }
-            
-        if (drawingLogic == null)
-            return;
-
+        
         TargetStack.Push(target.TargetHandle);
         {
             drawingLogic.Invoke(this, target);
@@ -332,9 +329,6 @@ public sealed class RenderContext
             );
         }
 
-        if (drawingLogic == null)
-            return;
-
         SDL_gpu.GPU_SetCamera(CurrentRenderTarget, ref camera.GpuCamera);
         {
             drawingLogic.Invoke(this, camera);
@@ -342,7 +336,7 @@ public sealed class RenderContext
         SDL_gpu.GPU_SetCamera(CurrentRenderTarget, IntPtr.Zero);
     }
         
-    public void DrawString(IFontProvider font, string text, float x, float y, GlyphTransform glyphTransform = null)
+    public void DrawString(IFontProvider font, string? text, float x, float y, GlyphTransform? glyphTransform = null)
     {
         if (font == null)
         {
@@ -372,8 +366,9 @@ public sealed class RenderContext
             var bounds = font.GetGlyphBounds(c);
             var offsets = font.GetRenderOffsets(c);
             var advance = font.GetHorizontalAdvance(c);
-            var texture = font.GetTexture(c);
-
+            var texture = font.GetTexture(c) 
+                          ?? throw new InvalidOperationException("Font provider returned a null texture while rendering glyph");
+            
             var srcRect = new SDL_gpu.GPU_Rect
             {
                 x = bounds.X,
@@ -434,7 +429,7 @@ public sealed class RenderContext
         );
 
         for (var i = 0; i < BatchBuffer.Count; i++)
-            BatchBuffer[i].DrawAction?.Invoke(this);
+            BatchBuffer[i].DrawAction.Invoke(this);
 
         if (discardBatchAfterUse)
             BatchBuffer.Clear();
@@ -442,9 +437,6 @@ public sealed class RenderContext
 
     public void Batch(Action<RenderContext> drawAction, int depth)
     {
-        if (drawAction == null)
-            return;
-
         BatchBuffer.Add(
             new BatchInfo
             {

@@ -8,8 +8,8 @@ public class StreamAudioCapture : AudioCapture
         
     public StreamAudioCapture(
         Stream stream,
-        AudioDevice device = null, 
-        AudioFormat format = null, 
+        AudioDevice? device = null, 
+        AudioFormat? format = null, 
         ChannelMode channelMode = ChannelMode.Mono, 
         int frequency = 44100, ushort bufferSize = 4096) 
         : base(device, format, channelMode, frequency, bufferSize)

@@ -73,7 +73,7 @@ public class TriggerEffect
         }
     }
 
-    public void Linear(LinearTriggerEffectPreset leftPreset, LinearTriggerEffectPreset rightPreset)
+    public void Linear(LinearTriggerEffectPreset? leftPreset, LinearTriggerEffectPreset? rightPreset)
     {
         unsafe
         {

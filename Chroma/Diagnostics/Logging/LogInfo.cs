@@ -2,8 +2,8 @@
 
 using System.Reflection;
 
-internal class LogInfo
+internal class LogInfo(Assembly owningAssembly, Log log)
 {
-    internal Assembly OwningAssembly { get; set; }
-    internal Log Log { get; set; }
+    internal Assembly OwningAssembly { get; } = owningAssembly;
+    internal Log Log { get; } = log;
 }

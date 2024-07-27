@@ -32,6 +32,9 @@ internal sealed class ControllerRegistry
         if (_controllers.ContainsKey(instance))
             throw new InvalidOperationException("Duplicate controller instance pointer.");
 
+        if (controller.Info == null)
+            throw new InvalidOperationException("Controller driver information structure was null.");
+        
         if (_playerMappings[controller.Info.PlayerIndex] != IntPtr.Zero)
             throw new InvalidOperationException("Duplicate controller player index.");
 
@@ -44,8 +47,13 @@ internal sealed class ControllerRegistry
         if (!_controllers.ContainsKey(instance))
             throw new InvalidOperationException($"Controller with instance ID {instance} does not exist.");
 
-        var playerIndex = _controllers[instance].Info.PlayerIndex;
-        _playerMappings[playerIndex] = IntPtr.Zero;
+        var controllerInfo = _controllers[instance].Info;
+        
+        if (controllerInfo != null)
+        {
+            var playerIndex = controllerInfo.PlayerIndex;
+            _playerMappings[playerIndex] = IntPtr.Zero;
+        }
 
         _controllers.Remove(instance);
     }
@@ -59,7 +67,7 @@ internal sealed class ControllerRegistry
         return -1;
     }
 
-    public ControllerDriver GetControllerDriver(int playerIndex)
+    public ControllerDriver? GetControllerDriver(int playerIndex)
     {
         if (!_playerMappings.ContainsKey(playerIndex) || _playerMappings[playerIndex] == IntPtr.Zero)
             return null;
@@ -68,7 +76,7 @@ internal sealed class ControllerRegistry
         return _controllers[instancePointer];
     }
 
-    internal ControllerDriver GetControllerDriverByPointer(IntPtr instancePointer)
+    internal ControllerDriver? GetControllerDriverByPointer(IntPtr instancePointer)
     {
         if (!_controllers.ContainsKey(instancePointer))
             return null;

@@ -12,7 +12,7 @@ public static class Controller
 
     public static int DeviceCount => ControllerRegistry.Instance.DeviceCount;
 
-    public static ControllerDriver Get(int playerIndex)
+    public static ControllerDriver? Get(int playerIndex)
         => ControllerRegistry.Instance.GetControllerDriver(playerIndex);
 
     public static bool Is<T>(int playerIndex) where T : ControllerDriver
@@ -21,7 +21,7 @@ public static class Controller
         return driver != null && driver.Is<T>();
     }
 
-    public static T As<T>(int playerIndex) where T : ControllerDriver
+    public static T? As<T>(int playerIndex) where T : ControllerDriver
         => Get(playerIndex)?.As<T>();
 
     public static void SetDeadZone(int playerIndex, ControllerAxis axis, ushort value)
@@ -139,7 +139,7 @@ public static class Controller
         return driver.RetrieveMapping();
     }
 
-    public static IReadOnlySet<ControllerButton> GetActiveButtons(int playerIndex)
+    public static IReadOnlySet<ControllerButton>? GetActiveButtons(int playerIndex)
     {
         var driver = Get(playerIndex);
 

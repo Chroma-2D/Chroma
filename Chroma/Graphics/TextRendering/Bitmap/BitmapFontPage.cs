@@ -13,9 +13,9 @@ internal class BitmapFontPage
     public string RootDirectory { get; }
     public string FileName { get; }
         
-    public Texture Texture { get; }
+    public Texture? Texture { get; }
 
-    public BitmapFontPage(int id, string rootDirectory, string fileName, Func<string, Texture> textureLoader = null)
+    public BitmapFontPage(int id, string rootDirectory, string fileName, Func<string, Texture>? textureLoader = null)
     {
         ID = id;
             

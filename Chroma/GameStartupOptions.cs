@@ -7,6 +7,8 @@ public class GameStartupOptions
         
     public int MsaaSamples { get; }
 
+    public static readonly GameStartupOptions Default = new(); 
+
     public GameStartupOptions(bool constructDefaultScene = true, bool useBootSplash = true, int msaaSamples = 0)
     {
         ConstructDefaultScene = constructDefaultScene;

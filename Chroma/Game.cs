@@ -17,13 +17,13 @@ using Chroma.Windowing;
 
 public class Game : IDisposable
 {
-    private static DefaultScene _defaultScene;
-    private static BootScene _bootScene;
+    private static DefaultScene? _defaultScene;
+    private static BootScene? _bootScene;
         
     private static readonly Log _log = LogManager.GetForCurrentAssembly();
         
     private int _fixedTimeStepTarget;
-    private IContentProvider _content;
+    private IContentProvider? _content;
 
     internal static bool WasConstructed { get; private set; }
 
@@ -39,11 +39,11 @@ public class Game : IDisposable
     }
 
     public GameStartupOptions StartupOptions { get; }
-    public Window Window { get; private set; }
-    public GraphicsManager Graphics { get; private set; }
-    public AudioManager Audio { get; private set; }
+    public Window Window { get; private set; } = null!;
+    public GraphicsManager Graphics { get; private set; } = null!;
+    public AudioManager Audio { get; private set; } = null!;
         
-    public Game(GameStartupOptions options = null)
+    public Game(GameStartupOptions? options = null)
     {
 #if !DEBUG
             _log.LogLevel = LogLevel.Info | LogLevel.Warning | LogLevel.Error;
@@ -65,7 +65,7 @@ public class Game : IDisposable
             SdlLogHook.Enable();
         }
 
-        options ??= new GameStartupOptions();
+        options ??= GameStartupOptions.Default;
 
         StartupOptions = options;
         WasConstructed = true;
@@ -326,12 +326,14 @@ public class Game : IDisposable
         Audio.Initialize();
     }
 
-    private void BootSceneFinished(object sender, EventArgs e)
+    private void BootSceneFinished(object? sender, EventArgs e)
     {
-        _bootScene.Finished -= BootSceneFinished;
+        if (_bootScene != null)
+        {
+            _bootScene.Finished -= BootSceneFinished;
+        }
 
         FinishBoot();
-
         InitializeGraphicsDefaults();
     }
 
@@ -347,7 +349,7 @@ public class Game : IDisposable
         OnDispose();
             
         Window.Dispose();
-        _content.Dispose();
+        _content?.Dispose();
 
         AudioOutput.Instance.Close();
         AudioInput.Instance.Close();

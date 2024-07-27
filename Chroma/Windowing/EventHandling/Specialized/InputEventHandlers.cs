@@ -52,8 +52,11 @@ internal sealed class InputEventHandlers
     private void ControllerSensorStateChanged(Window owner, SDL2.SDL_Event ev)
     {
         var instance = SDL2.SDL_GameControllerFromInstanceID(ev.ctouchpad.which);
-        var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance);
+        
+        var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance)
+                         ?? throw new FrameworkException("Controller driver lookup failed. This is an internal error. Pwease report? >w<");
 
+        
         if (ev.csensor.sensor == SDL2.SDL_SensorType.SDL_SENSOR_GYRO)
         {
             Controller.OnGyroscopeStateChanged(
@@ -73,7 +76,8 @@ internal sealed class InputEventHandlers
     private void ControllerTouchpadReleased(Window owner, SDL2.SDL_Event ev)
     {
         var instance = SDL2.SDL_GameControllerFromInstanceID(ev.ctouchpad.which);
-        var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance);
+        var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance)
+                         ?? throw new FrameworkException("Controller driver lookup failed. This is an internal error. Pwease report? >w<");
 
         Controller.OnTouchpadReleased(
             owner.Game,
@@ -84,8 +88,9 @@ internal sealed class InputEventHandlers
     private void ControllerTouchpadTouched(Window owner, SDL2.SDL_Event ev)
     {
         var instance = SDL2.SDL_GameControllerFromInstanceID(ev.ctouchpad.which);
-        var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance);
-
+        var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance)
+                         ?? throw new FrameworkException("Controller driver lookup failed. This is an internal error. Pwease report? >w<");
+        
         Controller.OnTouchpadTouched(
             owner.Game,
             new(controller, ev.ctouchpad.touchpad, ev.ctouchpad.finger, new(ev.ctouchpad.x, ev.ctouchpad.y), ev.ctouchpad.pressure)
@@ -95,7 +100,8 @@ internal sealed class InputEventHandlers
     private void ControllerTouchpadMoved(Window owner, SDL2.SDL_Event ev)
     {
         var instance = SDL2.SDL_GameControllerFromInstanceID(ev.ctouchpad.which);
-        var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance);
+        var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance)
+                         ?? throw new FrameworkException("Controller driver lookup failed. This is an internal error. Pwease report? >w<");
 
         Controller.OnTouchpadMoved(
             owner.Game,
@@ -106,7 +112,8 @@ internal sealed class InputEventHandlers
     private void ControllerAxisMoved(Window owner, SDL2.SDL_Event ev)
     {
         var instance = SDL2.SDL_GameControllerFromInstanceID(ev.caxis.which);
-        var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance);
+        var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance)
+                         ?? throw new FrameworkException("Controller driver lookup failed. This is an internal error. Pwease report? >w<");
 
         var axis = (ControllerAxis)ev.caxis.axis;
 
@@ -119,8 +126,9 @@ internal sealed class InputEventHandlers
     private void ControllerButtonPressed(Window owner, SDL2.SDL_Event ev)
     {
         var instance = SDL2.SDL_GameControllerFromInstanceID(ev.cbutton.which);
-        var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance);
-
+        var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance)
+                         ?? throw new FrameworkException("Controller driver lookup failed. This is an internal error. Pwease report? >w<");
+        
         var button = (ControllerButton)ev.cbutton.button;
 
         Controller.OnButtonPressed(
@@ -132,8 +140,9 @@ internal sealed class InputEventHandlers
     private void ControllerButtonReleased(Window owner, SDL2.SDL_Event ev)
     {
         var instance = SDL2.SDL_GameControllerFromInstanceID(ev.cbutton.which);
-        var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance);
-
+        var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance)
+                         ?? throw new FrameworkException("Controller driver lookup failed. This is an internal error. Pwease report? >w<");
+        
         var button = (ControllerButton)ev.cbutton.button;
 
         Controller.OnButtonReleased(
@@ -226,8 +235,9 @@ internal sealed class InputEventHandlers
     private void ControllerDisconnected(Window owner, SDL2.SDL_Event ev)
     {
         var instance = SDL2.SDL_GameControllerFromInstanceID(ev.cdevice.which);
-        var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance);
-
+        var controller = ControllerRegistry.Instance.GetControllerDriverByPointer(instance)
+                         ?? throw new FrameworkException("Controller driver lookup failed. This is an internal error. Pwease report? >w<");
+        
         ControllerRegistry.Instance.Unregister(instance);
 
         Controller.OnDisconnected(
@@ -269,7 +279,7 @@ internal sealed class InputEventHandlers
         {
             textInput = Marshal.PtrToStringUTF8(
                 new IntPtr(ev.text.text)
-            );
+            ) ?? throw new FrameworkException("Text pointer was null. This is an internal error. Pwease report? >w<");
         }
 
         owner.Game.OnTextInput(new TextInputEventArgs(textInput));

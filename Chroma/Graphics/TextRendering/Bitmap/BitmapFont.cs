@@ -14,15 +14,15 @@ public class BitmapFont : DisposableResource, IFontProvider
 {
     private static readonly Log _log = LogManager.GetForCurrentAssembly();
 
-    private readonly Func<string, Texture> _pageTextureLookup;
+    private readonly Func<string, Texture>? _pageTextureLookup;
 
-    private List<string> _lines;
-    private Dictionary<string, Action> _parsers;
+    private List<string> _lines = null!;
+    private Dictionary<string, Action> _parsers = null!;
 
-    private BitmapFontLexer _lexer;
+    private BitmapFontLexer _lexer = null!;
 
-    private BitmapFontInfo Info { get; set; }
-    private BitmapFontCommon Common { get; set; }
+    private BitmapFontInfo Info { get; set; } = null!;
+    private BitmapFontCommon Common { get; set; } = null!;
 
     private List<BitmapFontPage> Pages { get; } = new();
     private List<BitmapFontKerningPair> Kernings { get; } = new();
@@ -39,7 +39,7 @@ public class BitmapFont : DisposableResource, IFontProvider
     public int Height => Info.Size;
     public int LineSpacing => (int)(Common.LineHeight + Info.Spacing.Y);
 
-    public BitmapFont(string fileName, Stream dataStream, Func<string, Texture> pageTextureLookup = null)
+    public BitmapFont(string fileName, Stream dataStream, Func<string, Texture>? pageTextureLookup = null)
     {
         FileName = fileName;
         _pageTextureLookup = pageTextureLookup;
@@ -47,7 +47,7 @@ public class BitmapFont : DisposableResource, IFontProvider
         Initialize(dataStream);
     }
 
-    public BitmapFont(string fileName, Func<string, Texture> pageTextureLookup = null)
+    public BitmapFont(string fileName, Func<string, Texture>? pageTextureLookup = null)
     {
         FileName = fileName;
         _pageTextureLookup = pageTextureLookup;
@@ -116,7 +116,7 @@ public class BitmapFont : DisposableResource, IFontProvider
         return new Size(maxWidth, height);
     }
 
-    public Texture GetTexture(char c)
+    public Texture? GetTexture(char c)
     {
         if (Pages.Count == 0)
             return null;
@@ -158,7 +158,7 @@ public class BitmapFont : DisposableResource, IFontProvider
         return Glyphs[c].HorizontalAdvance;
     }
 
-    public Texture GetTexture(int page)
+    public Texture? GetTexture(int page)
     {
         if (!Pages.Any())
             return null;
@@ -174,7 +174,7 @@ public class BitmapFont : DisposableResource, IFontProvider
         _log.Debug($"Disposing {Info.FaceName}.");
 
         foreach (var page in Pages)
-            page.Texture.Dispose();
+            page.Texture?.Dispose();
     }
 
     private void ParseFontDefinition()
@@ -356,7 +356,14 @@ public class BitmapFont : DisposableResource, IFontProvider
 
         if (id >= 0)
         {
-            Pages.Add(new BitmapFontPage(id, Path.GetDirectoryName(FileName), fileName, _pageTextureLookup));
+            Pages.Add(
+                new BitmapFontPage(
+                    id, 
+                    Path.GetDirectoryName(FileName) ?? throw new ArgumentNullException($"Unable to retrieve directory name for '{FileName}'"),
+                    fileName,
+                    _pageTextureLookup
+                )
+            );
         }
         else
         {

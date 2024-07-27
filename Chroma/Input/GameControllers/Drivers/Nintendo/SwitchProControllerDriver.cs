@@ -30,10 +30,23 @@ public sealed class SwitchProControllerDriver
         
     public bool GyroscopeEnabled
     {
-        get => SDL2.SDL_GameControllerIsSensorEnabled(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_GYRO);
+        get
+        {
+            if (Info == null)
+            {
+                throw new FrameworkException("Driver information structure was null. This is an internal error. Report pwease? >w<");
+            }
+            
+            return SDL2.SDL_GameControllerIsSensorEnabled(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_GYRO);
+        }
 
         set
         {
+            if (Info == null)
+            {
+                throw new FrameworkException("Driver information structure was null. This is an internal error. Report pwease? >w<");
+            }
+            
             if (SDL2.SDL_GameControllerSetSensorEnabled(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_GYRO, value) < 0)
                 _log.Error($"Failed to enable gyroscope: {SDL2.SDL_GetError()}");
         }
@@ -41,14 +54,27 @@ public sealed class SwitchProControllerDriver
 
     public bool AccelerometerEnabled
     {
-        get => SDL2.SDL_GameControllerIsSensorEnabled(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_ACCEL);
+        get
+        {
+            if (Info == null)
+            {
+                throw new FrameworkException("Driver information structure was null. This is an internal error. Report pwease? >w<");
+            }
+            
+            return SDL2.SDL_GameControllerIsSensorEnabled(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_ACCEL);
+        }
         set
         {
+            if (Info == null)
+            {
+                throw new FrameworkException("Driver information structure was null. This is an internal error. Report pwease? >w<");
+            }
+            
             if (SDL2.SDL_GameControllerSetSensorEnabled(Info.InstancePointer, SDL2.SDL_SensorType.SDL_SENSOR_ACCEL, value) < 0)
                 _log.Error($"Failed to enable accelerometer: {SDL2.SDL_GetError()}");
         }
     }
-        
+
     public SwitchProControllerDriver(ControllerInfo info) : base(info)
     {
         UseXboxButtonLayout = false;
@@ -80,6 +106,11 @@ public sealed class SwitchProControllerDriver
 
     public Vector3 ReadGyroscopeSensor()
     {
+        if (Info == null)
+        {
+            throw new FrameworkException("Driver information structure was null. This is an internal error. Report pwease? >w<");
+        }
+        
         var data = new float[3];
 
         unsafe
@@ -103,6 +134,11 @@ public sealed class SwitchProControllerDriver
 
     public Vector3 ReadAccelerometerSensor()
     {
+        if (Info == null)
+        {
+            throw new FrameworkException("Driver information structure was null. This is an internal error. Report pwease? >w<");
+        }
+        
         var data = new float[3];
 
         unsafe

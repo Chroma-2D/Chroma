@@ -31,7 +31,7 @@ public sealed class Window : DisposableResource
     private Vector2 _position = new(SDL2.SDL_WINDOWPOS_CENTERED);
     private WindowState _state = WindowState.Normal;
     private bool _enableDragDrop;
-    private WindowHitTestDelegate _hitTestDelegate;
+    private WindowHitTestDelegate? _hitTestDelegate;
 
     private IntPtr _windowHandle;
     private IntPtr _currentIconPtr;
@@ -42,18 +42,18 @@ public sealed class Window : DisposableResource
 
     internal delegate void DrawDelegate(RenderContext context);
 
-    internal StateUpdateDelegate FixedUpdate;
-    internal StateUpdateDelegate Update;
-    internal DrawDelegate Draw;
+    internal StateUpdateDelegate? FixedUpdate;
+    internal StateUpdateDelegate? Update;
+    internal DrawDelegate? Draw;
 
     internal Game Game { get; }
-    internal EventDispatcher EventDispatcher { get; private set; }
+    internal EventDispatcher? EventDispatcher { get; private set; }
     internal DragDropManager DragDropManager { get; }
 
     internal IntPtr Handle => _windowHandle;
     internal IntPtr RenderTargetHandle { get; private set; }
 
-    internal static Window Instance { get; private set; }
+    internal static Window Instance { get; private set; } = null!;
 
     public delegate WindowHitTestResult WindowHitTestDelegate(Window window, Vector2 position);
 
@@ -332,7 +332,7 @@ public sealed class Window : DisposableResource
         }
     }
 
-    public WindowHitTestDelegate HitTest
+    public WindowHitTestDelegate? HitTest
     {
         get => _hitTestDelegate;
         set
@@ -359,23 +359,23 @@ public sealed class Window : DisposableResource
 
     public WindowMode Mode { get; }
 
-    public event EventHandler Shown;
-    public event EventHandler Hidden;
-    public event EventHandler Invalidated;
-    public event EventHandler<WindowMoveEventArgs> Moved;
-    public event EventHandler<WindowSizeEventArgs> Resized;
-    public event EventHandler<WindowSizeEventArgs> SizeChanged;
-    public event EventHandler<WindowStateEventArgs> StateChanged;
-    public event EventHandler MouseEntered;
-    public event EventHandler MouseLeft;
-    public event EventHandler Focused;
-    public event EventHandler Unfocused;
-    public event EventHandler Closed;
-    public event EventHandler<DisplayChangedEventArgs> DisplayChanged;
-    public event EventHandler<CancelEventArgs> QuitRequested;
+    public event EventHandler? Shown;
+    public event EventHandler? Hidden;
+    public event EventHandler? Invalidated;
+    public event EventHandler<WindowMoveEventArgs>? Moved;
+    public event EventHandler<WindowSizeEventArgs>? Resized;
+    public event EventHandler<WindowSizeEventArgs>? SizeChanged;
+    public event EventHandler<WindowStateEventArgs>? StateChanged;
+    public event EventHandler? MouseEntered;
+    public event EventHandler? MouseLeft;
+    public event EventHandler? Focused;
+    public event EventHandler? Unfocused;
+    public event EventHandler? Closed;
+    public event EventHandler<DisplayChangedEventArgs>? DisplayChanged;
+    public event EventHandler<CancelEventArgs>? QuitRequested;
 
-    public event EventHandler<FileDragDropEventArgs> FilesDropped;
-    public event EventHandler<TextDragDropEventArgs> TextDropped;
+    public event EventHandler<FileDragDropEventArgs>? FilesDropped;
+    public event EventHandler<TextDragDropEventArgs>? TextDropped;
 
     internal Window(Game game)
     {
@@ -677,7 +677,7 @@ public sealed class Window : DisposableResource
             {
                 try
                 {
-                    scheduledValueAction.ReturnValue = scheduledValueAction.ValueAction.Invoke();
+                    scheduledValueAction.ReturnValue = scheduledValueAction.ValueAction?.Invoke();
                     scheduledValueAction.Completed = true;
                 }
                 catch (Exception e)

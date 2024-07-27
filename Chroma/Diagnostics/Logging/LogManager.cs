@@ -41,7 +41,7 @@ public static class LogManager
             (log) => { log.SinkTo(new FileSink(GetAssemblyLogPath(asm))); });
     }
 
-    private static Log GetForAssembly(Assembly assembly, bool initializeDefaults, Action<Log> postInit = null)
+    private static Log GetForAssembly(Assembly assembly, bool initializeDefaults, Action<Log>? postInit = null)
     {
         var logInfo = Logs.FirstOrDefault(x => x.OwningAssembly == assembly);
 
@@ -61,16 +61,11 @@ public static class LogManager
                 postInit?.Invoke(log);
             }
 
-            logInfo = new LogInfo
-            {
-                OwningAssembly = assembly,
-                Log = log
-            };
-
+            logInfo = new LogInfo(assembly, log);
             Logs.Add(logInfo);
         }
 
-        return logInfo.Log;
+        return logInfo.Log ?? throw new InvalidOperationException("");
     }
 
     private static string GetAssemblyLogPath(Assembly assembly)

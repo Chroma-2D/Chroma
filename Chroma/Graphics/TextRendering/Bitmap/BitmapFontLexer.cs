@@ -2,8 +2,8 @@
 
 internal class BitmapFontLexer
 {
-    public string CurrentKey { get; private set; }
-    public string CurrentValue { get; private set; }
+    public string CurrentKey { get; private set; } = string.Empty;
+    public string CurrentValue { get; private set; } = string.Empty;
 
     public string Line { get; }
 

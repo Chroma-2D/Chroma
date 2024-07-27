@@ -153,7 +153,7 @@ public static class Extensions
         IFontProvider font,
         string text,
         Vector2 position,
-        GlyphTransform perCharTransform = null
+        GlyphTransform? perCharTransform = null
     ) => context.DrawString(font, text, position.X, position.Y, perCharTransform);
         
     public static void DrawString(
@@ -175,7 +175,7 @@ public static class Extensions
         string text,
         float x,
         float y,
-        GlyphTransform perCharTransform = null
+        GlyphTransform? perCharTransform = null
     ) => context.DrawString(EmbeddedAssets.DefaultFont, text, x, y, perCharTransform);
         
     public static void DrawString(
@@ -201,7 +201,7 @@ public static class Extensions
         this RenderContext context,
         string text,
         Vector2 position,
-        GlyphTransform perCharTransform = null
+        GlyphTransform? perCharTransform = null
     ) => context.DrawString(EmbeddedAssets.DefaultFont, text, position.X, position.Y, perCharTransform);
         
     public static void DrawString(

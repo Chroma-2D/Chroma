@@ -14,8 +14,8 @@ public sealed class MessageBox
     private List<MessageBoxButton> Buttons { get; }
 
     private string Title { get; set; }
-    private string Message { get; set; }
-    private Action AbnormalClosureAction { get; set; }
+    private string Message { get; set; } = string.Empty;
+    private Action? AbnormalClosureAction { get; set; } 
 
     public MessageBox(MessageBoxSeverity severity)
     {
@@ -37,7 +37,7 @@ public sealed class MessageBox
         return this;
     }
 
-    public MessageBox WithButton(string text, Action<int> action = null)
+    public MessageBox WithButton(string text, Action<int>? action = null)
     {
         Buttons.Add(
             new MessageBoxButton
@@ -56,7 +56,7 @@ public sealed class MessageBox
         return this;
     }
 
-    public int Show(Window owner = null)
+    public int Show(Window? owner = null)
     {
         var buttonData = Buttons.Select(button => new SDL2.SDL_MessageBoxButtonData
         {
@@ -96,7 +96,7 @@ public sealed class MessageBox
         return result;
     }
 
-    public static void Show(MessageBoxSeverity severity, string title, string message, Window owner = null)
+    public static void Show(MessageBoxSeverity severity, string title, string message, Window? owner = null)
     {
         if (SDL2.SDL_ShowSimpleMessageBox(
                 (SDL2.SDL_MessageBoxFlags)severity,

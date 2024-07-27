@@ -19,7 +19,7 @@ public sealed class Dispatcher
 
     public static Task RunOnMainThread(Action action, bool immediateStart = false)
     {
-        var scheduledAction = new ScheduledAction { Action = action };
+        var scheduledAction = new ScheduledAction(action);
         ActionQueue.Enqueue(scheduledAction);
 
         var task = new Task((a) =>
@@ -38,19 +38,19 @@ public sealed class Dispatcher
         return task;
     }
 
-    public static Task<T> RunOnMainThread<T>(Func<object> valueAction, bool immediateStart = false)
+    public static Task<T?> RunOnMainThread<T>(Func<object?> valueAction, bool immediateStart = false)
     {
         var scheduledAction = new ScheduledValueAction { ValueAction = valueAction };
         ActionQueue.Enqueue(scheduledAction);
 
-        var task = new Task<T>((a) =>
+        var task = new Task<T?>((a) =>
         {
             var sched = a as ScheduledValueAction;
 
             while (!sched!.Completed)
                 Task.Delay(1);
 
-            return (T)sched.ReturnValue;
+            return (T?)sched.ReturnValue;
         }, scheduledAction);
 
         if (immediateStart)

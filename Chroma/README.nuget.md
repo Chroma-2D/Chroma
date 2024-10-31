@@ -2,6 +2,10 @@
 Chroma is a 2D game development framework focused on quick prototyping.
 
 ### Change log
+#### Changes in release 0.65.1
+- SDL updated to 2.30.8
+- System.Text.JSON updated to 6.0.10
+
 #### Changes in release 0.65.0
 - Updates to some diagnostic strings.
 - SDL updated to 2.30.5

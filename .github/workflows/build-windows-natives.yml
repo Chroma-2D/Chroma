@@ -26,7 +26,7 @@ jobs:
       with:
         install: >-
           mingw-w64-x86_64-ninja
-          mingw-w64-x86_64-cmake=3.31.7
+          mingw-w64-x86_64-cmake=3
           mingw-w64-x86_64-gcc=14
     - name: Put MSYS2_MinGW64 on PATH
       run: echo "$RUNNER_TEMP/msys64/mingw64/bin" >> $GITHUB_PATH

@@ -35,7 +35,7 @@ jobs:
       run: cd Dependencies && ./build_natives --with-ft && cd ..
 
     - name: Pack artifact
-      uses: actions/upload-artifact@v3.1.3
+      uses: actions/upload-artifact@v4
       with:
         name: chroma-natives-windows
         path: Dependencies/build_env/artifacts

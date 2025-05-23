@@ -6,7 +6,7 @@ if [[ "linux" != *"$PLATFORM"* ]]; then
   exit
 fi
 
-FT_SOPATH=$FT_BUILDROOT/libfreetype.so.6.20.1
+FT_SOPATH=$FT_BUILDROOT/libfreetype.so.6.20.2
 FT_ARTIFACT=libfreetype.so
 
 SDL_SOPATH=$SDL_BUILDROOT/libSDL2-2.0.so

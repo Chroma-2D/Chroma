@@ -14,11 +14,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - uses: Symbitic/install-cmake@v0.1.0
+    - uses: lukka/get-cmake@v4.0.2
+      with: 
+        cmakeVersion: 3.31.7
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
-      with:
-        platform: mac
 
     - name: Build
       run: cd Dependencies && ./build_natives --with-ft && cd ..

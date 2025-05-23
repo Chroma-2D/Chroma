@@ -14,11 +14,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - uses: Symbitic/install-cmake@v0.1.0
-      with:
-        cmake: 3.31.7
-        ninja: 1.12.1
-        platform: mac
+    - uses: lukka/get-cmake@v4.0.2
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
 

@@ -21,13 +21,13 @@ jobs:
     - uses: msys2/setup-msys2@v2
       with:
         update: true
+        install: patch
     - uses: Totto16/msys2-install-packages-pinned@v1.0.1
       with:
         install: >-
           mingw-w64-x86_64-ninja
           mingw-w64-x86_64-cmake
           mingw-w64-x86_64-gcc=14
-          patch
     - name: Put MSYS2_MinGW64 on PATH
       run: echo "$RUNNER_TEMP/msys64/mingw64/bin" >> $GITHUB_PATH
 

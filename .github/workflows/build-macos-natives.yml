@@ -16,7 +16,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: Symbitic/install-cmake@v0.1.0
       with:
-        cmake: 4.0.2
+        cmake: 3.31.7
         ninja: 1.12.1
         platform: mac
       env:

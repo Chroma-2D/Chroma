@@ -15,10 +15,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: Symbitic/install-cmake@v0.1.0
+      with:
+        cmake: 4.0.2
+        ninja: 1.12.1
+        platform: mac
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
-      with:
-        platform: mac
 
     - name: Build
       run: cd Dependencies && ./build_natives --with-ft && cd ..

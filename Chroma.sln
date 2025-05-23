@@ -104,6 +104,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{4E142959-AB6
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chroma.GameTemplate", "Chroma.GameTemplate\Chroma.GameTemplate.csproj", "{2DBE15B6-563C-4CDB-91E0-DB03AB4A2589}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserBootHints", "Chroma.Examples\UserBootHints\UserBootHints.csproj", "{55448446-4D3D-4362-AB0D-64E8A695661F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -258,6 +260,10 @@ Global
 		{2DBE15B6-563C-4CDB-91E0-DB03AB4A2589}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2DBE15B6-563C-4CDB-91E0-DB03AB4A2589}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2DBE15B6-563C-4CDB-91E0-DB03AB4A2589}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55448446-4D3D-4362-AB0D-64E8A695661F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55448446-4D3D-4362-AB0D-64E8A695661F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55448446-4D3D-4362-AB0D-64E8A695661F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55448446-4D3D-4362-AB0D-64E8A695661F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -298,6 +304,7 @@ Global
 		{E520164F-F501-4AD0-AB4A-54CAEA0F927F} = {14BADE0D-C0CC-49C6-AFCC-B876B9E964D7}
 		{E867A642-1F8F-4BD1-A135-3E352E60E7D2} = {14BADE0D-C0CC-49C6-AFCC-B876B9E964D7}
 		{4E142959-AB62-4716-A658-10CD6E747C1A} = {14BADE0D-C0CC-49C6-AFCC-B876B9E964D7}
+		{55448446-4D3D-4362-AB0D-64E8A695661F} = {8BB44FE3-1EFC-4C5C-9E25-767BB6CAF4B0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BD41D1A7-4878-4659-ADD4-D387313A77CA}

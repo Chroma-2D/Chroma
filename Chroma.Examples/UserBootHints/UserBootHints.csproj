@@ -10,10 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Chroma.Natives\Chroma.Natives.csproj" />
     <ProjectReference Include="..\..\Chroma\Chroma.csproj"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="FftSharp" Version="2.1.0" />
   </ItemGroup>
 </Project>

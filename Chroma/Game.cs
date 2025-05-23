@@ -2,6 +2,7 @@
 
 using System;
 using Chroma.Audio;
+using Chroma.Boot;
 using Chroma.ContentManagement;
 using Chroma.ContentManagement.FileSystem;
 using Chroma.Diagnostics;
@@ -42,7 +43,7 @@ public class Game : IDisposable
     public Window Window { get; private set; } = null!;
     public GraphicsManager Graphics { get; private set; } = null!;
     public AudioManager Audio { get; private set; } = null!;
-        
+    
     public Game(GameStartupOptions? options = null)
     {
 #if !DEBUG
@@ -57,6 +58,8 @@ public class Game : IDisposable
             );
         }
 
+        BootHints.Lock();
+        
         // This breaks the architecture, but
         // I don't see a better way of doing it
         // right now.

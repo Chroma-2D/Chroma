@@ -1,6 +1,7 @@
 ﻿namespace Chroma.Natives.Boot;
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -14,6 +15,7 @@ using Chroma.Natives.Syscalls;
 
 internal static class ModuleInitializer
 {
+    private static Dictionary<string, string> UserBootHints { get; set; }
     internal static BootConfig BootConfig { get; private set; }
 
     [ModuleInitializer]
@@ -51,7 +53,7 @@ internal static class ModuleInitializer
             {
                 SdlBootTimeHook.Hook();
             }
-
+            
             SetSdlHints();
             InitializeSdlSystems();
         }
@@ -77,6 +79,11 @@ internal static class ModuleInitializer
             "boot.json"
         );
 
+        var bootHintsPath = Path.Combine(
+            AppContext.BaseDirectory,
+            "boot.hints.json"
+        );
+
         try
         {
             using var sr = new StreamReader(bootConfigPath);
@@ -98,19 +105,39 @@ internal static class ModuleInitializer
                 })
             );
         }
+
+        if (File.Exists(bootHintsPath))
+        {
+            UserBootHints = JsonSerializer.Deserialize<Dictionary<string, string>>(
+                File.ReadAllText(bootHintsPath)
+            );
+        }
     }
 
     private static void SetSdlHints()
     {
         if (BootConfig.SdlInitializationHints != null)
         {
-            foreach (var kvp in BootConfig.SdlInitializationHints)
-            {
-                if (!SDL2.SDL_SetHint(kvp.Key, kvp.Value))
-                {
-                    EarlyLog.Error($"Failed to set '{kvp.Key}' to '{kvp.Value}': {SDL2.SDL_GetError()}");
-                }
-            }
+            foreach (var (name, value) in BootConfig.SdlInitializationHints) 
+                TrySetHint(name, value);
+        }
+
+        if (UserBootHints != null)
+        {
+            foreach (var (name, value) in UserBootHints)
+                TrySetHint(name, value);
+        }
+    }
+
+    private static void TrySetHint(string name, string value)
+    {
+        if (!SDL2.SDL_SetHint(name, value))
+        {
+            EarlyLog.Error($"Failed to set hint '{name}' to '{value}': {SDL2.SDL_GetError()}");
+        }
+        else
+        {
+            EarlyLog.Debug($"SDL hint '{name}': {value}");
         }
     }
 

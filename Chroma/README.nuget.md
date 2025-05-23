@@ -2,6 +2,11 @@
 Chroma is a 2D game development framework focused on quick prototyping.
 
 ### Change log
+#### Changes in release 0.66.0
+- SDL updated to 2.32.6
+- FreeType2 updated to 2.13.3
+- Added `BootHints` class to allow users to specify pre-boot SDL hints  without having to rely on boot.json modifications.
+
 #### Changes in release 0.65.2
 - SDL updated to 2.30.10
 - Active development resuming in hopes of moving to SDL3 this year.

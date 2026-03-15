@@ -462,6 +462,6 @@ internal static class FT2
     public static extern void FT_Done_Glyph(ref FT_GlyphRec glyph);
         
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-    public static extern FT_Error FT_Glyph_Get_CBox(ref FT_GlyphRec glyph, uint bbox_mode, out FT_BBox acbox);
+    public static extern void FT_Glyph_Get_CBox(ref FT_GlyphRec glyph, uint bbox_mode, out FT_BBox acbox);
         
 }

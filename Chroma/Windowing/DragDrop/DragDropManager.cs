@@ -12,7 +12,7 @@ internal sealed class DragDropManager
 
     private bool? _isFileDrop;
 
-    private readonly List<string> _fileList = new();
+    private readonly List<string> _fileList = [];
     private readonly StringBuilder _textBuffer = new();
 
     internal DragDropManager(Window owner)

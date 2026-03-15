@@ -2,6 +2,13 @@
 Chroma is a 2D game development framework focused on quick prototyping.
 
 ### Change log
+#### Changes in release 0.67.0
+- Dropped support for .NET 7, move to .NET 8.
+- Modernized parts of the project to use C# 14 features.
+- Game class constructor is now marked as `protected`.
+- GameStartupOptions now allows the user to specify the default framework log level.
+- SDL updated to 2.32.10
+
 #### Changes in release 0.66.0
 - SDL updated to 2.32.6
 - FreeType2 updated to 2.13.3

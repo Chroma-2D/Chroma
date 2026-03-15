@@ -1,9 +1,4 @@
 namespace Chroma.Audio;
 
-public class AudioException : FrameworkException
-{
-    public AudioException(string message) 
-        : base(message)
-    {
-    }
-}
+public class AudioException(string message) 
+    : FrameworkException(message);

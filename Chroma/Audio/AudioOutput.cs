@@ -13,8 +13,8 @@ public sealed class AudioOutput
 {
     private static readonly Log _log = LogManager.GetForCurrentAssembly();
         
-    private readonly List<AudioDevice> _devices = new();
-    private readonly List<Decoder> _decoders = new();
+    private readonly List<AudioDevice> _devices = [];
+    private readonly List<Decoder> _decoders = [];
         
     private static AudioOutput? _instance;
     internal static AudioOutput Instance => _instance ??= new();

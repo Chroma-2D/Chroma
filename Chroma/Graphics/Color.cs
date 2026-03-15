@@ -283,7 +283,7 @@ public struct Color : IEquatable<Color>
     public static readonly Color YellowGreen = new(154, 205, 50);
 
     public float[] AsNormalizedFloatArray()
-        => new[] { R / 255f, G / 255f, B / 255f, A / 255f };
+        => [R / 255f, G / 255f, B / 255f, A / 255f];
 
     public Color Alpha(byte alpha)
         => new(R, G, B, alpha);

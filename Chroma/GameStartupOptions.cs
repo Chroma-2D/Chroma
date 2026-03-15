@@ -1,18 +1,24 @@
 namespace Chroma;
 
-public class GameStartupOptions
+using Chroma.Diagnostics.Logging;
+
+public class GameStartupOptions(
+    bool constructDefaultScene = true,
+    bool useBootSplash = true,
+    int msaaSamples = 0,
+    LogLevel frameworkLogLevel =
+#if !DEBUG
+        LogLevel.Info | LogLevel.Warning | LogLevel.Error
+#else
+        LogLevel.Everything
+#endif
+)
 {
-    public bool ConstructDefaultScene { get; }
-    public bool UseBootSplash { get; }
-        
-    public int MsaaSamples { get; }
+    public bool ConstructDefaultScene { get; } = constructDefaultScene;
+    public bool UseBootSplash { get; } = useBootSplash;
 
-    public static readonly GameStartupOptions Default = new(); 
+    public int MsaaSamples { get; } = msaaSamples;
+    public LogLevel FrameworkLogLevel { get; } = frameworkLogLevel;
 
-    public GameStartupOptions(bool constructDefaultScene = true, bool useBootSplash = true, int msaaSamples = 0)
-    {
-        ConstructDefaultScene = constructDefaultScene;
-        MsaaSamples = msaaSamples;
-        UseBootSplash = useBootSplash;
-    }
+    public static readonly GameStartupOptions Default = new();
 }

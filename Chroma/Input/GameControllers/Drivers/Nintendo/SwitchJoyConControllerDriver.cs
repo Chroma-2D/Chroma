@@ -241,15 +241,15 @@ public sealed class SwitchJoyConControllerDriver
 
     private bool TryRemapButton(ControllerButton button, out ControllerButton remappedButton)
     {
-        if (IsLeftSide && _leftButtonRemappings.ContainsKey(button))
+        if (IsLeftSide && _leftButtonRemappings.TryGetValue(button, out var remapping))
         {
-            remappedButton = _leftButtonRemappings[button];
+            remappedButton = remapping;
             return true;
         }
 
-        if (IsRightSide && _rightButtonRemappings.ContainsKey(button))
+        if (IsRightSide && _rightButtonRemappings.TryGetValue(button, out var buttonRemapping))
         {
-            remappedButton = _rightButtonRemappings[button];
+            remappedButton = buttonRemapping;
             return true;
         }
 
@@ -259,15 +259,15 @@ public sealed class SwitchJoyConControllerDriver
 
     private bool TryRemapAxis(ControllerAxis axis, out ControllerAxis remappedAxis)
     {
-        if (IsLeftSide && _leftAxisRemappings.ContainsKey(axis))
+        if (IsLeftSide && _leftAxisRemappings.TryGetValue(axis, out var remapping))
         {
-            remappedAxis = _leftAxisRemappings[axis];
+            remappedAxis = remapping;
             return true;
         }
 
-        if (IsRightSide && _rightAxisRemappings.ContainsKey(axis))
+        if (IsRightSide && _rightAxisRemappings.TryGetValue(axis, out var axisRemapping))
         {
-            remappedAxis = _rightAxisRemappings[axis];
+            remappedAxis = axisRemapping;
             return true;
         }
 

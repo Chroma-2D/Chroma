@@ -20,7 +20,7 @@ public static class LogManager
         if (!Directory.Exists(LogRoot))
             Directory.CreateDirectory(LogRoot);
 
-        Logs = new List<LogInfo>();
+        Logs = [];
     }
 
     public static string GetCurrentAssemblyLogPath()

@@ -9,7 +9,7 @@ public sealed class AudioManager
 {
     private static readonly Log _log = LogManager.GetForCurrentAssembly();
         
-    private readonly List<string> _audioDrivers = new();
+    private readonly List<string> _audioDrivers = [];
 
     public AudioInput Input => AudioInput.Instance;
     public AudioOutput Output => AudioOutput.Instance;

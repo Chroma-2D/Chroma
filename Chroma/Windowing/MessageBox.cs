@@ -20,7 +20,7 @@ public sealed class MessageBox
     public MessageBox(MessageBoxSeverity severity)
     {
         Severity = severity;
-        Buttons = new List<MessageBoxButton>();
+        Buttons = [];
 
         Title = $"Chroma Framework - {Severity}";
     }

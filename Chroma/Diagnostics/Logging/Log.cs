@@ -17,7 +17,7 @@ public sealed class Log
 
     internal Log()
     {
-        Sinks = new List<Sink>();
+        Sinks = [];
         Decorators = new Dictionary<string, Decorator>();
 
         LogLevel = LogLevel.Everything;

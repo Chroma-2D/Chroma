@@ -12,10 +12,8 @@ internal static class PixelFormatConverter
     {
         if (surface == IntPtr.Zero)
             throw new FrameworkException("Surface pointer cannot be null.");
-            
-        uint sdlFormat;
 
-        sdlFormat = format switch
+        uint sdlFormat = format switch
         {
             PixelFormat.BGR => SDL2.SDL_PIXELFORMAT_BGR888,
             PixelFormat.RGB => SDL2.SDL_PIXELFORMAT_RGB888,

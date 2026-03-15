@@ -4,7 +4,7 @@ using System;
 
 public class LinearTriggerEffectPreset
 {
-    private sbyte[] _zoneForces = new sbyte[10];
+    private readonly sbyte[] _zoneForces = new sbyte[10];
 
     public ushort ZoneEnableMask { get; private set; }
     public ulong EncodedZoneForces { get; private set; }

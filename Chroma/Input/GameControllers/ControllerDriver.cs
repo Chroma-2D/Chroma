@@ -13,7 +13,7 @@ public abstract class ControllerDriver
     protected static readonly Log _log = LogManager.GetForCurrentAssembly();
 
     protected Dictionary<ControllerAxis, ushort> _deadZones = new();
-    protected HashSet<ControllerButton> _buttonStates = new();
+    protected HashSet<ControllerButton> _buttonStates = [];
 
     public IReadOnlyDictionary<ControllerAxis, ushort> DeadZones => _deadZones;
     public IReadOnlySet<ControllerButton> ActiveButtons => _buttonStates;
@@ -83,11 +83,7 @@ public abstract class ControllerDriver
     public virtual int GetAxisValue(ControllerAxis axis)
     {
         var axisValue = GetRawAxisValue(axis);
-
-        if (CanIgnoreAxisMotion(axis, axisValue))
-            return 0;
-
-        return axisValue;
+        return CanIgnoreAxisMotion(axis, axisValue) ? 0 : axisValue;
     }
 
     public virtual float GetAxisValueNormalized(ControllerAxis axis)

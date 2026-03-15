@@ -1,9 +1,4 @@
 namespace Chroma.ContentManagement;
 
-public class ContentException : FrameworkException
-{
-    public ContentException(string message) 
-        : base(message)
-    {
-    }
-}
+public class ContentException(string message) 
+    : FrameworkException(message);

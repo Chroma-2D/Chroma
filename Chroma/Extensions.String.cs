@@ -5,22 +5,25 @@ using System.Collections.Generic;
 
 public static partial class Extensions
 {
-    public static string AnsiColorEncodeRGB(this string s, byte r, byte g, byte b)
-        => $"\x1b[38;2;{r};{g};{b}m{s}\x1b[0m";
-
-    public static List<Range> FindWordRanges(this string str, params string[] highlights)
+    extension(string s)
     {
-        var ranges = new List<Range>();
+        public string AnsiColorEncodeRGB(byte r, byte g, byte b)
+            => $"\x1b[38;2;{r};{g};{b}m{s}\x1b[0m";
 
-        for (var i = 0; i < highlights.Length; i++)
+        public List<Range> FindWordRanges(params string[] highlights)
         {
-            var highlight = highlights[i];
-            var index = str.IndexOf(highlight, StringComparison.Ordinal);
+            var ranges = new List<Range>();
 
-            if (index >= 0)
-                ranges.Add(index..(index + highlight.Length));
+            for (var i = 0; i < highlights.Length; i++)
+            {
+                var highlight = highlights[i];
+                var index = s.IndexOf(highlight, StringComparison.Ordinal);
+
+                if (index >= 0)
+                    ranges.Add(index..(index + highlight.Length));
+            }
+
+            return ranges;
         }
-
-        return ranges;
     }
 }

@@ -28,7 +28,7 @@ public class FileSystemContentProvider : DisposableResource, IContentProvider
         
         ContentRoot = contentRoot;
 
-        _loadedResources = new HashSet<DisposableResource>();
+        _loadedResources = [];
         _importers = new Dictionary<Type, Func<string, object[], object>>();
 
         RegisterImporters();
@@ -38,7 +38,7 @@ public class FileSystemContentProvider : DisposableResource, IContentProvider
     {
         var type = typeof(T);
 
-        if (!_importers.ContainsKey(type))
+        if (!_importers.TryGetValue(type, out var importer))
         {
             throw new UnsupportedContentException(
                 "This type of content is not supported by this provider.",
@@ -46,7 +46,7 @@ public class FileSystemContentProvider : DisposableResource, IContentProvider
             );
         }
 
-        var resource = _importers[type].Invoke(MakeAbsolutePath(relativePath), args) as T;
+        var resource = importer.Invoke(MakeAbsolutePath(relativePath), args) as T;
 
         if (resource != null)
         {
@@ -74,10 +74,9 @@ public class FileSystemContentProvider : DisposableResource, IContentProvider
 
     public void Track<T>(T resource) where T : DisposableResource
     {
-        if (_loadedResources.Contains(resource))
+        if (!_loadedResources.Add(resource))
             throw new InvalidOperationException("The content you want to track is already being tracked.");
 
-        _loadedResources.Add(resource);
         resource.Disposing += OnResourceDisposing;
     }
 
@@ -95,27 +94,24 @@ public class FileSystemContentProvider : DisposableResource, IContentProvider
     {
         var contentType = typeof(T);
             
-        if (_importers.ContainsKey(contentType))
+        if (!_importers.TryAdd(contentType, importer))
         {
             throw new InvalidOperationException(
                 $"An importer for type {contentType.Name} was already registered."
             );
         }
-
-        _importers.Add(contentType, importer);
     }
 
     public void UnregisterImporter<T>() where T : DisposableResource
     {
         var contentType = typeof(T);
 
-        if (!_importers.ContainsKey(contentType))
+        if (!_importers.Remove(contentType))
         {
             throw new InvalidOperationException(
-                $"An importer for type {contentType.Name} was never registered, thus it cannot be unregistered.");
+                $"An importer for type {contentType.Name} was never registered, thus it cannot be unregistered."
+            );
         }
-
-        _importers.Remove(contentType);
     }
 
     public bool IsImporterPresent<T>() where T : DisposableResource
@@ -152,19 +148,12 @@ public class FileSystemContentProvider : DisposableResource, IContentProvider
 
         RegisterImporter<TrueTypeFont>((path, args) =>
         {
-            TrueTypeFont ttf;
-            if (args.Length == 2)
+            TrueTypeFont ttf = args.Length switch
             {
-                ttf = new TrueTypeFont(path, (int)args[0], (string)args[1]);
-            }
-            else if (args.Length == 1)
-            {
-                ttf = new TrueTypeFont(path, (int)args[0]);
-            }
-            else
-            {
-                ttf = new TrueTypeFont(path, 12);
-            }
+                2 => new TrueTypeFont(path, (int)args[0], (string)args[1]),
+                1 => new TrueTypeFont(path, (int)args[0]),
+                _ => new TrueTypeFont(path, 12)
+            };
 
             return ttf;
         });

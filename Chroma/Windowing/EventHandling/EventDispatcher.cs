@@ -43,9 +43,9 @@ internal sealed class EventDispatcher
         if (DiscardedWindowEventHandlers.Contains(ev.windowEvent))
             return;
             
-        if (WindowEventHandlers.ContainsKey(ev.windowEvent))
+        if (WindowEventHandlers.TryGetValue(ev.windowEvent, out var handler))
         {
-            WindowEventHandlers[ev.windowEvent]?.Invoke(Owner, ev);
+            handler.Invoke(Owner, ev);
         }
         else
         {
@@ -55,9 +55,9 @@ internal sealed class EventDispatcher
 
     internal void DispatchEvent(SDL2.SDL_Event ev)
     {
-        if (SdlEventHandlers.ContainsKey(ev.type))
+        if (SdlEventHandlers.TryGetValue(ev.type, out var handler))
         {
-            SdlEventHandlers[ev.type]?.Invoke(Owner, ev);
+            handler.Invoke(Owner, ev);
         }
         else
         {
@@ -67,27 +67,19 @@ internal sealed class EventDispatcher
         
     internal void RegisterWindowEventHandler(SDL2.SDL_WindowEventID eventId, WindowEventHandler handler)
     {
-        if (WindowEventHandlers.ContainsKey(eventId))
+        if (!WindowEventHandlers.TryAdd(eventId, handler))
         {
             _log.Warning($"{eventId} handler is getting redefined.");
             WindowEventHandlers[eventId] = handler;
-        }
-        else
-        {
-            WindowEventHandlers.Add(eventId, handler);
         }
     }
 
     internal void RegisterEventHandler(SDL2.SDL_EventType type, SdlEventHandler handler)
     {
-        if (SdlEventHandlers.ContainsKey(type))
+        if (!SdlEventHandlers.TryAdd(type, handler))
         {
             _log.Warning($"{type} handler is getting redefined.");
             SdlEventHandlers[type] = handler;
-        }
-        else
-        {
-            SdlEventHandlers.Add(type, handler);
         }
     }
 

@@ -3,17 +3,10 @@
 using System.Globalization;
 using System.Text;
 
-public readonly struct ProductInfo
+public readonly record struct ProductInfo(
+    ushort VendorId, 
+    ushort ProductId)
 {
-    public ushort VendorId { get; }
-    public ushort ProductId { get; }
-
-    public ProductInfo(ushort vid, ushort pid)
-    {
-        VendorId = vid;
-        ProductId = pid;
-    }
-
     public override string ToString()
     {
         var sb = new StringBuilder();

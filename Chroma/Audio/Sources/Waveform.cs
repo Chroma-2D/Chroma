@@ -8,7 +8,7 @@ using Chroma.Natives.Ports.NMIX;
 public class Waveform : AudioSource
 {
     private static readonly Log _log = LogManager.GetForCurrentAssembly();
-    private SDL2_nmix.NMIX_SourceCallback? _internalCallback; // Needs to be a class field to avoid GC collection.
+    private readonly SDL2_nmix.NMIX_SourceCallback? _internalCallback; // Needs to be a class field to avoid GC collection.
 
     public AudioStreamDelegate SampleGenerator { get; set; }
 

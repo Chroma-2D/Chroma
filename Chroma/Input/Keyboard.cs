@@ -5,8 +5,8 @@ using Chroma.Natives.Bindings.SDL;
 
 public static class Keyboard
 {
-    private static readonly HashSet<KeyCode> _keyCodeStates = new();
-    private static readonly HashSet<ScanCode> _scanCodeStates = new();
+    private static readonly HashSet<KeyCode> _keyCodeStates = [];
+    private static readonly HashSet<ScanCode> _scanCodeStates = [];
 
     public static IReadOnlySet<KeyCode> ActiveKeys => _keyCodeStates;
     public static KeyModifiers ActiveModifiers => (KeyModifiers)SDL2.SDL_GetModState();

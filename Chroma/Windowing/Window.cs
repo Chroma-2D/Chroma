@@ -70,10 +70,8 @@ public sealed class Window : DisposableResource
                 SDL2.SDL_GetWindowSize(Handle, out var w, out var h);
                 return new Size(w, h);
             }
-            else
-            {
-                return _size;
-            }
+
+            return _size;
         }
 
         set

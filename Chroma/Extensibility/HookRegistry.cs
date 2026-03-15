@@ -188,7 +188,7 @@ public static class HookRegistry
 
         for (var i = 0; i < hookCollection.Count; i++)
         {
-            continueToMainBody &= (bool)hookCollection[i].Invoke(null, new object?[] { _owner, argument })!;
+            continueToMainBody &= (bool)hookCollection[i].Invoke(null, [_owner, argument])!;
         }
 
         return continueToMainBody;
@@ -200,18 +200,18 @@ public static class HookRegistry
 
         for (var i = 0; i < hookCollection.Count; i++)
         {
-            hookCollection[i].Invoke(null, new object?[] { _owner, argument });
+            hookCollection[i].Invoke(null, [_owner, argument]);
         }
     }
 
     private static void InitializeHookCollections()
     {
-        var enumEntryCount = Enum.GetNames(typeof(HookPoint)).Length;
+        var enumEntryCount = Enum.GetNames<HookPoint>().Length;
 
         for (var i = 0; i < enumEntryCount; i++)
         {
-            _prefixHooks.Add((HookPoint)i, new List<MethodInfo>());
-            _postfixHooks.Add((HookPoint)i, new List<MethodInfo>());
+            _prefixHooks.Add((HookPoint)i, []);
+            _postfixHooks.Add((HookPoint)i, []);
         }
     }
 

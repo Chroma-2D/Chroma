@@ -36,7 +36,7 @@ public sealed class Effect : Shader
                 var windowHandle = SDL2.SDL_GL_GetCurrentWindow();
                 SDL2.SDL_GetWindowSize(windowHandle, out var w, out var h);
                 
-                SDL_gpu.GPU_SetAttributefv(loc, 2, new float[] {w, h});
+                SDL_gpu.GPU_SetAttributefv(loc, 2, [w, h]);
             }
         }
     }

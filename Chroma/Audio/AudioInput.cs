@@ -10,8 +10,8 @@ public sealed class AudioInput
 {
     private static readonly Log _log = LogManager.GetForCurrentAssembly();
         
-    private readonly List<AudioDevice> _devices = new();
-    private readonly List<AudioCapture> _activeCaptures = new();
+    private readonly List<AudioDevice> _devices = [];
+    private readonly List<AudioCapture> _activeCaptures = [];
         
     private static AudioInput? _instance;
     internal static AudioInput Instance => _instance ??= new();

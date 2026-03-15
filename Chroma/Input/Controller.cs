@@ -25,97 +25,34 @@ public static class Controller
         => Get(playerIndex)?.As<T>();
 
     public static void SetDeadZone(int playerIndex, ControllerAxis axis, ushort value)
-    {
-        var driver = Get(playerIndex);
-
-        if (driver == null)
-            return;
-
-        driver.SetDeadZone(axis, value);
-    }
+        => Get(playerIndex)?.SetDeadZone(axis, value);
 
     public static void SetDeadZoneAllAxes(int playerIndex, ushort value)
-    {
-        var driver = Get(playerIndex);
-
-        if (driver == null)
-            return;
-
-        driver.SetDeadZoneAllAxes(value);
-    }
+        => Get(playerIndex)?.SetDeadZoneAllAxes(value);
 
     public static bool CanIgnoreAxisMotion(int playerIndex, ControllerAxis axis, short axisValue)
-    {
-        var driver = Get(playerIndex);
-
-        if (driver == null)
-            return false;
-
-        return driver.CanIgnoreAxisMotion(axis, axisValue);
-    }
+        => Get(playerIndex)?.CanIgnoreAxisMotion(axis, axisValue) ?? false;
 
     public static int GetRawAxisValue(int playerIndex, ControllerAxis axis)
-    {
-        var driver = Get(playerIndex);
-
-        if (driver == null)
-            return 0;
-
-        return driver.GetRawAxisValue(axis);
-    }
+        => Get(playerIndex)?.GetRawAxisValue(axis) ?? 0;
 
     public static float GetRawAxisValueNormalized(int playerIndex, ControllerAxis axis)
-    {
-        var driver = Get(playerIndex);
-
-        if (driver == null)
-            return 0;
-
-        return driver.GetRawAxisValueNormalized(axis);
-    }
+        => Get(playerIndex)?.GetRawAxisValueNormalized(axis) ?? 0;
 
     public static int GetAxisValue(int playerIndex, ControllerAxis axis)
-    {
-        var driver = Get(playerIndex);
-
-        if (driver == null)
-            return 0;
-
-        return driver.GetAxisValue(axis);
-    }
+        => Get(playerIndex)?.GetAxisValue(axis) ?? 0;
 
     public static float GetAxisValueNormalized(int playerIndex, ControllerAxis axis)
-    {
-        var driver = Get(playerIndex);
-
-        if (driver == null)
-            return 0;
-
-        return driver.GetAxisValueNormalized(axis);
-    }
+        => Get(playerIndex)?.GetAxisValueNormalized(axis) ?? 0;
 
     public static bool IsButtonDown(int playerIndex, ControllerButton button)
-    {
-        var driver = Get(playerIndex);
-
-        if (driver == null)
-            return false;
-
-        return driver.IsButtonDown(button);
-    }
+        => Get(playerIndex)?.IsButtonDown(button) ?? false;
 
     public static bool IsButtonUp(int playerIndex, ControllerButton button)
-        => IsButtonDown(playerIndex, button);
+        => !IsButtonDown(playerIndex, button);
 
     public static void Rumble(int playerIndex, ushort leftIntensity, ushort rightIntensity, uint duration)
-    {
-        var driver = Get(playerIndex);
-
-        if (driver == null)
-            return;
-
-        driver.Rumble(leftIntensity, rightIntensity, duration);
-    }
+        => Get(playerIndex)?.Rumble(leftIntensity, rightIntensity, duration);
 
     public static void AddMapping(string controllerMapping)
     {
@@ -130,24 +67,10 @@ public static class Controller
     }
 
     public static string RetrieveMapping(int playerIndex)
-    {
-        var driver = Get(playerIndex);
-
-        if (driver == null)
-            return string.Empty;
-
-        return driver.RetrieveMapping();
-    }
+        => Get(playerIndex)?.RetrieveMapping() ?? string.Empty;
 
     public static IReadOnlySet<ControllerButton>? GetActiveButtons(int playerIndex)
-    {
-        var driver = Get(playerIndex);
-
-        if (driver == null)
-            return null;
-
-        return driver.ActiveButtons;
-    }
+        => Get(playerIndex)?.ActiveButtons;
 
     internal static void OnConnected(Game game, ControllerEventArgs e)
     {
@@ -215,7 +138,7 @@ public static class Controller
 
     internal static void OnAccelerometerStateChanged(Game game, ControllerSensorEventArgs e)
     {
-        if(e.Controller is IAccelerometerEnabled acceleroEnabledDriver)
+        if (e.Controller is IAccelerometerEnabled acceleroEnabledDriver)
         {
             acceleroEnabledDriver.OnAccelerometerStateChanged(e.Values.X, e.Values.Y, e.Values.Z);
             game.OnControllerAccelerometerStateChanged(e);

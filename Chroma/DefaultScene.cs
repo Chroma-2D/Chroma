@@ -14,14 +14,14 @@ internal sealed class DefaultScene
         "Welcome to Chroma Framework.\nTo get started, override Draw and Update methods.";
     private static readonly string _versionString = $"v{Assembly.GetExecutingAssembly().GetName().Version}";
     private float _betaEmblemHue;
-    private List<Range> _wordRanges = _welcomeMessage.FindWordRanges("Draw", "Update");
+    private readonly List<Range> _wordRanges = _welcomeMessage.FindWordRanges("Draw", "Update");
 
     internal DefaultScene(Game game)
         => Game = game;
 
     internal void Draw(RenderContext context)
     {
-        if (EmbeddedAssets.LogoTexture == null || EmbeddedAssets.LogoTexture.Disposed)
+        if (EmbeddedAssets.LogoTexture.Disposed)
             return;
 
         context.Clear(Color.Black);

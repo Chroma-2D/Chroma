@@ -8,7 +8,8 @@ Chroma is a 2D game development framework focused on quick prototyping.
 - Game class constructor is now marked as `protected`.
 - GameStartupOptions now allows the user to specify the default framework log level.
 - SDL updated to 2.32.10
-- FreeType2 update to 2.14.2
+- FreeType2 updated to 2.14.2
+- System.Text.Json updated to 10.0.5
 
 #### Changes in release 0.66.0
 - SDL updated to 2.32.6

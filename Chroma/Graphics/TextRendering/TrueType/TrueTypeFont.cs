@@ -522,13 +522,8 @@ public class TrueTypeFont : DisposableResource, IFontProvider
                 $"Failed to get glyph {_face->glyph->glyph_index} from typeface '{FamilyName}': {_lastFtError}"
             );
         }
-            
-        if ((_lastFtError = FT_Glyph_Get_CBox(ref glyph, (uint)FT_Glyph_BBox_Mode.FT_GLYPH_BBOX_PIXELS, out var cbox)) != FT_Error.FT_Err_Ok)
-        {
-            throw new FreeTypeException(
-                $"Failed to get a control box for glyph {_face->glyph->glyph_index} from typeface '{FamilyName}': {_lastFtError}"
-            );
-        }
+
+        FT_Glyph_Get_CBox(ref glyph, (uint)FT_Glyph_BBox_Mode.FT_GLYPH_BBOX_PIXELS, out var cbox);
 
         return new TrueTypeGlyph
         {

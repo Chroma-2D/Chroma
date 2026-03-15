@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk"> 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -19,7 +19,7 @@
     </Description>
     
     <PackageId>Chroma</PackageId>
-    <Version>0.66.0</Version>
+    <Version>0.67.0</Version>
     <Author>vddCore</Author>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Chroma-2D/Chroma</RepositoryUrl>
@@ -37,7 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="7.0.4" />
+    <PackageReference Include="System.Text.Json" Version="10.0.5" />
   </ItemGroup>
 
   <ItemGroup>

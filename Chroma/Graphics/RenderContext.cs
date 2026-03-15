@@ -20,7 +20,7 @@ public sealed class RenderContext
     internal IntPtr CurrentRenderTarget => TargetStack.Peek();
 
     internal Stack<IntPtr> TargetStack { get; } = new();
-    internal List<BatchInfo> BatchBuffer { get; } = new();
+    internal List<BatchInfo> BatchBuffer { get; } = [];
 
     public bool RenderingToWindow
         => CurrentRenderTarget == Owner.RenderTargetHandle;
@@ -398,8 +398,7 @@ public sealed class RenderContext
                 
             _transformData.Clear(pos, new GlyphRenderMetrics(bounds, offsets, advance));
                 
-            if (glyphTransform != null)
-                glyphTransform(_transformData, c, i, pos);
+            glyphTransform?.Invoke(_transformData, c, i, pos);
 
             SDL_gpu.GPU_SetColor(texture.ImageHandle, Color.ToSdlColor(_transformData.Color));
             SDL_gpu.GPU_BlitTransformX(

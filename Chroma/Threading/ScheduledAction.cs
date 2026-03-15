@@ -2,10 +2,7 @@
 
 using System;
 
-internal sealed class ScheduledAction : SchedulerEntry
+internal sealed class ScheduledAction(Action action) : SchedulerEntry
 {
-    public Action Action { get; }
-
-    public ScheduledAction(Action action)
-        => Action = action;
+    public Action Action { get; } = action;
 }

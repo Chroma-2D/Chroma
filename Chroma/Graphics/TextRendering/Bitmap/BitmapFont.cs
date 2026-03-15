@@ -24,8 +24,8 @@ public class BitmapFont : DisposableResource, IFontProvider
     private BitmapFontInfo Info { get; set; } = null!;
     private BitmapFontCommon Common { get; set; } = null!;
 
-    private List<BitmapFontPage> Pages { get; } = new();
-    private List<BitmapFontKerningPair> Kernings { get; } = new();
+    private List<BitmapFontPage> Pages { get; } = [];
+    private List<BitmapFontKerningPair> Kernings { get; } = [];
     private Dictionary<char, BitmapGlyph> Glyphs { get; } = new();
 
     public string FamilyName => Info.FaceName;

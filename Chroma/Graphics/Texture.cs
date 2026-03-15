@@ -72,7 +72,8 @@ public class Texture : DisposableResource
                     VirtualResolution.Value.Height / 2f
                 );
             }
-            else return AbsoluteCenter;
+
+            return AbsoluteCenter;
         }
     }
 
@@ -777,21 +778,18 @@ public class Texture : DisposableResource
     private void CreateEmpty(int width, int height, PixelFormat format, bool allocateImage)
     {
         var pixelCount = width * height;
-        var bytesPerPixel = 0;
 
-        switch (format)
+        var bytesPerPixel = format switch
         {
-            case PixelFormat.RGB:
-            case PixelFormat.BGR:
-                bytesPerPixel = 3;
-                break;
-
-            case PixelFormat.RGBA:
-            case PixelFormat.BGRA:
-            case PixelFormat.ABGR:
-                bytesPerPixel = 4;
-                break;
-        }
+            PixelFormat.RGB or 
+            PixelFormat.BGR => 3,
+            
+            PixelFormat.RGBA or 
+            PixelFormat.BGRA or 
+            PixelFormat.ABGR => 4,
+            
+            _ => 0
+        };
 
         Format = format;
         BytesPerPixel = bytesPerPixel;

@@ -19,9 +19,11 @@ public sealed class DualSenseControllerDriver : SonyControllerDriver
         {
             _micLedMode = value;
 
-            var state = new DS5EffectState();
-            state.ucEnableBits2 = DS5EffectState.EnableBits2.ModifyMicrophoneLight;
-            state.ucMicLightMode = _micLedMode;
+            var state = new DS5EffectState
+            {
+                ucEnableBits2 = DS5EffectState.EnableBits2.ModifyMicrophoneLight,
+                ucMicLightMode = _micLedMode
+            };
 
             unsafe
             {

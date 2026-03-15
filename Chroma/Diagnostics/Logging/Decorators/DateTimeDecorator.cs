@@ -4,18 +4,14 @@ using System;
 using System.Globalization;
 using Chroma.Diagnostics.Logging.Base;
 
-public class DateTimeDecorator : Decorator
+public class DateTimeDecorator(DateTimeDecorator.DisplayMode mode) 
+    : Decorator
 {
-    private DisplayMode Mode { get; }
+    private DisplayMode Mode { get; } = mode;
 
     public DateTimeDecorator()
         : this(DisplayMode.TimeString24h)
     {
-    }
-
-    public DateTimeDecorator(DisplayMode mode)
-    {
-        Mode = mode;
     }
 
     public override string Decorate(LogLevel logLevel, string input, string originalMessage, Sink sink)

@@ -2,12 +2,6 @@
 
 using System.IO;
 
-public class FileSink : StreamSink
-{
-    public FileSink(string filePath)
-        : base(new FileStream(
-            filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read
-        ))
-    {
-    }
-}
+public class FileSink(string filePath) : StreamSink(new FileStream(
+    filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read
+));

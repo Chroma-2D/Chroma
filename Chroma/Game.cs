@@ -22,19 +22,18 @@ public class Game : IDisposable
     private static BootScene? _bootScene;
         
     private static readonly Log _log = LogManager.GetForCurrentAssembly();
-        
-    private int _fixedTimeStepTarget;
+
     private IContentProvider? _content;
 
     internal static bool WasConstructed { get; private set; }
 
     public int FixedTimeStepTarget
     {
-        get => _fixedTimeStepTarget;
+        get;
 
         protected set
         {
-            _fixedTimeStepTarget = value;
+            field = value;
             PerformanceCounter.FixedDelta = 1f / value;
         }
     }
@@ -44,12 +43,8 @@ public class Game : IDisposable
     public GraphicsManager Graphics { get; private set; } = null!;
     public AudioManager Audio { get; private set; } = null!;
     
-    public Game(GameStartupOptions? options = null)
+    protected Game(GameStartupOptions? options = null)
     {
-#if !DEBUG
-            _log.LogLevel = LogLevel.Info | LogLevel.Warning | LogLevel.Error;
-#endif
-
         if (WasConstructed)
         {
             throw new InvalidOperationException(
@@ -69,6 +64,8 @@ public class Game : IDisposable
         }
 
         options ??= GameStartupOptions.Default;
+
+        _log.LogLevel = options.FrameworkLogLevel;
 
         StartupOptions = options;
         WasConstructed = true;

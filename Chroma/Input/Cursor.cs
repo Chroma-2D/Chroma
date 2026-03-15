@@ -10,14 +10,13 @@ using Chroma.Natives.Bindings.SDL;
 public class Cursor : DisposableResource
 {
     private static readonly Log _log = LogManager.GetForCurrentAssembly();
-        
-    private static bool _isVisible = true;
+
     private IntPtr _cursorHandle;
     private IntPtr _sdlTextureHandle;
 
     public static bool IsVisible
     {
-        get => _isVisible;
+        get;
         set
         {
             if (SDL2.SDL_ShowCursor(value ? 1 : 0) < 0)
@@ -25,10 +24,10 @@ public class Cursor : DisposableResource
                 _log.Error($"Failed to {(value ? "show" : "hide")} the cursor: {SDL2.SDL_GetError()}");
                 return;
             }
-                
-            _isVisible = value;
+
+            field = value;
         }
-    }
+    } = true;
 
     public Texture Texture { get; }
     public Vector2 HotSpot { get; }

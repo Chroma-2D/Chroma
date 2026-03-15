@@ -6,7 +6,7 @@ using Chroma.Input.GameControllers.Drivers.Sony.DualSense.TriggerEffectPresets;
 public class TriggerEffect
 {
     private DS5EffectState _state;
-    private DualSenseControllerDriver _driver;
+    private readonly DualSenseControllerDriver _driver;
 
     internal TriggerEffect(DualSenseControllerDriver driver)
     {

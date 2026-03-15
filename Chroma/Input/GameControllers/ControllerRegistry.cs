@@ -44,10 +44,10 @@ internal sealed class ControllerRegistry
 
     public void Unregister(IntPtr instance)
     {
-        if (!_controllers.ContainsKey(instance))
+        if (!_controllers.TryGetValue(instance, out var controller))
             throw new InvalidOperationException($"Controller with instance ID {instance} does not exist.");
 
-        var controllerInfo = _controllers[instance].Info;
+        var controllerInfo = controller.Info;
         
         if (controllerInfo != null)
         {
@@ -69,18 +69,12 @@ internal sealed class ControllerRegistry
 
     public ControllerDriver? GetControllerDriver(int playerIndex)
     {
-        if (!_playerMappings.ContainsKey(playerIndex) || _playerMappings[playerIndex] == IntPtr.Zero)
+        if (!_playerMappings.TryGetValue(playerIndex, out nint instancePointer) || instancePointer == IntPtr.Zero)
             return null;
-
-        var instancePointer = _playerMappings[playerIndex];
+        
         return _controllers[instancePointer];
     }
 
     internal ControllerDriver? GetControllerDriverByPointer(IntPtr instancePointer)
-    {
-        if (!_controllers.ContainsKey(instancePointer))
-            return null;
-
-        return _controllers[instancePointer];
-    }
+        => _controllers.GetValueOrDefault(instancePointer);
 }

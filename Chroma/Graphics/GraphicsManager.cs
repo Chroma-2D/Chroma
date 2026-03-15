@@ -17,9 +17,8 @@ public sealed class GraphicsManager
 
     private Stack<SDL_gpu.GPU_RendererID>? _rendererIdStack;
 
-    private VerticalSyncMode _verticalSyncMode;
-
-    internal bool AnyRenderersAvailable => _rendererIdStack != null && _rendererIdStack.Any();
+    internal bool AnyRenderersAvailable => _rendererIdStack != null 
+                                        && _rendererIdStack.Count != 0;
 
     public bool ViewportAutoResize { get; set; } = true;
     public bool LimitFramerate { get; set; } = true;
@@ -42,7 +41,7 @@ public sealed class GraphicsManager
 
     public VerticalSyncMode VerticalSyncMode
     {
-        get => _verticalSyncMode;
+        get;
         set
         {
             if (SDL2.SDL_GL_SetSwapInterval((int)value) < 0)
@@ -54,15 +53,16 @@ public sealed class GraphicsManager
 
                 if (SDL2.SDL_GL_SetSwapInterval(1) < 0)
                 {
-                    _log.Error($"Failed to set the fallback vertical retrace synchronization mode: {SDL2.SDL_GetError()}.");
+                    _log.Error(
+                        $"Failed to set the fallback vertical retrace synchronization mode: {SDL2.SDL_GetError()}.");
                     return;
                 }
-                    
-                _verticalSyncMode = VerticalSyncMode.Retrace;
+
+                field = VerticalSyncMode.Retrace;
                 return;
             }
-                
-            _verticalSyncMode = value;
+
+            field = value;
         }
     }
 
@@ -83,7 +83,7 @@ public sealed class GraphicsManager
 
     public bool IsAdaptiveVSyncSupported { get; private set; }
 
-    public List<string> GlExtensions { get; } = new();
+    public List<string> GlExtensions { get; } = [];
 
     public bool IsValidOpenGlContextPresent
         => SDL2.SDL_GL_GetCurrentContext() != IntPtr.Zero;
@@ -140,11 +140,10 @@ public sealed class GraphicsManager
             Gl.GetIntegerV(Gl.GL_MAX_SAMPLES, out var maxMsaa);
             MaximumMSAA = maxMsaa;
 
-            IsAdaptiveVSyncSupported = GlExtensions.Intersect(new[]
-            {
+            IsAdaptiveVSyncSupported = GlExtensions.Intersect([
                 "GLX_EXT_swap_control_tear",
                 "WGL_EXT_swap_control_tear"
-            }).Any();
+            ]).Any();
 
             return true;
         }
@@ -254,7 +253,7 @@ public sealed class GraphicsManager
         return renderTargetHandle;
     }
 
-    private static IEnumerable<SDL_gpu.GPU_RendererID> GetRegisteredRenderers()
+    private static List<SDL_gpu.GPU_RendererID> GetRegisteredRenderers()
     {
         var renderers = SDL_gpu.GPU_GetNumRegisteredRenderers();
         var registeredRenderers = new SDL_gpu.GPU_RendererID[renderers];

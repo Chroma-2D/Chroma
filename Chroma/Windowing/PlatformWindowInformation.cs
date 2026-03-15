@@ -5,7 +5,7 @@ using Chroma.Natives.Bindings.SDL;
 
 internal sealed class PlatformWindowInformation
 {
-    private SDL2.SDL_SysWMinfo _info;
+    private readonly SDL2.SDL_SysWMinfo _info;
 
     public IntPtr SystemWindowHandle
     {

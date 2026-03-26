@@ -131,15 +131,27 @@ public class FileSystemContentProvider : DisposableResource, IContentProvider
         RegisterImporter<VertexShader>((path, _) => VertexShader.FromFile(path));
         RegisterImporter<Effect>((path, _) => Effect.FromFile(path));
         RegisterImporter<BitmapFont>((path, _) => new BitmapFont(path));
-        RegisterImporter<Sound>((path, _) => new Sound(path));
-        RegisterImporter<Music>((path, _) => new Music(path));
+        
+        RegisterImporter<AudioClip>((path, args) =>
+        {
+            var decodeWhole = false;
+
+            if (args.Length >= 1)
+            {
+                decodeWhole = EnsureArgumentIs<bool>(0, args[0]);
+            }
+            
+            return new AudioClip(path, decodeWhole);
+        });
 
         RegisterImporter<Cursor>((path, args) =>
         {
             var hotSpot = new Vector2();
 
             if (args.Length >= 1)
-                hotSpot = (Vector2)args[0];
+            {
+                hotSpot = EnsureArgumentIs<Vector2>(0, args[0]);
+            }
 
             var cursor = new Cursor(path, hotSpot);
             return cursor;
@@ -147,19 +159,39 @@ public class FileSystemContentProvider : DisposableResource, IContentProvider
 
         RegisterImporter<TrueTypeFont>((path, args) =>
         {
-            TrueTypeFont ttf = args.Length switch
+            var fontSize = 12;
+            string? alphabet = null;
+            
+            switch (args.Length)
             {
-                2 => new TrueTypeFont(path, (int)args[0], (string)args[1]),
-                1 => new TrueTypeFont(path, (int)args[0]),
-                _ => new TrueTypeFont(path, 12)
-            };
+                case 2:
+                    fontSize = EnsureArgumentIs<int>(0, args[0]);
+                    alphabet = EnsureArgumentIs<string>(1, args[1]);
+                    break;
+                
+                case 1:
+                    fontSize = EnsureArgumentIs<int>(0, args[0]);
+                    break;
+            }
 
-            return ttf;
+            return new TrueTypeFont(path, fontSize, alphabet);
         });
     }
 
     private string MakeAbsolutePath(string relativePath)
         => Path.Combine(ContentRoot, relativePath);
+
+    private static T EnsureArgumentIs<T>(int argIndex, object arg)
+    {
+        if (arg is not T castArg)
+        {
+            throw new ArgumentException(
+                $"Expected argument {argIndex} to be of type {typeof(T).Name}, found {arg.GetType().Name} instead."
+            );
+        }
+
+        return castArg;
+    }
 
     private void OnResourceDisposing(object? sender, EventArgs e)
     {

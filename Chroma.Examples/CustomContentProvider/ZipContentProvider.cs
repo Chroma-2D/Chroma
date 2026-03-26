@@ -50,7 +50,7 @@ public class ZipContentProvider : DisposableResource, IContentProvider
             }
         });
 
-        _importers.Add(typeof(Sound), (path, _) =>
+        _importers.Add(typeof(AudioClip), (path, _) =>
         {
             using (var stream = Open(path))
             {
@@ -59,7 +59,7 @@ public class ZipContentProvider : DisposableResource, IContentProvider
                     stream.CopyTo(ms);
                     ms.Seek(0, SeekOrigin.Begin);
                         
-                    return new Sound(ms);
+                    return new AudioClip(ms, true);
                 }
             }
         });

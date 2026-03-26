@@ -35,9 +35,6 @@ internal static partial class SDL2_nmix
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     internal delegate void NMIX_SourceCallback(IntPtr userdata, IntPtr stream, int stream_size);
 
-    private static ushort SDL_AUDIO_SAMPLELEN(ushort x)
-        => (ushort)((x & SDL_AUDIO_MASK_BITSIZE) / 8);
-
     private static float clampf(float x, float min, float max)
         => Math.Clamp(x, min, max);
 
@@ -94,6 +91,8 @@ internal static partial class SDL2_nmix
 
                 if (SDL_AudioStreamAvailable(s->stream) == 0)
                 {
+                    SDL_AudioStreamFlush(s->stream);
+                    
                     if (!s->eof)
                     {
                         var del = Marshal.GetDelegateForFunctionPointer<NMIX_SourceCallback>(s->callback);
@@ -103,23 +102,17 @@ internal static partial class SDL2_nmix
                         {
                             Console.Error.WriteLine($"SDL_nmix: FATAL: {SDL_GetError()}");
                             return;
-                        }
-
-                        SDL_AudioStreamFlush(s->stream);
+                        }                        
                     }
                     else
                     {
-                        SDL_AudioStreamFlush(s->stream);
-
-                        if (SDL_AudioStreamAvailable(s->stream) == 0)
-                        {
-                            NMIX_Pause((IntPtr)s);
-                            break;
-                        }
+                        // SDL_AudioStreamClear(s->stream);
+                        NMIX_Pause((IntPtr)s);
+                        break;
                     }
                 }
             }
-
+            
             s = next;
         }
     }
@@ -236,7 +229,7 @@ internal static partial class SDL2_nmix
             {
                 SDL_OutOfMemory();
                 return IntPtr.Zero;
-            }
+            }   
 
             source->out_buffer_size = (int)mixer.size;
             source->out_buffer = (void*)SDL_malloc(new IntPtr(source->out_buffer_size));

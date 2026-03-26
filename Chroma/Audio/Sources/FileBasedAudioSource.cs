@@ -291,12 +291,12 @@ public abstract class FileBasedAudioSource : AudioSource
             _originalSourceCallback?.Invoke(userdata, buffer, bufferSize);
 
             var sampleDuration = (double)bufferSize / (
-                SoundSample->actual.rate * SoundSample->actual.channels * (actualAudioFormat.BitsPerSample / 8)
+                SoundSample->actual.rate * SoundSample->actual.channels * SDL2.SDL_AUDIO_SAMPLELEN(SoundSample->actual.format)
             );
 
             Position += sampleDuration;
-
-            if (Position >= Duration || Source->eof)
+            
+            if (Source->eof)
             {
                 Position = 0;
                     

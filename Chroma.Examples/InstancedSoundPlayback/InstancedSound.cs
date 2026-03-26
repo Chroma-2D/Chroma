@@ -9,8 +9,8 @@ using Chroma.MemoryManagement;
 
 public class InstancedSound : DisposableResource
 {
-    private static Queue<Sound> _expiredInstances = new();
-    private static List<Sound> _liveInstances = new();
+    private static Queue<AudioClip> _expiredInstances = new();
+    private static List<AudioClip> _liveInstances = new();
     private Stream _template;
 
     public static int LiveInstanceCount => _liveInstances.Count;
@@ -47,10 +47,10 @@ public class InstancedSound : DisposableResource
             _template.CopyTo(ms);
             _template.Seek(0, SeekOrigin.Begin);
                 
-            var snd = new Sound(ms);
-            _liveInstances.Add(snd);
+            var clip = new AudioClip(ms, true);
+            _liveInstances.Add(clip);
 
-            snd.Play();
+            clip.Play();
         }
     }
 
@@ -65,9 +65,9 @@ public class InstancedSound : DisposableResource
         if (e.IsLooping)
             return;
             
-        if (e.Source is Sound snd)
+        if (e.Source is AudioClip clip)
         {
-            _expiredInstances.Enqueue(snd);
+            _expiredInstances.Enqueue(clip);
         }
     }
 }

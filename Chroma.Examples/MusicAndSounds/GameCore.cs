@@ -22,8 +22,8 @@ public class GameCore : Game
     private static readonly Log _log = LogManager.GetForCurrentAssembly();
     private IContentProvider _content;
 
-    private Sound _doomShotgun;
-    private Music _elysiumMod;
+    private AudioClip _doomShotgun;
+    private AudioClip _elysiumMod;
     private Waveform _waveform;
 
     private double[] _frequencies;
@@ -61,8 +61,8 @@ public class GameCore : Game
     {
         _content ??= content;
             
-        _doomShotgun = content.Load<Sound>("Sounds/doomsg.wav");
-        _elysiumMod = content.Load<Music>("Music/elysium.mod");
+        _doomShotgun = content.Load<AudioClip>("Sounds/doomsg.wav", true);
+        _elysiumMod = content.Load<AudioClip>("Music/elysium.mod");
 
         var time = 0;
         _waveform = new Waveform(
@@ -172,7 +172,15 @@ public class GameCore : Game
                     if (_elysiumMod.IsPlaying)
                         _elysiumMod.Pause();
                     else
+                    {
+                        if (_elysiumMod.Status == PlaybackStatus.Stopped)
+                        {
+                            _elysiumMod.Rewind();
+                        }
+                        
                         _elysiumMod.Play();
+                        
+                    }
                 }
 
                 break;

@@ -11,7 +11,7 @@ using Chroma.Input;
 
 public class GameCore : Game
 {
-    private Sound _shotgun;
+    private AudioClip _shotgun;
     private Texture _texture;
     private float _rotation;
 
@@ -30,7 +30,7 @@ public class GameCore : Game
     protected override void Initialize(IContentProvider content)
     {
         _texture = content.Load<Texture>("Textures/pentagram.png");
-        _shotgun = content.Load<Sound>("doomsg.wav");
+        _shotgun = content.Load<AudioClip>("doomsg.wav", true);
     }
 
     protected override void Draw(RenderContext context)

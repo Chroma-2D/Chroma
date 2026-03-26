@@ -9,6 +9,9 @@ internal static partial class SDL2
 	public const ushort SDL_AUDIO_MASK_DATATYPE =	(1 << 8);
 	public const ushort SDL_AUDIO_MASK_ENDIAN =	(1 << 12);
 	public const ushort SDL_AUDIO_MASK_SIGNED =	(1 << 15);
+	
+	public static ushort SDL_AUDIO_SAMPLELEN(ushort x)
+		=> (ushort)((x & SDL_AUDIO_MASK_BITSIZE) / 8);
 
 	public const ushort AUDIO_U8 =		0x0008;
 	public const ushort AUDIO_S8 =		0x8008;

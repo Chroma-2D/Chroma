@@ -33,8 +33,8 @@ public class GameCore : Game
     private Cursor _cursor;
     private Effect _effect;
         
-    private Sound _bounce1;
-    private Sound _bounce2;
+    private AudioClip _bounce1;
+    private AudioClip _bounce2;
 
     public GameCore()
         : base(new(false, false))
@@ -68,8 +68,8 @@ public class GameCore : Game
         _cursor.SetCurrent();
 
         _effect = content.Load<Effect>("Shaders/distort.frag");
-        _bounce1 = content.Load<Sound>("Sounds/bounce1.ogg");
-        _bounce2 = content.Load<Sound>("Sounds/bounce2.ogg");
+        _bounce1 = content.Load<AudioClip>("Sounds/bounce1.ogg", true);
+        _bounce2 = content.Load<AudioClip>("Sounds/bounce2.ogg", true);
     }
 
     protected override void FixedUpdate(float delta)

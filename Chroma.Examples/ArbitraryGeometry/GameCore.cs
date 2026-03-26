@@ -16,8 +16,8 @@ public class GameCore : Game
     private PixelShader _ps;
     private float _t;
 
-    private float[] _box = new[]
-    {
+    private readonly float[] _box =
+    [
         -0.25f, -0.25f, -0.25f,
         -0.25f, -0.25f, 0.25f,
         -0.25f, 0.25f, 0.25f,
@@ -53,8 +53,8 @@ public class GameCore : Game
         -0.25f, 0.25f, 0.25f,
         0.25f, 0.25f, 0.25f,
         -0.25f, 0.25f, 0.25f,
-        0.25f, -0.25f, 0.25f,
-    };
+        0.25f, -0.25f, 0.25f
+    ];
 
     public GameCore() : base(new(false, true, 4))
     {
@@ -135,11 +135,10 @@ public class GameCore : Game
                     VertexFormat.XYZ,
                     36,
                     _box,
-                    new ushort[]
-                    {
+                    [
                         3, 4, 5,
                         9, 10, 11
-                    }
+                    ]
                 );
 
                 _ps.SetUniform("tri_color", Color.Magenta);
@@ -148,11 +147,10 @@ public class GameCore : Game
                     VertexFormat.XYZ,
                     36,
                     _box,
-                    new ushort[]
-                    {
+                    [
                         0, 1, 2,
-                        12, 13, 14,
-                    }
+                        12, 13, 14
+                    ]
                 );
 
                 _ps.SetUniform("tri_color", Color.Yellow);
@@ -161,11 +159,10 @@ public class GameCore : Game
                     VertexFormat.XYZ,
                     36,
                     _box,
-                    new ushort[]
-                    {
+                    [
                         6, 7, 8,
-                        15, 16, 17,
-                    }
+                        15, 16, 17
+                    ]
                 );
 
                 _ps.SetUniform("tri_color", Color.CornflowerBlue);
@@ -174,11 +171,10 @@ public class GameCore : Game
                     VertexFormat.XYZ,
                     36,
                     _box,
-                    new ushort[]
-                    {
+                    [
                         18, 19, 20,
                         33, 34, 35
-                    }
+                    ]
                 );
 
                 _ps.SetUniform("tri_color", Color.White);
@@ -187,11 +183,10 @@ public class GameCore : Game
                     VertexFormat.XYZ,
                     36,
                     _box,
-                    new ushort[]
-                    {
+                    [
                         21, 22, 23,
-                        24, 25, 26,
-                    }
+                        24, 25, 26
+                    ]
                 );
 
                 _ps.SetUniform("tri_color", Color.Lime);
@@ -200,11 +195,10 @@ public class GameCore : Game
                     VertexFormat.XYZ,
                     36,
                     _box,
-                    new ushort[]
-                    {
+                    [
                         27, 28, 29,
-                        30, 31, 32,
-                    }
+                        30, 31, 32
+                    ]
                 );
             });
         }

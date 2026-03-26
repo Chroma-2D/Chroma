@@ -16,11 +16,11 @@ public class GameCore : Game
     private static readonly Log _log = LogManager.GetForCurrentAssembly();
 
     private RenderTarget _target;
-    private Task _longRunningTask;
+    private readonly Task _longRunningTask;
 
     public GameCore() : base(new(false, false))
     {
-        _longRunningTask = new Task(async () =>
+        _longRunningTask = new Task(async void () =>
         {
             while (true)
             {
@@ -42,9 +42,9 @@ public class GameCore : Game
             new Vector2(8)
         );
 
-        if (_target != null && !_target.Disposed)
+        if (_target is { Disposed: false })
         {
-            context.RenderTo(_target, (ctx, tgt) =>
+            context.RenderTo(_target, (ctx, _) =>
             {
                 ctx.Rectangle(
                     ShapeMode.Fill,
@@ -85,7 +85,7 @@ public class GameCore : Game
             {
                 await Dispatcher.RunOnMainThread(() =>
                 {
-                    if (_target != null && !_target.Disposed)
+                    if (_target is { Disposed: false })
                     {
                         _target.Dispose();
                     }
@@ -100,7 +100,7 @@ public class GameCore : Game
             {
                 await Dispatcher.RunOnMainThread(() =>
                 {
-                    if (_target != null && !_target.Disposed)
+                    if (_target is { Disposed: false })
                     {
                         _target.Dispose();
                     }
@@ -111,14 +111,13 @@ public class GameCore : Game
 
     private void ProcessInSeparateTask()
     {
-        var target = Dispatcher.RunOnMainThread<RenderTarget>(() =>
-        {
-            return new RenderTarget(10, 10);
-        }, true).Result;
+        var target = Dispatcher.RunOnMainThread<RenderTarget>(
+            () => new RenderTarget(10, 10), true
+        ).Result;
 
         if (target != null)
         {
-            _log.Info(target.ToString());
+            _log.Info(target.ToString() ?? "what.");
             Dispatcher.RunOnMainThread(target.Dispose, true).GetAwaiter().GetResult();
         }
     }

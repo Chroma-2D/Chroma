@@ -22,9 +22,9 @@ public class GameCore : Game
     private AudioClip _music = null!;
 
     private double[] _frequencies = new double[2048];
-    private double[] _lowFrequencies = new double[0];
-    private double[] _midFrequencies = new double[0];
-    private double[] _highFrequencies = new double[0];
+    private double[] _lowFrequencies = [];
+    private double[] _midFrequencies = [];
+    private double[] _highFrequencies = [];
 
     public GameCore()
         : base(new(false, false))
@@ -41,7 +41,7 @@ public class GameCore : Game
     protected override void Initialize(IContentProvider content)
     {
         _effect = content.Load<Effect>("Shaders/glowyrings.frag");
-        _music = content.Load<AudioClip>("Music/groovy.mp3");
+        _music = content.Load<AudioClip>("Music/groovy.mp3")!;
         _music.Filters.Add(FftTunnel);
         _music.IsLooping = true;
         _music.Play();
@@ -79,17 +79,9 @@ public class GameCore : Game
 
     protected override void Draw(RenderContext context)
     {
-        context.RenderTo(_target, (ctx, tgt) => { ctx.Clear(Color.Black); });
-
-        var mp = Mouse.WindowSpacePosition;
-        var dx = Window.Center.X - mp.X;
-        var dy = Window.Center.Y - mp.Y;
+        context.RenderTo(_target, (ctx, _) => { ctx.Clear(Color.Black); });
 
         _effect.Activate();
-        _effect.SetUniform(
-            "mouse_pos",
-            new Vector2(dx / Window.Width, dy / Window.Height)
-        );
 
         if (_lowFrequencies.Any())
         {

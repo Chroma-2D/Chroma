@@ -14,8 +14,8 @@ using Chroma.MemoryManagement;
 
 public class FileSystemContentProvider : DisposableResource, IContentProvider
 {
-    private readonly HashSet<DisposableResource> _loadedResources;
-    private readonly Dictionary<Type, Func<string, object[], object>> _importers;
+    private readonly HashSet<DisposableResource> _loadedResources = [];
+    private readonly Dictionary<Type, Func<string, object[], object>> _importers = [];
 
     public string ContentRoot { get; }
 
@@ -27,10 +27,6 @@ public class FileSystemContentProvider : DisposableResource, IContentProvider
         }
         
         ContentRoot = contentRoot;
-
-        _loadedResources = [];
-        _importers = new Dictionary<Type, Func<string, object[], object>>();
-
         RegisterImporters();
     }
 
@@ -60,8 +56,11 @@ public class FileSystemContentProvider : DisposableResource, IContentProvider
     public void Unload<T>(T resource) where T : DisposableResource
     {
         if (!_loadedResources.Contains(resource))
+        {
             throw new ContentNotLoadedException(
-                "The content you want to unload was never loaded in the first place.");
+                "The content you want to unload was never loaded in the first place."
+            );
+        }
 
         resource.Dispose();
     }

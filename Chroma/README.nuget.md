@@ -2,6 +2,12 @@
 Chroma is a 2D game development framework focused on quick prototyping.
 
 ### Change log
+#### Changes in release 0.68.0
+- Fixed a bug where the previous fix would cause clicking at the end of predecoded sound clips.
+- Removed `Music` and `Sound` audio sources.
+- Added a unified `AudioClip` audio source - predecoding is now configured manually.
+- SDL_nmix port and internal playback position calculation now use the same helper function.
+
 #### Changes in release 0.67.1
 - Fixed a bug where the internal SDL_nmix port would cut off a sound at the end instead of playing the remaining contents
   of the buffer.

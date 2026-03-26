@@ -104,11 +104,18 @@ internal static partial class SDL2_nmix
                             Console.Error.WriteLine($"SDL_nmix: FATAL: {SDL_GetError()}");
                             return;
                         }
+
+                        SDL_AudioStreamFlush(s->stream);
                     }
                     else
                     {
-                        NMIX_Pause((IntPtr)s);
-                        bytes_written = buffer_size;
+                        SDL_AudioStreamFlush(s->stream);
+
+                        if (SDL_AudioStreamAvailable(s->stream) == 0)
+                        {
+                            NMIX_Pause((IntPtr)s);
+                            break;
+                        }
                     }
                 }
             }

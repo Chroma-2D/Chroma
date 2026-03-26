@@ -370,6 +370,9 @@ internal static partial class SDL2
 	[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
 	public static extern int SDL_AudioStreamAvailable(IntPtr stream);
 
+	[DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+	public static extern int SDL_AudioStreamFlush(IntPtr stream);
+
 	/* stream refers to an SDL_AudioStream*.
 	 * Only available in 2.0.7 or higher.
 	 */

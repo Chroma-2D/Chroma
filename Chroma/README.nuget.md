@@ -2,6 +2,10 @@
 Chroma is a 2D game development framework focused on quick prototyping.
 
 ### Change log
+#### Changes in release 0.67.1
+- Fixed a bug where the internal SDL_nmix port would cut off a sound at the end instead of playing the remaining contents
+  of the buffer.
+
 #### Changes in release 0.67.0
 - Dropped support for .NET 7, move to .NET 8.
 - Modernized parts of the project to use C# 14 features.
